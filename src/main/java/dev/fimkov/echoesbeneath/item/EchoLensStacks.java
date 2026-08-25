@@ -28,8 +28,9 @@ public final class EchoLensStacks {
 	}
 
 	public static void setUpgrades(ItemStack stack, EchoLensUpgrades upgrades) {
+		EchoLensUpgrades reached = EchoLensUpgrades.highestOf(peak(stack), upgrades);
 		stack.set(EchoComponents.LENS_UPGRADES, upgrades);
-		stack.set(EchoComponents.LENS_PEAK, EchoLensUpgrades.highestOf(peak(stack), upgrades));
+		stack.set(EchoComponents.LENS_PEAK, reached);
 	}
 
 	public static EchoLensUpgrades peak(ItemStack stack) {

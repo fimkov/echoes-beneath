@@ -3,7 +3,10 @@ package dev.fimkov.echoesbeneath.test;
 import dev.fimkov.echoesbeneath.entity.EchoLensEntity;
 import dev.fimkov.echoesbeneath.entity.EchoLensMode;
 import dev.fimkov.echoesbeneath.item.EchoLensStacks;
+import dev.fimkov.echoesbeneath.item.EchoLensUpgrades;
 import dev.fimkov.echoesbeneath.memory.EchoFormat;
+import dev.fimkov.echoesbeneath.menu.ResonanceTablePlan;
+import dev.fimkov.echoesbeneath.menu.ResonanceTableUpgrade;
 import dev.fimkov.echoesbeneath.registry.EchoItems;
 import dev.fimkov.echoesbeneath.registry.EchoTags;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
@@ -18,6 +21,32 @@ import java.util.UUID;
 
 public class EchoLensGameTest implements FabricGameTest {
 	private static final BlockPos ANCHOR = new BlockPos(1, 2, 1);
+
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aLensRemembersTheHeightItWasTunedTo(GameTestHelper helper) {
+		ItemStack lens = new ItemStack(EchoItems.ECHO_LENS);
+		EchoLensUpgrades raised = new EchoLensUpgrades(2, 32, 2, 1);
+		EchoLensStacks.setUpgrades(lens, raised);
+		if (!EchoLensStacks.peak(lens).equals(raised)) {
+			helper.fail("a tuned lens must record the height it reached");
+		}
+		EchoLensStacks.setUpgrades(lens, EchoLensUpgrades.DEFAULT);
+		if (EchoLensStacks.upgrades(lens).memorySlots() != EchoFormat.DEFAULT_MEMORY_SLOTS) {
+			helper.fail("winding a lens back down must actually lower it");
+		}
+		if (!EchoLensStacks.peak(lens).equals(raised)) {
+			helper.fail("winding a lens back down must not erase what it already paid for");
+		}
+		ResonanceTablePlan back = ResonanceTablePlan.of(EchoLensStacks.upgrades(lens),
+				ResonanceTableUpgrade.lowestSetting(0), EchoLensStacks.peak(lens), raised);
+		if (!back.isFree()) {
+			helper.fail("climbing back to a level this lens already bought must cost nothing");
+		}
+		if (!back.changed()) {
+			helper.fail("climbing back must still count as a change to apply");
+		}
+		helper.succeed();
+	}
 
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void aCraftedLensStartsWithNoMemories(GameTestHelper helper) {
