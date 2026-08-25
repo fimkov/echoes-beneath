@@ -13,6 +13,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -20,28 +21,24 @@ import net.minecraft.world.item.Items;
 public class ResonanceTableMenu extends AbstractContainerMenu {
 	public static final int LENS_SLOT = 0;
 	public static final int AMETHYST_SLOT = 1;
-	private static final int CONTAINER_SLOTS = 2;
-	private static final int INVENTORY_ROWS = 3;
-	private static final int INVENTORY_COLUMNS = 9;
-	private static final int SLOT_SPACING = 18;
-	private static final int INVENTORY_LEFT = 8;
-	private static final int INVENTORY_TOP = 84;
-	private static final int HOTBAR_TOP = 142;
-	private static final int LENS_SLOT_X = 26;
-	private static final int LENS_SLOT_Y = 47;
-	private static final int AMETHYST_SLOT_X = 50;
-	private static final int AMETHYST_SLOT_Y = 47;
+	public static final int RESULT_SLOT = 2;
+	public static final int CONTAINER_SLOTS = 3;
+
 	private static final float SUCCESS_VOLUME = 0.8F;
 	private static final float SUCCESS_PITCH = 1.3F;
 
-	private final Container container = new SimpleContainer(CONTAINER_SLOTS) {
+	private final Container input = new SimpleContainer(2) {
 		@Override
 		public void setChanged() {
 			super.setChanged();
 			slotsChanged(this);
 		}
 	};
+	private final Container output = new SimpleContainer(1);
 	private final ContainerLevelAccess access;
+	private final DataSlot[] targetSteps = new DataSlot[ResonanceTableUpgrade.all().length];
+	private final DataSlot costLevels = DataSlot.standalone();
+	private final DataSlot costShards = DataSlot.standalone();
 
 	public ResonanceTableMenu(int containerId, Inventory inventory, BlockPos position) {
 		this(containerId, inventory, ContainerLevelAccess.create(inventory.player.level(), position));
@@ -50,64 +47,163 @@ public class ResonanceTableMenu extends AbstractContainerMenu {
 	public ResonanceTableMenu(int containerId, Inventory inventory, ContainerLevelAccess access) {
 		super(EchoMenus.RESONANCE_TABLE, containerId);
 		this.access = access;
-		addSlot(new Slot(container, LENS_SLOT, LENS_SLOT_X, LENS_SLOT_Y) {
+		addSlot(new Slot(input, LENS_SLOT, ResonanceTableLayout.LENS_SLOT_X, ResonanceTableLayout.LENS_SLOT_Y) {
 			@Override
 			public boolean mayPlace(ItemStack stack) {
 				return EchoLensStacks.isLens(stack);
 			}
+
+			@Override
+			public int getMaxStackSize() {
+				return 1;
+			}
 		});
-		addSlot(new Slot(container, AMETHYST_SLOT, AMETHYST_SLOT_X, AMETHYST_SLOT_Y) {
+		addSlot(new Slot(input, AMETHYST_SLOT,
+				ResonanceTableLayout.AMETHYST_SLOT_X, ResonanceTableLayout.AMETHYST_SLOT_Y) {
 			@Override
 			public boolean mayPlace(ItemStack stack) {
 				return stack.is(Items.AMETHYST_SHARD);
 			}
 		});
-		for (int row = 0; row < INVENTORY_ROWS; row++) {
-			for (int column = 0; column < INVENTORY_COLUMNS; column++) {
-				addSlot(new Slot(inventory, column + row * INVENTORY_COLUMNS + INVENTORY_COLUMNS,
-						INVENTORY_LEFT + column * SLOT_SPACING, INVENTORY_TOP + row * SLOT_SPACING));
+		addSlot(new Slot(output, 0, ResonanceTableLayout.RESULT_SLOT_X, ResonanceTableLayout.RESULT_SLOT_Y) {
+			@Override
+			public boolean mayPlace(ItemStack stack) {
+				return false;
+			}
+
+			@Override
+			public boolean mayPickup(Player player) {
+				return canApply(player);
+			}
+
+			@Override
+			public void onTake(Player player, ItemStack stack) {
+				applyPlan(player);
+			}
+		});
+		for (int row = 0; row < ResonanceTableLayout.INVENTORY_ROWS; row++) {
+			for (int column = 0; column < ResonanceTableLayout.INVENTORY_COLUMNS; column++) {
+				addSlot(new Slot(inventory,
+						column + row * ResonanceTableLayout.INVENTORY_COLUMNS + ResonanceTableLayout.INVENTORY_COLUMNS,
+						ResonanceTableLayout.INVENTORY_LEFT + column * ResonanceTableLayout.SLOT_SPACING,
+						ResonanceTableLayout.INVENTORY_TOP + row * ResonanceTableLayout.SLOT_SPACING));
 			}
 		}
-		for (int column = 0; column < INVENTORY_COLUMNS; column++) {
-			addSlot(new Slot(inventory, column, INVENTORY_LEFT + column * SLOT_SPACING, HOTBAR_TOP));
+		for (int column = 0; column < ResonanceTableLayout.INVENTORY_COLUMNS; column++) {
+			addSlot(new Slot(inventory, column,
+					ResonanceTableLayout.INVENTORY_LEFT + column * ResonanceTableLayout.SLOT_SPACING,
+					ResonanceTableLayout.HOTBAR_TOP));
 		}
+		for (int index = 0; index < targetSteps.length; index++) {
+			targetSteps[index] = addDataSlot(DataSlot.standalone());
+		}
+		addDataSlot(costLevels);
+		addDataSlot(costShards);
 	}
 
 	public ItemStack lens() {
-		return container.getItem(LENS_SLOT);
+		return input.getItem(LENS_SLOT);
 	}
 
-	public EchoLensUpgrades upgrades() {
-		return EchoLensStacks.upgrades(lens());
+	public ItemStack amethyst() {
+		return input.getItem(AMETHYST_SLOT);
 	}
 
-	public boolean canAfford(Player player, ResonanceTableUpgrade upgrade) {
-		if (upgrade == null || lens().isEmpty() || !upgrade.isAvailable(upgrades())) {
+	public EchoLensUpgrades floorUpgrades() {
+		ItemStack lens = lens();
+		return lens.isEmpty() ? EchoLensUpgrades.DEFAULT : EchoLensStacks.upgrades(lens);
+	}
+
+	public EchoLensUpgrades targetUpgrades() {
+		EchoLensUpgrades result = floorUpgrades();
+		for (int index = 0; index < targetSteps.length; index++) {
+			ResonanceTableUpgrade upgrade = ResonanceTableUpgrade.fromIndex(index);
+			result = upgrade.withSteps(result, targetSteps[index].get());
+		}
+		return ResonanceTableUpgrade.clampToFloor(floorUpgrades(), result);
+	}
+
+	public ResonanceTablePlan plan() {
+		return new ResonanceTablePlan(floorUpgrades(), targetUpgrades(), costLevels.get(), costShards.get());
+	}
+
+	public boolean canApply(Player player) {
+		if (output.getItem(0).isEmpty()) {
 			return false;
 		}
 		if (player.getAbilities().instabuild) {
 			return true;
 		}
-		return player.experienceLevel >= upgrade.experienceLevels()
-				&& container.getItem(AMETHYST_SLOT).getCount() >= upgrade.amethystShards();
+		return player.experienceLevel >= costLevels.get() && amethyst().getCount() >= costShards.get();
+	}
+
+	public boolean canIncrease(ResonanceTableUpgrade upgrade) {
+		return !lens().isEmpty() && upgrade.stepsOf(targetUpgrades()) < upgrade.maxSteps();
+	}
+
+	public boolean canDecrease(ResonanceTableUpgrade upgrade) {
+		return !lens().isEmpty() && upgrade.stepsOf(targetUpgrades()) > upgrade.stepsOf(floorUpgrades());
 	}
 
 	@Override
 	public boolean clickMenuButton(Player player, int buttonId) {
-		ResonanceTableUpgrade upgrade = ResonanceTableUpgrade.fromIndex(buttonId);
-		if (!canAfford(player, upgrade)) {
+		int index = ResonanceTableUpgrade.indexOfButton(buttonId);
+		ResonanceTableUpgrade upgrade = ResonanceTableUpgrade.fromIndex(index);
+		if (upgrade == null || lens().isEmpty()) {
 			return false;
 		}
-		ItemStack lens = lens();
-		EchoLensStacks.setUpgrades(lens, upgrade.apply(EchoLensStacks.upgrades(lens)));
-		if (!player.getAbilities().instabuild) {
-			player.giveExperienceLevels(-upgrade.experienceLevels());
-			container.removeItem(AMETHYST_SLOT, upgrade.amethystShards());
+		boolean increase = ResonanceTableUpgrade.isIncrease(buttonId);
+		if (increase ? !canIncrease(upgrade) : !canDecrease(upgrade)) {
+			return false;
 		}
-		container.setChanged();
+		targetSteps[index].set(upgrade.stepsOf(targetUpgrades()) + (increase ? 1 : -1));
+		refresh();
+		return true;
+	}
+
+	@Override
+	public void slotsChanged(Container container) {
+		super.slotsChanged(container);
+		if (container == input) {
+			refresh();
+		}
+	}
+
+	private void refresh() {
+		EchoLensUpgrades floor = floorUpgrades();
+		for (int index = 0; index < targetSteps.length; index++) {
+			ResonanceTableUpgrade upgrade = ResonanceTableUpgrade.fromIndex(index);
+			int lowest = upgrade.stepsOf(floor);
+			targetSteps[index].set(Math.clamp(targetSteps[index].get(), lowest, upgrade.maxSteps()));
+		}
+		ItemStack lens = lens();
+		ResonanceTablePlan plan = ResonanceTablePlan.between(floor, targetUpgrades());
+		costLevels.set(plan.experienceLevels());
+		costShards.set(plan.amethystShards());
+		if (lens.isEmpty() || plan.isEmpty()) {
+			output.setItem(0, ItemStack.EMPTY);
+		} else {
+			ItemStack preview = lens.copy();
+			EchoLensStacks.setUpgrades(preview, plan.target());
+			output.setItem(0, preview);
+		}
+		broadcastChanges();
+	}
+
+	private void applyPlan(Player player) {
+		int levels = costLevels.get();
+		int shards = costShards.get();
+		if (!player.getAbilities().instabuild) {
+			player.giveExperienceLevels(-levels);
+			input.removeItem(AMETHYST_SLOT, shards);
+		}
+		input.setItem(LENS_SLOT, ItemStack.EMPTY);
+		for (DataSlot slot : targetSteps) {
+			slot.set(0);
+		}
+		refresh();
 		access.execute((level, position) -> level.playSound(null, position,
 				EchoSounds.LENS_RECORDING_COMPLETE, SoundSource.BLOCKS, SUCCESS_VOLUME, SUCCESS_PITCH));
-		return true;
 	}
 
 	@Override
@@ -118,11 +214,16 @@ public class ResonanceTableMenu extends AbstractContainerMenu {
 		}
 		ItemStack moved = slot.getItem();
 		ItemStack original = moved.copy();
-		if (index < CONTAINER_SLOTS) {
+		if (index == RESULT_SLOT) {
+			if (!canApply(player) || !moveItemStackTo(moved, CONTAINER_SLOTS, slots.size(), true)) {
+				return ItemStack.EMPTY;
+			}
+			slot.onQuickCraft(moved, original);
+		} else if (index < CONTAINER_SLOTS) {
 			if (!moveItemStackTo(moved, CONTAINER_SLOTS, slots.size(), true)) {
 				return ItemStack.EMPTY;
 			}
-		} else if (!moveItemStackTo(moved, 0, CONTAINER_SLOTS, false)) {
+		} else if (!moveItemStackTo(moved, LENS_SLOT, AMETHYST_SLOT + 1, false)) {
 			return ItemStack.EMPTY;
 		}
 		if (moved.isEmpty()) {
@@ -130,13 +231,18 @@ public class ResonanceTableMenu extends AbstractContainerMenu {
 		} else {
 			slot.setChanged();
 		}
+		if (original.getCount() == moved.getCount()) {
+			return ItemStack.EMPTY;
+		}
+		slot.onTake(player, moved);
 		return original;
 	}
 
 	@Override
 	public void removed(Player player) {
 		super.removed(player);
-		access.execute((level, position) -> clearContainer(player, container));
+		output.setItem(0, ItemStack.EMPTY);
+		access.execute((level, position) -> clearContainer(player, input));
 	}
 
 	@Override

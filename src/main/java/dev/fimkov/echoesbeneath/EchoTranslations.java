@@ -44,6 +44,15 @@ public final class EchoTranslations {
 	public static final String UPGRADE_COST_WITH_SHARDS = "upgrade.echoes_beneath.cost_with_shards";
 	public static final String UPGRADE_MAXED = "upgrade.echoes_beneath.maxed";
 	public static final String UPGRADE_NO_LENS = "upgrade.echoes_beneath.no_lens";
+	public static final String UPGRADE_UNIT_MEMORIES = "upgrade.echoes_beneath.unit.memories";
+	public static final String UPGRADE_UNIT_BLOCKS = "upgrade.echoes_beneath.unit.blocks";
+	public static final String UPGRADE_UNIT_LEVEL = "upgrade.echoes_beneath.unit.level";
+	public static final String UPGRADE_CHANGE = "upgrade.echoes_beneath.change";
+	public static final String UPGRADE_PER_STEP = "upgrade.echoes_beneath.per_step";
+	public static final String UPGRADE_PER_STEP_SHARDS = "upgrade.echoes_beneath.per_step_shards";
+	public static final String UPGRADE_LEVELS = "upgrade.echoes_beneath.levels";
+	public static final String UPGRADE_NEED_LEVELS = "upgrade.echoes_beneath.need_levels";
+	public static final String UPGRADE_NEED_SHARDS = "upgrade.echoes_beneath.need_shards";
 
 	private EchoTranslations() {
 	}
