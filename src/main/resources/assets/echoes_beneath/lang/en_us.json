@@ -29,7 +29,6 @@
   "command.echoes_beneath.structure_missing": "Could not find %s nearby.",
   "advancements.echoes_beneath.echo_shard.title": "A Shard That Listens",
   "advancements.echoes_beneath.echo_shard.description": "Find an Echo Shard in an ancient city, then ring eight of them around an Amethyst Shard",
-  "subtitles.echoes_beneath.lens_resonates": "Echo Lens resonates",
   "block.echoes_beneath.resonance_table": "Resonance Table",
   "container.echoes_beneath.resonance_table": "Resonance Table",
   "upgrade.echoes_beneath.memory_slot": "Memory",
@@ -83,5 +82,17 @@
   "advancements.echoes_beneath.echolocation.title": "Echolocation",
   "advancements.echoes_beneath.echolocation.description": "Replay a memory on a lens tuned to see everything within its radius",
   "advancements.echoes_beneath.tuner.title": "Tuner",
-  "advancements.echoes_beneath.tuner.description": "Buy every step on every track of a single lens"
+  "advancements.echoes_beneath.tuner.description": "Buy every step on every track of a single lens",
+  "subtitles.echoes_beneath.lens_deploy": "Echo Lens lifts",
+  "subtitles.echoes_beneath.recording_start": "Echo Lens draws breath",
+  "subtitles.echoes_beneath.recording_pulse": "Echo Lens listens",
+  "subtitles.echoes_beneath.memory_seal": "Memory seals",
+  "subtitles.echoes_beneath.lens_return": "Echo Lens settles",
+  "subtitles.echoes_beneath.playback_start": "The dark closes in",
+  "subtitles.echoes_beneath.playback_end": "The memory lets go",
+  "subtitles.echoes_beneath.region_ambient": "Something remembers",
+  "subtitles.echoes_beneath.resonance_ping": "Echo Lens resonates",
+  "subtitles.echoes_beneath.wave_pulse": "An old sound returns",
+  "subtitles.echoes_beneath.table_tune": "Resonance Table tunes",
+  "subtitles.echoes_beneath.table_deny": "Resonance Table refuses"
 }

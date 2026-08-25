@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import dev.fimkov.echoesbeneath.registry.EchoSounds;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
@@ -145,7 +146,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 			return;
 		}
 		minecraft.getSoundManager().play(
-				SimpleSoundInstance.forUI(SoundEvents.SCULK_CLICKING_STOP, DENIED_PITCH, DENIED_VOLUME));
+				SimpleSoundInstance.forUI(EchoSounds.TABLE_DENY, DENIED_PITCH, DENIED_VOLUME));
 	}
 
 	private float pulse() {

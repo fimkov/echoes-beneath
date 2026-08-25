@@ -1,6 +1,7 @@
 package dev.fimkov.echoesbeneath.client.render;
 
 import dev.fimkov.echoesbeneath.client.playback.ClientPlaybackManager;
+import dev.fimkov.echoesbeneath.client.sound.EchoRegionAmbience;
 import dev.fimkov.echoesbeneath.client.playback.ClientPlaybackSession;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
@@ -17,6 +18,7 @@ public final class EchoPlaybackRenderer {
 			if (EchoDarkness.isTransitionActive()) {
 				EchoDarkness.applyDarkness(context.tickCounter().getGameTimeDeltaPartialTick(false));
 			}
+			EchoRegionAmbience.follow();
 		});
 		WorldRenderEvents.AFTER_ENTITIES.register(EchoPlaybackRenderer::render);
 		WorldRenderEvents.END.register(EchoPlaybackRenderer::restoreInterfaceLight);

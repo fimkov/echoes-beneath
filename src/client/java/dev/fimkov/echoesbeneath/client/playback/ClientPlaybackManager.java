@@ -1,6 +1,8 @@
 package dev.fimkov.echoesbeneath.client.playback;
 
 import dev.fimkov.echoesbeneath.EchoesBeneath;
+import dev.fimkov.echoesbeneath.client.render.EchoBlockHologramRenderer;
+import dev.fimkov.echoesbeneath.client.sound.EchoRegionAmbience;
 import dev.fimkov.echoesbeneath.network.EchoPlaybackDataPart;
 import dev.fimkov.echoesbeneath.network.PlaybackDataPayload;
 import dev.fimkov.echoesbeneath.network.PlaybackStartPayload;
@@ -112,6 +114,8 @@ public final class ClientPlaybackManager {
 		}
 		sessions.clear();
 		transfers.clear();
+		EchoRegionAmbience.forget();
+		EchoBlockHologramRenderer.forget();
 	}
 
 	private record PendingTransfer(EchoRegion region, int durationTicks, int memorySlot, int vision,

@@ -1,0 +1,122 @@
+{
+  "echoes_beneath.lens_deploy": {
+    "category": "ambient",
+    "subtitle": "subtitles.echoes_beneath.lens_deploy",
+    "sounds": [
+      {
+        "name": "echoes_beneath:lens_deploy",
+        "stream": false
+      }
+    ]
+  },
+  "echoes_beneath.lens_return": {
+    "category": "ambient",
+    "subtitle": "subtitles.echoes_beneath.lens_return",
+    "sounds": [
+      {
+        "name": "echoes_beneath:lens_return",
+        "stream": false
+      }
+    ]
+  },
+  "echoes_beneath.memory_seal": {
+    "category": "ambient",
+    "subtitle": "subtitles.echoes_beneath.memory_seal",
+    "sounds": [
+      {
+        "name": "echoes_beneath:memory_seal",
+        "stream": false
+      }
+    ]
+  },
+  "echoes_beneath.playback_end": {
+    "category": "ambient",
+    "subtitle": "subtitles.echoes_beneath.playback_end",
+    "sounds": [
+      {
+        "name": "echoes_beneath:playback_end",
+        "stream": false
+      }
+    ]
+  },
+  "echoes_beneath.playback_start": {
+    "category": "ambient",
+    "subtitle": "subtitles.echoes_beneath.playback_start",
+    "sounds": [
+      {
+        "name": "echoes_beneath:playback_start",
+        "stream": false
+      }
+    ]
+  },
+  "echoes_beneath.recording_pulse": {
+    "category": "ambient",
+    "subtitle": "subtitles.echoes_beneath.recording_pulse",
+    "sounds": [
+      {
+        "name": "echoes_beneath:recording_pulse",
+        "stream": false
+      }
+    ]
+  },
+  "echoes_beneath.recording_start": {
+    "category": "ambient",
+    "subtitle": "subtitles.echoes_beneath.recording_start",
+    "sounds": [
+      {
+        "name": "echoes_beneath:recording_start",
+        "stream": false
+      }
+    ]
+  },
+  "echoes_beneath.region_ambient": {
+    "category": "ambient",
+    "subtitle": "subtitles.echoes_beneath.region_ambient",
+    "sounds": [
+      {
+        "name": "echoes_beneath:region_ambient",
+        "stream": true
+      }
+    ]
+  },
+  "echoes_beneath.resonance_ping": {
+    "category": "ambient",
+    "subtitle": "subtitles.echoes_beneath.resonance_ping",
+    "sounds": [
+      {
+        "name": "echoes_beneath:resonance_ping",
+        "stream": false
+      }
+    ]
+  },
+  "echoes_beneath.table_deny": {
+    "category": "block",
+    "subtitle": "subtitles.echoes_beneath.table_deny",
+    "sounds": [
+      {
+        "name": "echoes_beneath:table_deny",
+        "stream": false
+      }
+    ]
+  },
+  "echoes_beneath.table_tune": {
+    "category": "block",
+    "subtitle": "subtitles.echoes_beneath.table_tune",
+    "sounds": [
+      {
+        "name": "echoes_beneath:table_tune",
+        "stream": false
+      }
+    ]
+  },
+  "echoes_beneath.wave_pulse": {
+    "category": "ambient",
+    "subtitle": "subtitles.echoes_beneath.wave_pulse",
+    "sounds": [
+      {
+        "name": "echoes_beneath:wave_pulse",
+        "stream": false
+      }
+    ]
+  }
+}

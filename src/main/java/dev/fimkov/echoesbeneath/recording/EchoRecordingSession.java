@@ -9,6 +9,7 @@ import dev.fimkov.echoesbeneath.memory.snapshot.BlockPalette;
 import dev.fimkov.echoesbeneath.memory.timeline.BlockTimeline;
 import dev.fimkov.echoesbeneath.memory.timeline.EchoSoundCategory;
 import dev.fimkov.echoesbeneath.memory.timeline.EntityTimeline;
+import dev.fimkov.echoesbeneath.registry.EchoSounds;
 import dev.fimkov.echoesbeneath.memory.timeline.ParticleTimeline;
 import dev.fimkov.echoesbeneath.memory.timeline.SoundTimeline;
 import net.minecraft.core.BlockPos;
@@ -47,6 +48,12 @@ public final class EchoRecordingSession {
 	private final EntityTimeline entityTimeline;
 	private final SoundTimeline soundTimeline;
 	private final ParticleTimeline particleTimeline;
+	private static final int FIRST_BREATH_TICK = 1;
+	private static final int LISTEN_PULSE_TICKS = 60;
+	private static final float BREATH_VOLUME = 0.8F;
+	private static final float BREATH_PITCH = 1.0F;
+	private static final float PULSE_VOLUME = 0.28F;
+	private static final float PULSE_PITCH = 1.0F;
 	private final Set<UUID> recordedPlayers = new LinkedHashSet<>();
 	private final EntityTrackRecorder entityRecorder;
 	private final EchoLensEntity lensEntity;
@@ -205,6 +212,16 @@ public final class EchoRecordingSession {
 			sampleEntities();
 		}
 		lensEntity.setProgress((float) currentTick / Math.max(1, maxTicks));
+		if (currentTick == FIRST_BREATH_TICK) {
+			EchoRecordingHooks.runWithoutCapture(() -> level.playSound(null, center,
+					EchoSounds.LENS_RECORDING_START, SoundSource.AMBIENT,
+					BREATH_VOLUME, BREATH_PITCH));
+		}
+		if (currentTick > 0 && currentTick % LISTEN_PULSE_TICKS == 0) {
+			EchoRecordingHooks.runWithoutCapture(() -> level.playSound(null, center,
+					EchoSounds.LENS_RECORDING_PULSE, SoundSource.AMBIENT,
+					PULSE_VOLUME, PULSE_PITCH));
+		}
 		if (currentTick % RecordingPulseTrace.BEAT_INTERVAL_TICKS == 0) {
 			RecordingPulseTrace.sweep(level, level.getServer().getPlayerList().getPlayer(ownerId),
 					center, radius, verticalRadius, currentTick);

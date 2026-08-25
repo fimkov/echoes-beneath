@@ -28,7 +28,7 @@ public class ResonanceTableMenu extends AbstractContainerMenu {
 	public static final int CONTAINER_SLOTS = 3;
 
 	private static final float SUCCESS_VOLUME = 0.8F;
-	private static final float SUCCESS_PITCH = 1.3F;
+	private static final float SUCCESS_PITCH = 1.0F;
 
 	private final Container input = new SimpleContainer(2) {
 		@Override
@@ -233,7 +233,7 @@ public class ResonanceTableMenu extends AbstractContainerMenu {
 		}
 		refresh();
 		access.execute((level, position) -> level.playSound(null, position,
-				EchoSounds.LENS_RECORDING_COMPLETE, SoundSource.BLOCKS, SUCCESS_VOLUME, SUCCESS_PITCH));
+				EchoSounds.TABLE_TUNE, SoundSource.BLOCKS, SUCCESS_VOLUME, SUCCESS_PITCH));
 	}
 
 	@Override
