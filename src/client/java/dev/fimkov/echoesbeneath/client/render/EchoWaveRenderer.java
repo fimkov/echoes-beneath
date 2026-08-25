@@ -20,6 +20,7 @@ public final class EchoWaveRenderer {
 	private static final int MAX_HIGHLIGHT_FACES = 6000;
 	private static final int SUBDIVISIONS = 4;
 	private static final int GRID_POINTS = SUBDIVISIONS + 1;
+	private static final int TEXTURE_ROWS = 8;
 
 	private EchoWaveRenderer() {
 	}
@@ -48,7 +49,9 @@ public final class EchoWaveRenderer {
 		float[] gridX = new float[GRID_POINTS * GRID_POINTS];
 		float[] gridY = new float[GRID_POINTS * GRID_POINTS];
 		float[] gridZ = new float[GRID_POINTS * GRID_POINTS];
+		float[] gridU = new float[GRID_POINTS * GRID_POINTS];
 		int[] gridColor = new int[GRID_POINTS * GRID_POINTS];
+		float[] depthOut = new float[1];
 		List<EchoWave> nearby = new ArrayList<>();
 		List<EchoWave> facing = new ArrayList<>();
 		int emitted = 0;
@@ -68,17 +71,27 @@ public final class EchoWaveRenderer {
 				if (facing.isEmpty()) {
 					continue;
 				}
-				if (!shadeGrid(facing, currentTick, partialTick, center, basis, gridX, gridY, gridZ, gridColor)) {
+				if (!shadeGrid(facing, currentTick, partialTick, center, basis,
+						gridX, gridY, gridZ, gridU, gridColor, depthOut)) {
 					continue;
 				}
-				emitSubQuads(consumer, matrix, gridX, gridY, gridZ, gridColor);
+				emitSubQuads(consumer, matrix, gridX, gridY, gridZ, gridU, gridColor,
+						textureRowFor(packedFace, mesh));
 				emitted++;
 			}
 		}
 	}
 
+	private static float textureRowFor(int packedFace, EchoSectionMesh mesh) {
+		int hash = (mesh.originX() + EchoFaceGeometry.localX(packedFace)) * 31
+				+ (mesh.originY() + EchoFaceGeometry.localY(packedFace)) * 17
+				+ (mesh.originZ() + EchoFaceGeometry.localZ(packedFace)) * 13;
+		return (Math.floorMod(hash, TEXTURE_ROWS) + 0.5F) / TEXTURE_ROWS;
+	}
+
 	private static boolean shadeGrid(List<EchoWave> nearby, int currentTick, float partialTick, BlockPos center,
-			float[] basis, float[] gridX, float[] gridY, float[] gridZ, int[] gridColor) {
+			float[] basis, float[] gridX, float[] gridY, float[] gridZ, float[] gridU, int[] gridColor,
+			float[] depthOut) {
 		boolean anyVisible = false;
 		for (int row = 0; row < GRID_POINTS; row++) {
 			float v = (float) row / SUBDIVISIONS;
@@ -91,9 +104,10 @@ public final class EchoWaveRenderer {
 				gridX[index] = x;
 				gridY[index] = y;
 				gridZ[index] = z;
-				int color = colorFromWaves(nearby, currentTick, partialTick,
-						center.getX() + x, center.getY() + y, center.getZ() + z);
+				int color = shadePoint(nearby, currentTick, partialTick,
+						center.getX() + x, center.getY() + y, center.getZ() + z, depthOut);
 				gridColor[index] = color;
+				gridU[index] = depthOut[0];
 				if ((color >>> 24) != 0) {
 					anyVisible = true;
 				}
@@ -103,7 +117,7 @@ public final class EchoWaveRenderer {
 	}
 
 	private static void emitSubQuads(VertexConsumer consumer, Matrix4f matrix,
-			float[] gridX, float[] gridY, float[] gridZ, int[] gridColor) {
+			float[] gridX, float[] gridY, float[] gridZ, float[] gridU, int[] gridColor, float textureRow) {
 		for (int row = 0; row < SUBDIVISIONS; row++) {
 			for (int column = 0; column < SUBDIVISIONS; column++) {
 				int bottomLeft = row * GRID_POINTS + column;
@@ -114,18 +128,19 @@ public final class EchoWaveRenderer {
 						&& (gridColor[topRight] >>> 24) == 0 && (gridColor[topLeft] >>> 24) == 0) {
 					continue;
 				}
-				emitCorner(consumer, matrix, gridX, gridY, gridZ, gridColor, bottomLeft);
-				emitCorner(consumer, matrix, gridX, gridY, gridZ, gridColor, bottomRight);
-				emitCorner(consumer, matrix, gridX, gridY, gridZ, gridColor, topRight);
-				emitCorner(consumer, matrix, gridX, gridY, gridZ, gridColor, topLeft);
+				emitCorner(consumer, matrix, gridX, gridY, gridZ, gridU, gridColor, bottomLeft, textureRow);
+				emitCorner(consumer, matrix, gridX, gridY, gridZ, gridU, gridColor, bottomRight, textureRow);
+				emitCorner(consumer, matrix, gridX, gridY, gridZ, gridU, gridColor, topRight, textureRow);
+				emitCorner(consumer, matrix, gridX, gridY, gridZ, gridU, gridColor, topLeft, textureRow);
 			}
 		}
 	}
 
 	private static void emitCorner(VertexConsumer consumer, Matrix4f matrix,
-			float[] gridX, float[] gridY, float[] gridZ, int[] gridColor, int index) {
+			float[] gridX, float[] gridY, float[] gridZ, float[] gridU, int[] gridColor,
+			int index, float textureRow) {
 		EchoFaceGeometry.emitVertex(consumer, matrix,
-				gridX[index], gridY[index], gridZ[index], gridColor[index]);
+				gridX[index], gridY[index], gridZ[index], gridU[index], textureRow, gridColor[index]);
 	}
 
 	private static void collectFacingWaves(List<EchoWave> nearby, int packedFace, float[] basis,
@@ -166,11 +181,12 @@ public final class EchoWaveRenderer {
 		}
 	}
 
-	public static int colorFromWaves(List<EchoWave> waves, int currentTick, float partialTick,
-			double worldX, double worldY, double worldZ) {
+	public static int shadePoint(List<EchoWave> waves, int currentTick, float partialTick,
+			double worldX, double worldY, double worldZ, float[] depthOut) {
 		Vec3 point = new Vec3(worldX, worldY, worldZ);
 		int best = 0;
 		int bestAlpha = 0;
+		float bestDepth = 0.0F;
 		for (EchoWave wave : waves) {
 			float elapsed = wave.elapsedAt(currentTick, partialTick);
 			float depth = wave.depthOf(wave.origin().distanceTo(point), elapsed);
@@ -182,8 +198,15 @@ public final class EchoWaveRenderer {
 			if (alpha > bestAlpha) {
 				bestAlpha = alpha;
 				best = color;
+				bestDepth = depth;
 			}
 		}
+		depthOut[0] = bestDepth;
 		return bestAlpha == 0 ? 0 : best;
+	}
+
+	public static int colorFromWaves(List<EchoWave> waves, int currentTick, float partialTick,
+			double worldX, double worldY, double worldZ) {
+		return shadePoint(waves, currentTick, partialTick, worldX, worldY, worldZ, new float[1]);
 	}
 }

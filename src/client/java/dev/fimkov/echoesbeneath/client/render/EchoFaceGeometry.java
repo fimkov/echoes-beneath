@@ -98,8 +98,9 @@ public final class EchoFaceGeometry {
 	}
 
 	public static void emitVertex(VertexConsumer consumer, Matrix4f matrix,
-			float x, float y, float z, int argb) {
+			float x, float y, float z, float u, float v, int argb) {
 		consumer.addVertex(matrix, x, y, z)
+				.setUv(u, v)
 				.setColor((argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF, (argb >>> 24) & 0xFF);
 	}
 

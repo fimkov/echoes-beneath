@@ -17,6 +17,7 @@ import java.util.List;
 public final class EchoBlockDeltaRenderer {
 	private static final double MAX_DELTA_DISTANCE = 96.0D;
 	private static final int CORNERS = EchoFaceGeometry.CORNERS_PER_FACE;
+	private static final float DELTA_TEXTURE_ROW = 0.5F;
 
 	private EchoBlockDeltaRenderer() {
 	}
@@ -40,6 +41,7 @@ public final class EchoBlockDeltaRenderer {
 		VertexConsumer consumer = context.consumers().getBuffer(EchoRenderTypes.ECHO_WAVE);
 		float[] corners = new float[CORNERS * EchoFaceGeometry.COMPONENTS_PER_CORNER];
 		int[] cornerColors = new int[CORNERS];
+		float[] cornerDepths = new float[CORNERS];
 
 		for (int packed : deltas.trackedPositions()) {
 			if (!deltas.isSolidAt(packed)) {
@@ -55,14 +57,15 @@ public final class EchoBlockDeltaRenderer {
 				continue;
 			}
 			emitCube(consumer, matrix, deltas, waves, session.currentTick(), partialTick, center,
-					relativeX, relativeY, relativeZ, corners, cornerColors);
+					relativeX, relativeY, relativeZ, corners, cornerColors, cornerDepths);
 		}
 		poseStack.popPose();
 	}
 
 	private static void emitCube(VertexConsumer consumer, Matrix4f matrix, EchoBlockDeltaState deltas,
 			List<EchoWave> waves, int currentTick, float partialTick, BlockPos center,
-			int relativeX, int relativeY, int relativeZ, float[] corners, int[] cornerColors) {
+			int relativeX, int relativeY, int relativeZ, float[] corners, int[] cornerColors,
+			float[] cornerDepths) {
 		for (Direction direction : Direction.values()) {
 			if (deltas.isSolidAt(relativeX + direction.getStepX(),
 					relativeY + direction.getStepY(), relativeZ + direction.getStepZ())) {
@@ -71,18 +74,27 @@ public final class EchoBlockDeltaRenderer {
 			int packedFace = EchoFaceGeometry.pack(0, 0, 0, direction);
 			EchoFaceGeometry.cornerOffsets(packedFace, relativeX, relativeY, relativeZ, corners);
 			boolean visible = false;
+			float[] depthOut = new float[1];
 			for (int corner = 0; corner < CORNERS; corner++) {
-				int color = EchoWaveRenderer.colorFromWaves(waves, currentTick, partialTick,
+				int color = EchoWaveRenderer.shadePoint(waves, currentTick, partialTick,
 						center.getX() + corners[corner * EchoFaceGeometry.COMPONENTS_PER_CORNER],
 						center.getY() + corners[corner * EchoFaceGeometry.COMPONENTS_PER_CORNER + 1],
-						center.getZ() + corners[corner * EchoFaceGeometry.COMPONENTS_PER_CORNER + 2]);
+						center.getZ() + corners[corner * EchoFaceGeometry.COMPONENTS_PER_CORNER + 2],
+						depthOut);
 				cornerColors[corner] = color;
+				cornerDepths[corner] = depthOut[0];
 				if ((color >>> 24) != 0) {
 					visible = true;
 				}
 			}
 			if (visible) {
-				EchoFaceGeometry.emitGradient(consumer, matrix, corners, cornerColors);
+				for (int corner = 0; corner < CORNERS; corner++) {
+					EchoFaceGeometry.emitVertex(consumer, matrix,
+							corners[corner * EchoFaceGeometry.COMPONENTS_PER_CORNER],
+							corners[corner * EchoFaceGeometry.COMPONENTS_PER_CORNER + 1],
+							corners[corner * EchoFaceGeometry.COMPONENTS_PER_CORNER + 2],
+							cornerDepths[corner], DELTA_TEXTURE_ROW, cornerColors[corner]);
+				}
 			}
 		}
 	}

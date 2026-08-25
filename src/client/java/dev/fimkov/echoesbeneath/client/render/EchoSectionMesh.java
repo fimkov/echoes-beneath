@@ -39,6 +39,9 @@ public final class EchoSectionMesh {
 					if (snapshot.paletteIndexAt(relativeX, relativeY, relativeZ) == BlockPalette.AIR_INDEX) {
 						continue;
 					}
+					if (!snapshot.stateAt(relativeX, relativeY, relativeZ).canOcclude()) {
+						continue;
+					}
 					if (excludedPositions.contains(EchoCoordinates.packRelative(relativeX, relativeY, relativeZ))) {
 						continue;
 					}
