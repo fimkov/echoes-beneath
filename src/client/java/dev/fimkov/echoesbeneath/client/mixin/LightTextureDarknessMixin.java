@@ -8,9 +8,6 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LightTexture.class)
 public abstract class LightTextureDarknessMixin implements EchoLightTextureAccess {
@@ -31,21 +28,18 @@ public abstract class LightTextureDarknessMixin implements EchoLightTextureAcces
 	public abstract void updateLightTexture(float partialTick);
 
 	@Override
-	public void echoesBeneath$restoreNaturalLight(float partialTick) {
-		this.updateLightTexture = true;
-		updateLightTexture(partialTick);
-	}
-
-	@Inject(method = "updateLightTexture", at = @At("TAIL"))
-	private void echoesBeneath$voidLightInsideRegion(float partialTick, CallbackInfo callback) {
-		if (!EchoDarkness.shouldDarken()) {
-			return;
-		}
+	public void echoesBeneath$paintVoid() {
 		for (int skyLevel = 0; skyLevel < LIGHT_LEVELS; skyLevel++) {
 			for (int blockLevel = 0; blockLevel < LIGHT_LEVELS; blockLevel++) {
 				lightPixels.setPixelRGBA(blockLevel, skyLevel, EchoDarkness.VOID_LIGHT_PIXEL);
 			}
 		}
 		lightTexture.upload();
+	}
+
+	@Override
+	public void echoesBeneath$restoreNaturalLight(float partialTick) {
+		this.updateLightTexture = true;
+		updateLightTexture(partialTick);
 	}
 }

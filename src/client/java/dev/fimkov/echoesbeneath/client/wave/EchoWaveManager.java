@@ -10,11 +10,11 @@ import java.util.List;
 public final class EchoWaveManager {
 	private final Deque<EchoWave> waves = new ArrayDeque<>();
 
-	public void spawn(Vec3 origin, int startTick, float maxRadius) {
+	public void spawn(Vec3 origin, int startTick, float maxRadius, int paletteIndex) {
 		while (waves.size() >= EchoConfig.values().maxConcurrentSoundWaves()) {
 			waves.pollFirst();
 		}
-		waves.addLast(new EchoWave(origin, startTick, maxRadius));
+		waves.addLast(new EchoWave(origin, startTick, maxRadius, paletteIndex));
 	}
 
 	public void prune(int currentTick) {

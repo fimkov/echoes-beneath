@@ -47,5 +47,6 @@ public abstract class FogRendererEchoMixin {
 		fogGreen = 0.0F;
 		fogBlue = 0.0F;
 		RenderSystem.setShaderFogColor(0.0F, 0.0F, 0.0F);
+		RenderSystem.clearColor(0.0F, 0.0F, 0.0F, 1.0F);
 	}
 }

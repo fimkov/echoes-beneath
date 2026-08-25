@@ -47,15 +47,27 @@ public final class EchoDarkness {
 		return !restoring && isViewerInsideRegion();
 	}
 
-	public static void restoreNaturalLight(float partialTick) {
+	public static void paintVoidLight() {
+		lightTextureAccess().ifPresent(EchoLightTextureAccess::echoesBeneath$paintVoid);
+	}
+
+	private static java.util.Optional<EchoLightTextureAccess> lightTextureAccess() {
 		Minecraft client = Minecraft.getInstance();
 		if (client.gameRenderer == null
 				|| !(client.gameRenderer.lightTexture() instanceof EchoLightTextureAccess access)) {
+			return Optional.empty();
+		}
+		return Optional.of(access);
+	}
+
+	public static void restoreNaturalLight(float partialTick) {
+		Optional<EchoLightTextureAccess> access = lightTextureAccess();
+		if (access.isEmpty()) {
 			return;
 		}
 		restoring = true;
 		try {
-			access.echoesBeneath$restoreNaturalLight(partialTick);
+			access.get().echoesBeneath$restoreNaturalLight(partialTick);
 		} finally {
 			restoring = false;
 		}

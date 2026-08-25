@@ -40,6 +40,33 @@ public final class EchoFaceGeometry {
 		return DIRECTIONS[(packed >> DIRECTION_SHIFT) & 0x7];
 	}
 
+	public static void faceBasis(int packedFace, float originX, float originY, float originZ, float[] basis) {
+		float x = originX + localX(packedFace);
+		float y = originY + localY(packedFace);
+		float z = originZ + localZ(packedFace);
+		switch (direction(packedFace)) {
+			case DOWN -> writeBasis(basis, x, y - FACE_INSET, z, 1, 0, 0, 0, 0, 1);
+			case UP -> writeBasis(basis, x, y + 1 + FACE_INSET, z, 0, 0, 1, 1, 0, 0);
+			case NORTH -> writeBasis(basis, x, y, z - FACE_INSET, 0, 1, 0, 1, 0, 0);
+			case SOUTH -> writeBasis(basis, x, y, z + 1 + FACE_INSET, 1, 0, 0, 0, 1, 0);
+			case WEST -> writeBasis(basis, x - FACE_INSET, y, z, 0, 0, 1, 0, 1, 0);
+			case EAST -> writeBasis(basis, x + 1 + FACE_INSET, y, z, 0, 1, 0, 0, 0, 1);
+		}
+	}
+
+	private static void writeBasis(float[] basis, float x, float y, float z,
+			float ax, float ay, float az, float bx, float by, float bz) {
+		basis[0] = x;
+		basis[1] = y;
+		basis[2] = z;
+		basis[3] = ax;
+		basis[4] = ay;
+		basis[5] = az;
+		basis[6] = bx;
+		basis[7] = by;
+		basis[8] = bz;
+	}
+
 	public static void cornerOffsets(int packedFace, float originX, float originY, float originZ, float[] corners) {
 		float x = originX + localX(packedFace);
 		float y = originY + localY(packedFace);
@@ -68,6 +95,12 @@ public final class EchoFaceGeometry {
 		corners[9] = x + bx;
 		corners[10] = y + by;
 		corners[11] = z + bz;
+	}
+
+	public static void emitVertex(VertexConsumer consumer, Matrix4f matrix,
+			float x, float y, float z, int argb) {
+		consumer.addVertex(matrix, x, y, z)
+				.setColor((argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF, (argb >>> 24) & 0xFF);
 	}
 
 	public static void emitGradient(VertexConsumer consumer, Matrix4f matrix, float[] corners, int[] cornerColors) {

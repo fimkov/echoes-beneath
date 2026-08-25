@@ -58,7 +58,8 @@ public final class EchoSoundPlayer {
 		float pitch = timeline.pitchAt(index);
 		SoundSource source = timeline.categoryAt(index);
 		level.playLocalSound(position.x, position.y, position.z, event, source, volume, pitch, false);
-		waves.spawn(position, tick, timeline.waveRadiusAt(index));
+		waves.spawn(position, tick, timeline.waveRadiusAt(index),
+				dev.fimkov.echoesbeneath.client.wave.EchoWavePalette.paletteFor(source));
 		scheduleEchoes(tick, event, source, position, volume, pitch);
 	}
 

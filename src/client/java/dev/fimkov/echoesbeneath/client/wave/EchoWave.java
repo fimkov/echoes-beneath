@@ -9,11 +9,17 @@ public final class EchoWave {
 	private final Vec3 origin;
 	private final int startTick;
 	private final float maxRadius;
+	private final int paletteIndex;
 
-	public EchoWave(Vec3 origin, int startTick, float maxRadius) {
+	public EchoWave(Vec3 origin, int startTick, float maxRadius, int paletteIndex) {
 		this.origin = origin;
 		this.startTick = startTick;
 		this.maxRadius = maxRadius;
+		this.paletteIndex = paletteIndex;
+	}
+
+	public int paletteIndex() {
+		return paletteIndex;
 	}
 
 	public Vec3 origin() {
