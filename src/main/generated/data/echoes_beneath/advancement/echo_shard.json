@@ -1,4 +1,5 @@
 {
+  "parent": "echoes_beneath:amethyst",
   "criteria": {
     "has_echo_shard": {
       "conditions": {

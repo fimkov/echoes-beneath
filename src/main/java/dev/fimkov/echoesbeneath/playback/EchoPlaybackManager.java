@@ -121,7 +121,7 @@ public final class EchoPlaybackManager {
 		player.setItemInHand(hand, ItemStack.EMPTY);
 
 		EchoPlaybackSession session = new EchoPlaybackSession(playbackId, player.getUUID(), level,
-				region, record, lensEntity, encoded, EchoLensStacks.upgrades(deployed).clarity());
+				region, record, lensEntity, encoded, EchoLensStacks.upgrades(deployed).vision());
 		if (EchoConfig.values().suppressHostileMobs()) {
 			session.rememberSuppressed(state.suppression().suppressRegion(level, region));
 		}
@@ -196,6 +196,7 @@ public final class EchoPlaybackManager {
 	}
 
 	public void stop(EchoPlaybackSession session, EchoPlaybackStopReason reason) {
+		session.awardWatchers();
 		sessions.remove(session.playbackId());
 		if (session.isFinished()) {
 			return;

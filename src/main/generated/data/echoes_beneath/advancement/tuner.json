@@ -1,0 +1,30 @@
+{
+  "parent": "echoes_beneath:first_upgrade",
+  "criteria": {
+    "maxed_everything": {
+      "conditions": {
+        "every_track_maxed": true
+      },
+      "trigger": "echoes_beneath:lens_tuned"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.echoes_beneath.tuner.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "count": 1,
+      "id": "minecraft:amethyst_cluster"
+    },
+    "title": {
+      "translate": "advancements.echoes_beneath.tuner.title"
+    }
+  },
+  "requirements": [
+    [
+      "maxed_everything"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

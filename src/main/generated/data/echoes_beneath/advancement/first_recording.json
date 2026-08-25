@@ -1,0 +1,26 @@
+{
+  "parent": "echoes_beneath:echo_lens",
+  "criteria": {
+    "recorded": {
+      "trigger": "echoes_beneath:memory_recorded"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.echoes_beneath.first_recording.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "echoes_beneath:echo_lens"
+    },
+    "title": {
+      "translate": "advancements.echoes_beneath.first_recording.title"
+    }
+  },
+  "requirements": [
+    [
+      "recorded"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

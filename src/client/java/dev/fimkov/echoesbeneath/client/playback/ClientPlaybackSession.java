@@ -26,7 +26,7 @@ public final class ClientPlaybackSession {
 	private final EchoRegion region;
 	private final int durationTicks;
 	private final int memorySlot;
-	private final int clarity;
+	private final int vision;
 	private final ClientPlaybackData data;
 	private final EchoWaveManager waves = new EchoWaveManager();
 	private final EchoSoundPlayer soundPlayer;
@@ -39,12 +39,12 @@ public final class ClientPlaybackSession {
 	private boolean puppetsInitialised;
 
 	public ClientPlaybackSession(UUID playbackId, EchoRegion region, int durationTicks, int memorySlot,
-			int clarity, ClientPlaybackData data) {
+			int vision, ClientPlaybackData data) {
 		this.playbackId = playbackId;
 		this.region = region;
 		this.durationTicks = durationTicks;
 		this.memorySlot = memorySlot;
-		this.clarity = clarity;
+		this.vision = vision;
 		this.data = data;
 		this.blockDeltas = new EchoBlockDeltaState(data.snapshot(), data.blockTimeline());
 		this.soundPlayer = new EchoSoundPlayer(data.soundTimeline(), waves, region.centerVector());
@@ -67,8 +67,8 @@ public final class ClientPlaybackSession {
 		return memorySlot;
 	}
 
-	public int clarity() {
-		return clarity;
+	public int vision() {
+		return vision;
 	}
 
 	public int currentTick() {

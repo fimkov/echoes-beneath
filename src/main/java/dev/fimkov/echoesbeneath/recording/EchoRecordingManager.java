@@ -3,9 +3,11 @@ package dev.fimkov.echoesbeneath.recording;
 import dev.fimkov.echoesbeneath.EchoTranslations;
 import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.config.EchoConfig;
+import dev.fimkov.echoesbeneath.advancement.EchoCriteria;
 import dev.fimkov.echoesbeneath.entity.EchoLensEntity;
 import dev.fimkov.echoesbeneath.entity.EchoLensMode;
 import dev.fimkov.echoesbeneath.item.EchoLensStacks;
+import dev.fimkov.echoesbeneath.memory.timeline.SoundTimeline;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryRecord;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReferences;
 import dev.fimkov.echoesbeneath.memory.EchoTextFormat;
@@ -15,6 +17,7 @@ import dev.fimkov.echoesbeneath.runtime.EchoServerState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -27,6 +30,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -187,9 +192,24 @@ public final class EchoRecordingManager {
 			EchoLensStacks.setReferences(stack, EchoLensStacks.references(stack).withAdded(record.toReference()));
 			lens.setLens(stack);
 		}
+		awardRecording(session, record, stack);
 		playCompletionEffects(session);
 		notifyOwner(session, reason);
 		lens.setMode(EchoLensMode.RETURNING);
+	}
+
+	private void awardRecording(EchoRecordingSession session, EchoMemoryRecord record, ItemStack stack) {
+		ServerPlayer owner = session.level().getServer().getPlayerList().getPlayer(session.ownerId());
+		if (owner == null) {
+			return;
+		}
+		SoundTimeline sounds = record.soundTimeline();
+		Set<ResourceLocation> heard = new HashSet<>();
+		for (int index = 0; index < sounds.size(); index++) {
+			heard.add(sounds.soundAt(index));
+		}
+		EchoCriteria.MEMORY_RECORDED.trigger(owner, sounds.size(),
+				EchoLensStacks.references(stack).filledSlots(), heard);
 	}
 
 	private void releaseWithoutSealing(EchoRecordingSession session) {

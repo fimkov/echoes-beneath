@@ -8,6 +8,6 @@ public final class EchoReveal {
 	}
 
 	public static float of(ClientPlaybackSession session) {
-		return (float) session.clarity() / EchoLensUpgrades.MAX_CLARITY;
+		return (float) session.vision() / EchoLensUpgrades.MAX_VISION;
 	}
 }

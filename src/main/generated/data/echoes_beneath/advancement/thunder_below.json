@@ -1,0 +1,36 @@
+{
+  "parent": "echoes_beneath:first_recording",
+  "criteria": {
+    "heard_warden": {
+      "conditions": {
+        "heard_any": [
+          "minecraft:entity.warden.roar",
+          "minecraft:entity.warden.heartbeat",
+          "minecraft:entity.warden.listening_angry",
+          "minecraft:entity.warden.sonic_boom",
+          "minecraft:entity.warden.angry"
+        ]
+      },
+      "trigger": "echoes_beneath:memory_recorded"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.echoes_beneath.thunder_below.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "count": 1,
+      "id": "minecraft:echo_shard"
+    },
+    "title": {
+      "translate": "advancements.echoes_beneath.thunder_below.title"
+    }
+  },
+  "requirements": [
+    [
+      "heard_warden"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

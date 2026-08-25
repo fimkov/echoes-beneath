@@ -19,9 +19,9 @@ public enum ResonanceTableUpgrade {
 	SENSITIVITY(EchoTranslations.UPGRADE_SENSITIVITY, EchoTranslations.UPGRADE_UNIT_LEVEL,
 			EchoLensUpgrades.MAX_SENSITIVITY, 9, 3,
 			EchoLensUpgrades::sensitivity, steps -> steps),
-	CLARITY(EchoTranslations.UPGRADE_CLARITY, EchoTranslations.UPGRADE_UNIT_LEVEL,
-			EchoLensUpgrades.MAX_CLARITY, 20, 5,
-			EchoLensUpgrades::clarity, steps -> steps);
+	VISION(EchoTranslations.UPGRADE_VISION, EchoTranslations.UPGRADE_UNIT_LEVEL,
+			EchoLensUpgrades.MAX_VISION, 20, 5,
+			EchoLensUpgrades::vision, steps -> steps);
 
 	private static final ResonanceTableUpgrade[] VALUES = values();
 
@@ -88,12 +88,12 @@ public enum ResonanceTableUpgrade {
 		int clamped = Math.clamp(steps, 0, maxSteps);
 		return switch (this) {
 			case MEMORY_SLOT -> new EchoLensUpgrades(displayValue(clamped), upgrades.radius(),
-					upgrades.sensitivity(), upgrades.clarity());
+					upgrades.sensitivity(), upgrades.vision());
 			case RADIUS -> new EchoLensUpgrades(upgrades.memorySlots(), displayValue(clamped),
-					upgrades.sensitivity(), upgrades.clarity());
+					upgrades.sensitivity(), upgrades.vision());
 			case SENSITIVITY -> new EchoLensUpgrades(upgrades.memorySlots(), upgrades.radius(),
-					clamped, upgrades.clarity());
-			case CLARITY -> new EchoLensUpgrades(upgrades.memorySlots(), upgrades.radius(),
+					clamped, upgrades.vision());
+			case VISION -> new EchoLensUpgrades(upgrades.memorySlots(), upgrades.radius(),
 					upgrades.sensitivity(), clamped);
 		};
 	}
@@ -102,7 +102,7 @@ public enum ResonanceTableUpgrade {
 		EchoLensUpgrades lowest = new EchoLensUpgrades(EchoFormat.DEFAULT_MEMORY_SLOTS,
 				EchoLensUpgrades.MIN_RADIUS, 0, 0);
 		int needed = Math.clamp(sealedMemories, EchoFormat.DEFAULT_MEMORY_SLOTS, EchoFormat.MAX_MEMORY_SLOTS);
-		return new EchoLensUpgrades(needed, lowest.radius(), lowest.sensitivity(), lowest.clarity());
+		return new EchoLensUpgrades(needed, lowest.radius(), lowest.sensitivity(), lowest.vision());
 	}
 
 	public static EchoLensUpgrades clampToFloor(EchoLensUpgrades floor, EchoLensUpgrades target) {

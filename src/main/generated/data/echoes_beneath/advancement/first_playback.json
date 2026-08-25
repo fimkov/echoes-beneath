@@ -1,0 +1,26 @@
+{
+  "parent": "echoes_beneath:first_recording",
+  "criteria": {
+    "played": {
+      "trigger": "echoes_beneath:memory_played"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.echoes_beneath.first_playback.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:sculk_shrieker"
+    },
+    "title": {
+      "translate": "advancements.echoes_beneath.first_playback.title"
+    }
+  },
+  "requirements": [
+    [
+      "played"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

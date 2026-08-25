@@ -1,0 +1,26 @@
+{
+  "parent": "echoes_beneath:resonance_table",
+  "criteria": {
+    "tuned": {
+      "trigger": "echoes_beneath:lens_tuned"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.echoes_beneath.first_upgrade.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:amethyst_block"
+    },
+    "title": {
+      "translate": "advancements.echoes_beneath.first_upgrade.title"
+    }
+  },
+  "requirements": [
+    [
+      "tuned"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

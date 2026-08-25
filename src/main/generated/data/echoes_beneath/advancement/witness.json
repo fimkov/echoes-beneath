@@ -1,0 +1,29 @@
+{
+  "parent": "echoes_beneath:first_playback",
+  "criteria": {
+    "saw_someone": {
+      "conditions": {
+        "saw_someone_else": true
+      },
+      "trigger": "echoes_beneath:memory_played"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.echoes_beneath.witness.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:player_head"
+    },
+    "title": {
+      "translate": "advancements.echoes_beneath.witness.title"
+    }
+  },
+  "requirements": [
+    [
+      "saw_someone"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -108,6 +108,15 @@ public final class EntityTimeline {
 		return itemPalette.get(index);
 	}
 
+	public boolean holdsEntityType(ResourceLocation typeId) {
+		for (EntityTrack track : tracks()) {
+			if (entityTypeOf(track).equals(typeId)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public List<ResourceLocation> entityTypePalette() {
 		return List.copyOf(entityTypePalette);
 	}

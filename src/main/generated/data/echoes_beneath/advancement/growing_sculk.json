@@ -1,0 +1,30 @@
+{
+  "parent": "echoes_beneath:first_recording",
+  "criteria": {
+    "silent": {
+      "conditions": {
+        "sounds": 0
+      },
+      "trigger": "echoes_beneath:memory_recorded"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.echoes_beneath.growing_sculk.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "count": 1,
+      "id": "minecraft:sculk_vein"
+    },
+    "title": {
+      "translate": "advancements.echoes_beneath.growing_sculk.title"
+    }
+  },
+  "requirements": [
+    [
+      "silent"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

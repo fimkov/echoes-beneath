@@ -135,7 +135,14 @@ Which mobs are affected is controlled by the `echoes_beneath:temporarily_suppres
 
 ## The Resonance Table
 
-It has no recipe. One stands in each of the mod's four structures, so finding any of them is enough. Put a lens in the upper slot and amethyst shards in
+One stands in each of the mod's four structures, so finding any of them is enough. It can also be built
+by retuning an enchanting table, which is the expensive way in:
+
+```
+_ E _     E  echo shard
+A T A     T  enchanting table
+D D D     A  amethyst shard      D  deepslate tiles
+``` Put a lens in the upper slot and amethyst shards in
 the lower one. Each track has a meter and a pair of buttons, and nothing is spent while you plan.
 
 A lens remembers the highest setting it ever reached. Winding a track back down is free, and climbing

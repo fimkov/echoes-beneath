@@ -1,0 +1,29 @@
+{
+  "parent": "echoes_beneath:first_playback",
+  "criteria": {
+    "watched": {
+      "conditions": {
+        "watched_to_the_end": true
+      },
+      "trigger": "echoes_beneath:memory_played"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.echoes_beneath.hold_still.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:sculk_sensor"
+    },
+    "title": {
+      "translate": "advancements.echoes_beneath.hold_still.title"
+    }
+  },
+  "requirements": [
+    [
+      "watched"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

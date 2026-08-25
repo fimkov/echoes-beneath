@@ -1,5 +1,6 @@
 package dev.fimkov.echoesbeneath;
 
+import dev.fimkov.echoesbeneath.advancement.EchoCriteria;
 import dev.fimkov.echoesbeneath.command.EchoCommands;
 import dev.fimkov.echoesbeneath.config.EchoConfig;
 import dev.fimkov.echoesbeneath.network.EchoNetworkPayloads;
@@ -19,6 +20,7 @@ public final class EchoesBeneathBootstrap {
 
 	public static void bootstrap() {
 		EchoConfig.load();
+		EchoCriteria.register();
 		EchoComponents.register();
 		EchoBlocks.register();
 		EchoItems.register();

@@ -1,0 +1,32 @@
+{
+  "parent": "echoes_beneath:first_upgrade",
+  "criteria": {
+    "saw_it_all": {
+      "conditions": {
+        "vision": {
+          "min": 4
+        }
+      },
+      "trigger": "echoes_beneath:memory_played"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.echoes_beneath.echolocation.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "minecraft:spyglass"
+    },
+    "title": {
+      "translate": "advancements.echoes_beneath.echolocation.title"
+    }
+  },
+  "requirements": [
+    [
+      "saw_it_all"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

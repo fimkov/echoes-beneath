@@ -48,7 +48,7 @@ public final class ClientPlaybackManager {
 		EchoRegion region = new EchoRegion(payload.dimension(), payload.center(),
 				payload.radius(), payload.verticalRadius());
 		transfers.put(payload.playbackId(), new PendingTransfer(region, payload.durationTicks(),
-				payload.memorySlot(), payload.clarity(), new PlaybackDataAssembler()));
+				payload.memorySlot(), payload.vision(), new PlaybackDataAssembler()));
 	}
 
 	public void onData(PlaybackDataPayload payload, ClientLevel level) {
@@ -78,7 +78,7 @@ public final class ClientPlaybackManager {
 					transfer.assembler().decode(EchoPlaybackDataPart.SOUND_TIMELINE),
 					blockLookup);
 			sessions.put(playbackId, new ClientPlaybackSession(playbackId, transfer.region(),
-					transfer.durationTicks(), transfer.memorySlot(), transfer.clarity(), data));
+					transfer.durationTicks(), transfer.memorySlot(), transfer.vision(), data));
 		} catch (Exception failure) {
 			EchoesBeneath.LOGGER.error("Unable to decode playback {}", playbackId, failure);
 		}
@@ -113,7 +113,7 @@ public final class ClientPlaybackManager {
 		transfers.clear();
 	}
 
-	private record PendingTransfer(EchoRegion region, int durationTicks, int memorySlot, int clarity,
+	private record PendingTransfer(EchoRegion region, int durationTicks, int memorySlot, int vision,
 			PlaybackDataAssembler assembler) {
 	}
 }

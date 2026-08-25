@@ -1,0 +1,32 @@
+{
+  "parent": "echoes_beneath:first_upgrade",
+  "criteria": {
+    "filled_every_slot": {
+      "conditions": {
+        "filled_slots": {
+          "min": 3
+        }
+      },
+      "trigger": "echoes_beneath:memory_recorded"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.echoes_beneath.three_times.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "echoes_beneath:echo_lens"
+    },
+    "title": {
+      "translate": "advancements.echoes_beneath.three_times.title"
+    }
+  },
+  "requirements": [
+    [
+      "filled_every_slot"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

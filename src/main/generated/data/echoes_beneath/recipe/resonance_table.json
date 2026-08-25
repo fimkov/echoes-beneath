@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "D": {
+      "item": "minecraft:deepslate_tiles"
+    },
+    "E": {
+      "item": "minecraft:echo_shard"
+    },
+    "T": {
+      "item": "minecraft:enchanting_table"
+    }
+  },
+  "pattern": [
+    " E ",
+    "ATA",
+    "DDD"
+  ],
+  "result": {
+    "count": 1,
+    "id": "echoes_beneath:resonance_table"
+  }
+}

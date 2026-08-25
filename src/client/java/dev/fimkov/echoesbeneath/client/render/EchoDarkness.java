@@ -12,7 +12,7 @@ public final class EchoDarkness {
 	public static final float FULLY_DARK = 1.0F;
 
 	private static final float TRANSITION_PER_TICK = 0.045F;
-	private static final float CLARITY_RELIEF = 0.55F;
+	private static final float VISION_RELIEF = 0.55F;
 	private static final float ACTIVE_THRESHOLD = 0.002F;
 	private static final float SKY_HIDDEN_THRESHOLD = 0.9F;
 	private static final float FOG_START_FRACTION = 0.05F;
@@ -56,8 +56,8 @@ public final class EchoDarkness {
 	}
 
 	private static float darknessTargetFor(ClientPlaybackSession session) {
-		float relief = (float) session.clarity()
-				/ dev.fimkov.echoesbeneath.item.EchoLensUpgrades.MAX_CLARITY * CLARITY_RELIEF;
+		float relief = (float) session.vision()
+				/ dev.fimkov.echoesbeneath.item.EchoLensUpgrades.MAX_VISION * VISION_RELIEF;
 		lastTarget = FULLY_DARK - relief;
 		return lastTarget;
 	}

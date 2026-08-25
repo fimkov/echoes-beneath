@@ -45,7 +45,7 @@ public class EchoLensItem extends Item {
 				references.filledSlots(), upgrades.memorySlots()).withStyle(ChatFormatting.AQUA));
 		appendCapacityLine(references, upgrades, tooltip);
 		tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_TUNING,
-				upgrades.radius(), upgrades.sensitivity(), upgrades.clarity()).withStyle(ChatFormatting.DARK_GRAY));
+				upgrades.radius(), upgrades.sensitivity(), upgrades.vision()).withStyle(ChatFormatting.DARK_GRAY));
 		appendResonanceLines(references, tooltip);
 	}
 

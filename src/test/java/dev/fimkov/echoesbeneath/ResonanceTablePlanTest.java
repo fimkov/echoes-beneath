@@ -34,7 +34,7 @@ class ResonanceTablePlanTest {
 		assertTrue(result.changed());
 		assertTrue(result.isFree());
 		assertEquals(EchoLensUpgrades.MIN_RADIUS, result.target().radius());
-		assertEquals(0, result.target().clarity());
+		assertEquals(0, result.target().vision());
 	}
 
 	@Test
@@ -98,14 +98,14 @@ class ResonanceTablePlanTest {
 	}
 
 	@Test
-	@DisplayName("clarity is the dearest upgrade on the table")
-	void clarityCostsTheMost() {
+	@DisplayName("vision is the dearest upgrade on the table")
+	void visionCostsTheMost() {
 		for (ResonanceTableUpgrade upgrade : ResonanceTableUpgrade.all()) {
-			if (upgrade == ResonanceTableUpgrade.CLARITY) {
+			if (upgrade == ResonanceTableUpgrade.VISION) {
 				continue;
 			}
-			assertTrue(ResonanceTableUpgrade.CLARITY.experiencePerStep() > upgrade.experiencePerStep(),
-					upgrade + " costs at least as much as clarity");
+			assertTrue(ResonanceTableUpgrade.VISION.experiencePerStep() > upgrade.experiencePerStep(),
+					upgrade + " costs at least as much as vision");
 		}
 	}
 
@@ -123,7 +123,7 @@ class ResonanceTablePlanTest {
 	@DisplayName("staged values are capped at each upgrade's ceiling")
 	void plansCannotExceedTheCeiling() {
 		EchoLensUpgrades wild = new EchoLensUpgrades(EchoFormat.MAX_MEMORY_SLOTS, EchoLensUpgrades.MAX_RADIUS,
-				EchoLensUpgrades.MAX_SENSITIVITY, EchoLensUpgrades.MAX_CLARITY);
+				EchoLensUpgrades.MAX_SENSITIVITY, EchoLensUpgrades.MAX_VISION);
 		EchoLensUpgrades clamped = ResonanceTableUpgrade.clampToFloor(EchoLensUpgrades.DEFAULT, wild);
 		for (ResonanceTableUpgrade upgrade : ResonanceTableUpgrade.all()) {
 			assertEquals(upgrade.maxSteps(), upgrade.stepsOf(clamped), upgrade + " did not reach its ceiling");

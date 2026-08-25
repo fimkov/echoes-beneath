@@ -1,0 +1,33 @@
+{
+  "parent": "echoes_beneath:first_playback",
+  "criteria": {
+    "has_table": {
+      "conditions": {
+        "items": [
+          {
+            "items": "echoes_beneath:resonance_table"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.echoes_beneath.resonance_table.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "echoes_beneath:resonance_table"
+    },
+    "title": {
+      "translate": "advancements.echoes_beneath.resonance_table.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_table"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

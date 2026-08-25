@@ -1,0 +1,33 @@
+{
+  "parent": "echoes_beneath:echo_shard",
+  "criteria": {
+    "has_lens": {
+      "conditions": {
+        "items": [
+          {
+            "items": "echoes_beneath:echo_lens"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.echoes_beneath.echo_lens.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "echoes_beneath:echo_lens"
+    },
+    "title": {
+      "translate": "advancements.echoes_beneath.echo_lens.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_lens"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

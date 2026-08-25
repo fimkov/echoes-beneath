@@ -39,7 +39,7 @@ public final class EchoTranslations {
 	public static final String UPGRADE_MEMORY_SLOT = "upgrade.echoes_beneath.memory_slot";
 	public static final String UPGRADE_RADIUS = "upgrade.echoes_beneath.radius";
 	public static final String UPGRADE_SENSITIVITY = "upgrade.echoes_beneath.sensitivity";
-	public static final String UPGRADE_CLARITY = "upgrade.echoes_beneath.clarity";
+	public static final String UPGRADE_VISION = "upgrade.echoes_beneath.vision";
 	public static final String UPGRADE_COST = "upgrade.echoes_beneath.cost";
 	public static final String UPGRADE_COST_WITH_SHARDS = "upgrade.echoes_beneath.cost_with_shards";
 	public static final String UPGRADE_MAXED = "upgrade.echoes_beneath.maxed";

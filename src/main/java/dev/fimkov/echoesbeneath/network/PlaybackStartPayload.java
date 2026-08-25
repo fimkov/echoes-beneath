@@ -20,7 +20,7 @@ public record PlaybackStartPayload(
 		int verticalRadius,
 		int durationTicks,
 		int memorySlot,
-		int clarity) implements CustomPacketPayload {
+		int vision) implements CustomPacketPayload {
 
 	public static final CustomPacketPayload.Type<PlaybackStartPayload> TYPE =
 			new CustomPacketPayload.Type<>(EchoesBeneath.id("playback_start"));
@@ -36,7 +36,7 @@ public record PlaybackStartPayload(
 		buffer.writeVarInt(payload.verticalRadius);
 		buffer.writeVarInt(payload.durationTicks);
 		buffer.writeVarInt(payload.memorySlot);
-		buffer.writeVarInt(payload.clarity);
+		buffer.writeVarInt(payload.vision);
 	}
 
 	private static PlaybackStartPayload decode(RegistryFriendlyByteBuf buffer) {
@@ -47,9 +47,9 @@ public record PlaybackStartPayload(
 		int verticalRadius = clamp(buffer.readVarInt(), EchoPayloadLimits.MAX_RADIUS);
 		int durationTicks = clamp(buffer.readVarInt(), EchoPayloadLimits.MAX_DURATION_TICKS);
 		int memorySlot = clamp(buffer.readVarInt(), Integer.MAX_VALUE);
-		int clarity = clamp(buffer.readVarInt(), dev.fimkov.echoesbeneath.item.EchoLensUpgrades.MAX_CLARITY);
+		int vision = clamp(buffer.readVarInt(), dev.fimkov.echoesbeneath.item.EchoLensUpgrades.MAX_VISION);
 		return new PlaybackStartPayload(playbackId, ResourceKey.create(Registries.DIMENSION, dimensionId),
-				center, radius, verticalRadius, durationTicks, memorySlot, clarity);
+				center, radius, verticalRadius, durationTicks, memorySlot, vision);
 	}
 
 	private static int clamp(int value, int maximum) {

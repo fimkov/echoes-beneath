@@ -1,5 +1,6 @@
 package dev.fimkov.echoesbeneath.menu;
 
+import dev.fimkov.echoesbeneath.advancement.EchoCriteria;
 import dev.fimkov.echoesbeneath.item.EchoLensStacks;
 import dev.fimkov.echoesbeneath.item.EchoLensUpgrades;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReferences;
@@ -7,6 +8,7 @@ import dev.fimkov.echoesbeneath.registry.EchoBlocks;
 import dev.fimkov.echoesbeneath.registry.EchoMenus;
 import dev.fimkov.echoesbeneath.registry.EchoSounds;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -217,9 +219,13 @@ public class ResonanceTableMenu extends AbstractContainerMenu {
 	private void applyPlan(Player player) {
 		int levels = costLevels.get();
 		int shards = costShards.get();
+		EchoLensUpgrades applied = targetUpgrades();
 		if (!player.getAbilities().instabuild) {
 			player.giveExperienceLevels(-levels);
 			input.removeItem(AMETHYST_SLOT, shards);
+		}
+		if (player instanceof ServerPlayer server) {
+			EchoCriteria.LENS_TUNED.trigger(server, applied);
 		}
 		input.setItem(LENS_SLOT, ItemStack.EMPTY);
 		for (DataSlot slot : targetSteps) {

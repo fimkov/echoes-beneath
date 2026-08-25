@@ -1,5 +1,7 @@
 package dev.fimkov.echoesbeneath.playback;
 
+import dev.fimkov.echoesbeneath.advancement.EchoCriteria;
+import dev.fimkov.echoesbeneath.advancement.MemoryPlayedTrigger;
 import dev.fimkov.echoesbeneath.entity.EchoLensEntity;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryRecord;
 import dev.fimkov.echoesbeneath.network.EchoPlaybackDataPart;
@@ -9,9 +11,13 @@ import dev.fimkov.echoesbeneath.network.PlaybackTickPayload;
 import dev.fimkov.echoesbeneath.playback.suppression.HostileMobSuppressionManager;
 import dev.fimkov.echoesbeneath.playback.suppression.SuppressedMobState;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,16 +37,19 @@ public final class EchoPlaybackSession {
 	private final EchoMemoryRecord record;
 	private final EchoLensEntity lensEntity;
 	private final Map<EchoPlaybackDataPart, List<byte[]>> encodedParts;
-	private final int clarity;
+	private final int vision;
 	private final Map<UUID, SuppressedMobState> suppressed = new HashMap<>();
 	private final Set<UUID> subscribers = new HashSet<>();
+	private final Set<UUID> watchers = new HashSet<>();
+	private final Set<UUID> leftEarly = new HashSet<>();
+	private final Set<UUID> stoodInsideLostBlock = new HashSet<>();
 
 	private int currentTick;
 	private boolean finished;
 
 	public EchoPlaybackSession(UUID playbackId, UUID ownerId, ServerLevel level, EchoRegion region,
 			EchoMemoryRecord record, EchoLensEntity lensEntity,
-			Map<EchoPlaybackDataPart, List<byte[]>> encodedParts, int clarity) {
+			Map<EchoPlaybackDataPart, List<byte[]>> encodedParts, int vision) {
 		this.playbackId = playbackId;
 		this.ownerId = ownerId;
 		this.level = level;
@@ -48,7 +57,7 @@ public final class EchoPlaybackSession {
 		this.record = record;
 		this.lensEntity = lensEntity;
 		this.encodedParts = encodedParts;
-		this.clarity = clarity;
+		this.vision = vision;
 	}
 
 	public UUID playbackId() {
@@ -106,6 +115,7 @@ public final class EchoPlaybackSession {
 		currentTick++;
 		lensEntity.setProgress((float) currentTick / Math.max(1, record.durationTicks()));
 		updateSubscribers();
+		noteWatchers();
 		if (currentTick % TICK_SYNC_INTERVAL == 0) {
 			broadcastTick();
 		}
@@ -126,6 +136,49 @@ public final class EchoPlaybackSession {
 		}
 	}
 
+	private void noteWatchers() {
+		for (ServerPlayer player : level.players()) {
+			if (!region.contains(level.dimension(), player.position())) {
+				if (watchers.contains(player.getUUID())) {
+					leftEarly.add(player.getUUID());
+				}
+				continue;
+			}
+			watchers.add(player.getUUID());
+			if (standsInsideLostBlock(player)) {
+				stoodInsideLostBlock.add(player.getUUID());
+			}
+		}
+	}
+
+	private boolean standsInsideLostBlock(ServerPlayer player) {
+		BlockPos at = player.blockPosition();
+		int relativeX = at.getX() - region.center().getX();
+		int relativeY = at.getY() - region.center().getY();
+		int relativeZ = at.getZ() - region.center().getZ();
+		BlockState remembered = record.snapshot().stateAt(relativeX, relativeY, relativeZ);
+		return !remembered.isAir() && level.getBlockState(at).isAir();
+	}
+
+	public boolean memoryHoldsAnotherPlayer() {
+		return record.entityTimeline().holdsEntityType(
+				BuiltInRegistries.ENTITY_TYPE.getKey(EntityType.PLAYER));
+	}
+
+	public void awardWatchers() {
+		for (UUID id : watchers) {
+			ServerPlayer player = level.getServer().getPlayerList().getPlayer(id);
+			if (player == null) {
+				continue;
+			}
+			EchoCriteria.MEMORY_PLAYED.trigger(player, new MemoryPlayedTrigger.Situation(
+					hasReachedEnd() && !leftEarly.contains(id),
+					memoryHoldsAnotherPlayer(),
+					stoodInsideLostBlock.contains(id),
+					vision));
+		}
+	}
+
 	private void updateSubscribers() {
 		for (ServerPlayer player : level.players()) {
 			boolean inside = region.contains(level.dimension(), player.position());
@@ -143,7 +196,7 @@ public final class EchoPlaybackSession {
 		subscribers.add(player.getUUID());
 		ServerPlayNetworking.send(player, new PlaybackStartPayload(playbackId, region.dimension(),
 				region.center(), region.radius(), region.verticalRadius(), record.durationTicks(),
-				record.slot(), clarity));
+				record.slot(), vision));
 		EchoPlaybackTransfer.sendTo(player, playbackId, encodedParts);
 		ServerPlayNetworking.send(player, new PlaybackTickPayload(playbackId, currentTick));
 	}

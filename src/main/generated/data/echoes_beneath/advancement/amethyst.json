@@ -1,0 +1,33 @@
+{
+  "criteria": {
+    "has_amethyst": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:amethyst_shard"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "background": "minecraft:textures/block/sculk.png",
+    "description": {
+      "translate": "advancements.echoes_beneath.amethyst.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:amethyst_shard"
+    },
+    "title": {
+      "translate": "advancements.echoes_beneath.amethyst.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_amethyst"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

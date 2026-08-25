@@ -1,0 +1,30 @@
+{
+  "parent": "echoes_beneath:first_playback",
+  "criteria": {
+    "stood_inside": {
+      "conditions": {
+        "stood_inside_lost_block": true
+      },
+      "trigger": "echoes_beneath:memory_played"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.echoes_beneath.the_other_way.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "count": 1,
+      "id": "minecraft:iron_pickaxe"
+    },
+    "title": {
+      "translate": "advancements.echoes_beneath.the_other_way.title"
+    }
+  },
+  "requirements": [
+    [
+      "stood_inside"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
