@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -90,6 +91,23 @@ class EchoLensAppearanceTest {
 			}
 		}
 		assertTrue(wrong.isEmpty(), String.join("; ", wrong));
+	}
+
+	@Test
+	@DisplayName("an untouched lens looks exactly like the plain item texture")
+	void visionZeroIsThePlainLens() throws Exception {
+		byte[] plain;
+		byte[] visionZero;
+		try (InputStream a = EchoLensAppearanceTest.class
+				.getResourceAsStream("/assets/echoes_beneath/textures/item/echo_lens.png");
+				InputStream b = EchoLensAppearanceTest.class
+						.getResourceAsStream("/assets/echoes_beneath/textures/item/echo_lens_v0.png")) {
+			assertNotNull(a, "the fallback lens texture is missing");
+			assertNotNull(b, "the vision 0 lens texture is missing");
+			plain = a.readAllBytes();
+			visionZero = b.readAllBytes();
+		}
+		assertArrayEquals(plain, visionZero, "vision 0 has drifted away from the plain lens");
 	}
 
 	@Test
