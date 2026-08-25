@@ -5,6 +5,9 @@ import dev.fimkov.echoesbeneath.memory.timeline.EntityTrack;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,8 +17,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public final class EchoEntityPuppet {
+	private static final String REMEMBERED_PLAYER_NAME = "Echo";
 	private static final EquipmentSlot[] TRACKED_SLOTS = {
 			EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND,
 			EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
@@ -35,6 +40,13 @@ public final class EchoEntityPuppet {
 		this.entity = entity;
 	}
 
+	private static Entity playerStandIn(Level level) {
+		if (!(level instanceof ClientLevel clientLevel)) {
+			return null;
+		}
+		return new RemotePlayer(clientLevel, new GameProfile(UUID.randomUUID(), REMEMBERED_PLAYER_NAME));
+	}
+
 	public static Optional<EchoEntityPuppet> create(EntityTimeline timeline, EntityTrack track, Level level) {
 		if (track.keyframeCount() == 0) {
 			return Optional.empty();
@@ -44,7 +56,9 @@ public final class EchoEntityPuppet {
 		if (type.isEmpty()) {
 			return Optional.empty();
 		}
-		Entity created = type.get().create(level);
+		Entity created = type.get() == EntityType.PLAYER
+				? playerStandIn(level)
+				: type.get().create(level);
 		if (created == null) {
 			return Optional.empty();
 		}

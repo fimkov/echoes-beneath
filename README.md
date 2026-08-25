@@ -5,11 +5,16 @@
 Echoes Beneath is a Minecraft Java Edition mod for Fabric. It adds a single item — the **Echo Lens** —
 that records up to two minutes of a place and lets you stand inside that memory later.
 
-Inside a memory the present world goes almost completely dark. Recorded blocks and creatures are only
-black silhouettes. What makes them visible again are the **sounds that actually happened during the
-recording**: each old sound replays at its original tick and position and sends an expanding wave
-outward. Wherever that wave touches a surface, a bright white-cyan front briefly traces it before
-fading through cyan, deep blue and violet.
+Inside a memory the present world goes almost completely dark. What makes it legible again are the
+**sounds that actually happened during the recording**: each old sound replays at its original tick and
+position and sends an expanding wave outward. Wherever that wave touches a surface, a bright white-cyan
+front briefly traces it before fading through cyan, deep blue and violet.
+
+Creatures and players are not lit by the waves. They stay black and the wave passes around them, so a
+remembered figure shows up as a hole punched in the light behind it. Blocks that stood there then and
+have since been broken come back as black holograms in their old places, and they take the light the
+same way — you read them by what they block, not by what they emit. Clarity is the one thing that
+softens this: at full clarity the darkness lifts far enough for their real textures to come through.
 
 ## Requirements
 
@@ -151,7 +156,7 @@ plan and charges the levels and shards.**
 | Memory | 12 levels + 8 shards | 1 → 3 | one more irreversible memory slot |
 | Radius | 6 levels + 2 shards | 16 → 64 blocks | +8 blocks of recorded radius |
 | Hearing | 9 levels + 3 shards | 0 → 4 | quieter sounds still make it into the recording |
-| Clarity | 20 levels + 5 shards | 0 → 4 | lifts the darkness during playback |
+| Clarity | 20 levels + 5 shards | 0 → 4 | lifts the darkness, and lets textures show through |
 
 Hovering a track explains what it does, what the lens carries now, what the plan would make it, and
 what the next step costs.

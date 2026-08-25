@@ -39,6 +39,7 @@ public final class EchoPlaybackRenderer {
 				continue;
 			}
 			session.buildPendingMeshes();
+			EchoBlockHologramRenderer.render(context, session, cameraPosition);
 			EchoBlockDeltaRenderer.render(context, session, cameraPosition);
 			EchoWaveRenderer.render(context, session, cameraPosition);
 			EchoEntityRenderer.render(context, session);

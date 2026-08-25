@@ -1,27 +1,34 @@
 package dev.fimkov.echoesbeneath.client.render;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.util.Mth;
 
-public record EchoSilhouetteBuffers(MultiBufferSource delegate, int red, int green, int blue) implements MultiBufferSource {
+public record EchoSilhouetteBuffers(MultiBufferSource delegate, int red, int green, int blue, int light)
+		implements MultiBufferSource {
 	private static final int NO_LIGHT = 0;
+	private static final int REVEAL_BLOCK_LIGHT = 11;
 
-	public static EchoSilhouetteBuffers black(MultiBufferSource delegate) {
-		return new EchoSilhouetteBuffers(delegate, 0, 0, 0);
+	public static EchoSilhouetteBuffers revealed(MultiBufferSource delegate, float reveal) {
+		float clamped = Mth.clamp(reveal, 0.0F, 1.0F);
+		int level = Math.round(clamped * 255.0F);
+		return new EchoSilhouetteBuffers(delegate, level, level, level,
+				LightTexture.pack(Math.round(clamped * REVEAL_BLOCK_LIGHT), 0));
 	}
 
 	public static EchoSilhouetteBuffers tinted(MultiBufferSource delegate, int argb) {
 		return new EchoSilhouetteBuffers(delegate,
-				(argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF);
+				(argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF, NO_LIGHT);
 	}
 
 	@Override
 	public VertexConsumer getBuffer(RenderType renderType) {
-		return new SilhouetteConsumer(delegate.getBuffer(renderType), red, green, blue);
+		return new SilhouetteConsumer(delegate.getBuffer(renderType), red, green, blue, light);
 	}
 
-	private record SilhouetteConsumer(VertexConsumer delegate, int red, int green, int blue)
+	private record SilhouetteConsumer(VertexConsumer delegate, int red, int green, int blue, int light)
 			implements VertexConsumer {
 		@Override
 		public VertexConsumer addVertex(float x, float y, float z) {
@@ -49,7 +56,7 @@ public record EchoSilhouetteBuffers(MultiBufferSource delegate, int red, int gre
 
 		@Override
 		public VertexConsumer setUv2(int u, int v) {
-			delegate.setUv2(NO_LIGHT, NO_LIGHT);
+			delegate.setUv2(light & 0xFFFF, (light >> 16) & 0xFFFF);
 			return this;
 		}
 
