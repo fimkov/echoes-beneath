@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public final class EchoLensReturn {
-	private static final int OWNER_PROTECTION_TICKS = 600;
 	private static final float RETURN_VOLUME = 0.6F;
 	private static final float RETURN_PITCH = 1.4F;
 
@@ -62,7 +61,7 @@ public final class EchoLensReturn {
 	public static void deliverTo(EchoLensEntity lens, Player owner) {
 		ItemStack stack = lens.takeLens();
 		if (!stack.isEmpty() && !owner.getInventory().add(stack)) {
-			dropForOwner((ServerLevel) owner.level(), stack, owner, owner.getUUID());
+			dropForOwner((ServerLevel) owner.level(), stack, owner);
 		}
 		if (owner.level() instanceof ServerLevel serverLevel) {
 			EchoRecordingHooks.runWithoutCapture(() -> serverLevel.playSound(null,
@@ -75,21 +74,21 @@ public final class EchoLensReturn {
 	public static void dropAtSelf(EchoLensEntity lens) {
 		ItemStack stack = lens.takeLens();
 		if (!stack.isEmpty() && lens.level() instanceof ServerLevel serverLevel) {
-			ItemEntity dropped = new ItemEntity(serverLevel, lens.getX(), lens.getY(), lens.getZ(), stack);
-			dropped.setPickUpDelay(0);
-			lens.getOwnerId().ifPresent(dropped::setTarget);
-			dropped.setUnlimitedLifetime();
-			serverLevel.addFreshEntity(dropped);
+			spawnRecoverableDrop(serverLevel, stack, lens.getX(), lens.getY(), lens.getZ());
 			notifyOwner(serverLevel, lens.getOwnerId().orElse(null));
 		}
 		lens.discard();
 	}
 
-	private static void dropForOwner(ServerLevel level, ItemStack stack, Player owner, UUID ownerId) {
-		ItemEntity dropped = new ItemEntity(level, owner.getX(), owner.getY(), owner.getZ(), stack);
+	private static void dropForOwner(ServerLevel level, ItemStack stack, Player owner) {
+		spawnRecoverableDrop(level, stack, owner.getX(), owner.getY(), owner.getZ());
+	}
+
+	private static void spawnRecoverableDrop(ServerLevel level, ItemStack stack, double x, double y, double z) {
+		ItemEntity dropped = new ItemEntity(level, x, y, z, stack);
 		dropped.setPickUpDelay(0);
-		dropped.setTarget(ownerId);
 		dropped.setUnlimitedLifetime();
+		dropped.setInvulnerable(true);
 		level.addFreshEntity(dropped);
 	}
 
@@ -101,9 +100,5 @@ public final class EchoLensReturn {
 		if (owner != null) {
 			owner.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_LENS_RETURNED_TO_GROUND), true);
 		}
-	}
-
-	public static int ownerProtectionTicks() {
-		return OWNER_PROTECTION_TICKS;
 	}
 }

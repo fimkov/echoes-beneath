@@ -176,6 +176,10 @@ public final class EchoRecordingSession {
 			sampleEntities();
 		}
 		lensEntity.setProgress((float) currentTick / Math.max(1, maxTicks));
+		if (currentTick % RecordingBoundaryTrace.BEAT_INTERVAL_TICKS == 0) {
+			RecordingBoundaryTrace.sweep(level, level.getServer().getPlayerList().getPlayer(ownerId),
+					center, radius, verticalRadius, currentTick);
+		}
 		currentTick++;
 	}
 
