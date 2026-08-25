@@ -29,6 +29,13 @@ public final class EchoLensStacks {
 
 	public static void setUpgrades(ItemStack stack, EchoLensUpgrades upgrades) {
 		stack.set(EchoComponents.LENS_UPGRADES, upgrades);
+		stack.set(EchoComponents.LENS_PEAK, EchoLensUpgrades.highestOf(peak(stack), upgrades));
+	}
+
+	public static EchoLensUpgrades peak(ItemStack stack) {
+		EchoLensUpgrades reached = stack.get(EchoComponents.LENS_PEAK);
+		EchoLensUpgrades current = upgrades(stack);
+		return reached == null ? current : EchoLensUpgrades.highestOf(reached, current);
 	}
 
 	public static UUID identityOrAssign(ItemStack stack) {

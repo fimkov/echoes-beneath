@@ -53,6 +53,7 @@ public final class EchoTranslations {
 	public static final String UPGRADE_LEVELS = "upgrade.echoes_beneath.levels";
 	public static final String UPGRADE_NEED_LEVELS = "upgrade.echoes_beneath.need_levels";
 	public static final String UPGRADE_NEED_SHARDS = "upgrade.echoes_beneath.need_shards";
+	public static final String UPGRADE_REMEMBERED = "upgrade.echoes_beneath.remembered";
 
 	private EchoTranslations() {
 	}

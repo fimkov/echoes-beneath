@@ -94,6 +94,13 @@ public enum ResonanceTableUpgrade {
 		};
 	}
 
+	public static EchoLensUpgrades lowestSetting(int sealedMemories) {
+		EchoLensUpgrades lowest = new EchoLensUpgrades(EchoFormat.DEFAULT_MEMORY_SLOTS,
+				EchoLensUpgrades.MIN_RADIUS, 0, 0);
+		int needed = Math.clamp(sealedMemories, EchoFormat.DEFAULT_MEMORY_SLOTS, EchoFormat.MAX_MEMORY_SLOTS);
+		return new EchoLensUpgrades(needed, lowest.radius(), lowest.sensitivity(), lowest.clarity());
+	}
+
 	public static EchoLensUpgrades clampToFloor(EchoLensUpgrades floor, EchoLensUpgrades target) {
 		EchoLensUpgrades result = target;
 		for (ResonanceTableUpgrade upgrade : VALUES) {

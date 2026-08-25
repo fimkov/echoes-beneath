@@ -12,34 +12,80 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResonanceTablePlanTest {
+	private static ResonanceTablePlan plan(EchoLensUpgrades current, EchoLensUpgrades peak,
+			EchoLensUpgrades desired) {
+		return ResonanceTablePlan.of(current, ResonanceTableUpgrade.lowestSetting(0), peak, desired);
+	}
+
 	@Test
 	@DisplayName("a plan that changes nothing costs nothing")
 	void emptyPlanIsFree() {
-		ResonanceTablePlan plan = ResonanceTablePlan.between(EchoLensUpgrades.DEFAULT, EchoLensUpgrades.DEFAULT);
-		assertTrue(plan.isEmpty());
-		assertEquals(0, plan.experienceLevels());
-		assertEquals(0, plan.amethystShards());
+		ResonanceTablePlan result = plan(EchoLensUpgrades.DEFAULT, EchoLensUpgrades.DEFAULT,
+				EchoLensUpgrades.DEFAULT);
+		assertFalse(result.changed());
+		assertTrue(result.isFree());
+	}
+
+	@Test
+	@DisplayName("winding a track back down is free")
+	void downgradesCostNothing() {
+		EchoLensUpgrades tuned = new EchoLensUpgrades(1, 48, 3, 2);
+		ResonanceTablePlan result = plan(tuned, tuned, EchoLensUpgrades.DEFAULT);
+		assertTrue(result.changed());
+		assertTrue(result.isFree());
+		assertEquals(EchoLensUpgrades.MIN_RADIUS, result.target().radius());
+		assertEquals(0, result.target().clarity());
+	}
+
+	@Test
+	@DisplayName("climbing back to a level this lens already reached is free")
+	void restoringToThePeakCostsNothing() {
+		EchoLensUpgrades peak = new EchoLensUpgrades(1, 48, 3, 2);
+		EchoLensUpgrades current = EchoLensUpgrades.DEFAULT;
+		ResonanceTablePlan result = plan(current, peak, peak);
+		assertTrue(result.changed());
+		assertTrue(result.isFree());
+		assertEquals(peak, result.target());
+	}
+
+	@Test
+	@DisplayName("only the steps past the peak are charged for")
+	void onlyNewGroundIsCharged() {
+		EchoLensUpgrades peak = ResonanceTableUpgrade.RADIUS.withSteps(EchoLensUpgrades.DEFAULT, 2);
+		EchoLensUpgrades desired = ResonanceTableUpgrade.RADIUS.withSteps(EchoLensUpgrades.DEFAULT, 5);
+		ResonanceTablePlan result = plan(EchoLensUpgrades.DEFAULT, peak, desired);
+		assertEquals(3 * ResonanceTableUpgrade.RADIUS.experiencePerStep(), result.experienceLevels());
+	}
+
+	@Test
+	@DisplayName("memory slots never wind back below the memories already sealed")
+	void sealedMemoriesHoldTheirSlots() {
+		EchoLensUpgrades floor = ResonanceTableUpgrade.lowestSetting(2);
+		EchoLensUpgrades owned = new EchoLensUpgrades(3, 16, 0, 0);
+		ResonanceTablePlan result = ResonanceTablePlan.of(owned, floor, owned, EchoLensUpgrades.DEFAULT);
+		assertEquals(2, result.target().memorySlots());
+		assertTrue(result.isFree());
 	}
 
 	@Test
 	@DisplayName("each staged step adds that upgrade's own price")
 	void costsAccumulatePerStep() {
 		EchoLensUpgrades target = ResonanceTableUpgrade.RADIUS.withSteps(EchoLensUpgrades.DEFAULT, 3);
-		ResonanceTablePlan plan = ResonanceTablePlan.between(EchoLensUpgrades.DEFAULT, target);
-		assertFalse(plan.isEmpty());
-		assertEquals(3 * ResonanceTableUpgrade.RADIUS.experiencePerStep(), plan.experienceLevels());
-		assertEquals(0, plan.amethystShards());
-		assertEquals(EchoLensUpgrades.MIN_RADIUS + 3 * EchoLensUpgrades.RADIUS_STEP, plan.target().radius());
+		ResonanceTablePlan result = plan(EchoLensUpgrades.DEFAULT, EchoLensUpgrades.DEFAULT, target);
+		assertTrue(result.changed());
+		assertEquals(3 * ResonanceTableUpgrade.RADIUS.experiencePerStep(), result.experienceLevels());
+		assertEquals(0, result.amethystShards());
+		assertEquals(EchoLensUpgrades.MIN_RADIUS + 3 * EchoLensUpgrades.RADIUS_STEP, result.target().radius());
 	}
 
 	@Test
 	@DisplayName("memory slots are the only upgrade that also eats amethyst")
 	void memorySlotsCostShards() {
 		EchoLensUpgrades target = ResonanceTableUpgrade.MEMORY_SLOT.withSteps(EchoLensUpgrades.DEFAULT, 2);
-		ResonanceTablePlan plan = ResonanceTablePlan.between(EchoLensUpgrades.DEFAULT, target);
-		assertEquals(2 * ResonanceTableUpgrade.MEMORY_SLOT.experiencePerStep(), plan.experienceLevels());
-		assertEquals(2 * ResonanceTableUpgrade.MEMORY_SLOT.shardsPerStep(), plan.amethystShards());
-		assertEquals(EchoFormat.MAX_MEMORY_SLOTS, plan.target().memorySlots());
+		ResonanceTablePlan result = plan(EchoLensUpgrades.DEFAULT, EchoLensUpgrades.DEFAULT, target);
+		assertEquals(2 * ResonanceTableUpgrade.MEMORY_SLOT.experiencePerStep(), result.experienceLevels());
+		assertEquals(2 * ResonanceTableUpgrade.MEMORY_SLOT.shardsPerStep(), result.amethystShards());
+		assertEquals(EchoFormat.MAX_MEMORY_SLOTS, result.target().memorySlots());
 	}
 
 	@Test
@@ -55,13 +101,13 @@ class ResonanceTablePlanTest {
 	}
 
 	@Test
-	@DisplayName("staged values can never fall below what the lens already carries")
+	@DisplayName("a floor of its own settings pins a plan in place")
 	void plansCannotUndoOwnedUpgrades() {
 		EchoLensUpgrades owned = new EchoLensUpgrades(2, 32, 3, 2);
-		ResonanceTablePlan plan = ResonanceTablePlan.between(owned, EchoLensUpgrades.DEFAULT);
-		assertTrue(plan.isEmpty());
-		assertEquals(owned, plan.target());
-		assertEquals(0, plan.experienceLevels());
+		ResonanceTablePlan result = ResonanceTablePlan.of(owned, owned, owned, EchoLensUpgrades.DEFAULT);
+		assertFalse(result.changed());
+		assertEquals(owned, result.target());
+		assertEquals(0, result.experienceLevels());
 	}
 
 	@Test

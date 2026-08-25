@@ -50,5 +50,6 @@
   "upgrade.echoes_beneath.per_step_shards": "%s levels and %s shards per step",
   "upgrade.echoes_beneath.levels": "levels",
   "upgrade.echoes_beneath.need_levels": "Not enough experience",
-  "upgrade.echoes_beneath.need_shards": "Not enough amethyst"
+  "upgrade.echoes_beneath.need_shards": "Not enough amethyst",
+  "upgrade.echoes_beneath.remembered": "Tuned this far before, free to restore: %s"
 }

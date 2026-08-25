@@ -15,12 +15,16 @@ public final class ResonanceTableLayout {
 	public static final int TITLE_X = 10;
 	public static final int TITLE_Y = 6;
 	public static final int COST_X = 124;
-	public static final int COST_Y = 30;
+	public static final int COST_Y = 26;
 	public static final int COST_LINE = 10;
+	public static final int CHAMBER_BOTTOM = 66;
 	public static final int COST_RIGHT = PANEL_WIDTH - 8;
 	public static final int COST_LEFT_LIMIT = 118;
-	public static final int COST_SHARD_Y = 52;
-	public static final int SHARD_ICON_SIZE = 8;
+	public static final int COST_SHARD_Y = 48;
+	public static final int SHARD_ICON_SIZE = 16;
+	public static final int DIAL_CENTRE_X = 96;
+	public static final int DIAL_CENTRE_Y = 42;
+	public static final int DIAL_GLOW_SIZE = 32;
 
 	public static final int ROW_X = 8;
 	public static final int ROW_WIDTH = 160;

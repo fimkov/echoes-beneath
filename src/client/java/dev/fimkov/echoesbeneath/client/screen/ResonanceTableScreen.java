@@ -14,6 +14,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,17 +30,29 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	private static final int STATE_NORMAL = 0;
 	private static final int STATE_HOVERED = 12;
 	private static final int STATE_DISABLED = 24;
-	private static final int PIP_FILLED_U = 200;
-	private static final int PIP_PENDING_U = 204;
+	private static final int PIP_OWNED_U = 200;
+	private static final int PIP_REMEMBERED_U = 204;
 	private static final int PIP_EMPTY_U = 208;
-	private static final int ICON_U = 212;
-	private static final int SHARD_U = 244;
+	private static final int PIP_PAID_V = 6;
+	private static final int GLOW_U = 176;
+	private static final int GLOW_V = 36;
 
 	private static final int INK = 0xB4C4C2;
 	private static final int DIM = 0x68767A;
 	private static final int TITLE = 0xC8DCDA;
 	private static final int COST_OK = 0x7EE36B;
 	private static final int COST_BAD = 0xE0605E;
+
+	private static final float PULSE_PERIOD_TICKS = 46.0F;
+	private static final float PULSE_BASE = 0.30F;
+	private static final float PULSE_SWING = 0.22F;
+	private static final float PULSE_READY_BOOST = 0.26F;
+	private static final float GHOST_ALPHA = 0.28F;
+	private static final float DENIED_PITCH = 0.65F;
+	private static final float DENIED_VOLUME = 0.7F;
+
+	private final ItemStack amethystGhost = new ItemStack(Items.AMETHYST_SHARD);
+	private float animation;
 
 	public ResonanceTableScreen(ResonanceTableMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
@@ -53,6 +67,15 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		this.titleLabelY = ResonanceTableLayout.TITLE_Y;
 		this.inventoryLabelX = ResonanceTableLayout.INVENTORY_LABEL_X;
 		this.inventoryLabelY = ResonanceTableLayout.INVENTORY_LABEL_Y;
+	}
+
+	@Override
+	protected void containerTick() {
+		super.containerTick();
+		animation += 1.0F;
+		if (animation >= PULSE_PERIOD_TICKS) {
+			animation -= PULSE_PERIOD_TICKS;
+		}
 	}
 
 	private boolean over(int mouseX, int mouseY, int x, int y, int width, int height) {
@@ -72,6 +95,11 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 				ResonanceTableLayout.BUTTON_SIZE, ResonanceTableLayout.BUTTON_SIZE);
 	}
 
+	private boolean overResult(int mouseX, int mouseY) {
+		return over(mouseX, mouseY, ResonanceTableLayout.RESULT_SLOT_X, ResonanceTableLayout.RESULT_SLOT_Y,
+				ResonanceTableLayout.SLOT_SIZE, ResonanceTableLayout.SLOT_SIZE);
+	}
+
 	private boolean allowed(ResonanceTableUpgrade upgrade, boolean increase) {
 		return increase ? menu.canIncrease(upgrade) : menu.canDecrease(upgrade);
 	}
@@ -85,12 +113,17 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 					if (!overButton((int) mouseX, (int) mouseY, index, increase)) {
 						continue;
 					}
-					if (!allowed(upgrade, increase)) {
-						return true;
+					if (allowed(upgrade, increase)) {
+						press(ResonanceTableUpgrade.buttonId(index, increase));
 					}
-					press(ResonanceTableUpgrade.buttonId(index, increase));
 					return true;
 				}
+			}
+			if (overResult((int) mouseX, (int) mouseY) && !menu.slots.get(ResonanceTableMenu.RESULT_SLOT)
+					.getItem().isEmpty() && minecraft != null && minecraft.player != null
+					&& !menu.canApply(minecraft.player)) {
+				deny();
+				return true;
 			}
 		}
 		return super.mouseClicked(mouseX, mouseY, button);
@@ -104,9 +137,24 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 	}
 
+	private void deny() {
+		if (minecraft == null) {
+			return;
+		}
+		minecraft.getSoundManager().play(
+				SimpleSoundInstance.forUI(SoundEvents.SCULK_CLICKING_STOP, DENIED_PITCH, DENIED_VOLUME));
+	}
+
+	private float pulse() {
+		double phase = animation / PULSE_PERIOD_TICKS * Math.PI * 2.0;
+		return PULSE_BASE + PULSE_SWING * (float) ((Math.sin(phase) + 1.0) * 0.5);
+	}
+
 	@Override
 	protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
 		graphics.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+		renderGhostSlot(graphics);
+		renderDialGlow(graphics);
 		for (int index = 0; index < ResonanceTableLayout.ROW_COUNT; index++) {
 			int y = topPos + ResonanceTableLayout.rowY(index);
 			if (overRow(mouseX, mouseY, index)) {
@@ -122,23 +170,52 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		}
 	}
 
+	private static final int ICON_U = 212;
+
+	private void renderGhostSlot(GuiGraphics graphics) {
+		if (!menu.amethyst().isEmpty()) {
+			return;
+		}
+		graphics.setColor(1.0F, 1.0F, 1.0F, GHOST_ALPHA);
+		graphics.renderItem(amethystGhost, leftPos + ResonanceTableLayout.AMETHYST_SLOT_X,
+				topPos + ResonanceTableLayout.AMETHYST_SLOT_Y);
+		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+	}
+
+	private void renderDialGlow(GuiGraphics graphics) {
+		float alpha = pulse();
+		if (minecraft != null && minecraft.player != null && menu.canApply(minecraft.player)) {
+			alpha += PULSE_READY_BOOST;
+		}
+		graphics.setColor(1.0F, 1.0F, 1.0F, Math.min(1.0F, alpha));
+		graphics.blit(TEXTURE,
+				leftPos + ResonanceTableLayout.DIAL_CENTRE_X - ResonanceTableLayout.DIAL_GLOW_SIZE / 2,
+				topPos + ResonanceTableLayout.DIAL_CENTRE_Y - ResonanceTableLayout.DIAL_GLOW_SIZE / 2,
+				GLOW_U, GLOW_V, ResonanceTableLayout.DIAL_GLOW_SIZE, ResonanceTableLayout.DIAL_GLOW_SIZE);
+		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+	}
+
 	private void renderPips(GuiGraphics graphics, int index, int rowScreenY) {
 		ResonanceTableUpgrade upgrade = ResonanceTableUpgrade.fromIndex(index);
 		int count = upgrade.maxSteps();
-		int owned = upgrade.stepsOf(menu.floorUpgrades());
-		int staged = upgrade.stepsOf(menu.targetUpgrades());
 		boolean empty = menu.lens().isEmpty();
+		int peak = empty ? 0 : upgrade.stepsOf(menu.peakUpgrades());
+		int staged = empty ? 0 : upgrade.stepsOf(menu.targetUpgrades());
 		int left = leftPos + ResonanceTableLayout.pipsLeft(count);
 		for (int pip = 0; pip < count; pip++) {
 			int u = PIP_EMPTY_U;
-			if (!empty && pip < owned) {
-				u = PIP_FILLED_U;
-			} else if (!empty && pip < staged) {
-				u = PIP_PENDING_U;
+			int v = 0;
+			if (pip < staged) {
+				u = PIP_OWNED_U;
+				if (pip >= peak) {
+					v = PIP_PAID_V;
+				}
+			} else if (pip < peak) {
+				u = PIP_REMEMBERED_U;
 			}
 			graphics.blit(TEXTURE,
 					left + pip * (ResonanceTableLayout.PIP_WIDTH + ResonanceTableLayout.PIP_GAP),
-					rowScreenY + ResonanceTableLayout.PIP_Y_OFFSET, u, 0,
+					rowScreenY + ResonanceTableLayout.PIP_Y_OFFSET, u, v,
 					ResonanceTableLayout.PIP_WIDTH, ResonanceTableLayout.PIP_HEIGHT);
 		}
 	}
@@ -173,7 +250,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 			return;
 		}
 		ResonanceTablePlan plan = menu.plan();
-		if (plan.isEmpty()) {
+		if (!plan.changed() || plan.isFree()) {
 			return;
 		}
 		boolean affordable = minecraft != null && minecraft.player != null && menu.canApply(minecraft.player);
@@ -188,13 +265,11 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		boolean enough = minecraft != null && minecraft.player != null
 				&& (minecraft.player.getAbilities().instabuild
 				|| menu.amethyst().getCount() >= plan.amethystShards());
-		graphics.blit(TEXTURE, ResonanceTableLayout.COST_RIGHT - ResonanceTableLayout.SHARD_ICON_SIZE,
-				ResonanceTableLayout.COST_SHARD_Y, SHARD_U, 0,
-				ResonanceTableLayout.SHARD_ICON_SIZE, ResonanceTableLayout.SHARD_ICON_SIZE);
 		Component count = Component.literal(Integer.toString(plan.amethystShards()));
-		graphics.drawString(font, count,
-				ResonanceTableLayout.COST_RIGHT - ResonanceTableLayout.SHARD_ICON_SIZE - 2 - font.width(count),
-				ResonanceTableLayout.COST_SHARD_Y, enough ? DIM : COST_BAD, true);
+		int iconX = ResonanceTableLayout.COST_RIGHT - ResonanceTableLayout.SHARD_ICON_SIZE;
+		graphics.renderItem(amethystGhost, iconX, ResonanceTableLayout.COST_SHARD_Y);
+		graphics.drawString(font, count, iconX - 2 - font.width(count),
+				ResonanceTableLayout.COST_SHARD_Y + 4, enough ? DIM : COST_BAD, true);
 	}
 
 	private void drawRight(GuiGraphics graphics, Component text, int y, int colour) {
@@ -224,16 +299,22 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 			lines.add(Component.translatable(EchoTranslations.UPGRADE_NO_LENS));
 			return lines;
 		}
-		EchoLensUpgrades floor = menu.floorUpgrades();
+		EchoLensUpgrades current = menu.currentUpgrades();
 		EchoLensUpgrades target = menu.targetUpgrades();
-		int owned = upgrade.stepsOf(floor);
+		EchoLensUpgrades peak = menu.peakUpgrades();
+		int owned = upgrade.stepsOf(current);
 		int staged = upgrade.stepsOf(target);
-		Component current = Component.translatable(upgrade.unitKey(), upgrade.displayValue(owned));
+		int reached = upgrade.stepsOf(peak);
+		Component now = Component.translatable(upgrade.unitKey(), upgrade.displayValue(owned));
 		lines.add(staged == owned
-				? current
-				: Component.translatable(EchoTranslations.UPGRADE_CHANGE, current,
+				? now
+				: Component.translatable(EchoTranslations.UPGRADE_CHANGE, now,
 						Component.translatable(upgrade.unitKey(), upgrade.displayValue(staged))));
-		if (owned >= upgrade.maxSteps()) {
+		if (reached > owned) {
+			lines.add(Component.translatable(EchoTranslations.UPGRADE_REMEMBERED,
+					upgrade.displayValue(reached)));
+		}
+		if (staged >= upgrade.maxSteps()) {
 			lines.add(Component.translatable(EchoTranslations.UPGRADE_MAXED));
 			return lines;
 		}

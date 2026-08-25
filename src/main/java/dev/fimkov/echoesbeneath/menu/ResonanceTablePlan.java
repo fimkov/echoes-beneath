@@ -2,28 +2,27 @@ package dev.fimkov.echoesbeneath.menu;
 
 import dev.fimkov.echoesbeneath.item.EchoLensUpgrades;
 
-public record ResonanceTablePlan(EchoLensUpgrades floor, EchoLensUpgrades target,
-		int experienceLevels, int amethystShards) {
+public record ResonanceTablePlan(EchoLensUpgrades target, int experienceLevels, int amethystShards,
+		boolean changed) {
 	public static final ResonanceTablePlan NONE =
-			new ResonanceTablePlan(EchoLensUpgrades.DEFAULT, EchoLensUpgrades.DEFAULT, 0, 0);
+			new ResonanceTablePlan(EchoLensUpgrades.DEFAULT, 0, 0, false);
 
-	public static ResonanceTablePlan between(EchoLensUpgrades floor, EchoLensUpgrades target) {
-		EchoLensUpgrades clamped = ResonanceTableUpgrade.clampToFloor(floor, target);
+	public static ResonanceTablePlan of(EchoLensUpgrades current, EchoLensUpgrades floor,
+			EchoLensUpgrades peak, EchoLensUpgrades desired) {
+		EchoLensUpgrades clamped = ResonanceTableUpgrade.clampToFloor(floor, desired);
 		int levels = 0;
 		int shards = 0;
 		for (ResonanceTableUpgrade upgrade : ResonanceTableUpgrade.all()) {
-			int steps = upgrade.stepsOf(clamped) - upgrade.stepsOf(floor);
-			levels += steps * upgrade.experiencePerStep();
-			shards += steps * upgrade.shardsPerStep();
+			int unpaid = upgrade.stepsOf(clamped) - upgrade.stepsOf(peak);
+			if (unpaid > 0) {
+				levels += unpaid * upgrade.experiencePerStep();
+				shards += unpaid * upgrade.shardsPerStep();
+			}
 		}
-		return new ResonanceTablePlan(floor, clamped, levels, shards);
+		return new ResonanceTablePlan(clamped, levels, shards, !clamped.equals(current));
 	}
 
-	public boolean isEmpty() {
-		return target.equals(floor);
-	}
-
-	public int stepsAdded(ResonanceTableUpgrade upgrade) {
-		return upgrade.stepsOf(target) - upgrade.stepsOf(floor);
+	public boolean isFree() {
+		return experienceLevels == 0 && amethystShards == 0;
 	}
 }

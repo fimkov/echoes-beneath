@@ -20,7 +20,7 @@ public final class EchoBlocks {
 	public static final Block RESONANCE_TABLE = new ResonanceTableBlock(
 			BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_TILES)
 					.strength(HARDNESS, BLAST_RESISTANCE)
-					.sound(SoundType.SCULK_CATALYST)
+					.sound(SoundType.DEEPSLATE_TILES)
 					.lightLevel(state -> GLOW_LEVEL)
 					.noOcclusion());
 

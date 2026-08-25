@@ -2,6 +2,7 @@ package dev.fimkov.echoesbeneath.menu;
 
 import dev.fimkov.echoesbeneath.item.EchoLensStacks;
 import dev.fimkov.echoesbeneath.item.EchoLensUpgrades;
+import dev.fimkov.echoesbeneath.memory.EchoMemoryReferences;
 import dev.fimkov.echoesbeneath.registry.EchoBlocks;
 import dev.fimkov.echoesbeneath.registry.EchoMenus;
 import dev.fimkov.echoesbeneath.registry.EchoSounds;
@@ -39,6 +40,7 @@ public class ResonanceTableMenu extends AbstractContainerMenu {
 	private final DataSlot[] targetSteps = new DataSlot[ResonanceTableUpgrade.all().length];
 	private final DataSlot costLevels = DataSlot.standalone();
 	private final DataSlot costShards = DataSlot.standalone();
+	private ItemStack seededFrom = ItemStack.EMPTY;
 
 	public ResonanceTableMenu(int containerId, Inventory inventory, BlockPos position) {
 		this(containerId, inventory, ContainerLevelAccess.create(inventory.player.level(), position));
@@ -109,9 +111,23 @@ public class ResonanceTableMenu extends AbstractContainerMenu {
 		return input.getItem(AMETHYST_SLOT);
 	}
 
-	public EchoLensUpgrades floorUpgrades() {
+	public EchoLensUpgrades currentUpgrades() {
 		ItemStack lens = lens();
 		return lens.isEmpty() ? EchoLensUpgrades.DEFAULT : EchoLensStacks.upgrades(lens);
+	}
+
+	public EchoLensUpgrades peakUpgrades() {
+		ItemStack lens = lens();
+		return lens.isEmpty() ? EchoLensUpgrades.DEFAULT : EchoLensStacks.peak(lens);
+	}
+
+	public EchoLensUpgrades floorUpgrades() {
+		ItemStack lens = lens();
+		if (lens.isEmpty()) {
+			return EchoLensUpgrades.DEFAULT;
+		}
+		EchoMemoryReferences sealed = EchoLensStacks.references(lens);
+		return ResonanceTableUpgrade.lowestSetting(sealed.filledSlots());
 	}
 
 	public EchoLensUpgrades targetUpgrades() {
@@ -124,7 +140,8 @@ public class ResonanceTableMenu extends AbstractContainerMenu {
 	}
 
 	public ResonanceTablePlan plan() {
-		return new ResonanceTablePlan(floorUpgrades(), targetUpgrades(), costLevels.get(), costShards.get());
+		return new ResonanceTablePlan(targetUpgrades(), costLevels.get(), costShards.get(),
+				!targetUpgrades().equals(currentUpgrades()));
 	}
 
 	public boolean canApply(Player player) {
@@ -170,17 +187,24 @@ public class ResonanceTableMenu extends AbstractContainerMenu {
 	}
 
 	private void refresh() {
+		ItemStack lens = lens();
+		if (!ItemStack.matches(seededFrom, lens)) {
+			seededFrom = lens.copy();
+			EchoLensUpgrades seed = currentUpgrades();
+			for (int index = 0; index < targetSteps.length; index++) {
+				targetSteps[index].set(ResonanceTableUpgrade.fromIndex(index).stepsOf(seed));
+			}
+		}
 		EchoLensUpgrades floor = floorUpgrades();
 		for (int index = 0; index < targetSteps.length; index++) {
 			ResonanceTableUpgrade upgrade = ResonanceTableUpgrade.fromIndex(index);
 			int lowest = upgrade.stepsOf(floor);
 			targetSteps[index].set(Math.clamp(targetSteps[index].get(), lowest, upgrade.maxSteps()));
 		}
-		ItemStack lens = lens();
-		ResonanceTablePlan plan = ResonanceTablePlan.between(floor, targetUpgrades());
+		ResonanceTablePlan plan = ResonanceTablePlan.of(currentUpgrades(), floor, peakUpgrades(), targetUpgrades());
 		costLevels.set(plan.experienceLevels());
 		costShards.set(plan.amethystShards());
-		if (lens.isEmpty() || plan.isEmpty()) {
+		if (lens.isEmpty() || !plan.changed()) {
 			output.setItem(0, ItemStack.EMPTY);
 		} else {
 			ItemStack preview = lens.copy();

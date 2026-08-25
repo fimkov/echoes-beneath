@@ -50,5 +50,6 @@
   "upgrade.echoes_beneath.per_step_shards": "%s уровней и %s осколков за деление",
   "upgrade.echoes_beneath.levels": "уровней",
   "upgrade.echoes_beneath.need_levels": "Не хватает опыта",
-  "upgrade.echoes_beneath.need_shards": "Не хватает аметиста"
+  "upgrade.echoes_beneath.need_shards": "Не хватает аметиста",
+  "upgrade.echoes_beneath.remembered": "Уже был настроен до %s — вернуть бесплатно"
 }

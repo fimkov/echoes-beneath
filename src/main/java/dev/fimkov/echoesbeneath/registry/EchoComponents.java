@@ -26,6 +26,11 @@ public final class EchoComponents {
 			.networkSynchronized(EchoLensUpgrades.STREAM_CODEC)
 			.build();
 
+	public static final DataComponentType<EchoLensUpgrades> LENS_PEAK = DataComponentType.<EchoLensUpgrades>builder()
+			.persistent(EchoLensUpgrades.CODEC)
+			.networkSynchronized(EchoLensUpgrades.STREAM_CODEC)
+			.build();
+
 	private EchoComponents() {
 	}
 
@@ -33,5 +38,6 @@ public final class EchoComponents {
 		Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, EchoesBeneath.id("lens_identity"), LENS_IDENTITY);
 		Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, EchoesBeneath.id("memory_references"), MEMORY_REFERENCES);
 		Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, EchoesBeneath.id("lens_upgrades"), LENS_UPGRADES);
+		Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, EchoesBeneath.id("lens_peak"), LENS_PEAK);
 	}
 }

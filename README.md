@@ -131,9 +131,16 @@ Which mobs are affected is controlled by the `echoes_beneath:temporarily_suppres
 ## The Resonance Table
 
 Found only in a Resonance Vault — it has no recipe. Put a lens in the upper slot and amethyst shards in
-the lower one. Each track has a meter and a pair of buttons: filled segments are what the lens already
-carries, hollow ones are what you have staged. Nothing is spent while you plan, and a staged step can be
-taken back — but a segment the lens already owns cannot, because upgrades are permanent.
+the lower one. Each track has a meter and a pair of buttons, and nothing is spent while you plan.
+
+A lens remembers the highest setting it ever reached. Winding a track back down is free, and climbing
+back up to a level that lens already paid for is free too, so a lens can be retuned for the job at hand
+without being punished for it. Only ground it has never covered costs anything. The meter shows all four
+states: solid cyan is what the lens will carry, green is new ground you are buying, hollow is a level it
+reached before and can return to for nothing, dark is untouched.
+
+The one track that cannot wind all the way back is memory — it will not drop below the number of
+memories already sealed into the lens, because those cannot be given up.
 
 The dial shows the resulting lens; hover it to read the tuning it would have. The price of everything
 staged sits beside it, in red when you cannot pay. **Taking the lens off the dial is what applies the

@@ -36,6 +36,14 @@ public record EchoLensUpgrades(int memorySlots, int radius, int sensitivity, int
 					Math.clamp(buffer.readVarInt(), 0, MAX_SENSITIVITY),
 					Math.clamp(buffer.readVarInt(), 0, MAX_CLARITY)));
 
+	public static EchoLensUpgrades highestOf(EchoLensUpgrades first, EchoLensUpgrades second) {
+		return new EchoLensUpgrades(
+				Math.max(first.memorySlots, second.memorySlots),
+				Math.max(first.radius, second.radius),
+				Math.max(first.sensitivity, second.sensitivity),
+				Math.max(first.clarity, second.clarity));
+	}
+
 	public boolean canAddMemorySlot() {
 		return memorySlots < EchoFormat.MAX_MEMORY_SLOTS;
 	}
