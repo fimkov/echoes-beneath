@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public final class EchoDarkness {
 	public static final int VOID_LIGHT_PIXEL = 0xFF000000;
+	public static final int EMISSIVE_TEXEL = 15;
 	private static final float FOG_START_FRACTION = 0.05F;
 	private static final float FOG_END_MARGIN = 4.0F;
 

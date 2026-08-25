@@ -5,7 +5,8 @@
   "client": [
     "FogRendererEchoMixin",
     "LevelRendererSkyMixin",
-    "LightTextureDarknessMixin"
+    "LightTextureDarknessMixin",
+    "ParticleEmissiveMixin"
   ],
   "injectors": {
     "defaultRequire": 1

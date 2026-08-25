@@ -8,6 +8,7 @@ import dev.fimkov.echoesbeneath.client.wave.EchoWavePalette;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
@@ -49,6 +50,7 @@ public final class EchoWaveRenderer {
 		float[] gridZ = new float[GRID_POINTS * GRID_POINTS];
 		int[] gridColor = new int[GRID_POINTS * GRID_POINTS];
 		List<EchoWave> nearby = new ArrayList<>();
+		List<EchoWave> facing = new ArrayList<>();
 		int emitted = 0;
 
 		for (Map.Entry<Integer, EchoSectionMesh> entry : session.meshes().entrySet()) {
@@ -62,7 +64,11 @@ public final class EchoWaveRenderer {
 					return;
 				}
 				EchoFaceGeometry.faceBasis(packedFace, mesh.originX(), mesh.originY(), mesh.originZ(), basis);
-				if (!shadeGrid(nearby, currentTick, partialTick, center, basis, gridX, gridY, gridZ, gridColor)) {
+				collectFacingWaves(nearby, packedFace, basis, center, facing);
+				if (facing.isEmpty()) {
+					continue;
+				}
+				if (!shadeGrid(facing, currentTick, partialTick, center, basis, gridX, gridY, gridZ, gridColor)) {
 					continue;
 				}
 				emitSubQuads(consumer, matrix, gridX, gridY, gridZ, gridColor);
@@ -120,6 +126,26 @@ public final class EchoWaveRenderer {
 			float[] gridX, float[] gridY, float[] gridZ, int[] gridColor, int index) {
 		EchoFaceGeometry.emitVertex(consumer, matrix,
 				gridX[index], gridY[index], gridZ[index], gridColor[index]);
+	}
+
+	private static void collectFacingWaves(List<EchoWave> nearby, int packedFace, float[] basis,
+			BlockPos center, List<EchoWave> destination) {
+		destination.clear();
+		Direction direction = EchoFaceGeometry.direction(packedFace);
+		double faceCentreX = center.getX() + basis[0] + (basis[3] + basis[6]) * 0.5D;
+		double faceCentreY = center.getY() + basis[1] + (basis[4] + basis[7]) * 0.5D;
+		double faceCentreZ = center.getZ() + basis[2] + (basis[5] + basis[8]) * 0.5D;
+		for (EchoWave wave : nearby) {
+			double toOriginX = wave.origin().x - faceCentreX;
+			double toOriginY = wave.origin().y - faceCentreY;
+			double toOriginZ = wave.origin().z - faceCentreZ;
+			double facing = toOriginX * direction.getStepX()
+					+ toOriginY * direction.getStepY()
+					+ toOriginZ * direction.getStepZ();
+			if (facing > 0.0D) {
+				destination.add(wave);
+			}
+		}
 	}
 
 	private static void collectNearbyWaves(EchoSectionMesh mesh, List<EchoWave> waves, BlockPos center,

@@ -4,7 +4,7 @@ import dev.fimkov.echoesbeneath.memory.timeline.SoundWaveStrength;
 import net.minecraft.world.phys.Vec3;
 
 public final class EchoWave {
-	private static final float SHELL_THICKNESS = 6.0F;
+	private static final float SHELL_THICKNESS = 3.0F;
 
 	private final Vec3 origin;
 	private final int startTick;

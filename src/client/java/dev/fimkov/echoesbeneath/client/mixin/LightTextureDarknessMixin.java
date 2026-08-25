@@ -31,7 +31,11 @@ public abstract class LightTextureDarknessMixin implements EchoLightTextureAcces
 	public void echoesBeneath$paintVoid() {
 		for (int skyLevel = 0; skyLevel < LIGHT_LEVELS; skyLevel++) {
 			for (int blockLevel = 0; blockLevel < LIGHT_LEVELS; blockLevel++) {
-				lightPixels.setPixelRGBA(blockLevel, skyLevel, EchoDarkness.VOID_LIGHT_PIXEL);
+				boolean emissiveTexel = blockLevel == EchoDarkness.EMISSIVE_TEXEL
+						&& skyLevel == EchoDarkness.EMISSIVE_TEXEL;
+				if (!emissiveTexel) {
+					lightPixels.setPixelRGBA(blockLevel, skyLevel, EchoDarkness.VOID_LIGHT_PIXEL);
+				}
 			}
 		}
 		lightTexture.upload();

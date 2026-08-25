@@ -37,7 +37,9 @@ public class EchoLensEntity extends Entity {
 	private static final float ARRIVAL_SPIN_MULTIPLIER = 4.5F;
 	private static final int ARRIVAL_BURST_PARTICLES = 30;
 	private static final double ARRIVAL_BURST_SPREAD = 0.8D;
-	private static final int TRAIL_PARTICLES_PER_BEAT = 2;
+	private static final int MIN_ARC_POINTS = 2;
+	private static final int MAX_ARC_POINTS = 26;
+	private static final float ARC_ROLL_SCALE = 0.4F;
 	private static final float FULL_TURN_DEGREES = 360.0F;
 	private static final double RETURN_SPEED = 0.55D;
 	private static final double RETURN_PICKUP_DISTANCE = 1.1D;
@@ -201,13 +203,14 @@ public class EchoLensEntity extends Entity {
 	}
 
 	private void emitProgressRing(ServerLevel serverLevel) {
-		double leadingAngle = getProgress() * Math.PI * 2.0D;
-		spawnRingParticle(serverLevel, headParticle(), leadingAngle);
-		for (int trail = 0; trail < TRAIL_PARTICLES_PER_BEAT; trail++) {
-			spawnRingParticle(serverLevel, trailParticle(), this.random.nextDouble() * leadingAngle);
+		float progress = getProgress();
+		double leadingAngle = progress * Math.PI * 2.0D;
+		int arcPoints = MIN_ARC_POINTS + Math.round(progress * (MAX_ARC_POINTS - MIN_ARC_POINTS));
+		for (int point = 0; point < arcPoints; point++) {
+			double angle = leadingAngle * point / Math.max(1, arcPoints);
+			spawnRingParticle(serverLevel, trailParticle(angle), angle);
 		}
-		serverLevel.sendParticles(ParticleTypes.SCULK_SOUL, this.getX(), this.getY(), this.getZ(),
-				1, PARTICLE_SPREAD, PARTICLE_SPREAD, PARTICLE_SPREAD, 0.0D);
+		spawnRingParticle(serverLevel, headParticle(), leadingAngle);
 	}
 
 	private void spawnRingParticle(ServerLevel serverLevel, ParticleOptions particle, double angle) {
@@ -222,8 +225,9 @@ public class EchoLensEntity extends Entity {
 		return getMode() == EchoLensMode.PLAYBACK ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.SCULK_SOUL;
 	}
 
-	private ParticleOptions trailParticle() {
-		return getMode() == EchoLensMode.PLAYBACK ? ParticleTypes.WITCH : ParticleTypes.ELECTRIC_SPARK;
+	private ParticleOptions trailParticle(double angle) {
+		return new net.minecraft.core.particles.SculkChargeParticleOptions(
+				(float) Math.sin(angle) * ARC_ROLL_SCALE);
 	}
 
 	private void tickReturn(ServerLevel serverLevel) {

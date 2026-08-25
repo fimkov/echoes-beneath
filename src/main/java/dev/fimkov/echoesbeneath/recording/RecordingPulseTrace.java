@@ -3,6 +3,7 @@ package dev.fimkov.echoesbeneath.recording;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SculkChargeParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -16,7 +17,8 @@ public final class RecordingPulseTrace {
 	private static final int MIN_POINTS = 14;
 	private static final int MAX_POINTS = 96;
 	private static final double SURFACE_OFFSET = 1.04D;
-	private static final int ACCENT_EVERY = 8;
+	private static final int ACCENT_EVERY = 11;
+	private static final float CHARGE_ROLL_SCALE = 0.35F;
 	private static final int PARTICLE_COUNT = 1;
 	private static final double NO_SPREAD = 0.0D;
 	private static final double NO_SPEED = 0.0D;
@@ -59,7 +61,9 @@ public final class RecordingPulseTrace {
 			if (Math.abs(surface - center.getY()) > verticalRadius) {
 				continue;
 			}
-			ParticleOptions particle = point % ACCENT_EVERY == 0 ? ParticleTypes.SCULK_SOUL : ParticleTypes.GLOW;
+			ParticleOptions particle = point % ACCENT_EVERY == 0
+					? ParticleTypes.SCULK_SOUL
+					: new SculkChargeParticleOptions((float) Math.sin(angle) * CHARGE_ROLL_SCALE);
 			level.sendParticles(viewer, particle, true, x, surface + SURFACE_OFFSET - 1.0D, z,
 					PARTICLE_COUNT, NO_SPREAD, NO_SPREAD, NO_SPREAD, NO_SPEED);
 		}
