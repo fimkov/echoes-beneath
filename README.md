@@ -17,8 +17,8 @@ covers the ambient ones and leaves out block and item effects.
 Creatures and players are not lit by the waves. They stay black and the wave passes around them, so a
 remembered figure shows up as a hole punched in the light behind it. Blocks that stood there then and
 have since been broken come back as black holograms in their old places, and they take the light the
-same way — you read them by what they block, not by what they emit. Clarity is the one thing that
-softens this: at full clarity the darkness lifts far enough for their real textures to come through.
+same way — you read them by what they block, not by what they emit. Vision is the one thing that
+softens this: at full vision the darkness lifts far enough for their real textures to come through.
 
 ## Requirements
 
@@ -167,14 +167,14 @@ plan and charges the levels and shards.**
 | Memory | 12 levels + 8 shards | 1 → 3 | one more irreversible memory slot |
 | Radius | 6 levels + 2 shards | 16 → 64 blocks | +8 blocks of recorded radius |
 | Hearing | 9 levels + 3 shards | 0 → 4 | quieter sounds still make it into the recording |
-| Clarity | 20 levels + 5 shards | 0 → 4 | lifts the darkness, and lets textures show through |
+| Vision | 20 levels + 5 shards | 0 → 4 | lifts the darkness, and lets textures show through |
 
 Hovering a track explains what it does, what the lens carries now, what the plan would make it, and
 what the next step costs.
 
-**Clarity is the expensive one for a reason.** A memory records the whole cylinder, including what is
-buried and what sits behind walls. At low clarity the region is almost black and you only make out what a
-passing wave happens to trace. Each level of clarity lifts that darkness, so a fully tuned lens turns a
+**Vision is the expensive one for a reason.** A memory records the whole cylinder, including what is
+buried and what sits behind walls. At low vision the region is almost black and you only make out what a
+passing wave happens to trace. Each level of vision lifts that darkness, so a fully tuned lens turns a
 recording into a survey of everything within its radius — caves, voids, buried rooms. Place a lens, make
 some noise, walk away, and read the ground on the replay.
 

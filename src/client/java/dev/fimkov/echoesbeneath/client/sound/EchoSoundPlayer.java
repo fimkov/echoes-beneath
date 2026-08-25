@@ -1,6 +1,7 @@
 package dev.fimkov.echoesbeneath.client.sound;
 
 import dev.fimkov.echoesbeneath.client.wave.EchoWaveManager;
+import dev.fimkov.echoesbeneath.registry.EchoSounds;
 import dev.fimkov.echoesbeneath.memory.timeline.SoundTimeline;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -21,6 +22,7 @@ public final class EchoSoundPlayer {
 	private static final double BURST_SPEED = 0.045D;
 	private static final float BURST_ROLL = 0.8F;
 	private static final float SONIC_BOOM_RADIUS = 26.0F;
+	private static final float LOST_SOUND_VOLUME = 0.55F;
 
 	private final SoundTimeline timeline;
 	private final EchoWaveManager waves;
@@ -53,20 +55,24 @@ public final class EchoSoundPlayer {
 	private void emit(ClientLevel level, int index, int tick) {
 		ResourceLocation soundId = timeline.soundAt(index);
 		SoundEvent event = BuiltInRegistries.SOUND_EVENT.get(soundId);
-		if (event == null) {
-			return;
+		boolean remembered = event != null;
+		if (!remembered) {
+			event = EchoSounds.WAVE_ECHO;
 		}
 		Vec3 position = center.add(
 				timeline.relativeXAt(index), timeline.relativeYAt(index), timeline.relativeZAt(index));
 		float volume = timeline.volumeAt(index);
 		float pitch = timeline.pitchAt(index);
 		SoundSource source = timeline.categoryAt(index);
-		level.playLocalSound(position.x, position.y, position.z, event, source, volume, pitch, false);
+		level.playLocalSound(position.x, position.y, position.z, event, source,
+				remembered ? volume : volume * LOST_SOUND_VOLUME, pitch, false);
 		float radius = timeline.waveRadiusAt(index);
 		waves.spawn(position, tick, radius,
 				dev.fimkov.echoesbeneath.client.wave.EchoWavePalette.paletteFor(source));
 		burst(level, position, radius);
-		scheduleEchoes(tick, event, source, position, volume, pitch);
+		if (remembered) {
+			scheduleEchoes(tick, event, source, position, volume, pitch);
+		}
 	}
 
 	private void burst(ClientLevel level, Vec3 position, float radius) {

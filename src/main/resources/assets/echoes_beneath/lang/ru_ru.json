@@ -39,7 +39,7 @@
   "upgrade.echoes_beneath.cost_with_shards": "Стоит %s уровней и %s осколков аметиста",
   "upgrade.echoes_beneath.maxed": "Уже на пределе",
   "upgrade.echoes_beneath.no_lens": "Положите эхо-линзу",
-  "tooltip.echoes_beneath.tuning": "Радиус %s · Слух %s · Ясность %s",
+  "tooltip.echoes_beneath.tuning": "Радиус %s · Слух %s · Зрение %s",
   "structure.echoes_beneath.resonance_vault": "Хранилище резонанса",
   "upgrade.echoes_beneath.unit.memories": "%s воспоминаний",
   "upgrade.echoes_beneath.unit.blocks": "%s блоков",
