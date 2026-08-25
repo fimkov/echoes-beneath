@@ -12,11 +12,9 @@ import dev.fimkov.echoesbeneath.playback.suppression.HostileMobSuppressionManage
 import dev.fimkov.echoesbeneath.playback.suppression.SuppressedMobState;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.HashMap;
@@ -144,9 +142,11 @@ public final class EchoPlaybackSession {
 				}
 				continue;
 			}
-			watchers.add(player.getUUID());
-			if (standsInsideLostBlock(player)) {
-				stoodInsideLostBlock.add(player.getUUID());
+			boolean firstSight = watchers.add(player.getUUID());
+			boolean newlyInside = standsInsideLostBlock(player)
+					&& stoodInsideLostBlock.add(player.getUUID());
+			if (firstSight || newlyInside) {
+				award(player, false);
 			}
 		}
 	}
@@ -160,23 +160,25 @@ public final class EchoPlaybackSession {
 		return !remembered.isAir() && level.getBlockState(at).isAir();
 	}
 
-	public boolean memoryHoldsAnotherPlayer() {
-		return record.entityTimeline().holdsEntityType(
-				BuiltInRegistries.ENTITY_TYPE.getKey(EntityType.PLAYER));
+	public boolean memoryHoldsAnotherPlayer(UUID viewer) {
+		return record.holdsPlayerOtherThan(viewer);
 	}
 
 	public void awardWatchers() {
 		for (UUID id : watchers) {
 			ServerPlayer player = level.getServer().getPlayerList().getPlayer(id);
-			if (player == null) {
-				continue;
+			if (player != null) {
+				award(player, hasReachedEnd() && !leftEarly.contains(id));
 			}
-			EchoCriteria.MEMORY_PLAYED.trigger(player, new MemoryPlayedTrigger.Situation(
-					hasReachedEnd() && !leftEarly.contains(id),
-					memoryHoldsAnotherPlayer(),
-					stoodInsideLostBlock.contains(id),
-					vision));
 		}
+	}
+
+	private void award(ServerPlayer player, boolean watchedToTheEnd) {
+		EchoCriteria.MEMORY_PLAYED.trigger(player, new MemoryPlayedTrigger.Situation(
+				watchedToTheEnd,
+				memoryHoldsAnotherPlayer(player.getUUID()),
+				stoodInsideLostBlock.contains(player.getUUID()),
+				vision));
 	}
 
 	private void updateSubscribers() {

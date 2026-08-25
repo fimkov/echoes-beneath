@@ -10,12 +10,16 @@ import net.minecraft.core.HolderGetter;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public record EchoMemoryRecord(
@@ -32,7 +36,8 @@ public record EchoMemoryRecord(
 		BlockTimeline blockTimeline,
 		EntityTimeline entityTimeline,
 		SoundTimeline soundTimeline,
-		ParticleTimeline particleTimeline) {
+		ParticleTimeline particleTimeline,
+		List<UUID> recordedPlayers) {
 
 	public EchoMemoryReference toReference() {
 		return new EchoMemoryReference(id, slot, dimension, center, radius, verticalRadius,
@@ -57,6 +62,11 @@ public record EchoMemoryRecord(
 		tag.put("entity_timeline", entityTimeline.toNbt());
 		tag.put("sound_timeline", soundTimeline.toNbt());
 		tag.put("particle_timeline", particleTimeline.toNbt());
+		ListTag players = new ListTag();
+		for (UUID player : recordedPlayers) {
+			players.add(NbtUtils.createUUID(player));
+		}
+		tag.put("recorded_players", players);
 		return tag;
 	}
 
@@ -95,7 +105,25 @@ public record EchoMemoryRecord(
 				SoundTimeline.fromNbt(tag.getCompound("sound_timeline"), maxSoundEvents),
 				tag.contains("particle_timeline")
 						? ParticleTimeline.fromNbt(tag.getCompound("particle_timeline"), maxParticleEvents)
-						: new ParticleTimeline(maxParticleEvents));
+						: new ParticleTimeline(maxParticleEvents),
+				readPlayers(tag));
+	}
+
+	private static List<UUID> readPlayers(CompoundTag tag) {
+		List<UUID> players = new ArrayList<>();
+		for (Tag element : tag.getList("recorded_players", Tag.TAG_INT_ARRAY)) {
+			players.add(NbtUtils.loadUUID(element));
+		}
+		return List.copyOf(players);
+	}
+
+	public boolean holdsPlayerOtherThan(UUID viewer) {
+		for (UUID player : recordedPlayers) {
+			if (!player.equals(viewer)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void validate() {

@@ -46,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EchoPersistenceTest {
+	private static final UUID RECORDED_PLAYER = UUID.nameUUIDFromBytes("echo-test-player".getBytes());
 	private static final int MAX_EVENTS = 4096;
 	private static final int SLOT = 1;
 
@@ -144,6 +145,19 @@ class EchoPersistenceTest {
 	}
 
 	@Test
+	@DisplayName("a memory knows which players it caught, and does not count the one asking")
+	void recordedPlayersSurviveAndExcludeTheAsker() {
+		EchoMemoryRecord record = sampleRecord(UUID.randomUUID());
+		assertTrue(record.holdsPlayerOtherThan(UUID.randomUUID()),
+				"a memory holding a stranger must report one");
+		assertFalse(record.holdsPlayerOtherThan(RECORDED_PLAYER),
+				"a memory holding only you must not count you as somebody else");
+		EchoMemoryRecord restored = EchoMemoryRecord.fromNbt(record.toNbt(),
+				BuiltInRegistries.BLOCK.asLookup(), MAX_EVENTS, MAX_EVENTS, MAX_EVENTS, MAX_EVENTS);
+		assertEquals(record.recordedPlayers(), restored.recordedPlayers());
+	}
+
+	@Test
 	@DisplayName("a record from an unsupported format is refused instead of crashing the world")
 	void unsupportedFormatIsRefused() {
 		CompoundTag tag = sampleRecord(UUID.randomUUID()).toNbt();
@@ -223,6 +237,7 @@ class EchoPersistenceTest {
 
 		return new EchoMemoryRecord(id, SLOT, EchoFormat.CURRENT_VERSION, EchoTestSupport.OVERWORLD,
 				new BlockPos(120, 40, -60), 50, 32, 1_700_000_000_000L, 2400,
-				snapshot, blockTimeline, entityTimeline, soundTimeline, particleTimeline);
+				snapshot, blockTimeline, entityTimeline, soundTimeline, particleTimeline,
+				List.of(RECORDED_PLAYER));
 	}
 }

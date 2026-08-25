@@ -16,9 +16,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,6 +47,7 @@ public final class EchoRecordingSession {
 	private final EntityTimeline entityTimeline;
 	private final SoundTimeline soundTimeline;
 	private final ParticleTimeline particleTimeline;
+	private final Set<UUID> recordedPlayers = new LinkedHashSet<>();
 	private final EntityTrackRecorder entityRecorder;
 	private final EchoLensEntity lensEntity;
 
@@ -217,6 +221,9 @@ public final class EchoRecordingSession {
 			if (!containsPosition(entity.blockPosition())) {
 				continue;
 			}
+			if (entity instanceof Player) {
+				recordedPlayers.add(entity.getUUID());
+			}
 			entityRecorder.sample(entity, currentTick);
 		}
 	}
@@ -246,7 +253,8 @@ public final class EchoRecordingSession {
 				blockTimeline,
 				entityTimeline,
 				soundTimeline,
-				particleTimeline);
+				particleTimeline,
+				List.copyOf(recordedPlayers));
 	}
 
 	public void markFinished() {
