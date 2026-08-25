@@ -2,17 +2,18 @@ package dev.fimkov.echoesbeneath.client.screen;
 
 import dev.fimkov.echoesbeneath.EchoTranslations;
 import dev.fimkov.echoesbeneath.EchoesBeneath;
-import dev.fimkov.echoesbeneath.item.EchoLensUpgrades;
 import dev.fimkov.echoesbeneath.menu.ResonanceTableLayout;
 import dev.fimkov.echoesbeneath.menu.ResonanceTableMenu;
 import dev.fimkov.echoesbeneath.menu.ResonanceTablePlan;
 import dev.fimkov.echoesbeneath.menu.ResonanceTableUpgrade;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -51,6 +52,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	private static final float PULSE_READY_BOOST = 0.26F;
 	private static final float DENIED_PITCH = 0.65F;
 	private static final float DENIED_VOLUME = 0.7F;
+	private static final int TOOLTIP_WIDTH = 170;
 
 	private final ItemStack amethystGhost = new ItemStack(Items.AMETHYST_SHARD);
 	private float animation;
@@ -285,43 +287,47 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		}
 		for (int index = 0; index < ResonanceTableLayout.ROW_COUNT; index++) {
 			if (overRow(mouseX, mouseY, index)) {
-				graphics.renderComponentTooltip(font, rowTooltip(index), mouseX, mouseY);
+				graphics.renderTooltip(font, rowTooltip(index), mouseX, mouseY);
 				return;
 			}
 		}
 	}
 
-	private List<Component> rowTooltip(int index) {
+	private List<FormattedCharSequence> rowTooltip(int index) {
 		ResonanceTableUpgrade upgrade = ResonanceTableUpgrade.fromIndex(index);
-		List<Component> lines = new ArrayList<>();
-		lines.add(Component.translatable(upgrade.nameKey()));
+		List<FormattedCharSequence> lines = new ArrayList<>();
+		lines.add(Component.translatable(upgrade.nameKey()).withStyle(ChatFormatting.WHITE)
+				.getVisualOrderText());
+		lines.addAll(font.split(Component.translatable(upgrade.descriptionKey())
+				.withStyle(ChatFormatting.GRAY), TOOLTIP_WIDTH));
+		lines.add(FormattedCharSequence.EMPTY);
 		if (menu.lens().isEmpty()) {
-			lines.add(Component.translatable(EchoTranslations.UPGRADE_NO_LENS));
+			lines.add(Component.translatable(EchoTranslations.UPGRADE_NO_LENS)
+					.withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
 			return lines;
 		}
-		EchoLensUpgrades current = menu.currentUpgrades();
-		EchoLensUpgrades target = menu.targetUpgrades();
-		EchoLensUpgrades peak = menu.peakUpgrades();
-		int owned = upgrade.stepsOf(current);
-		int staged = upgrade.stepsOf(target);
-		int reached = upgrade.stepsOf(peak);
+		int owned = upgrade.stepsOf(menu.currentUpgrades());
+		int staged = upgrade.stepsOf(menu.targetUpgrades());
+		int reached = upgrade.stepsOf(menu.peakUpgrades());
 		Component now = Component.translatable(upgrade.unitKey(), upgrade.displayValue(owned));
-		lines.add(staged == owned
+		lines.add((staged == owned
 				? now
 				: Component.translatable(EchoTranslations.UPGRADE_CHANGE, now,
-						Component.translatable(upgrade.unitKey(), upgrade.displayValue(staged))));
+						Component.translatable(upgrade.unitKey(), upgrade.displayValue(staged))))
+				.copy().withStyle(ChatFormatting.AQUA).getVisualOrderText());
 		if (reached > owned) {
 			lines.add(Component.translatable(EchoTranslations.UPGRADE_REMEMBERED,
-					upgrade.displayValue(reached)));
+							upgrade.displayValue(reached))
+					.withStyle(ChatFormatting.DARK_AQUA).getVisualOrderText());
 		}
 		if (staged >= upgrade.maxSteps()) {
-			lines.add(Component.translatable(EchoTranslations.UPGRADE_MAXED));
+			lines.add(Component.translatable(EchoTranslations.UPGRADE_MAXED)
+					.withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
 			return lines;
 		}
-		lines.add(upgrade.shardsPerStep() > 0
-				? Component.translatable(EchoTranslations.UPGRADE_PER_STEP_SHARDS,
+		lines.add(Component.translatable(EchoTranslations.UPGRADE_PER_STEP_SHARDS,
 						upgrade.experiencePerStep(), upgrade.shardsPerStep())
-				: Component.translatable(EchoTranslations.UPGRADE_PER_STEP, upgrade.experiencePerStep()));
+				.withStyle(ChatFormatting.GRAY).getVisualOrderText());
 		return lines;
 	}
 }

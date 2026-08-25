@@ -51,5 +51,9 @@
   "upgrade.echoes_beneath.levels": "levels",
   "upgrade.echoes_beneath.need_levels": "Not enough experience",
   "upgrade.echoes_beneath.need_shards": "Not enough amethyst",
-  "upgrade.echoes_beneath.remembered": "Tuned this far before, free to restore: %s"
+  "upgrade.echoes_beneath.remembered": "Tuned this far before, free to restore: %s",
+  "upgrade.echoes_beneath.memory_slot.desc": "How many recordings this lens can hold at once. A sealed memory can never be cleared, so slots are what limit you.",
+  "upgrade.echoes_beneath.radius.desc": "How wide a circle the lens records and later replays around itself.",
+  "upgrade.echoes_beneath.sensitivity.desc": "How faint a sound still reaches the lens. Higher hearing catches quiet steps and distant water.",
+  "upgrade.echoes_beneath.clarity.desc": "How much the replay lets you see. At low clarity only what a passing wave touches shows; high clarity turns a memory into a survey of everything in radius."
 }

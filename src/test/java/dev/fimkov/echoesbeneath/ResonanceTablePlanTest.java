@@ -74,12 +74,21 @@ class ResonanceTablePlanTest {
 		ResonanceTablePlan result = plan(EchoLensUpgrades.DEFAULT, EchoLensUpgrades.DEFAULT, target);
 		assertTrue(result.changed());
 		assertEquals(3 * ResonanceTableUpgrade.RADIUS.experiencePerStep(), result.experienceLevels());
-		assertEquals(0, result.amethystShards());
+		assertEquals(3 * ResonanceTableUpgrade.RADIUS.shardsPerStep(), result.amethystShards());
 		assertEquals(EchoLensUpgrades.MIN_RADIUS + 3 * EchoLensUpgrades.RADIUS_STEP, result.target().radius());
 	}
 
 	@Test
-	@DisplayName("memory slots are the only upgrade that also eats amethyst")
+	@DisplayName("every track is priced in both experience and amethyst")
+	void everyTrackCostsBoth() {
+		for (ResonanceTableUpgrade upgrade : ResonanceTableUpgrade.all()) {
+			assertTrue(upgrade.experiencePerStep() > 0, upgrade + " is free in experience");
+			assertTrue(upgrade.shardsPerStep() > 0, upgrade + " is free in amethyst");
+		}
+	}
+
+	@Test
+	@DisplayName("memory slots are the dearest track in amethyst")
 	void memorySlotsCostShards() {
 		EchoLensUpgrades target = ResonanceTableUpgrade.MEMORY_SLOT.withSteps(EchoLensUpgrades.DEFAULT, 2);
 		ResonanceTablePlan result = plan(EchoLensUpgrades.DEFAULT, EchoLensUpgrades.DEFAULT, target);

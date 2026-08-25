@@ -13,14 +13,14 @@ public enum ResonanceTableUpgrade {
 			upgrades -> upgrades.memorySlots() - EchoFormat.DEFAULT_MEMORY_SLOTS,
 			steps -> EchoFormat.DEFAULT_MEMORY_SLOTS + steps),
 	RADIUS(EchoTranslations.UPGRADE_RADIUS, EchoTranslations.UPGRADE_UNIT_BLOCKS,
-			(EchoLensUpgrades.MAX_RADIUS - EchoLensUpgrades.MIN_RADIUS) / EchoLensUpgrades.RADIUS_STEP, 6, 0,
+			(EchoLensUpgrades.MAX_RADIUS - EchoLensUpgrades.MIN_RADIUS) / EchoLensUpgrades.RADIUS_STEP, 6, 2,
 			upgrades -> (upgrades.radius() - EchoLensUpgrades.MIN_RADIUS) / EchoLensUpgrades.RADIUS_STEP,
 			steps -> EchoLensUpgrades.MIN_RADIUS + steps * EchoLensUpgrades.RADIUS_STEP),
 	SENSITIVITY(EchoTranslations.UPGRADE_SENSITIVITY, EchoTranslations.UPGRADE_UNIT_LEVEL,
-			EchoLensUpgrades.MAX_SENSITIVITY, 9, 0,
+			EchoLensUpgrades.MAX_SENSITIVITY, 9, 3,
 			EchoLensUpgrades::sensitivity, steps -> steps),
 	CLARITY(EchoTranslations.UPGRADE_CLARITY, EchoTranslations.UPGRADE_UNIT_LEVEL,
-			EchoLensUpgrades.MAX_CLARITY, 20, 0,
+			EchoLensUpgrades.MAX_CLARITY, 20, 5,
 			EchoLensUpgrades::clarity, steps -> steps);
 
 	private static final ResonanceTableUpgrade[] VALUES = values();
@@ -58,6 +58,10 @@ public enum ResonanceTableUpgrade {
 
 	public String unitKey() {
 		return unitKey;
+	}
+
+	public String descriptionKey() {
+		return nameKey + ".desc";
 	}
 
 	public int maxSteps() {

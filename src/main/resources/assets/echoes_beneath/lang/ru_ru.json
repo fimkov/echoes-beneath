@@ -51,5 +51,9 @@
   "upgrade.echoes_beneath.levels": "уровней",
   "upgrade.echoes_beneath.need_levels": "Не хватает опыта",
   "upgrade.echoes_beneath.need_shards": "Не хватает аметиста",
-  "upgrade.echoes_beneath.remembered": "Уже был настроен до %s — вернуть бесплатно"
+  "upgrade.echoes_beneath.remembered": "Уже был настроен до %s — вернуть бесплатно",
+  "upgrade.echoes_beneath.memory_slot.desc": "Сколько записей линза держит одновременно. Запечатанное воспоминание не стереть, так что слоты и есть предел.",
+  "upgrade.echoes_beneath.radius.desc": "Насколько широкий круг вокруг себя линза записывает и потом проигрывает.",
+  "upgrade.echoes_beneath.sensitivity.desc": "Насколько тихий звук ещё дойдёт до линзы. Выше слух — слышны осторожные шаги и дальняя вода.",
+  "upgrade.echoes_beneath.clarity.desc": "Сколько видно при проигрывании. На низкой ясности видно лишь то, чего коснулась волна; на высокой воспоминание становится обзором всего в радиусе."
 }
