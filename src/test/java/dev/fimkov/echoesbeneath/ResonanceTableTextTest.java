@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -111,6 +112,31 @@ class ResonanceTableTextTest {
 			}
 		}
 		assertTrue(failures.isEmpty(), String.join("; ", failures));
+	}
+
+	@Test
+	@DisplayName("vanilla things are called by the names the game gives them")
+	void vanillaNamesMatchTheGame() {
+		Map<String, String> wrongRussian = Map.of(
+				"эхо-осколок", "осколок эха",
+				"эхо-осколк", "осколок эха",
+				"аметистовый осколок", "осколок аметиста",
+				"аметистовых осколков", "осколков аметиста",
+				"зачарования", "чародейский стол",
+				"зачаровывания", "чародейский стол",
+				"варден", "Хранитель",
+				"глубинная плитка", "глубинносланцевый плитняк");
+		JsonObject russian = language("ru_ru");
+		List<String> wrong = new ArrayList<>();
+		russian.entrySet().forEach(entry -> {
+			String value = entry.getValue().getAsString().toLowerCase(Locale.ROOT);
+			wrongRussian.forEach((bad, good) -> {
+				if (value.contains(bad)) {
+					wrong.add(entry.getKey() + " says \"" + bad + "\", the game says \"" + good + "\"");
+				}
+			});
+		});
+		assertTrue(wrong.isEmpty(), String.join("; ", wrong));
 	}
 
 	@Test
