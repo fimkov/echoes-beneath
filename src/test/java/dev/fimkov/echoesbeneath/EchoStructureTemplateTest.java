@@ -70,7 +70,7 @@ class EchoStructureTemplateTest {
 	}
 
 	@Test
-	@DisplayName("nothing stands beside a resonance table on its own level")
+	@DisplayName("a table's own level is cleared to air, not left to the world")
 	void tablesStandClear() {
 		List<String> failures = new ArrayList<>();
 		for (String name : TEMPLATES) {
@@ -83,7 +83,9 @@ class EchoStructureTemplateTest {
 					}
 					List<Integer> key = List.of(table.get(0) + dx, table.get(1), table.get(2) + dz);
 					String neighbour = placed.blocks().get(key);
-					if (neighbour != null && !neighbour.equals(AIR)) {
+					if (neighbour == null) {
+						failures.add(name + " leaves " + key + " to the world instead of clearing it");
+					} else if (!neighbour.equals(AIR)) {
 						failures.add(name + " has " + neighbour + " at " + key);
 					}
 				}
