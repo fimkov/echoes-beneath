@@ -4,7 +4,8 @@ public enum EchoPlaybackDataPart {
 	SNAPSHOT,
 	BLOCK_TIMELINE,
 	ENTITY_TIMELINE,
-	SOUND_TIMELINE;
+	SOUND_TIMELINE,
+	PARTICLE_TIMELINE;
 
 	private static final EchoPlaybackDataPart[] VALUES = values();
 

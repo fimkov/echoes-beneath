@@ -9,6 +9,7 @@ import dev.fimkov.echoesbeneath.memory.snapshot.BlockPalette;
 import dev.fimkov.echoesbeneath.memory.timeline.BlockTimeline;
 import dev.fimkov.echoesbeneath.memory.timeline.EchoSoundCategory;
 import dev.fimkov.echoesbeneath.memory.timeline.EntityTimeline;
+import dev.fimkov.echoesbeneath.memory.timeline.ParticleTimeline;
 import dev.fimkov.echoesbeneath.memory.timeline.SoundTimeline;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -42,6 +43,7 @@ public final class EchoRecordingSession {
 	private final BlockTimeline blockTimeline;
 	private final EntityTimeline entityTimeline;
 	private final SoundTimeline soundTimeline;
+	private final ParticleTimeline particleTimeline;
 	private final EntityTrackRecorder entityRecorder;
 	private final EchoLensEntity lensEntity;
 
@@ -68,6 +70,7 @@ public final class EchoRecordingSession {
 		this.blockTimeline = new BlockTimeline(MAX_BLOCK_EVENTS);
 		this.entityTimeline = new EntityTimeline(config.maxRecordedEntities());
 		this.soundTimeline = new SoundTimeline(config.maxSoundEvents());
+		this.particleTimeline = new ParticleTimeline(config.maxParticleEvents());
 		this.sensitivityFactor = upgrades.sensitivityFactor();
 		this.entityRecorder = new EntityTrackRecorder(entityTimeline, center);
 	}
@@ -172,6 +175,21 @@ public final class EchoRecordingSession {
 		soundTimeline.record(currentTick, relativeX, relativeY, relativeZ, soundId, source, volume, pitch);
 	}
 
+	public void onParticle(double x, double y, double z, ResourceLocation typeId, int count,
+			double spreadX, double spreadY, double spreadZ) {
+		if (finished) {
+			return;
+		}
+		double relativeX = x - center.getX();
+		double relativeY = y - center.getY();
+		double relativeZ = z - center.getZ();
+		if (!withinRegion(relativeX, relativeY, relativeZ)) {
+			return;
+		}
+		particleTimeline.record(currentTick, relativeX, relativeY, relativeZ, typeId, count,
+				spreadX, spreadY, spreadZ);
+	}
+
 	public void tick() {
 		if (finished || lensEntity.isArriving()) {
 			return;
@@ -227,7 +245,8 @@ public final class EchoRecordingSession {
 				snapshotCapture.toSnapshot(),
 				blockTimeline,
 				entityTimeline,
-				soundTimeline);
+				soundTimeline,
+				particleTimeline);
 	}
 
 	public void markFinished() {

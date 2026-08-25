@@ -1,0 +1,279 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "echoes_beneath:item/echo_lens_v0",
+    "layer1": "echoes_beneath:item/echo_lens_marks_1_0"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.0
+      },
+      "model": "echoes_beneath:item/echo_lens_0"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.022727
+      },
+      "model": "echoes_beneath:item/echo_lens_1"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.045455
+      },
+      "model": "echoes_beneath:item/echo_lens_2"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.068182
+      },
+      "model": "echoes_beneath:item/echo_lens_3"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.090909
+      },
+      "model": "echoes_beneath:item/echo_lens_4"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.113636
+      },
+      "model": "echoes_beneath:item/echo_lens_5"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.136364
+      },
+      "model": "echoes_beneath:item/echo_lens_6"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.159091
+      },
+      "model": "echoes_beneath:item/echo_lens_7"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.181818
+      },
+      "model": "echoes_beneath:item/echo_lens_8"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.204545
+      },
+      "model": "echoes_beneath:item/echo_lens_9"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.227273
+      },
+      "model": "echoes_beneath:item/echo_lens_10"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.25
+      },
+      "model": "echoes_beneath:item/echo_lens_11"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.272727
+      },
+      "model": "echoes_beneath:item/echo_lens_12"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.295455
+      },
+      "model": "echoes_beneath:item/echo_lens_13"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.318182
+      },
+      "model": "echoes_beneath:item/echo_lens_14"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.340909
+      },
+      "model": "echoes_beneath:item/echo_lens_15"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.363636
+      },
+      "model": "echoes_beneath:item/echo_lens_16"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.386364
+      },
+      "model": "echoes_beneath:item/echo_lens_17"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.409091
+      },
+      "model": "echoes_beneath:item/echo_lens_18"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.431818
+      },
+      "model": "echoes_beneath:item/echo_lens_19"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.454545
+      },
+      "model": "echoes_beneath:item/echo_lens_20"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.477273
+      },
+      "model": "echoes_beneath:item/echo_lens_21"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.5
+      },
+      "model": "echoes_beneath:item/echo_lens_22"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.522727
+      },
+      "model": "echoes_beneath:item/echo_lens_23"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.545455
+      },
+      "model": "echoes_beneath:item/echo_lens_24"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.568182
+      },
+      "model": "echoes_beneath:item/echo_lens_25"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.590909
+      },
+      "model": "echoes_beneath:item/echo_lens_26"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.613636
+      },
+      "model": "echoes_beneath:item/echo_lens_27"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.636364
+      },
+      "model": "echoes_beneath:item/echo_lens_28"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.659091
+      },
+      "model": "echoes_beneath:item/echo_lens_29"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.681818
+      },
+      "model": "echoes_beneath:item/echo_lens_30"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.704545
+      },
+      "model": "echoes_beneath:item/echo_lens_31"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.727273
+      },
+      "model": "echoes_beneath:item/echo_lens_32"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.75
+      },
+      "model": "echoes_beneath:item/echo_lens_33"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.772727
+      },
+      "model": "echoes_beneath:item/echo_lens_34"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.795455
+      },
+      "model": "echoes_beneath:item/echo_lens_35"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.818182
+      },
+      "model": "echoes_beneath:item/echo_lens_36"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.840909
+      },
+      "model": "echoes_beneath:item/echo_lens_37"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.863636
+      },
+      "model": "echoes_beneath:item/echo_lens_38"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.886364
+      },
+      "model": "echoes_beneath:item/echo_lens_39"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.909091
+      },
+      "model": "echoes_beneath:item/echo_lens_40"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.931818
+      },
+      "model": "echoes_beneath:item/echo_lens_41"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.954545
+      },
+      "model": "echoes_beneath:item/echo_lens_42"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.977273
+      },
+      "model": "echoes_beneath:item/echo_lens_43"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 1.0
+      },
+      "model": "echoes_beneath:item/echo_lens_44"
+    }
+  ]
+}

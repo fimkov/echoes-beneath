@@ -33,11 +33,6 @@ public class EchoLensItem extends Item {
 	}
 
 	@Override
-	public boolean isFoil(ItemStack stack) {
-		return !EchoLensStacks.references(stack).isEmpty();
-	}
-
-	@Override
 	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
 		EchoMemoryReferences references = EchoLensStacks.references(stack);
 		EchoLensUpgrades upgrades = EchoLensStacks.upgrades(stack);

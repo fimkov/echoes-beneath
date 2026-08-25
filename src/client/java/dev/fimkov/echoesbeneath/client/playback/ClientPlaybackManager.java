@@ -76,6 +76,7 @@ public final class ClientPlaybackManager {
 					transfer.assembler().decode(EchoPlaybackDataPart.BLOCK_TIMELINE),
 					transfer.assembler().decode(EchoPlaybackDataPart.ENTITY_TIMELINE),
 					transfer.assembler().decode(EchoPlaybackDataPart.SOUND_TIMELINE),
+					transfer.assembler().decode(EchoPlaybackDataPart.PARTICLE_TIMELINE),
 					blockLookup);
 			sessions.put(playbackId, new ClientPlaybackSession(playbackId, transfer.region(),
 					transfer.durationTicks(), transfer.memorySlot(), transfer.vision(), data));

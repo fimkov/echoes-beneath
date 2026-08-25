@@ -3,6 +3,7 @@ package dev.fimkov.echoesbeneath.memory;
 import dev.fimkov.echoesbeneath.memory.snapshot.BlockSnapshot;
 import dev.fimkov.echoesbeneath.memory.timeline.BlockTimeline;
 import dev.fimkov.echoesbeneath.memory.timeline.EntityTimeline;
+import dev.fimkov.echoesbeneath.memory.timeline.ParticleTimeline;
 import dev.fimkov.echoesbeneath.memory.timeline.SoundTimeline;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderGetter;
@@ -30,7 +31,8 @@ public record EchoMemoryRecord(
 		BlockSnapshot snapshot,
 		BlockTimeline blockTimeline,
 		EntityTimeline entityTimeline,
-		SoundTimeline soundTimeline) {
+		SoundTimeline soundTimeline,
+		ParticleTimeline particleTimeline) {
 
 	public EchoMemoryReference toReference() {
 		return new EchoMemoryReference(id, slot, dimension, center, radius, verticalRadius,
@@ -54,11 +56,12 @@ public record EchoMemoryRecord(
 		tag.put("block_timeline", blockTimeline.toNbt());
 		tag.put("entity_timeline", entityTimeline.toNbt());
 		tag.put("sound_timeline", soundTimeline.toNbt());
+		tag.put("particle_timeline", particleTimeline.toNbt());
 		return tag;
 	}
 
 	public static EchoMemoryRecord fromNbt(CompoundTag tag, HolderGetter<Block> blockLookup,
-			int maxBlockEvents, int maxEntityTracks, int maxSoundEvents) {
+			int maxBlockEvents, int maxEntityTracks, int maxSoundEvents, int maxParticleEvents) {
 		int formatVersion = tag.getInt("format_version");
 		if (!EchoFormat.isSupported(formatVersion)) {
 			throw new EchoMemoryFormatException("Unsupported memory format version " + formatVersion);
@@ -89,7 +92,10 @@ public record EchoMemoryRecord(
 				BlockSnapshot.fromNbt(tag.getCompound("snapshot"), blockLookup),
 				BlockTimeline.fromNbt(tag.getCompound("block_timeline"), maxBlockEvents),
 				EntityTimeline.fromNbt(tag.getCompound("entity_timeline"), maxEntityTracks),
-				SoundTimeline.fromNbt(tag.getCompound("sound_timeline"), maxSoundEvents));
+				SoundTimeline.fromNbt(tag.getCompound("sound_timeline"), maxSoundEvents),
+				tag.contains("particle_timeline")
+						? ParticleTimeline.fromNbt(tag.getCompound("particle_timeline"), maxParticleEvents)
+						: new ParticleTimeline(maxParticleEvents));
 	}
 
 	public void validate() {

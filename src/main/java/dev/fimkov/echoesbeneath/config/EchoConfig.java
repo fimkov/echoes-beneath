@@ -19,6 +19,7 @@ public final class EchoConfig {
 	private static final int DEFAULT_ENTITY_SAMPLE_RATE = 5;
 	private static final int DEFAULT_MAX_RECORDED_ENTITIES = 128;
 	private static final int DEFAULT_MAX_SOUND_EVENTS = 4096;
+	private static final int DEFAULT_MAX_PARTICLE_EVENTS = 8192;
 	private static final int DEFAULT_MAX_CONCURRENT_SOUND_WAVES = 64;
 	private static final boolean DEFAULT_ALLOW_OVERLAPPING_PLAYBACK = false;
 	private static final boolean DEFAULT_SUPPRESS_HOSTILE_MOBS = true;
@@ -36,6 +37,8 @@ public final class EchoConfig {
 	private static final int MAX_RECORDED_ENTITIES = 512;
 	private static final int MIN_SOUND_EVENTS = 64;
 	private static final int MAX_SOUND_EVENTS = 32768;
+	private static final int MIN_PARTICLE_EVENTS = 0;
+	private static final int MAX_PARTICLE_EVENTS = 65536;
 	private static final int MIN_CONCURRENT_WAVES = 4;
 	private static final int MAX_CONCURRENT_WAVES = 256;
 
@@ -56,6 +59,7 @@ public final class EchoConfig {
 				DEFAULT_ENTITY_SAMPLE_RATE,
 				DEFAULT_MAX_RECORDED_ENTITIES,
 				DEFAULT_MAX_SOUND_EVENTS,
+				DEFAULT_MAX_PARTICLE_EVENTS,
 				DEFAULT_MAX_CONCURRENT_SOUND_WAVES,
 				DEFAULT_ALLOW_OVERLAPPING_PLAYBACK,
 				DEFAULT_SUPPRESS_HOSTILE_MOBS,
@@ -84,6 +88,7 @@ public final class EchoConfig {
 				clampInt(properties, "entitySampleRate", DEFAULT_ENTITY_SAMPLE_RATE, MIN_SAMPLE_RATE, MAX_SAMPLE_RATE),
 				clampInt(properties, "maxRecordedEntities", DEFAULT_MAX_RECORDED_ENTITIES, MIN_RECORDED_ENTITIES, MAX_RECORDED_ENTITIES),
 				clampInt(properties, "maxSoundEvents", DEFAULT_MAX_SOUND_EVENTS, MIN_SOUND_EVENTS, MAX_SOUND_EVENTS),
+				clampInt(properties, "maxParticleEvents", DEFAULT_MAX_PARTICLE_EVENTS, MIN_PARTICLE_EVENTS, MAX_PARTICLE_EVENTS),
 				clampInt(properties, "maxConcurrentSoundWaves", DEFAULT_MAX_CONCURRENT_SOUND_WAVES, MIN_CONCURRENT_WAVES, MAX_CONCURRENT_WAVES),
 				readBoolean(properties, "allowOverlappingPlayback", DEFAULT_ALLOW_OVERLAPPING_PLAYBACK),
 				readBoolean(properties, "suppressHostileMobs", DEFAULT_SUPPRESS_HOSTILE_MOBS),
@@ -99,6 +104,7 @@ public final class EchoConfig {
 		out.setProperty("entitySampleRate", Integer.toString(current.entitySampleRate()));
 		out.setProperty("maxRecordedEntities", Integer.toString(current.maxRecordedEntities()));
 		out.setProperty("maxSoundEvents", Integer.toString(current.maxSoundEvents()));
+		out.setProperty("maxParticleEvents", Integer.toString(current.maxParticleEvents()));
 		out.setProperty("maxConcurrentSoundWaves", Integer.toString(current.maxConcurrentSoundWaves()));
 		out.setProperty("allowOverlappingPlayback", Boolean.toString(current.allowOverlappingPlayback()));
 		out.setProperty("suppressHostileMobs", Boolean.toString(current.suppressHostileMobs()));

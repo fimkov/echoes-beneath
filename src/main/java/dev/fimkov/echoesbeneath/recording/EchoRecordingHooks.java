@@ -59,4 +59,18 @@ public final class EchoRecordingHooks {
 			session.onSound(x, y, z, soundId, source, volume, pitch);
 		}
 	}
+
+	public static void onParticle(ServerLevel level, double x, double y, double z, ResourceLocation typeId,
+			int count, double spreadX, double spreadY, double spreadZ) {
+		if (!isCapturing()) {
+			return;
+		}
+		EchoServerState state = EchoServerState.current();
+		if (state == null) {
+			return;
+		}
+		for (EchoRecordingSession session : state.recordings().sessionsIn(level)) {
+			session.onParticle(x, y, z, typeId, count, spreadX, spreadY, spreadZ);
+		}
+	}
 }

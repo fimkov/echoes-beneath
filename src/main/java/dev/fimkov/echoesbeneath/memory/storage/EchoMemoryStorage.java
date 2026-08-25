@@ -98,7 +98,8 @@ public final class EchoMemoryStorage {
 		try {
 			CompoundTag tag = NbtIo.readCompressed(source, NbtAccounter.create(MAX_RECORD_BYTES));
 			EchoMemoryRecord record = EchoMemoryRecord.fromNbt(tag, blockLookup, MAX_BLOCK_EVENTS,
-					EchoConfig.values().maxRecordedEntities(), EchoConfig.values().maxSoundEvents());
+					EchoConfig.values().maxRecordedEntities(), EchoConfig.values().maxSoundEvents(),
+					EchoConfig.values().maxParticleEvents());
 			record.validate();
 			cache.put(id, record);
 			return Optional.of(record);

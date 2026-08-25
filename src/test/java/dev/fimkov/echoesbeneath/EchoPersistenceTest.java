@@ -13,6 +13,7 @@ import dev.fimkov.echoesbeneath.memory.timeline.BlockTimeline;
 import dev.fimkov.echoesbeneath.memory.timeline.EchoEntityAction;
 import dev.fimkov.echoesbeneath.memory.timeline.EntityTimeline;
 import dev.fimkov.echoesbeneath.memory.timeline.EntityTrack;
+import dev.fimkov.echoesbeneath.memory.timeline.ParticleTimeline;
 import dev.fimkov.echoesbeneath.memory.timeline.SoundTimeline;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -149,7 +150,7 @@ class EchoPersistenceTest {
 		tag.putInt("format_version", EchoFormat.CURRENT_VERSION + 99);
 		assertThrows(RuntimeException.class,
 				() -> EchoMemoryRecord.fromNbt(tag, BuiltInRegistries.BLOCK.asLookup(),
-						MAX_EVENTS, MAX_EVENTS, MAX_EVENTS));
+						MAX_EVENTS, MAX_EVENTS, MAX_EVENTS, MAX_EVENTS));
 	}
 
 	@Test
@@ -216,8 +217,12 @@ class EchoPersistenceTest {
 				ResourceLocation.withDefaultNamespace("entity.zombie.ambient"),
 				SoundSource.HOSTILE, 1.0F, 0.95F);
 
+		ParticleTimeline particleTimeline = new ParticleTimeline(MAX_EVENTS);
+		particleTimeline.record(120, 4.0D, 1.0D, -8.0D,
+				ResourceLocation.withDefaultNamespace("sculk_soul"), 3, 0.2D, 0.1D, 0.2D);
+
 		return new EchoMemoryRecord(id, SLOT, EchoFormat.CURRENT_VERSION, EchoTestSupport.OVERWORLD,
 				new BlockPos(120, 40, -60), 50, 32, 1_700_000_000_000L, 2400,
-				snapshot, blockTimeline, entityTimeline, soundTimeline);
+				snapshot, blockTimeline, entityTimeline, soundTimeline, particleTimeline);
 	}
 }

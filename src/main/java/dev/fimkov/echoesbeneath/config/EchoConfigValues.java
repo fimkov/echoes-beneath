@@ -7,6 +7,7 @@ public record EchoConfigValues(
 		int entitySampleRate,
 		int maxRecordedEntities,
 		int maxSoundEvents,
+		int maxParticleEvents,
 		int maxConcurrentSoundWaves,
 		boolean allowOverlappingPlayback,
 		boolean suppressHostileMobs,

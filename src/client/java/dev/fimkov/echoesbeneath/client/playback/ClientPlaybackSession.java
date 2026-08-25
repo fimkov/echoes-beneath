@@ -3,6 +3,7 @@ package dev.fimkov.echoesbeneath.client.playback;
 import dev.fimkov.echoesbeneath.client.render.EchoBlockDeltaState;
 import dev.fimkov.echoesbeneath.client.render.EchoEntityPuppet;
 import dev.fimkov.echoesbeneath.client.render.EchoSectionMesh;
+import dev.fimkov.echoesbeneath.client.particle.EchoParticlePlayer;
 import dev.fimkov.echoesbeneath.client.sound.EchoSoundPlayer;
 import dev.fimkov.echoesbeneath.client.wave.EchoWaveManager;
 import dev.fimkov.echoesbeneath.memory.timeline.EntityTrack;
@@ -30,6 +31,7 @@ public final class ClientPlaybackSession {
 	private final ClientPlaybackData data;
 	private final EchoWaveManager waves = new EchoWaveManager();
 	private final EchoSoundPlayer soundPlayer;
+	private final EchoParticlePlayer particlePlayer;
 	private final EchoBlockDeltaState blockDeltas;
 	private final Int2ObjectMap<EchoSectionMesh> meshes = new Int2ObjectOpenHashMap<>();
 	private final IntList pendingSectionKeys = new IntArrayList();
@@ -48,6 +50,7 @@ public final class ClientPlaybackSession {
 		this.data = data;
 		this.blockDeltas = new EchoBlockDeltaState(data.snapshot(), data.blockTimeline());
 		this.soundPlayer = new EchoSoundPlayer(data.soundTimeline(), waves, region.centerVector());
+		this.particlePlayer = new EchoParticlePlayer(data.particleTimeline(), region.centerVector());
 		this.pendingSectionKeys.addAll(data.snapshot().sections().keySet());
 	}
 
@@ -101,11 +104,13 @@ public final class ClientPlaybackSession {
 		}
 		currentTick = serverTick;
 		soundPlayer.resyncTo(serverTick);
+		particlePlayer.resyncTo(serverTick);
 	}
 
 	public void clientTick(ClientLevel level) {
 		currentTick++;
 		soundPlayer.playForTick(level, currentTick);
+		particlePlayer.playForTick(level, currentTick);
 		waves.prune(currentTick);
 		blockDeltas.advanceTo(currentTick);
 		ensurePuppets(level);

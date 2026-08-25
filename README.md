@@ -10,6 +10,10 @@ Inside a memory the present world goes almost completely dark. What makes it leg
 position and sends an expanding wave outward. Wherever that wave touches a surface, a bright white-cyan
 front briefly traces it before fading through cyan, deep blue and violet.
 
+The lens also keeps the particles that were spawned in the region and puts them back at their own tick,
+so smoke, drips and sculk still happen in the replay. Only particles without extra data are kept, which
+covers the ambient ones and leaves out block and item effects.
+
 Creatures and players are not lit by the waves. They stay black and the wave passes around them, so a
 remembered figure shows up as a hole punched in the light behind it. Blocks that stood there then and
 have since been broken come back as black holograms in their old places, and they take the light the

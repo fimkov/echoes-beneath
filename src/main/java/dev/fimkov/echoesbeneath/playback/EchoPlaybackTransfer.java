@@ -28,6 +28,8 @@ public final class EchoPlaybackTransfer {
 		parts.put(EchoPlaybackDataPart.BLOCK_TIMELINE, split(compress(record.blockTimeline().toNbt())));
 		parts.put(EchoPlaybackDataPart.ENTITY_TIMELINE, split(compress(record.entityTimeline().toNbt())));
 		parts.put(EchoPlaybackDataPart.SOUND_TIMELINE, split(compress(record.soundTimeline().toNbt())));
+		parts.put(EchoPlaybackDataPart.PARTICLE_TIMELINE,
+				split(compress(record.particleTimeline().toNbt())));
 		return parts;
 	}
 
