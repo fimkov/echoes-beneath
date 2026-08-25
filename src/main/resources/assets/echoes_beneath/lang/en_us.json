@@ -40,5 +40,6 @@
   "upgrade.echoes_beneath.cost_with_shards": "Costs %s levels and %s amethyst shards",
   "upgrade.echoes_beneath.maxed": "Already at its limit",
   "upgrade.echoes_beneath.no_lens": "Place an Echo Lens",
-  "tooltip.echoes_beneath.tuning": "Radius %s · Hearing %s · Clarity %s"
+  "tooltip.echoes_beneath.tuning": "Radius %s · Hearing %s · Clarity %s",
+  "structure.echoes_beneath.resonance_vault": "Resonance Vault"
 }

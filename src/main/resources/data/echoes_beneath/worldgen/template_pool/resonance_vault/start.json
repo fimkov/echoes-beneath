@@ -1,0 +1,24 @@
+{
+  "name": "echoes_beneath:resonance_vault/start",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "echoes_beneath:resonance_vault/vault_1",
+        "processors": "echoes_beneath:deep_ruin_degradation",
+        "projection": "rigid"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "echoes_beneath:resonance_vault/vault_2",
+        "processors": "echoes_beneath:deep_ruin_degradation",
+        "projection": "rigid"
+      }
+    }
+  ]
+}

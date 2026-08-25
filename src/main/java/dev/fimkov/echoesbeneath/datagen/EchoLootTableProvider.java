@@ -28,6 +28,7 @@ public class EchoLootTableProvider extends SimpleFabricLootTableProvider {
 		exporter.accept(EchoStructures.LISTENING_POST_LOOT, listeningPost());
 		exporter.accept(EchoStructures.RESONANCE_SHRINE_LOOT, resonanceShrine());
 		exporter.accept(EchoStructures.SURFACE_RUIN_LOOT, surfaceRuin());
+		exporter.accept(EchoStructures.RESONANCE_VAULT_LOOT, resonanceVault());
 	}
 
 	private LootTable.Builder listeningPost() {
@@ -80,6 +81,27 @@ public class EchoLootTableProvider extends SimpleFabricLootTableProvider {
 								.setWeight(4)
 								.apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 2.0F))))
 						.add(LootItem.lootTableItem(Items.ECHO_SHARD).setWeight(2))
+						.add(LootItem.lootTableItem(Items.RECOVERY_COMPASS).setWeight(1)));
+	}
+
+	private LootTable.Builder resonanceVault() {
+		return LootTable.lootTable()
+				.withPool(LootPool.lootPool()
+						.setRolls(UniformGenerator.between(3.0F, 5.0F))
+						.add(LootItem.lootTableItem(Items.AMETHYST_SHARD)
+								.setWeight(30)
+								.apply(SetItemCountFunction.setCount(UniformGenerator.between(3.0F, 7.0F))))
+						.add(LootItem.lootTableItem(Items.EXPERIENCE_BOTTLE)
+								.setWeight(20)
+								.apply(SetItemCountFunction.setCount(UniformGenerator.between(2.0F, 5.0F))))
+						.add(LootItem.lootTableItem(Items.CANDLE)
+								.setWeight(12)
+								.apply(SetItemCountFunction.setCount(UniformGenerator.between(2.0F, 4.0F))))
+						.add(LootItem.lootTableItem(Items.BOOK).setWeight(10))
+						.add(LootItem.lootTableItem(Blocks.SCULK.asItem())
+								.setWeight(10)
+								.apply(SetItemCountFunction.setCount(UniformGenerator.between(2.0F, 5.0F))))
+						.add(LootItem.lootTableItem(Items.ECHO_SHARD).setWeight(3))
 						.add(LootItem.lootTableItem(Items.RECOVERY_COMPASS).setWeight(1)));
 	}
 

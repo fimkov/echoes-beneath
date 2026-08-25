@@ -64,15 +64,17 @@ Eight vanilla Echo Shards around one vanilla Amethyst Shard.
 7. Right-click. The lens flies to the exact original centre, the memory region forms, and the
    recording replays from tick zero.
 
-## Three irreversible memories
+## Irreversible memories
 
-Every Echo Lens has exactly three slots: **Memory I**, **Memory II**, **Memory III**.
+A fresh Echo Lens has **one** memory slot. It can be widened to three at a Resonance Table, and slots stay
+irreversible either way: **Memory I**, **Memory II**, **Memory III**.
 
 - You cannot pick a slot. Recording always takes the first free one, in order.
+- More slots cost amethyst shards and experience at a Resonance Table.
 - Once a slot is filled it is sealed. It cannot be cleared, overwritten, moved to another lens,
   copied or merged.
 - Playback never consumes a memory. Each one can be replayed without limit.
-- When all three are full, no new recording can start:
+- When every slot the lens has is full, no new recording can start:
   - English: `This Echo Lens can remember no more.`
   - Russian: `Эта эхо-линза больше не может ничего запомнить.`
 
@@ -125,6 +127,24 @@ forces it manually. The suppression list is written to the world save, so a cras
 leave a mob permanently invisible.
 
 Which mobs are affected is controlled by the `echoes_beneath:temporarily_suppressed` entity type tag.
+
+## The Resonance Table
+
+Found only in a Resonance Vault — it has no recipe. Put a lens in the left slot, amethyst shards in the
+right, and spend experience levels on four tracks:
+
+| Upgrade | Cost | Effect |
+|---|---|---|
+| Add Memory Slot | 12 levels + 8 amethyst shards | one more irreversible memory, up to three |
+| Widen Radius | 6 levels | +8 blocks of recorded radius, from 16 up to 64 |
+| Sharpen Hearing | 9 levels | quieter sounds still make it into the recording |
+| Deepen Clarity | 20 levels | lifts the darkness during playback |
+
+**Clarity is the expensive one for a reason.** A memory records the whole cylinder, including what is
+buried and what sits behind walls. At low clarity the region is almost black and you only make out what a
+passing wave happens to trace. Each level of clarity lifts that darkness, so a fully tuned lens turns a
+recording into a survey of everything within its radius — caves, voids, buried rooms. Place a lens, make
+some noise, walk away, and read the ground on the replay.
 
 ## Controls
 
@@ -192,6 +212,9 @@ Shards; Ancient City remains the intended source.
   lush caves, with damaged arches and a central lens point.
 - **Surface Echo Ruin** — a very rare small surface ruin in common overworld biomes, carrying a compass,
   a map and a hint that the source of the echo lies below.
+- **Resonance Vault** — a sealed deep dark chamber in the ancient city style: deepslate brick walls,
+  soul lanterns on chains, sculk veins across the floor, and a **Resonance Table** on a raised platform in
+  the middle. The table has no recipe, so this room is the only place to find one.
 
 ## Building
 

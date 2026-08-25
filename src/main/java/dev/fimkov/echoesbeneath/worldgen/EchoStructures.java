@@ -12,13 +12,15 @@ public final class EchoStructures {
 	public static final String ECHO_LISTENING_POST = "echo_listening_post";
 	public static final String COLLAPSED_RESONANCE_SHRINE = "collapsed_resonance_shrine";
 	public static final String SURFACE_ECHO_RUIN = "surface_echo_ruin";
+	public static final String RESONANCE_VAULT = "resonance_vault";
 
 	public static final List<String> ALL = List.of(
-			ECHO_LISTENING_POST, COLLAPSED_RESONANCE_SHRINE, SURFACE_ECHO_RUIN);
+			ECHO_LISTENING_POST, COLLAPSED_RESONANCE_SHRINE, SURFACE_ECHO_RUIN, RESONANCE_VAULT);
 
 	public static final ResourceKey<LootTable> LISTENING_POST_LOOT = lootTable(ECHO_LISTENING_POST);
 	public static final ResourceKey<LootTable> RESONANCE_SHRINE_LOOT = lootTable(COLLAPSED_RESONANCE_SHRINE);
 	public static final ResourceKey<LootTable> SURFACE_RUIN_LOOT = lootTable(SURFACE_ECHO_RUIN);
+	public static final ResourceKey<LootTable> RESONANCE_VAULT_LOOT = lootTable(RESONANCE_VAULT);
 
 	private EchoStructures() {
 	}
