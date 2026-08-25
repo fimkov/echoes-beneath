@@ -3,7 +3,7 @@
   "biomes": "#echoes_beneath:has_structure/surface_echo_ruin",
   "step": "surface_structures",
   "spawn_overrides": {},
-  "terrain_adaptation": "beard_thin",
+  "terrain_adaptation": "none",
   "start_pool": "echoes_beneath:surface_echo_ruin/start",
   "size": 1,
   "start_height": {

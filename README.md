@@ -242,7 +242,8 @@ restarts of both single-player worlds and dedicated servers.
 - Regions of two active playbacks may not overlap while `allowOverlappingPlayback` is false. The second
   attempt is refused with a message.
 - The Surface Echo Ruin uses common overworld surface biomes rather than "above a deep dark region",
-  because data-driven worldgen cannot see a cave biome from the surface.
+  because data-driven worldgen cannot see a cave biome from the surface. It uses no terrain adaptation,
+  so on steep slopes part of its floor can sit proud of the ground rather than being cut into it.
 - Block changes recorded during the first ~1 second of a recording, in a chunk section that has not yet
   been snapshotted, use a pre-change override; this is exact for the recorded block but the surrounding
   section is captured slightly later.
