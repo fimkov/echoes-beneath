@@ -128,8 +128,6 @@ public final class EchoPlaybackManager {
 		}
 		EchoRecordingHooks.runWithoutCapture(() -> level.playSound(null, hover.x, hover.y, hover.z,
 				EchoSounds.PLAYBACK_START, SoundSource.AMBIENT, START_VOLUME, START_PITCH));
-		player.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_PLAYBACK_STARTED,
-				EchoTextFormat.romanSlot(record.slot())), true);
 		return true;
 	}
 
@@ -215,7 +213,6 @@ public final class EchoPlaybackManager {
 		state.suppression().restoreAll(session.suppressedStates());
 		session.broadcastStop();
 		playEndingEffects(session);
-		notifyOwner(session);
 		EchoLensEntity lens = session.lensEntity();
 		if (!lens.isRemoved()) {
 			lens.setMode(EchoLensMode.RETURNING);
@@ -232,14 +229,6 @@ public final class EchoPlaybackManager {
 			level.sendParticles(ParticleTypes.SCULK_CHARGE_POP, center.x, center.y, center.z,
 					END_PARTICLE_COUNT, END_PARTICLE_SPREAD, END_PARTICLE_SPREAD, END_PARTICLE_SPREAD, 0.0D);
 		});
-	}
-
-	private void notifyOwner(EchoPlaybackSession session) {
-		ServerPlayer owner = session.level().getServer().getPlayerList().getPlayer(session.ownerId());
-		if (owner != null) {
-			owner.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_PLAYBACK_FINISHED,
-					EchoTextFormat.romanSlot(session.record().slot())), true);
-		}
 	}
 
 	public boolean requestEarlyStop(UUID playbackId, UUID requesterId) {

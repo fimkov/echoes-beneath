@@ -102,6 +102,7 @@ public final class EchoPlaybackSession {
 			return;
 		}
 		currentTick++;
+		lensEntity.setProgress((float) currentTick / Math.max(1, record.durationTicks()));
 		updateSubscribers();
 		if (currentTick % TICK_SYNC_INTERVAL == 0) {
 			broadcastTick();

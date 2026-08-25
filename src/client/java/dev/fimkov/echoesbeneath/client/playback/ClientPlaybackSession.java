@@ -20,6 +20,7 @@ import java.util.UUID;
 
 public final class ClientPlaybackSession {
 	private static final int MESH_BUILDS_PER_FRAME = 3;
+	private static final int TICK_DRIFT_TOLERANCE = 3;
 
 	private final UUID playbackId;
 	private final EchoRegion region;
@@ -89,6 +90,9 @@ public final class ClientPlaybackSession {
 	}
 
 	public void syncTo(int serverTick) {
+		if (Math.abs(serverTick - currentTick) <= TICK_DRIFT_TOLERANCE) {
+			return;
+		}
 		currentTick = serverTick;
 		soundPlayer.resyncTo(serverTick);
 	}

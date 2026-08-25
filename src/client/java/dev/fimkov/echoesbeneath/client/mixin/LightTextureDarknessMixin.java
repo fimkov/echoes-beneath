@@ -28,6 +28,11 @@ public abstract class LightTextureDarknessMixin {
 		}
 		for (int skyLevel = 0; skyLevel < 16; skyLevel++) {
 			for (int blockLevel = 0; blockLevel < 16; blockLevel++) {
+				boolean interfaceTexel = blockLevel == EchoDarkness.FULL_BRIGHT_TEXEL
+						&& skyLevel == EchoDarkness.FULL_BRIGHT_TEXEL;
+				if (interfaceTexel) {
+					continue;
+				}
 				lightPixels.setPixelRGBA(blockLevel, skyLevel, EchoDarkness.SILHOUETTE_LIGHT_PIXEL);
 			}
 		}

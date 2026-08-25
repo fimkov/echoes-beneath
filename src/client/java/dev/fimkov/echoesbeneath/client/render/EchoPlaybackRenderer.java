@@ -1,7 +1,6 @@
 package dev.fimkov.echoesbeneath.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import dev.fimkov.echoesbeneath.client.playback.ClientPlaybackManager;
 import dev.fimkov.echoesbeneath.client.playback.ClientPlaybackSession;
@@ -12,6 +11,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 
 import java.util.Map;
 
@@ -59,7 +59,7 @@ public final class EchoPlaybackRenderer {
 		RenderSystem.enableDepthTest();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
-		PoseStack poseStack = context.matrixStack();
+		Matrix4f cameraMatrix = RenderSystem.getModelViewMatrix();
 		for (Map.Entry<Integer, EchoSectionMesh> entry : session.meshes().entrySet()) {
 			EchoSectionMesh mesh = entry.getValue();
 			if (!isSectionVisible(context, mesh, center, cameraPosition)) {
@@ -69,15 +69,13 @@ public final class EchoPlaybackRenderer {
 			if (buffer == null) {
 				continue;
 			}
-			poseStack.pushPose();
-			poseStack.translate(
-					center.getX() + mesh.originX() - cameraPosition.x,
-					center.getY() + mesh.originY() - cameraPosition.y,
-					center.getZ() + mesh.originZ() - cameraPosition.z);
+			Matrix4f modelView = new Matrix4f(cameraMatrix).translate(
+					(float) (center.getX() + mesh.originX() - cameraPosition.x),
+					(float) (center.getY() + mesh.originY() - cameraPosition.y),
+					(float) (center.getZ() + mesh.originZ() - cameraPosition.z));
 			buffer.bind();
-			buffer.drawWithShader(poseStack.last().pose(), context.projectionMatrix(), shader);
+			buffer.drawWithShader(modelView, context.projectionMatrix(), shader);
 			VertexBuffer.unbind();
-			poseStack.popPose();
 		}
 		RenderSystem.disableBlend();
 	}

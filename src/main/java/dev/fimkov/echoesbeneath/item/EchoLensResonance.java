@@ -60,8 +60,6 @@ public final class EchoLensResonance {
 	}
 
 	private static void announce(ServerLevel serverLevel, ServerPlayer player, EchoMemoryReference reference) {
-		player.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_RESONATES,
-				EchoTextFormat.romanSlot(reference.slot())), true);
 		EchoRecordingHooks.runWithoutCapture(() -> serverLevel.playSound(null,
 				reference.center().getX() + 0.5D, reference.center().getY() + 0.5D, reference.center().getZ() + 0.5D,
 				EchoSounds.RESONANCE_PING, SoundSource.AMBIENT, RESONANCE_VOLUME, RESONANCE_PITCH));

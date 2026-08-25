@@ -1,22 +1,18 @@
 package dev.fimkov.echoesbeneath.recording;
 
-import dev.fimkov.echoesbeneath.EchoTranslations;
 import dev.fimkov.echoesbeneath.config.EchoConfigValues;
 import dev.fimkov.echoesbeneath.entity.EchoLensEntity;
 import dev.fimkov.echoesbeneath.memory.EchoCoordinates;
 import dev.fimkov.echoesbeneath.memory.EchoFormat;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryRecord;
-import dev.fimkov.echoesbeneath.memory.EchoTextFormat;
 import dev.fimkov.echoesbeneath.memory.snapshot.BlockPalette;
 import dev.fimkov.echoesbeneath.memory.timeline.BlockTimeline;
 import dev.fimkov.echoesbeneath.memory.timeline.EchoSoundCategory;
 import dev.fimkov.echoesbeneath.memory.timeline.EntityTimeline;
 import dev.fimkov.echoesbeneath.memory.timeline.SoundTimeline;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -27,7 +23,6 @@ import java.util.UUID;
 
 public final class EchoRecordingSession {
 	private static final int MAX_BLOCK_EVENTS = 65536;
-	private static final int ACTION_BAR_INTERVAL_TICKS = 10;
 
 	private final UUID sessionId;
 	private final UUID memoryId;
@@ -180,9 +175,7 @@ public final class EchoRecordingSession {
 		if (currentTick % entitySampleInterval == 0) {
 			sampleEntities();
 		}
-		if (currentTick % ACTION_BAR_INTERVAL_TICKS == 0) {
-			updateActionBar();
-		}
+		lensEntity.setProgress((float) currentTick / Math.max(1, maxTicks));
 		currentTick++;
 	}
 
@@ -197,17 +190,6 @@ public final class EchoRecordingSession {
 			}
 			entityRecorder.sample(entity, currentTick);
 		}
-	}
-
-	private void updateActionBar() {
-		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(ownerId);
-		if (owner == null) {
-			return;
-		}
-		owner.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_RECORDING,
-				EchoTextFormat.romanSlot(slot),
-				EchoTextFormat.clock(currentTick),
-				EchoTextFormat.clock(maxTicks)), true);
 	}
 
 	public boolean hasReachedDuration() {

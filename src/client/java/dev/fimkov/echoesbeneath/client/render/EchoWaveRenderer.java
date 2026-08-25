@@ -17,7 +17,7 @@ import java.util.Map;
 public final class EchoWaveRenderer {
 	private static final int MAX_HIGHLIGHT_FACES = 20000;
 	private static final float FACE_CENTRE_OFFSET = 0.5F;
-	private static final double SECTION_INFLUENCE_MARGIN = 14.0D;
+	private static final double SECTION_INFLUENCE_MARGIN = 18.0D;
 
 	private EchoWaveRenderer() {
 	}

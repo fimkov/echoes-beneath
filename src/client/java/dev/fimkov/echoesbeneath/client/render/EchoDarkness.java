@@ -8,7 +8,8 @@ import net.minecraft.world.phys.Vec3;
 import java.util.Optional;
 
 public final class EchoDarkness {
-	public static final int SILHOUETTE_LIGHT_PIXEL = 0xFF14161C;
+	public static final int SILHOUETTE_LIGHT_PIXEL = 0xFF000000;
+	public static final int FULL_BRIGHT_TEXEL = 15;
 	private static final float FOG_START_FRACTION = 0.05F;
 	private static final float FOG_END_MARGIN = 4.0F;
 

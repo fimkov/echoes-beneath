@@ -2,6 +2,7 @@ package dev.fimkov.echoesbeneath.entity;
 
 import dev.fimkov.echoesbeneath.registry.EchoEntities;
 import dev.fimkov.echoesbeneath.runtime.EchoLensReturn;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -23,10 +24,14 @@ import java.util.UUID;
 
 public class EchoLensEntity extends Entity {
 	public static final double HOVER_HEIGHT = 1.375D;
-	private static final float SPIN_DEGREES_PER_TICK = 2.5F;
-	private static final int PARTICLE_INTERVAL_TICKS = 6;
+	private static final float BASE_SPIN_DEGREES_PER_TICK = 2.0F;
+	private static final float PROGRESS_SPIN_BONUS = 6.0F;
+	private static final int PARTICLE_INTERVAL_TICKS = 2;
 	private static final double PARTICLE_SPREAD = 0.35D;
-	private static final int PARTICLE_COUNT = 2;
+	private static final double RING_RADIUS = 1.05D;
+	private static final int RETURN_TRAIL_PARTICLES = 2;
+	private static final int TRAIL_PARTICLES_PER_BEAT = 2;
+	private static final float FULL_TURN_DEGREES = 360.0F;
 	private static final double RETURN_SPEED = 0.55D;
 	private static final double RETURN_PICKUP_DISTANCE = 1.1D;
 	private static final int ORPHAN_GRACE_TICKS = 40;
@@ -36,6 +41,8 @@ public class EchoLensEntity extends Entity {
 	private static final EntityDataAccessor<Integer> DATA_MODE =
 			SynchedEntityData.defineId(EchoLensEntity.class, EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Float> DATA_SPIN =
+			SynchedEntityData.defineId(EchoLensEntity.class, EntityDataSerializers.FLOAT);
+	private static final EntityDataAccessor<Float> DATA_PROGRESS =
 			SynchedEntityData.defineId(EchoLensEntity.class, EntityDataSerializers.FLOAT);
 
 	private UUID ownerId;
@@ -62,6 +69,7 @@ public class EchoLensEntity extends Entity {
 		builder.define(DATA_LENS, ItemStack.EMPTY);
 		builder.define(DATA_MODE, EchoLensMode.RECORDING.ordinal());
 		builder.define(DATA_SPIN, 0.0F);
+		builder.define(DATA_PROGRESS, 0.0F);
 	}
 
 	public ItemStack getLens() {
@@ -90,6 +98,14 @@ public class EchoLensEntity extends Entity {
 		return this.entityData.get(DATA_SPIN);
 	}
 
+	public float getProgress() {
+		return this.entityData.get(DATA_PROGRESS);
+	}
+
+	public void setProgress(float progress) {
+		this.entityData.set(DATA_PROGRESS, Math.clamp(progress, 0.0F, 1.0F));
+	}
+
 	public Optional<UUID> getOwnerId() {
 		return Optional.ofNullable(ownerId);
 	}
@@ -105,10 +121,14 @@ public class EchoLensEntity extends Entity {
 	@Override
 	public void tick() {
 		super.tick();
-		this.entityData.set(DATA_SPIN, (getSpin() + SPIN_DEGREES_PER_TICK) % 360.0F);
+		this.entityData.set(DATA_SPIN, (getSpin() + spinStep()) % FULL_TURN_DEGREES);
 		if (this.level() instanceof ServerLevel serverLevel) {
 			serverTick(serverLevel);
 		}
+	}
+
+	private float spinStep() {
+		return BASE_SPIN_DEGREES_PER_TICK + PROGRESS_SPIN_BONUS * getProgress();
 	}
 
 	private void serverTick(ServerLevel serverLevel) {
@@ -129,8 +149,34 @@ public class EchoLensEntity extends Entity {
 		}
 		orphanTicks = 0;
 		if (this.tickCount % PARTICLE_INTERVAL_TICKS == 0) {
-			emitAmbientParticles(serverLevel);
+			emitProgressRing(serverLevel);
 		}
+	}
+
+	private void emitProgressRing(ServerLevel serverLevel) {
+		double leadingAngle = getProgress() * Math.PI * 2.0D;
+		spawnRingParticle(serverLevel, headParticle(), leadingAngle);
+		for (int trail = 0; trail < TRAIL_PARTICLES_PER_BEAT; trail++) {
+			spawnRingParticle(serverLevel, trailParticle(), this.random.nextDouble() * leadingAngle);
+		}
+		serverLevel.sendParticles(ParticleTypes.SCULK_SOUL, this.getX(), this.getY(), this.getZ(),
+				1, PARTICLE_SPREAD, PARTICLE_SPREAD, PARTICLE_SPREAD, 0.0D);
+	}
+
+	private void spawnRingParticle(ServerLevel serverLevel, ParticleOptions particle, double angle) {
+		serverLevel.sendParticles(particle,
+				this.getX() + Math.cos(angle) * RING_RADIUS,
+				this.getY(),
+				this.getZ() + Math.sin(angle) * RING_RADIUS,
+				1, 0.0D, 0.0D, 0.0D, 0.0D);
+	}
+
+	private ParticleOptions headParticle() {
+		return getMode() == EchoLensMode.PLAYBACK ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.SCULK_SOUL;
+	}
+
+	private ParticleOptions trailParticle() {
+		return getMode() == EchoLensMode.PLAYBACK ? ParticleTypes.WITCH : ParticleTypes.ELECTRIC_SPARK;
 	}
 
 	private void tickReturn(ServerLevel serverLevel) {
@@ -146,14 +192,12 @@ public class EchoLensEntity extends Entity {
 			return;
 		}
 		this.setPos(this.position().add(delta.normalize().scale(RETURN_SPEED)));
-		emitAmbientParticles(serverLevel);
+		emitTrailParticles(serverLevel);
 	}
 
-	private void emitAmbientParticles(ServerLevel serverLevel) {
+	private void emitTrailParticles(ServerLevel serverLevel) {
 		serverLevel.sendParticles(ParticleTypes.SCULK_SOUL, this.getX(), this.getY(), this.getZ(),
-				PARTICLE_COUNT, PARTICLE_SPREAD, PARTICLE_SPREAD, PARTICLE_SPREAD, 0.0D);
-		serverLevel.sendParticles(ParticleTypes.WITCH, this.getX(), this.getY(), this.getZ(),
-				1, PARTICLE_SPREAD, PARTICLE_SPREAD, PARTICLE_SPREAD, 0.0D);
+				RETURN_TRAIL_PARTICLES, PARTICLE_SPREAD, PARTICLE_SPREAD, PARTICLE_SPREAD, 0.0D);
 	}
 
 	@Override

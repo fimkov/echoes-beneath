@@ -14,12 +14,12 @@ public final class EchoFaceGeometry {
 	private static final float FACE_INSET = 0.001F;
 
 	static {
-		SHADE_COLORS[Direction.DOWN.ordinal()] = 0x06070A;
-		SHADE_COLORS[Direction.UP.ordinal()] = 0x1B1F27;
-		SHADE_COLORS[Direction.NORTH.ordinal()] = 0x0E1016;
-		SHADE_COLORS[Direction.SOUTH.ordinal()] = 0x11141B;
-		SHADE_COLORS[Direction.WEST.ordinal()] = 0x0B0D12;
-		SHADE_COLORS[Direction.EAST.ordinal()] = 0x131722;
+		SHADE_COLORS[Direction.DOWN.ordinal()] = 0x000000;
+		SHADE_COLORS[Direction.UP.ordinal()] = 0x080A0E;
+		SHADE_COLORS[Direction.NORTH.ordinal()] = 0x030407;
+		SHADE_COLORS[Direction.SOUTH.ordinal()] = 0x040509;
+		SHADE_COLORS[Direction.WEST.ordinal()] = 0x020305;
+		SHADE_COLORS[Direction.EAST.ordinal()] = 0x05060B;
 	}
 
 	private EchoFaceGeometry() {

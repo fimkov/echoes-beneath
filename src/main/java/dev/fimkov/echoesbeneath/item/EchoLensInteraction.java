@@ -56,9 +56,6 @@ public final class EchoLensInteraction {
 			player.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_NO_MORE), true);
 			return InteractionResult.FAIL;
 		}
-		if (!references.isEmpty()) {
-			player.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_NO_RESONANCE), true);
-		}
 		return state.recordings().start(player, stack, clickedPos).isPresent()
 				? InteractionResult.CONSUME
 				: InteractionResult.FAIL;

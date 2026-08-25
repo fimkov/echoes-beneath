@@ -207,14 +207,15 @@ public final class EchoRecordingManager {
 	}
 
 	private void notifyOwner(EchoRecordingSession session, EchoRecordingStopReason reason) {
-		ServerPlayer owner = session.level().getServer().getPlayerList().getPlayer(session.ownerId());
-		if (owner == null) {
+		if (reason != EchoRecordingStopReason.CHUNKS_UNLOADED) {
 			return;
 		}
-		String key = reason == EchoRecordingStopReason.CHUNKS_UNLOADED
-				? EchoTranslations.MESSAGE_RECORDING_STOPPED_UNLOADED
-				: EchoTranslations.MESSAGE_RECORDING_SEALED;
-		owner.displayClientMessage(Component.translatable(key, EchoTextFormat.romanSlot(session.slot())), true);
+		ServerPlayer owner = session.level().getServer().getPlayerList().getPlayer(session.ownerId());
+		if (owner != null) {
+			owner.displayClientMessage(Component.translatable(
+					EchoTranslations.MESSAGE_RECORDING_STOPPED_UNLOADED,
+					EchoTextFormat.romanSlot(session.slot())), true);
+		}
 	}
 
 	public boolean requestEarlyStop(UUID sessionId, UUID requesterId) {

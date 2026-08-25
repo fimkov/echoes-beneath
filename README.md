@@ -51,15 +51,16 @@ Eight vanilla Echo Shards around one vanilla Amethyst Shard.
 
 1. Craft an Echo Lens.
 2. Right-click the **top face** of a block. The lens leaves your hand, flies to the spot, hovers at
-   about 1.4 blocks and starts recording.
+   about 1.4 blocks and starts recording. A ring of particles closes around it as the recording fills,
+   and it spins faster the closer it gets to full — there is no timer text anywhere.
 3. For up to two minutes it records the space around it: a snapshot of the blocks, every block change,
    the movement and actions of nearby creatures, and every spatial sound that actually plays inside
    the radius.
 4. Recording ends after 2400 ticks, or earlier if you right-click the hovering lens.
 5. The lens flies back and the **same item stack** returns to your inventory, now carrying one more
    memory.
-6. Come back to that place later holding the lens. It glints, pulses, emits rare particles and a quiet
-   directional tone tells you a memory resonates here.
+6. Come back to that place later holding the lens. It glints, emits rare particles and a quiet
+   directional tone tells you a memory resonates here. The item tooltip names which memory it is.
 7. Right-click. The lens flies to the exact original centre, the memory region forms, and the
    recording replays from tick zero.
 
@@ -88,6 +89,9 @@ your dimension and position against every stored region:
 - If two centres are equally close, the **lower Memory number** wins.
 - If nothing matches: `No memory resonates with this place.` /
   `Ни одно воспоминание не отзывается в этом месте.`
+
+Progress and resonance are shown the way vanilla shows things — through particles, sound, item glint
+and the tooltip. The mod never prints a clock or a countdown to the HUD.
 
 ## Old sounds
 
@@ -132,6 +136,10 @@ Which mobs are affected is controlled by the `echoes_beneath:temporarily_suppres
 | End playback early | Right-click the hovering lens (owner only) |
 
 There is no GUI, and by design there is nothing to configure per-lens.
+
+While a lens is deployed, a ring of particles around it shows how far the recording or the playback has
+come: the leading particle marks the current position on the ring and the trail fills the arc behind it.
+Recording uses a teal ring, playback a violet one.
 
 ## Configuration
 
@@ -251,6 +259,8 @@ restarts of both single-player worlds and dedicated servers.
   example specific villager professions) is not reproduced.
 - The darkening and fog effects apply to the whole client view while the camera is inside a region.
   Other rendering mods that also override the light texture or fog may conflict.
+- The darkening leaves the full-bright lightmap texel alone so that the HUD and inventory stay readable.
+  A world block lit to both full block light and full sky light therefore keeps its brightness.
 
 ## Trailer scenario
 
@@ -259,16 +269,14 @@ A short capture that shows the whole idea in about 60 seconds.
 1. **0:00–0:06** — Ancient City, torchlight, the player picks up an Echo Shard. The recipe toast pops.
 2. **0:06–0:12** — Crafting table, the 3×3 of eight Echo Shards around one Amethyst Shard closes into
    the lens. Hold on the item for a beat.
-3. **0:12–0:20** — A small built room. The player right-clicks the floor; the lens flies out, rises,
-   begins to turn, amethyst and sculk particles drifting off it. Action bar reads
-   `Recording Echo I — 00:03 / 02:00`.
+3. **0:12–0:20** — A small built room. The player right-clicks the floor; the lens flies out, rises and
+   begins to turn, a ring of teal particles opening around it.
 4. **0:20–0:32** — Ordinary life inside the radius: open a door, walk a lap, a zombie groans in the
    corner, place a block, break it. Nothing looks special yet.
 5. **0:32–0:36** — The player right-clicks the lens. Particles pull inward, it chimes and flies back
    to the hand. Tooltip: `Memories: 1 / 3`.
 6. **0:36–0:42** — Cut. The room has been changed: the wall is gone, the door replaced. The player
-   walks in holding the lens; it glints and pulses, and the quiet resonance tone plays.
-   Action bar: `Memory I resonates here`.
+   walks in holding the lens; it glints, sparks drift off it and the quiet resonance tone plays.
 7. **0:42–0:50** — Right-click. The lens flies to the old centre. Light drains out of the frame, the
    sky disappears, everything past the boundary goes black. Only faint grey outlines remain.
 8. **0:50–1:00** — The old door opens. Its recorded sound plays, and a wave rolls outward, tracing the

@@ -13,14 +13,9 @@ public final class EchoTranslations {
 
 	public static final String MESSAGE_NO_MORE = "message.echoes_beneath.no_more";
 	public static final String MESSAGE_NO_RESONANCE = "message.echoes_beneath.no_resonance";
-	public static final String MESSAGE_RECORDING = "message.echoes_beneath.recording";
 	public static final String MESSAGE_RECORDING_STOPPED_UNLOADED = "message.echoes_beneath.recording_stopped_unloaded";
-	public static final String MESSAGE_RECORDING_SEALED = "message.echoes_beneath.recording_sealed";
-	public static final String MESSAGE_RESONATES = "message.echoes_beneath.resonates";
 	public static final String MESSAGE_PLAYBACK_OVERLAP = "message.echoes_beneath.playback_overlap";
 	public static final String MESSAGE_PLAYBACK_BLOCKED_INTERACTION = "message.echoes_beneath.playback_blocked_interaction";
-	public static final String MESSAGE_PLAYBACK_STARTED = "message.echoes_beneath.playback_started";
-	public static final String MESSAGE_PLAYBACK_FINISHED = "message.echoes_beneath.playback_finished";
 	public static final String MESSAGE_MEMORY_CORRUPT = "message.echoes_beneath.memory_corrupt";
 	public static final String MESSAGE_LENS_RETURNED_TO_GROUND = "message.echoes_beneath.lens_returned_to_ground";
 
