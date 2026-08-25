@@ -87,8 +87,10 @@ public final class EchoRecordingManager {
 		EchoLensStacks.identityOrAssign(deployed);
 		UUID sessionId = UUID.randomUUID();
 
-		EchoLensEntity lensEntity = new EchoLensEntity(level, hoverPosition, deployed,
+		Vec3 launchPosition = player.getEyePosition().add(player.getLookAngle().scale(0.6D));
+		EchoLensEntity lensEntity = new EchoLensEntity(level, launchPosition, deployed,
 				player.getUUID(), sessionId, EchoLensMode.RECORDING);
+		lensEntity.beginArrival(launchPosition, hoverPosition);
 		if (!level.addFreshEntity(lensEntity)) {
 			return Optional.empty();
 		}
@@ -99,7 +101,7 @@ public final class EchoRecordingManager {
 		sessions.put(sessionId, session);
 		EchoRecordingHooks.setAnyRecordingActive(true);
 		EchoRecordingHooks.runWithoutCapture(() -> level.playSound(null,
-				hoverPosition.x, hoverPosition.y, hoverPosition.z,
+				launchPosition.x, launchPosition.y, launchPosition.z,
 				EchoSounds.LENS_DEPLOY, SoundSource.BLOCKS, DEPLOY_VOLUME, DEPLOY_PITCH));
 		return Optional.of(session);
 	}

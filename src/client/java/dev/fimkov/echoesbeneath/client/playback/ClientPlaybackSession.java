@@ -137,9 +137,6 @@ public final class ClientPlaybackSession {
 	}
 
 	public void discard() {
-		for (EchoSectionMesh mesh : meshes.values()) {
-			mesh.close();
-		}
 		meshes.clear();
 		pendingSectionKeys.clear();
 		puppets.clear();

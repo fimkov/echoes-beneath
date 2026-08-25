@@ -8,19 +8,11 @@ public final class EchoFaceGeometry {
 	public static final int LOCAL_BITS = 4;
 	public static final int LOCAL_MASK = (1 << LOCAL_BITS) - 1;
 	public static final int DIRECTION_SHIFT = LOCAL_BITS * 3;
+	public static final int CORNERS_PER_FACE = 4;
+	public static final int COMPONENTS_PER_CORNER = 3;
 
 	private static final Direction[] DIRECTIONS = Direction.values();
-	private static final int[] SHADE_COLORS = new int[DIRECTIONS.length];
-	private static final float FACE_INSET = 0.001F;
-
-	static {
-		SHADE_COLORS[Direction.DOWN.ordinal()] = 0x000000;
-		SHADE_COLORS[Direction.UP.ordinal()] = 0x080A0E;
-		SHADE_COLORS[Direction.NORTH.ordinal()] = 0x030407;
-		SHADE_COLORS[Direction.SOUTH.ordinal()] = 0x040509;
-		SHADE_COLORS[Direction.WEST.ordinal()] = 0x020305;
-		SHADE_COLORS[Direction.EAST.ordinal()] = 0x05060B;
-	}
+	private static final float FACE_INSET = 0.002F;
 
 	private EchoFaceGeometry() {
 	}
@@ -48,42 +40,44 @@ public final class EchoFaceGeometry {
 		return DIRECTIONS[(packed >> DIRECTION_SHIFT) & 0x7];
 	}
 
-	public static int shadeColor(Direction direction) {
-		return SHADE_COLORS[direction.ordinal()];
-	}
-
-	public static void emit(VertexConsumer consumer, Matrix4f matrix, float originX, float originY, float originZ,
-			int packedFace, int argb) {
+	public static void cornerOffsets(int packedFace, float originX, float originY, float originZ, float[] corners) {
 		float x = originX + localX(packedFace);
 		float y = originY + localY(packedFace);
 		float z = originZ + localZ(packedFace);
-		int alpha = (argb >>> 24) & 0xFF;
-		int red = (argb >> 16) & 0xFF;
-		int green = (argb >> 8) & 0xFF;
-		int blue = argb & 0xFF;
 		switch (direction(packedFace)) {
-			case DOWN -> quad(consumer, matrix, x, y - FACE_INSET, z, 1, 0, 0, 0, 0, 1, red, green, blue, alpha);
-			case UP -> quad(consumer, matrix, x, y + 1 + FACE_INSET, z, 0, 0, 1, 1, 0, 0, red, green, blue, alpha);
-			case NORTH -> quad(consumer, matrix, x, y, z - FACE_INSET, 0, 1, 0, 1, 0, 0, red, green, blue, alpha);
-			case SOUTH -> quad(consumer, matrix, x, y, z + 1 + FACE_INSET, 1, 0, 0, 0, 1, 0, red, green, blue, alpha);
-			case WEST -> quad(consumer, matrix, x - FACE_INSET, y, z, 0, 0, 1, 0, 1, 0, red, green, blue, alpha);
-			case EAST -> quad(consumer, matrix, x + 1 + FACE_INSET, y, z, 0, 1, 0, 0, 0, 1, red, green, blue, alpha);
+			case DOWN -> writeQuad(corners, x, y - FACE_INSET, z, 1, 0, 0, 0, 0, 1);
+			case UP -> writeQuad(corners, x, y + 1 + FACE_INSET, z, 0, 0, 1, 1, 0, 0);
+			case NORTH -> writeQuad(corners, x, y, z - FACE_INSET, 0, 1, 0, 1, 0, 0);
+			case SOUTH -> writeQuad(corners, x, y, z + 1 + FACE_INSET, 1, 0, 0, 0, 1, 0);
+			case WEST -> writeQuad(corners, x - FACE_INSET, y, z, 0, 0, 1, 0, 1, 0);
+			case EAST -> writeQuad(corners, x + 1 + FACE_INSET, y, z, 0, 1, 0, 0, 0, 1);
 		}
 	}
 
-	private static void quad(VertexConsumer consumer, Matrix4f matrix, float x, float y, float z,
-			float ax, float ay, float az, float bx, float by, float bz,
-			int red, int green, int blue, int alpha) {
-		if (matrix == null) {
-			consumer.addVertex(x, y, z).setColor(red, green, blue, alpha);
-			consumer.addVertex(x + ax, y + ay, z + az).setColor(red, green, blue, alpha);
-			consumer.addVertex(x + ax + bx, y + ay + by, z + az + bz).setColor(red, green, blue, alpha);
-			consumer.addVertex(x + bx, y + by, z + bz).setColor(red, green, blue, alpha);
-			return;
+	private static void writeQuad(float[] corners, float x, float y, float z,
+			float ax, float ay, float az, float bx, float by, float bz) {
+		corners[0] = x;
+		corners[1] = y;
+		corners[2] = z;
+		corners[3] = x + ax;
+		corners[4] = y + ay;
+		corners[5] = z + az;
+		corners[6] = x + ax + bx;
+		corners[7] = y + ay + by;
+		corners[8] = z + az + bz;
+		corners[9] = x + bx;
+		corners[10] = y + by;
+		corners[11] = z + bz;
+	}
+
+	public static void emitGradient(VertexConsumer consumer, Matrix4f matrix, float[] corners, int[] cornerColors) {
+		for (int corner = 0; corner < CORNERS_PER_FACE; corner++) {
+			int argb = cornerColors[corner];
+			consumer.addVertex(matrix,
+							corners[corner * COMPONENTS_PER_CORNER],
+							corners[corner * COMPONENTS_PER_CORNER + 1],
+							corners[corner * COMPONENTS_PER_CORNER + 2])
+					.setColor((argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF, (argb >>> 24) & 0xFF);
 		}
-		consumer.addVertex(matrix, x, y, z).setColor(red, green, blue, alpha);
-		consumer.addVertex(matrix, x + ax, y + ay, z + az).setColor(red, green, blue, alpha);
-		consumer.addVertex(matrix, x + ax + bx, y + ay + by, z + az + bz).setColor(red, green, blue, alpha);
-		consumer.addVertex(matrix, x + bx, y + by, z + bz).setColor(red, green, blue, alpha);
 	}
 }

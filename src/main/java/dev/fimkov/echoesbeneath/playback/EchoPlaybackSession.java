@@ -98,7 +98,7 @@ public final class EchoPlaybackSession {
 	}
 
 	public void tick(HostileMobSuppressionManager suppressionManager) {
-		if (finished) {
+		if (finished || lensEntity.isArriving()) {
 			return;
 		}
 		currentTick++;

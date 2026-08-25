@@ -11,13 +11,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public final class EchoWaveRenderer {
-	private static final int MAX_HIGHLIGHT_FACES = 20000;
-	private static final float FACE_CENTRE_OFFSET = 0.5F;
-	private static final double SECTION_INFLUENCE_MARGIN = 18.0D;
+	private static final int MAX_HIGHLIGHT_FACES = 30000;
+	private static final int CORNERS = EchoFaceGeometry.CORNERS_PER_FACE;
 
 	private EchoWaveRenderer() {
 	}
@@ -35,54 +35,70 @@ public final class EchoWaveRenderer {
 				center.getY() - cameraPosition.y, center.getZ() - cameraPosition.z);
 		Matrix4f matrix = poseStack.last().pose();
 		VertexConsumer consumer = context.consumers().getBuffer(RenderType.debugQuads());
-		emitHighlightedFaces(session, waves, center, partialTick, matrix, consumer);
+		emitRings(session, waves, center, partialTick, matrix, consumer);
 		poseStack.popPose();
 	}
 
-	private static void emitHighlightedFaces(ClientPlaybackSession session, List<EchoWave> waves, BlockPos center,
+	private static void emitRings(ClientPlaybackSession session, List<EchoWave> waves, BlockPos center,
 			float partialTick, Matrix4f matrix, VertexConsumer consumer) {
+		int currentTick = session.currentTick();
+		float[] corners = new float[CORNERS * EchoFaceGeometry.COMPONENTS_PER_CORNER];
+		int[] cornerColors = new int[CORNERS];
+		List<EchoWave> nearby = new ArrayList<>();
 		int emitted = 0;
+
 		for (Map.Entry<Integer, EchoSectionMesh> entry : session.meshes().entrySet()) {
-			EchoSectionMesh sectionMesh = entry.getValue();
-			if (!sectionInfluenced(sectionMesh, waves, center, session.currentTick(), partialTick)) {
+			EchoSectionMesh mesh = entry.getValue();
+			collectNearbyWaves(mesh, waves, center, currentTick, partialTick, nearby);
+			if (nearby.isEmpty()) {
 				continue;
 			}
-			for (int packedFace : sectionMesh.faces()) {
+			for (int packedFace : mesh.faces()) {
 				if (emitted >= MAX_HIGHLIGHT_FACES) {
 					return;
 				}
-				double worldX = center.getX() + sectionMesh.originX()
-						+ EchoFaceGeometry.localX(packedFace) + FACE_CENTRE_OFFSET;
-				double worldY = center.getY() + sectionMesh.originY()
-						+ EchoFaceGeometry.localY(packedFace) + FACE_CENTRE_OFFSET;
-				double worldZ = center.getZ() + sectionMesh.originZ()
-						+ EchoFaceGeometry.localZ(packedFace) + FACE_CENTRE_OFFSET;
-				int color = colorFromWaves(waves, session.currentTick(), partialTick, worldX, worldY, worldZ);
-				if (color == 0) {
+				EchoFaceGeometry.cornerOffsets(packedFace, mesh.originX(), mesh.originY(), mesh.originZ(), corners);
+				if (!shadeCorners(nearby, currentTick, partialTick, center, corners, cornerColors)) {
 					continue;
 				}
-				EchoFaceGeometry.emit(consumer, matrix,
-						sectionMesh.originX(), sectionMesh.originY(), sectionMesh.originZ(), packedFace, color);
+				EchoFaceGeometry.emitGradient(consumer, matrix, corners, cornerColors);
 				emitted++;
 			}
 		}
 	}
 
-	private static boolean sectionInfluenced(EchoSectionMesh sectionMesh, List<EchoWave> waves, BlockPos center,
-			int currentTick, float partialTick) {
-		Vec3 sectionCenter = new Vec3(
-				center.getX() + sectionMesh.originX() + 8.0D,
-				center.getY() + sectionMesh.originY() + 8.0D,
-				center.getZ() + sectionMesh.originZ() + 8.0D);
+	private static boolean shadeCorners(List<EchoWave> nearby, int currentTick, float partialTick,
+			BlockPos center, float[] corners, int[] cornerColors) {
+		boolean anyVisible = false;
+		for (int corner = 0; corner < CORNERS; corner++) {
+			int color = colorFromWaves(nearby, currentTick, partialTick,
+					center.getX() + corners[corner * EchoFaceGeometry.COMPONENTS_PER_CORNER],
+					center.getY() + corners[corner * EchoFaceGeometry.COMPONENTS_PER_CORNER + 1],
+					center.getZ() + corners[corner * EchoFaceGeometry.COMPONENTS_PER_CORNER + 2]);
+			cornerColors[corner] = color;
+			if ((color >>> 24) != 0) {
+				anyVisible = true;
+			}
+		}
+		return anyVisible;
+	}
+
+	private static void collectNearbyWaves(EchoSectionMesh mesh, List<EchoWave> waves, BlockPos center,
+			int currentTick, float partialTick, List<EchoWave> destination) {
+		destination.clear();
+		Vec3 sectionCentre = new Vec3(
+				center.getX() + mesh.originX() + 8.0D,
+				center.getY() + mesh.originY() + 8.0D,
+				center.getZ() + mesh.originZ() + 8.0D);
 		for (EchoWave wave : waves) {
 			float elapsed = wave.elapsedAt(currentTick, partialTick);
 			double front = wave.radiusAt(elapsed);
-			double distance = wave.origin().distanceTo(sectionCenter);
-			if (Math.abs(distance - front) <= SECTION_INFLUENCE_MARGIN) {
-				return true;
+			double distance = wave.origin().distanceTo(sectionCentre);
+			double reach = EchoSectionMesh.CIRCUMRADIUS + wave.shellThickness();
+			if (Math.abs(distance - front) <= reach) {
+				destination.add(wave);
 			}
 		}
-		return false;
 	}
 
 	public static int colorFromWaves(List<EchoWave> waves, int currentTick, float partialTick,

@@ -30,6 +30,13 @@ public class EchoLensEntity extends Entity {
 	private static final double PARTICLE_SPREAD = 0.35D;
 	private static final double RING_RADIUS = 1.05D;
 	private static final int RETURN_TRAIL_PARTICLES = 2;
+	private static final double ARRIVAL_TICKS_PER_BLOCK = 1.4D;
+	private static final int MIN_ARRIVAL_TICKS = 12;
+	private static final int MAX_ARRIVAL_TICKS = 44;
+	private static final double ARRIVAL_ARC_HEIGHT = 1.8D;
+	private static final float ARRIVAL_SPIN_MULTIPLIER = 4.5F;
+	private static final int ARRIVAL_BURST_PARTICLES = 30;
+	private static final double ARRIVAL_BURST_SPREAD = 0.8D;
 	private static final int TRAIL_PARTICLES_PER_BEAT = 2;
 	private static final float FULL_TURN_DEGREES = 360.0F;
 	private static final double RETURN_SPEED = 0.55D;
@@ -48,6 +55,10 @@ public class EchoLensEntity extends Entity {
 	private UUID ownerId;
 	private UUID sessionId;
 	private int orphanTicks;
+	private Vec3 arrivalOrigin = Vec3.ZERO;
+	private Vec3 arrivalTarget = Vec3.ZERO;
+	private int arrivalTicksTotal;
+	private int arrivalTicksRemaining;
 
 	public EchoLensEntity(EntityType<? extends EchoLensEntity> type, Level level) {
 		super(type, level);
@@ -118,6 +129,38 @@ public class EchoLensEntity extends Entity {
 		this.sessionId = sessionId;
 	}
 
+	public void beginArrival(Vec3 from, Vec3 to) {
+		this.arrivalOrigin = from;
+		this.arrivalTarget = to;
+		this.arrivalTicksTotal = (int) Math.clamp(
+				Math.round(from.distanceTo(to) * ARRIVAL_TICKS_PER_BLOCK), MIN_ARRIVAL_TICKS, MAX_ARRIVAL_TICKS);
+		this.arrivalTicksRemaining = this.arrivalTicksTotal;
+		this.setPos(from);
+	}
+
+	public boolean isArriving() {
+		return arrivalTicksRemaining > 0;
+	}
+
+	private void tickArrival(ServerLevel serverLevel) {
+		arrivalTicksRemaining--;
+		float travelled = 1.0F - (float) arrivalTicksRemaining / Math.max(1, arrivalTicksTotal);
+		float eased = travelled * travelled * (3.0F - 2.0F * travelled);
+		Vec3 flat = arrivalOrigin.add(arrivalTarget.subtract(arrivalOrigin).scale(eased));
+		double arc = Math.sin(eased * Math.PI) * ARRIVAL_ARC_HEIGHT;
+		this.setPos(flat.add(0.0D, arc, 0.0D));
+		this.entityData.set(DATA_SPIN,
+				(getSpin() + BASE_SPIN_DEGREES_PER_TICK * ARRIVAL_SPIN_MULTIPLIER) % FULL_TURN_DEGREES);
+		emitTrailParticles(serverLevel);
+		if (arrivalTicksRemaining == 0) {
+			this.setPos(arrivalTarget);
+			serverLevel.sendParticles(ParticleTypes.SCULK_CHARGE_POP,
+					arrivalTarget.x, arrivalTarget.y, arrivalTarget.z,
+					ARRIVAL_BURST_PARTICLES, ARRIVAL_BURST_SPREAD, ARRIVAL_BURST_SPREAD,
+					ARRIVAL_BURST_SPREAD, 0.0D);
+		}
+	}
+
 	@Override
 	public void tick() {
 		super.tick();
@@ -132,6 +175,10 @@ public class EchoLensEntity extends Entity {
 	}
 
 	private void serverTick(ServerLevel serverLevel) {
+		if (isArriving()) {
+			tickArrival(serverLevel);
+			return;
+		}
 		if (getMode() == EchoLensMode.RETURNING) {
 			tickReturn(serverLevel);
 			return;
@@ -231,12 +278,35 @@ public class EchoLensEntity extends Entity {
 		return true;
 	}
 
+	private static Vec3 readVector(CompoundTag tag, String key) {
+		if (!tag.contains(key)) {
+			return Vec3.ZERO;
+		}
+		net.minecraft.nbt.ListTag values = tag.getList(key, net.minecraft.nbt.Tag.TAG_DOUBLE);
+		if (values.size() != 3) {
+			return Vec3.ZERO;
+		}
+		return new Vec3(values.getDouble(0), values.getDouble(1), values.getDouble(2));
+	}
+
+	private static void writeVector(CompoundTag tag, String key, Vec3 value) {
+		net.minecraft.nbt.ListTag values = new net.minecraft.nbt.ListTag();
+		values.add(net.minecraft.nbt.DoubleTag.valueOf(value.x));
+		values.add(net.minecraft.nbt.DoubleTag.valueOf(value.y));
+		values.add(net.minecraft.nbt.DoubleTag.valueOf(value.z));
+		tag.put(key, values);
+	}
+
 	@Override
 	protected void readAdditionalSaveData(CompoundTag tag) {
 		this.entityData.set(DATA_MODE, tag.getInt("mode"));
 		this.ownerId = tag.hasUUID("owner") ? tag.getUUID("owner") : null;
 		this.sessionId = tag.hasUUID("session") ? tag.getUUID("session") : null;
 		this.orphanTicks = tag.getInt("orphan_ticks");
+		this.arrivalTicksTotal = tag.getInt("arrival_total");
+		this.arrivalTicksRemaining = tag.getInt("arrival_left");
+		this.arrivalOrigin = readVector(tag, "arrival_origin");
+		this.arrivalTarget = readVector(tag, "arrival_target");
 		if (tag.contains("lens")) {
 			this.setLens(ItemStack.parse(this.registryAccess(), tag.getCompound("lens")).orElse(ItemStack.EMPTY));
 		}
@@ -252,6 +322,10 @@ public class EchoLensEntity extends Entity {
 			tag.putUUID("session", sessionId);
 		}
 		tag.putInt("orphan_ticks", orphanTicks);
+		tag.putInt("arrival_total", arrivalTicksTotal);
+		tag.putInt("arrival_left", arrivalTicksRemaining);
+		writeVector(tag, "arrival_origin", arrivalOrigin);
+		writeVector(tag, "arrival_target", arrivalTarget);
 		ItemStack lens = getLens();
 		if (!lens.isEmpty()) {
 			tag.put("lens", lens.save(this.registryAccess()));

@@ -166,7 +166,7 @@ public final class EchoRecordingSession {
 	}
 
 	public void tick() {
-		if (finished) {
+		if (finished || lensEntity.isArriving()) {
 			return;
 		}
 		if (!snapshotCapture.isComplete()) {

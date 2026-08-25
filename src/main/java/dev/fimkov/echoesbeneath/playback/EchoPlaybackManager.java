@@ -23,7 +23,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -110,8 +109,10 @@ public final class EchoPlaybackManager {
 		EchoLensStacks.identityOrAssign(deployed);
 		UUID playbackId = UUID.randomUUID();
 		Vec3 hover = findHoverPosition(level, region.center());
-		EchoLensEntity lensEntity = new EchoLensEntity(level, hover, deployed,
+		Vec3 launchPosition = player.getEyePosition().add(player.getLookAngle().scale(0.6D));
+		EchoLensEntity lensEntity = new EchoLensEntity(level, launchPosition, deployed,
 				player.getUUID(), playbackId, EchoLensMode.PLAYBACK);
+		lensEntity.beginArrival(launchPosition, hover);
 		if (!level.addFreshEntity(lensEntity)) {
 			return false;
 		}
@@ -123,10 +124,8 @@ public final class EchoPlaybackManager {
 			session.rememberSuppressed(state.suppression().suppressRegion(level, region));
 		}
 		sessions.put(playbackId, session);
-		for (ServerPlayer nearby : playersInside(level, region)) {
-			session.subscribe(nearby);
-		}
-		EchoRecordingHooks.runWithoutCapture(() -> level.playSound(null, hover.x, hover.y, hover.z,
+		EchoRecordingHooks.runWithoutCapture(() -> level.playSound(null,
+				launchPosition.x, launchPosition.y, launchPosition.z,
 				EchoSounds.PLAYBACK_START, SoundSource.AMBIENT, START_VOLUME, START_PITCH));
 		return true;
 	}
@@ -138,16 +137,6 @@ public final class EchoPlaybackManager {
 			}
 		}
 		return false;
-	}
-
-	private List<ServerPlayer> playersInside(ServerLevel level, EchoRegion region) {
-		List<ServerPlayer> inside = new ArrayList<>();
-		for (ServerPlayer player : level.players()) {
-			if (region.contains(level.dimension(), player.position())) {
-				inside.add(player);
-			}
-		}
-		return inside;
 	}
 
 	private Vec3 findHoverPosition(ServerLevel level, BlockPos center) {
