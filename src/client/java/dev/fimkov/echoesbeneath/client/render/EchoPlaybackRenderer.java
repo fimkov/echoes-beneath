@@ -13,8 +13,9 @@ public final class EchoPlaybackRenderer {
 	public static void register() {
 		WorldRenderEvents.START.register(context -> {
 			EchoDarkness.refreshFrameState();
-			if (EchoDarkness.isViewerInsideRegion()) {
-				EchoDarkness.paintVoidLight();
+			EchoDarkness.advanceTransition(context.tickCounter().getRealtimeDeltaTicks());
+			if (EchoDarkness.isTransitionActive()) {
+				EchoDarkness.applyDarkness(context.tickCounter().getGameTimeDeltaPartialTick(false));
 			}
 		});
 		WorldRenderEvents.AFTER_ENTITIES.register(EchoPlaybackRenderer::render);
@@ -45,7 +46,7 @@ public final class EchoPlaybackRenderer {
 	}
 
 	private static void restoreInterfaceLight(WorldRenderContext context) {
-		if (!EchoDarkness.isViewerInsideRegion()) {
+		if (!EchoDarkness.isTransitionActive()) {
 			return;
 		}
 		EchoDarkness.restoreNaturalLight(context.tickCounter().getGameTimeDeltaPartialTick(false));

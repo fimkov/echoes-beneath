@@ -14,7 +14,7 @@ public abstract class LevelRendererSkyMixin {
 	@Inject(method = "renderSky", at = @At("HEAD"), cancellable = true)
 	private void echoesBeneath$hideSkyInsideRegion(Matrix4f frustumMatrix, Matrix4f projectionMatrix,
 			float partialTick, Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo callback) {
-		if (EchoDarkness.isViewerInsideRegion()) {
+		if (EchoDarkness.shouldHideSky()) {
 			callback.cancel();
 		}
 	}
@@ -23,7 +23,7 @@ public abstract class LevelRendererSkyMixin {
 	private void echoesBeneath$hideCloudsInsideRegion(com.mojang.blaze3d.vertex.PoseStack poseStack,
 			Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick,
 			double cameraX, double cameraY, double cameraZ, CallbackInfo callback) {
-		if (EchoDarkness.isViewerInsideRegion()) {
+		if (EchoDarkness.shouldHideSky()) {
 			callback.cancel();
 		}
 	}

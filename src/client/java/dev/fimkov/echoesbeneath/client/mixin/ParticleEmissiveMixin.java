@@ -14,7 +14,7 @@ public abstract class ParticleEmissiveMixin {
 			at = @At(value = "INVOKE",
 					target = "Lnet/minecraft/client/particle/SingleQuadParticle;getLightColor(F)I"))
 	private int echoesBeneath$keepParticlesLit(SingleQuadParticle particle, float partialTick) {
-		if (EchoDarkness.isViewerInsideRegion()) {
+		if (EchoDarkness.isTransitionActive()) {
 			return LightTexture.FULL_BRIGHT;
 		}
 		return particle.getLightColor(partialTick);

@@ -12,6 +12,8 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(LightTexture.class)
 public abstract class LightTextureDarknessMixin implements EchoLightTextureAccess {
 	private static final int LIGHT_LEVELS = 16;
+	private static final int CHANNEL_MASK = 0xFF;
+	private static final int ALPHA_MASK = 0xFF000000;
 
 	@Shadow
 	@Final
@@ -28,17 +30,26 @@ public abstract class LightTextureDarknessMixin implements EchoLightTextureAcces
 	public abstract void updateLightTexture(float partialTick);
 
 	@Override
-	public void echoesBeneath$paintVoid() {
+	public void echoesBeneath$applyDarkness(float darkness, float partialTick) {
+		echoesBeneath$restoreNaturalLight(partialTick);
+		float retained = 1.0F - Math.clamp(darkness, 0.0F, 1.0F);
 		for (int skyLevel = 0; skyLevel < LIGHT_LEVELS; skyLevel++) {
 			for (int blockLevel = 0; blockLevel < LIGHT_LEVELS; blockLevel++) {
-				boolean emissiveTexel = blockLevel == EchoDarkness.EMISSIVE_TEXEL
-						&& skyLevel == EchoDarkness.EMISSIVE_TEXEL;
-				if (!emissiveTexel) {
-					lightPixels.setPixelRGBA(blockLevel, skyLevel, EchoDarkness.VOID_LIGHT_PIXEL);
+				if (blockLevel == EchoDarkness.EMISSIVE_TEXEL && skyLevel == EchoDarkness.EMISSIVE_TEXEL) {
+					continue;
 				}
+				lightPixels.setPixelRGBA(blockLevel, skyLevel,
+						dimmed(lightPixels.getPixelRGBA(blockLevel, skyLevel), retained));
 			}
 		}
 		lightTexture.upload();
+	}
+
+	private static int dimmed(int packed, float retained) {
+		int first = Math.round((packed & CHANNEL_MASK) * retained);
+		int second = Math.round(((packed >> 8) & CHANNEL_MASK) * retained);
+		int third = Math.round(((packed >> 16) & CHANNEL_MASK) * retained);
+		return (packed & ALPHA_MASK) | (third << 16) | (second << 8) | first;
 	}
 
 	@Override
