@@ -3,7 +3,9 @@ package dev.fimkov.echoesbeneath;
 import dev.fimkov.echoesbeneath.command.EchoCommands;
 import dev.fimkov.echoesbeneath.config.EchoConfig;
 import dev.fimkov.echoesbeneath.network.EchoNetworkPayloads;
+import dev.fimkov.echoesbeneath.registry.EchoBlocks;
 import dev.fimkov.echoesbeneath.registry.EchoComponents;
+import dev.fimkov.echoesbeneath.registry.EchoMenus;
 import dev.fimkov.echoesbeneath.registry.EchoEntities;
 import dev.fimkov.echoesbeneath.registry.EchoItemGroups;
 import dev.fimkov.echoesbeneath.registry.EchoItems;
@@ -18,7 +20,9 @@ public final class EchoesBeneathBootstrap {
 	public static void bootstrap() {
 		EchoConfig.load();
 		EchoComponents.register();
+		EchoBlocks.register();
 		EchoItems.register();
+		EchoMenus.register();
 		EchoItemGroups.register();
 		EchoSounds.register();
 		EchoEntities.register();

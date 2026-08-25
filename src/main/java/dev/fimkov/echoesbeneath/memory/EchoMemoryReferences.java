@@ -25,7 +25,7 @@ public record EchoMemoryReferences(List<EchoMemoryReference> entries) {
 				}
 			},
 			buffer -> {
-				int size = Math.min(buffer.readVarInt(), EchoFormat.MEMORY_SLOT_COUNT);
+				int size = Math.min(buffer.readVarInt(), EchoFormat.MAX_MEMORY_SLOTS);
 				List<EchoMemoryReference> decoded = new ArrayList<>(size);
 				for (int index = 0; index < size; index++) {
 					decoded.add(EchoMemoryReference.STREAM_CODEC.decode(buffer));
@@ -41,16 +41,17 @@ public record EchoMemoryReferences(List<EchoMemoryReference> entries) {
 		return entries.size();
 	}
 
-	public boolean isFull() {
-		return entries.size() >= EchoFormat.MEMORY_SLOT_COUNT;
+	public boolean isFull(int capacity) {
+		return entries.size() >= Math.min(capacity, EchoFormat.MAX_MEMORY_SLOTS);
 	}
 
 	public boolean isEmpty() {
 		return entries.isEmpty();
 	}
 
-	public Optional<Integer> nextFreeSlot() {
-		for (int slot = 0; slot < EchoFormat.MEMORY_SLOT_COUNT; slot++) {
+	public Optional<Integer> nextFreeSlot(int capacity) {
+		int limit = Math.min(capacity, EchoFormat.MAX_MEMORY_SLOTS);
+		for (int slot = 0; slot < limit; slot++) {
 			if (findBySlot(slot).isEmpty()) {
 				return Optional.of(slot);
 			}

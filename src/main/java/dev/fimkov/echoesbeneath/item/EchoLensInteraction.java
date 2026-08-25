@@ -37,7 +37,8 @@ public final class EchoLensInteraction {
 		if (resonating.isPresent()) {
 			return startPlayback(state, player, context.getHand(), resonating.get());
 		}
-		return startRecording(state, player, context.getHand(), supportBlockFor(context), references);
+		return startRecording(state, player, context.getHand(), supportBlockFor(context), references,
+				EchoLensStacks.upgrades(stack).memorySlots());
 	}
 
 	private static BlockPos supportBlockFor(UseOnContext context) {
@@ -62,8 +63,9 @@ public final class EchoLensInteraction {
 	}
 
 	private static InteractionResult startRecording(EchoServerState state, ServerPlayer player,
-			net.minecraft.world.InteractionHand hand, BlockPos clickedPos, EchoMemoryReferences references) {
-		if (references.isFull()) {
+			net.minecraft.world.InteractionHand hand, BlockPos clickedPos, EchoMemoryReferences references,
+			int capacity) {
+		if (references.isFull(capacity)) {
 			player.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_NO_MORE), true);
 			return InteractionResult.FAIL;
 		}

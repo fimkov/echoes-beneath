@@ -40,18 +40,22 @@ public class EchoLensItem extends Item {
 	@Override
 	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
 		EchoMemoryReferences references = EchoLensStacks.references(stack);
+		EchoLensUpgrades upgrades = EchoLensStacks.upgrades(stack);
 		tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_MEMORIES,
-				references.filledSlots(), EchoFormat.MEMORY_SLOT_COUNT).withStyle(ChatFormatting.AQUA));
-		appendCapacityLine(references, tooltip);
+				references.filledSlots(), upgrades.memorySlots()).withStyle(ChatFormatting.AQUA));
+		appendCapacityLine(references, upgrades, tooltip);
+		tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_TUNING,
+				upgrades.radius(), upgrades.sensitivity(), upgrades.clarity()).withStyle(ChatFormatting.DARK_GRAY));
 		appendResonanceLines(references, tooltip);
 	}
 
-	private void appendCapacityLine(EchoMemoryReferences references, List<Component> tooltip) {
+	private void appendCapacityLine(EchoMemoryReferences references, EchoLensUpgrades upgrades,
+			List<Component> tooltip) {
 		if (references.isEmpty()) {
 			tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_SILENT).withStyle(ChatFormatting.DARK_GRAY));
 			return;
 		}
-		Optional<Integer> nextSlot = references.nextFreeSlot();
+		Optional<Integer> nextSlot = references.nextFreeSlot(upgrades.memorySlots());
 		if (nextSlot.isPresent()) {
 			tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_WILL_RECORD,
 					EchoTextFormat.romanSlot(nextSlot.get())).withStyle(ChatFormatting.DARK_AQUA));

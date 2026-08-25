@@ -72,7 +72,7 @@ public record EchoMemoryRecord(
 			throw new EchoMemoryFormatException("Memory record has an unreadable dimension");
 		}
 		int slot = tag.getInt("slot");
-		if (slot < 0 || slot >= EchoFormat.MEMORY_SLOT_COUNT) {
+		if (slot < 0 || slot >= EchoFormat.MAX_MEMORY_SLOTS) {
 			throw new EchoMemoryFormatException("Memory record has an out of range slot " + slot);
 		}
 		BlockPos center = new BlockPos(tag.getInt("center_x"), tag.getInt("center_y"), tag.getInt("center_z"));

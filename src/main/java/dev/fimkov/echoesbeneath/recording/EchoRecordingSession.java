@@ -23,6 +23,7 @@ import java.util.UUID;
 
 public final class EchoRecordingSession {
 	private static final int MAX_BLOCK_EVENTS = 65536;
+	private static final float QUIET_SOUND_THRESHOLD = 0.12F;
 
 	private final UUID sessionId;
 	private final UUID memoryId;
@@ -44,18 +45,20 @@ public final class EchoRecordingSession {
 	private final EntityTrackRecorder entityRecorder;
 	private final EchoLensEntity lensEntity;
 
+	private final float sensitivityFactor;
 	private int currentTick;
 	private boolean finished;
 
 	public EchoRecordingSession(UUID sessionId, UUID memoryId, UUID ownerId, int slot, ServerLevel level,
-			BlockPos center, EchoConfigValues config, EchoLensEntity lensEntity, long createdAtEpochMillis) {
+			BlockPos center, EchoConfigValues config, dev.fimkov.echoesbeneath.item.EchoLensUpgrades upgrades,
+			EchoLensEntity lensEntity, long createdAtEpochMillis) {
 		this.sessionId = sessionId;
 		this.memoryId = memoryId;
 		this.ownerId = ownerId;
 		this.slot = slot;
 		this.level = level;
 		this.center = center;
-		this.radius = config.recordingRadius();
+		this.radius = Math.min(config.recordingRadius(), upgrades.radius());
 		this.verticalRadius = config.recordingVerticalRadius();
 		this.maxTicks = config.maxRecordingTicks();
 		this.entitySampleInterval = config.entitySampleIntervalTicks();
@@ -65,6 +68,7 @@ public final class EchoRecordingSession {
 		this.blockTimeline = new BlockTimeline(MAX_BLOCK_EVENTS);
 		this.entityTimeline = new EntityTimeline(config.maxRecordedEntities());
 		this.soundTimeline = new SoundTimeline(config.maxSoundEvents());
+		this.sensitivityFactor = upgrades.sensitivityFactor();
 		this.entityRecorder = new EntityTrackRecorder(entityTimeline, center);
 	}
 
@@ -160,6 +164,9 @@ public final class EchoRecordingSession {
 		double relativeY = y - center.getY();
 		double relativeZ = z - center.getZ();
 		if (!withinRegion(relativeX, relativeY, relativeZ)) {
+			return;
+		}
+		if (volume < sensitivityFactor * QUIET_SOUND_THRESHOLD) {
 			return;
 		}
 		soundTimeline.record(currentTick, relativeX, relativeY, relativeZ, soundId, source, volume, pitch);

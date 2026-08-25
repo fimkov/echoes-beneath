@@ -61,7 +61,7 @@ public final class EchoCommandActions {
 		context.getSource().sendSuccess(() -> Component.translatable(EchoTranslations.COMMAND_STATUS_HEADER,
 				identity == null ? "-" : identity.toString(),
 				references.filledSlots(),
-				dev.fimkov.echoesbeneath.memory.EchoFormat.MEMORY_SLOT_COUNT), false);
+				EchoLensStacks.upgrades(held).memorySlots()), false);
 		for (EchoMemoryReference reference : references.entries()) {
 			context.getSource().sendSuccess(() -> Component.translatable(EchoTranslations.COMMAND_STATUS_ENTRY,
 					EchoTextFormat.romanSlot(reference.slot()),

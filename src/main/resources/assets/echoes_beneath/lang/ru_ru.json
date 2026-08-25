@@ -29,5 +29,16 @@
   "command.echoes_beneath.structure_missing": "Поблизости не удалось найти %s.",
   "advancements.echoes_beneath.echo_shard.title": "Осколок, который слушает",
   "advancements.echoes_beneath.echo_shard.description": "Добудьте эхо-осколок и научитесь делать из него линзу",
-  "subtitles.echoes_beneath.lens_resonates": "Эхо-линза отзывается"
+  "subtitles.echoes_beneath.lens_resonates": "Эхо-линза отзывается",
+  "block.echoes_beneath.resonance_table": "Стол резонанса",
+  "container.echoes_beneath.resonance_table": "Стол резонанса",
+  "upgrade.echoes_beneath.memory_slot": "Добавить слот памяти",
+  "upgrade.echoes_beneath.radius": "Расширить радиус",
+  "upgrade.echoes_beneath.sensitivity": "Обострить слух",
+  "upgrade.echoes_beneath.clarity": "Углубить ясность",
+  "upgrade.echoes_beneath.cost": "Стоит %s уровней",
+  "upgrade.echoes_beneath.cost_with_shards": "Стоит %s уровней и %s аметистовых осколков",
+  "upgrade.echoes_beneath.maxed": "Уже на пределе",
+  "upgrade.echoes_beneath.no_lens": "Положите эхо-линзу",
+  "tooltip.echoes_beneath.tuning": "Радиус %s · Слух %s · Ясность %s"
 }

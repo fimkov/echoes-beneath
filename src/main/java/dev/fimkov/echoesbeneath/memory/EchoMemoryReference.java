@@ -27,7 +27,7 @@ public record EchoMemoryReference(
 
 	public static final Codec<EchoMemoryReference> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			UUIDUtil.CODEC.fieldOf("memory_id").forGetter(EchoMemoryReference::memoryId),
-			Codec.intRange(0, EchoFormat.MEMORY_SLOT_COUNT - 1).fieldOf("slot").forGetter(EchoMemoryReference::slot),
+			Codec.intRange(0, EchoFormat.MAX_MEMORY_SLOTS - 1).fieldOf("slot").forGetter(EchoMemoryReference::slot),
 			DIMENSION_CODEC.fieldOf("dimension").forGetter(EchoMemoryReference::dimension),
 			BlockPos.CODEC.fieldOf("center").forGetter(EchoMemoryReference::center),
 			Codec.INT.fieldOf("radius").forGetter(EchoMemoryReference::radius),

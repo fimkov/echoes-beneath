@@ -25,14 +25,18 @@ public class EchoLensGameTest implements FabricGameTest {
 		if (EchoLensStacks.references(lens).filledSlots() != 0) {
 			helper.fail("a crafted lens must hold no memories");
 		}
-		if (!EchoLensStacks.references(lens).nextFreeSlot().orElseThrow().equals(0)) {
-			helper.fail("a crafted lens must record into Memory I first");
+		if (!EchoLensStacks.references(lens).nextFreeSlot(
+				EchoLensStacks.upgrades(lens).memorySlots()).orElseThrow().equals(0)) {
+			helper.fail("a fresh lens must record into Memory I first");
 		}
 		if (EchoLensStacks.identityOrNull(lens) != null) {
 			helper.fail("a crafted lens must not carry an identity before it is used");
 		}
-		if (EchoFormat.MEMORY_SLOT_COUNT != 3) {
-			helper.fail("a lens must expose exactly three memory slots");
+		if (EchoLensStacks.upgrades(lens).memorySlots() != EchoFormat.DEFAULT_MEMORY_SLOTS) {
+			helper.fail("a fresh lens must start with a single memory slot");
+		}
+		if (EchoFormat.MAX_MEMORY_SLOTS != 3) {
+			helper.fail("a fully upgraded lens must top out at three memory slots");
 		}
 		helper.succeed();
 	}

@@ -19,6 +19,9 @@ public final class EchoesBeneathClient implements ClientModInitializer {
 		EntityRendererRegistry.register(EchoEntities.ECHO_LENS, EchoLensEntityRenderer::new);
 		EchoPlaybackReceiver.register();
 		EchoPlaybackRenderer.register();
+		net.minecraft.client.gui.screens.MenuScreens.register(
+				dev.fimkov.echoesbeneath.registry.EchoMenus.RESONANCE_TABLE,
+				dev.fimkov.echoesbeneath.client.screen.ResonanceTableScreen::new);
 	}
 
 	private static Optional<EchoLensTooltipContext.TooltipViewer> localViewer() {

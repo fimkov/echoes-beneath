@@ -23,6 +23,14 @@ public final class EchoLensStacks {
 		stack.set(EchoComponents.MEMORY_REFERENCES, references);
 	}
 
+	public static EchoLensUpgrades upgrades(ItemStack stack) {
+		return stack.getOrDefault(EchoComponents.LENS_UPGRADES, EchoLensUpgrades.DEFAULT);
+	}
+
+	public static void setUpgrades(ItemStack stack, EchoLensUpgrades upgrades) {
+		stack.set(EchoComponents.LENS_UPGRADES, upgrades);
+	}
+
 	public static UUID identityOrAssign(ItemStack stack) {
 		UUID existing = stack.get(EchoComponents.LENS_IDENTITY);
 		if (existing != null) {

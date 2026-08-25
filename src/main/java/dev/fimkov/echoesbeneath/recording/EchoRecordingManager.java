@@ -75,7 +75,7 @@ public final class EchoRecordingManager {
 	public Optional<EchoRecordingSession> start(ServerPlayer player, InteractionHand hand, BlockPos supportBlock) {
 		ItemStack lensStack = player.getItemInHand(hand);
 		EchoMemoryReferences references = EchoLensStacks.references(lensStack);
-		Optional<Integer> freeSlot = references.nextFreeSlot();
+		Optional<Integer> freeSlot = references.nextFreeSlot(EchoLensStacks.upgrades(lensStack).memorySlots());
 		if (freeSlot.isEmpty()) {
 			player.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_NO_MORE), true);
 			return Optional.empty();
@@ -99,7 +99,8 @@ public final class EchoRecordingManager {
 		player.setItemInHand(hand, ItemStack.EMPTY);
 
 		EchoRecordingSession session = new EchoRecordingSession(sessionId, UUID.randomUUID(), player.getUUID(),
-				freeSlot.get(), level, center, EchoConfig.values(), lensEntity, System.currentTimeMillis());
+				freeSlot.get(), level, center, EchoConfig.values(), EchoLensStacks.upgrades(deployed),
+				lensEntity, System.currentTimeMillis());
 		sessions.put(sessionId, session);
 		EchoRecordingHooks.setAnyRecordingActive(true);
 		EchoRecordingHooks.runWithoutCapture(() -> level.playSound(null,

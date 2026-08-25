@@ -13,7 +13,10 @@ public final class EchoItemGroups {
 			.builder(CreativeModeTab.Row.TOP, 0)
 			.title(Component.translatable(EchoTranslations.ITEM_GROUP))
 			.icon(() -> new ItemStack(EchoItems.ECHO_LENS))
-			.displayItems((parameters, output) -> output.accept(EchoItems.ECHO_LENS))
+			.displayItems((parameters, output) -> {
+				output.accept(EchoItems.ECHO_LENS);
+				output.accept(EchoBlocks.RESONANCE_TABLE_ITEM);
+			})
 			.build();
 
 	private EchoItemGroups() {

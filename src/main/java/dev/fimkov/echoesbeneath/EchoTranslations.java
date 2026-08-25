@@ -10,6 +10,7 @@ public final class EchoTranslations {
 	public static final String TOOLTIP_FULL = "tooltip.echoes_beneath.full";
 	public static final String TOOLTIP_RESONATES = "tooltip.echoes_beneath.resonates";
 	public static final String TOOLTIP_DURATION = "tooltip.echoes_beneath.duration";
+	public static final String TOOLTIP_TUNING = "tooltip.echoes_beneath.tuning";
 
 	public static final String MESSAGE_NO_MORE = "message.echoes_beneath.no_more";
 	public static final String MESSAGE_NO_RESONANCE = "message.echoes_beneath.no_resonance";
@@ -33,6 +34,16 @@ public final class EchoTranslations {
 	public static final String COMMAND_STRUCTURE_MISSING = "command.echoes_beneath.structure_missing";
 
 	public static final String ENTITY_ECHO_LENS = "entity.echoes_beneath.echo_lens";
+	public static final String BLOCK_RESONANCE_TABLE = "block.echoes_beneath.resonance_table";
+	public static final String CONTAINER_RESONANCE_TABLE = "container.echoes_beneath.resonance_table";
+	public static final String UPGRADE_MEMORY_SLOT = "upgrade.echoes_beneath.memory_slot";
+	public static final String UPGRADE_RADIUS = "upgrade.echoes_beneath.radius";
+	public static final String UPGRADE_SENSITIVITY = "upgrade.echoes_beneath.sensitivity";
+	public static final String UPGRADE_CLARITY = "upgrade.echoes_beneath.clarity";
+	public static final String UPGRADE_COST = "upgrade.echoes_beneath.cost";
+	public static final String UPGRADE_COST_WITH_SHARDS = "upgrade.echoes_beneath.cost_with_shards";
+	public static final String UPGRADE_MAXED = "upgrade.echoes_beneath.maxed";
+	public static final String UPGRADE_NO_LENS = "upgrade.echoes_beneath.no_lens";
 
 	private EchoTranslations() {
 	}
