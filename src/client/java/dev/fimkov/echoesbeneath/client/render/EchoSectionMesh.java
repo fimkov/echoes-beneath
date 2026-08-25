@@ -46,18 +46,38 @@ public final class EchoSectionMesh {
 						continue;
 					}
 					for (Direction direction : Direction.values()) {
-						int neighbour = snapshot.paletteIndexAt(
-								relativeX + direction.getStepX(),
-								relativeY + direction.getStepY(),
-								relativeZ + direction.getStepZ());
-						if (neighbour == BlockPalette.AIR_INDEX) {
-							collected.add(EchoFaceGeometry.pack(localX, localY, localZ, direction));
+						if (!hasFace(snapshot, relativeX, relativeY, relativeZ, direction)) {
+							continue;
 						}
+						int edgeMask = 0;
+						for (int edge = 0; edge < EchoFaceGeometry.EDGES_PER_FACE; edge++) {
+							Direction step = EchoFaceGeometry.edgeNeighbour(direction, edge);
+							if (!hasFace(snapshot,
+									relativeX + step.getStepX(),
+									relativeY + step.getStepY(),
+									relativeZ + step.getStepZ(), direction)) {
+								edgeMask |= 1 << edge;
+							}
+						}
+						collected.add(EchoFaceGeometry.withEdges(
+								EchoFaceGeometry.pack(localX, localY, localZ, direction), edgeMask));
 					}
 				}
 			}
 		}
 		return new EchoSectionMesh(originX, originY, originZ, collected.toIntArray());
+	}
+
+	private static boolean solid(BlockSnapshot snapshot, int x, int y, int z) {
+		if (snapshot.paletteIndexAt(x, y, z) == BlockPalette.AIR_INDEX) {
+			return false;
+		}
+		return snapshot.stateAt(x, y, z).canOcclude();
+	}
+
+	private static boolean hasFace(BlockSnapshot snapshot, int x, int y, int z, Direction direction) {
+		return solid(snapshot, x, y, z)
+				&& !solid(snapshot, x + direction.getStepX(), y + direction.getStepY(), z + direction.getStepZ());
 	}
 
 	public boolean isEmpty() {

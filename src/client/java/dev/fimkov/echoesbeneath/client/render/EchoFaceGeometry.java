@@ -8,6 +8,8 @@ public final class EchoFaceGeometry {
 	public static final int LOCAL_BITS = 4;
 	public static final int LOCAL_MASK = (1 << LOCAL_BITS) - 1;
 	public static final int DIRECTION_SHIFT = LOCAL_BITS * 3;
+	public static final int EDGE_SHIFT = DIRECTION_SHIFT + 3;
+	public static final int EDGES_PER_FACE = 4;
 	public static final int CORNERS_PER_FACE = 4;
 	public static final int COMPONENTS_PER_CORNER = 3;
 
@@ -22,6 +24,56 @@ public final class EchoFaceGeometry {
 				| ((localY & LOCAL_MASK) << LOCAL_BITS)
 				| ((localZ & LOCAL_MASK) << (LOCAL_BITS * 2))
 				| (direction.ordinal() << DIRECTION_SHIFT);
+	}
+
+	public static int withEdges(int packed, int edgeMask) {
+		return packed | ((edgeMask & 0xF) << EDGE_SHIFT);
+	}
+
+	public static int edgeMask(int packed) {
+		return (packed >> EDGE_SHIFT) & 0xF;
+	}
+
+	public static Direction tangentA(Direction face) {
+		return switch (face) {
+			case DOWN, SOUTH -> Direction.EAST;
+			case UP, WEST -> Direction.SOUTH;
+			case NORTH, EAST -> Direction.UP;
+		};
+	}
+
+	public static Direction tangentB(Direction face) {
+		return switch (face) {
+			case DOWN, EAST -> Direction.SOUTH;
+			case UP, NORTH -> Direction.EAST;
+			case SOUTH, WEST -> Direction.UP;
+		};
+	}
+
+	public static Direction edgeNeighbour(Direction face, int edgeIndex) {
+		return switch (edgeIndex) {
+			case 0 -> tangentB(face).getOpposite();
+			case 1 -> tangentA(face);
+			case 2 -> tangentB(face);
+			default -> tangentA(face).getOpposite();
+		};
+	}
+
+	public static void edgeEndpoints(int packedFace, float originX, float originY, float originZ,
+			int edgeIndex, float[] basis, float[] endpoints) {
+		faceBasis(packedFace, originX, originY, originZ, basis);
+		float[] corner = new float[12];
+		for (int index = 0; index < CORNERS_PER_FACE; index++) {
+			float u = index == 1 || index == 2 ? 1.0F : 0.0F;
+			float v = index >= 2 ? 1.0F : 0.0F;
+			corner[index * 3] = basis[0] + basis[3] * u + basis[6] * v;
+			corner[index * 3 + 1] = basis[1] + basis[4] * u + basis[7] * v;
+			corner[index * 3 + 2] = basis[2] + basis[5] * u + basis[8] * v;
+		}
+		int from = edgeIndex;
+		int to = (edgeIndex + 1) % CORNERS_PER_FACE;
+		System.arraycopy(corner, from * 3, endpoints, 0, 3);
+		System.arraycopy(corner, to * 3, endpoints, 3, 3);
 	}
 
 	public static int localX(int packed) {
