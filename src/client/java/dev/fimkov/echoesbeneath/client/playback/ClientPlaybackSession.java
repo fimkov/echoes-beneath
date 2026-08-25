@@ -103,8 +103,6 @@ public final class ClientPlaybackSession {
 		waves.prune(currentTick);
 		blockDeltas.advanceTo(currentTick);
 		ensurePuppets(level);
-		dev.fimkov.echoesbeneath.client.wave.EchoWaveParticles.emit(
-				level, region.center(), meshes, waves.active(), currentTick);
 	}
 
 	private void ensurePuppets(ClientLevel level) {

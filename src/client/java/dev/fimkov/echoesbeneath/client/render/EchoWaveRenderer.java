@@ -6,19 +6,21 @@ import dev.fimkov.echoesbeneath.client.playback.ClientPlaybackSession;
 import dev.fimkov.echoesbeneath.client.wave.EchoWave;
 import dev.fimkov.echoesbeneath.client.wave.EchoWavePalette;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public final class EchoWaveRenderer {
-	private static final int MAX_OUTLINE_EDGES = 24000;
-	private static final int MAX_RING_FACES = 14000;
-	private static final float COLOUR_SCALE = 1.0F / 255.0F;
+	private static final int MAX_TEXELS = 42000;
+	private static final int SAMPLE_DEPTH = 0;
+	private static final int SAMPLE_FADE = 1;
+	private static final int SAMPLE_PALETTE = 2;
+	private static final int SAMPLE_SIZE = 3;
 
 	private EchoWaveRenderer() {
 	}
@@ -34,22 +36,18 @@ public final class EchoWaveRenderer {
 		poseStack.pushPose();
 		poseStack.translate(center.getX() - cameraPosition.x,
 				center.getY() - cameraPosition.y, center.getZ() - cameraPosition.z);
-		float animationRow = EchoRenderTypes.animationRow(
-				context.world() == null ? 0L : context.world().getGameTime());
-		paintRings(session, waves, center, partialTick, poseStack,
-				context.consumers().getBuffer(EchoRenderTypes.ECHO_WAVE), animationRow);
-		traceOutlines(session, waves, center, partialTick, poseStack,
-				context.consumers().getBuffer(RenderType.lines()));
+		VertexConsumer consumer = context.consumers().getBuffer(EchoRenderTypes.ECHO_TEXELS);
+		lightTexels(session, waves, center, partialTick, poseStack.last().pose(), consumer);
 		poseStack.popPose();
 	}
 
-	private static void paintRings(ClientPlaybackSession session, List<EchoWave> waves, BlockPos center,
-			float partialTick, PoseStack poseStack, VertexConsumer consumer, float animationRow) {
+	private static void lightTexels(ClientPlaybackSession session, List<EchoWave> waves, BlockPos center,
+			float partialTick, Matrix4f matrix, VertexConsumer consumer) {
 		int currentTick = session.currentTick();
+		int animationStep = currentTick / EchoTexelGrid.TICKS_PER_ANIMATION_STEP;
+		float texel = EchoTexelGrid.texelSize();
 		float[] basis = new float[9];
-		float[] corners = new float[EchoFaceGeometry.CORNERS_PER_FACE * 3];
-		float[] radial = new float[EchoFaceGeometry.CORNERS_PER_FACE];
-		float[] depthOut = new float[1];
+		float[] depthOut = new float[SAMPLE_SIZE];
 		List<EchoWave> nearby = new ArrayList<>();
 		List<EchoWave> facing = new ArrayList<>();
 		int emitted = 0;
@@ -61,7 +59,7 @@ public final class EchoWaveRenderer {
 				continue;
 			}
 			for (int packedFace : mesh.faces()) {
-				if (emitted >= MAX_RING_FACES) {
+				if (emitted >= MAX_TEXELS) {
 					return;
 				}
 				EchoFaceGeometry.faceBasis(packedFace, mesh.originX(), mesh.originY(), mesh.originZ(), basis);
@@ -69,44 +67,66 @@ public final class EchoWaveRenderer {
 				if (facing.isEmpty()) {
 					continue;
 				}
-				int colour = shadeFaceCentre(facing, currentTick, partialTick, center, basis, depthOut);
-				if ((colour >>> 24) == 0) {
-					continue;
-				}
-				fillCorners(basis, corners);
-				for (int corner = 0; corner < EchoFaceGeometry.CORNERS_PER_FACE; corner++) {
-					shadePoint(facing, currentTick, partialTick,
-							center.getX() + corners[corner * 3],
-							center.getY() + corners[corner * 3 + 1],
-							center.getZ() + corners[corner * 3 + 2], depthOut);
-					radial[corner] = depthOut[0];
-				}
-				for (int corner = 0; corner < EchoFaceGeometry.CORNERS_PER_FACE; corner++) {
-					EchoFaceGeometry.emitVertex(consumer, poseStack.last().pose(),
-							corners[corner * 3], corners[corner * 3 + 1], corners[corner * 3 + 2],
-							radial[corner], animationRow, colour);
-				}
-				emitted++;
+				emitted += lightFace(consumer, matrix, facing, center, basis, texel,
+						currentTick, partialTick, animationStep, depthOut, MAX_TEXELS - emitted);
 			}
 		}
 	}
 
-	private static void fillCorners(float[] basis, float[] corners) {
-		for (int index = 0; index < EchoFaceGeometry.CORNERS_PER_FACE; index++) {
-			float u = index == 1 || index == 2 ? 1.0F : 0.0F;
-			float v = index >= 2 ? 1.0F : 0.0F;
-			corners[index * 3] = basis[0] + basis[3] * u + basis[6] * v;
-			corners[index * 3 + 1] = basis[1] + basis[4] * u + basis[7] * v;
-			corners[index * 3 + 2] = basis[2] + basis[5] * u + basis[8] * v;
+	private static int lightFace(VertexConsumer consumer, Matrix4f matrix, List<EchoWave> waves, BlockPos center,
+			float[] basis, float texel, int currentTick, float partialTick, int animationStep,
+			float[] depthOut, int budget) {
+		int emitted = 0;
+		for (int row = 0; row < EchoTexelGrid.TEXELS_PER_BLOCK && emitted < budget; row++) {
+			for (int column = 0; column < EchoTexelGrid.TEXELS_PER_BLOCK && emitted < budget; column++) {
+				float u = (column + 0.5F) * texel;
+				float v = (row + 0.5F) * texel;
+				float localX = basis[0] + basis[3] * u + basis[6] * v;
+				float localY = basis[1] + basis[4] * u + basis[7] * v;
+				float localZ = basis[2] + basis[5] * u + basis[8] * v;
+				int body = shadePoint(waves, currentTick, partialTick,
+						center.getX() + localX, center.getY() + localY, center.getZ() + localZ, depthOut);
+				if ((body >>> 24) == 0) {
+					continue;
+				}
+				int paletteIndex = (int) depthOut[SAMPLE_PALETTE];
+				float fade = depthOut[SAMPLE_FADE];
+				int colour;
+				if (EchoWavePalette.isFront(depthOut[SAMPLE_DEPTH])) {
+					colour = EchoWavePalette.outlineColour(paletteIndex, fade);
+				} else {
+					int hash = EchoTexelGrid.hash(center.getX() + localX, center.getY() + localY,
+							center.getZ() + localZ, animationStep);
+					if (EchoTexelGrid.isGlow(hash)) {
+						colour = EchoWavePalette.glowColour(paletteIndex, fade, false);
+					} else if (EchoTexelGrid.isEmber(hash)) {
+						colour = EchoWavePalette.glowColour(paletteIndex, fade, true);
+					} else {
+						colour = body;
+					}
+				}
+				emitTexel(consumer, matrix, basis, column * texel, row * texel, texel, colour);
+				emitted++;
+			}
 		}
+		return emitted;
 	}
 
-	private static int shadeFaceCentre(List<EchoWave> waves, int currentTick, float partialTick,
-			BlockPos center, float[] basis, float[] depthOut) {
-		return shadePoint(waves, currentTick, partialTick,
-				center.getX() + basis[0] + (basis[3] + basis[6]) * 0.5F,
-				center.getY() + basis[1] + (basis[4] + basis[7]) * 0.5F,
-				center.getZ() + basis[2] + (basis[5] + basis[8]) * 0.5F, depthOut);
+	private static void emitTexel(VertexConsumer consumer, Matrix4f matrix, float[] basis,
+			float u, float v, float size, int argb) {
+		emitCorner(consumer, matrix, basis, u, v, argb);
+		emitCorner(consumer, matrix, basis, u + size, v, argb);
+		emitCorner(consumer, matrix, basis, u + size, v + size, argb);
+		emitCorner(consumer, matrix, basis, u, v + size, argb);
+	}
+
+	private static void emitCorner(VertexConsumer consumer, Matrix4f matrix, float[] basis,
+			float u, float v, int argb) {
+		consumer.addVertex(matrix,
+						basis[0] + basis[3] * u + basis[6] * v,
+						basis[1] + basis[4] * u + basis[7] * v,
+						basis[2] + basis[5] * u + basis[8] * v)
+				.setColor((argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF, (argb >>> 24) & 0xFF);
 	}
 
 	private static void collectFacingWaves(List<EchoWave> nearby, int packedFace, float[] basis,
@@ -124,92 +144,6 @@ public final class EchoWaveRenderer {
 				destination.add(wave);
 			}
 		}
-	}
-
-	public static int shadePoint(List<EchoWave> waves, int currentTick, float partialTick,
-			double worldX, double worldY, double worldZ, float[] depthOut) {
-		Vec3 point = new Vec3(worldX, worldY, worldZ);
-		int best = 0;
-		int bestAlpha = 0;
-		float bestDepth = 0.0F;
-		for (EchoWave wave : waves) {
-			float elapsed = wave.elapsedAt(currentTick, partialTick);
-			float depth = wave.depthOf(wave.origin().distanceTo(point), elapsed);
-			if (depth < 0.0F) {
-				continue;
-			}
-			int colour = EchoWavePalette.colorAt(wave.paletteIndex(), depth, wave.fadeAt(elapsed));
-			int alpha = (colour >>> 24) & 0xFF;
-			if (alpha > bestAlpha) {
-				bestAlpha = alpha;
-				best = colour;
-				bestDepth = depth;
-			}
-		}
-		depthOut[0] = bestDepth;
-		return bestAlpha == 0 ? 0 : best;
-	}
-
-	private static void traceOutlines(ClientPlaybackSession session, List<EchoWave> waves, BlockPos center,
-			float partialTick, PoseStack poseStack, VertexConsumer consumer) {
-		int currentTick = session.currentTick();
-		float[] basis = new float[9];
-		float[] endpoints = new float[6];
-		List<EchoWave> nearby = new ArrayList<>();
-		int emitted = 0;
-
-		for (Map.Entry<Integer, EchoSectionMesh> entry : session.meshes().entrySet()) {
-			EchoSectionMesh mesh = entry.getValue();
-			collectNearbyWaves(mesh, waves, center, currentTick, partialTick, nearby);
-			if (nearby.isEmpty()) {
-				continue;
-			}
-			for (int packedFace : mesh.faces()) {
-				int edgeMask = EchoFaceGeometry.edgeMask(packedFace);
-				if (edgeMask == 0) {
-					continue;
-				}
-				if (emitted >= MAX_OUTLINE_EDGES) {
-					return;
-				}
-				EchoFaceGeometry.faceBasis(packedFace, mesh.originX(), mesh.originY(), mesh.originZ(), basis);
-				float faceCentreX = basis[0] + (basis[3] + basis[6]) * 0.5F;
-				float faceCentreY = basis[1] + (basis[4] + basis[7]) * 0.5F;
-				float faceCentreZ = basis[2] + (basis[5] + basis[8]) * 0.5F;
-				int colour = colorFromWaves(nearby, currentTick, partialTick,
-						center.getX() + faceCentreX, center.getY() + faceCentreY, center.getZ() + faceCentreZ);
-				if ((colour >>> 24) == 0) {
-					continue;
-				}
-				for (int edge = 0; edge < EchoFaceGeometry.EDGES_PER_FACE; edge++) {
-					if ((edgeMask & (1 << edge)) == 0) {
-						continue;
-					}
-					EchoFaceGeometry.edgeEndpoints(packedFace, mesh.originX(), mesh.originY(), mesh.originZ(),
-							edge, basis, endpoints);
-					emitLine(consumer, poseStack, endpoints, colour);
-					emitted++;
-				}
-			}
-		}
-	}
-
-	private static void emitLine(VertexConsumer consumer, PoseStack poseStack, float[] endpoints, int argb) {
-		float red = ((argb >> 16) & 0xFF) * COLOUR_SCALE;
-		float green = ((argb >> 8) & 0xFF) * COLOUR_SCALE;
-		float blue = (argb & 0xFF) * COLOUR_SCALE;
-		float alpha = ((argb >>> 24) & 0xFF) * COLOUR_SCALE;
-		float normalX = endpoints[3] - endpoints[0];
-		float normalY = endpoints[4] - endpoints[1];
-		float normalZ = endpoints[5] - endpoints[2];
-		float length = Math.max(1.0E-4F, (float) Math.sqrt(
-				normalX * normalX + normalY * normalY + normalZ * normalZ));
-		consumer.addVertex(poseStack.last().pose(), endpoints[0], endpoints[1], endpoints[2])
-				.setColor(red, green, blue, alpha)
-				.setNormal(poseStack.last(), normalX / length, normalY / length, normalZ / length);
-		consumer.addVertex(poseStack.last().pose(), endpoints[3], endpoints[4], endpoints[5])
-				.setColor(red, green, blue, alpha)
-				.setNormal(poseStack.last(), normalX / length, normalY / length, normalZ / length);
 	}
 
 	private static void collectNearbyWaves(EchoSectionMesh mesh, List<EchoWave> waves, BlockPos center,
@@ -230,24 +164,44 @@ public final class EchoWaveRenderer {
 		}
 	}
 
-	public static int colorFromWaves(List<EchoWave> waves, int currentTick, float partialTick,
-			double worldX, double worldY, double worldZ) {
+	public static int shadePoint(List<EchoWave> waves, int currentTick, float partialTick,
+			double worldX, double worldY, double worldZ, float[] sampleOut) {
 		Vec3 point = new Vec3(worldX, worldY, worldZ);
 		int best = 0;
 		int bestAlpha = 0;
+		float bestDepth = 0.0F;
+		float bestFade = 0.0F;
+		int bestPalette = EchoWavePalette.PALETTE_SCULK;
 		for (EchoWave wave : waves) {
 			float elapsed = wave.elapsedAt(currentTick, partialTick);
 			float depth = wave.depthOf(wave.origin().distanceTo(point), elapsed);
 			if (depth < 0.0F) {
 				continue;
 			}
-			int colour = EchoWavePalette.colorAt(wave.paletteIndex(), depth, wave.fadeAt(elapsed));
+			float fade = wave.fadeAt(elapsed);
+			int colour = EchoWavePalette.colorAt(wave.paletteIndex(), depth, fade);
 			int alpha = (colour >>> 24) & 0xFF;
 			if (alpha > bestAlpha) {
 				bestAlpha = alpha;
 				best = colour;
+				bestDepth = depth;
+				bestFade = fade;
+				bestPalette = wave.paletteIndex();
 			}
 		}
+		sampleOut[SAMPLE_DEPTH] = bestDepth;
+		sampleOut[SAMPLE_FADE] = bestFade;
+		sampleOut[SAMPLE_PALETTE] = bestPalette;
 		return bestAlpha == 0 ? 0 : best;
+	}
+
+	public static int colorFromWaves(List<EchoWave> waves, int currentTick, float partialTick,
+			double worldX, double worldY, double worldZ) {
+		float[] sample = new float[SAMPLE_SIZE];
+		int body = shadePoint(waves, currentTick, partialTick, worldX, worldY, worldZ, sample);
+		if ((body >>> 24) == 0) {
+			return 0;
+		}
+		return EchoWavePalette.glowColour((int) sample[SAMPLE_PALETTE], sample[SAMPLE_FADE], false);
 	}
 }
