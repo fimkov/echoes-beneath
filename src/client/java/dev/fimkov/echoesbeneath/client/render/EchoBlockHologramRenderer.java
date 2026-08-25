@@ -7,7 +7,7 @@ import dev.fimkov.echoesbeneath.memory.EchoCoordinates;
 import dev.fimkov.echoesbeneath.memory.snapshot.BlockPalette;
 import dev.fimkov.echoesbeneath.memory.snapshot.BlockSnapshot;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import dev.fimkov.echoesbeneath.client.platform.EchoRenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -36,7 +36,7 @@ public final class EchoBlockHologramRenderer {
 		lastScanTime = Long.MIN_VALUE;
 	}
 
-	public static void render(WorldRenderContext context, ClientPlaybackSession session, Vec3 cameraPosition) {
+	public static void render(EchoRenderContext context, ClientPlaybackSession session, Vec3 cameraPosition) {
 		Minecraft client = Minecraft.getInstance();
 		Level level = client.level;
 		if (context.consumers() == null || level == null) {
@@ -89,7 +89,7 @@ public final class EchoBlockHologramRenderer {
 		}
 	}
 
-	private static int draw(WorldRenderContext context, Level level, BlockRenderDispatcher blocks,
+	private static int draw(EchoRenderContext context, Level level, BlockRenderDispatcher blocks,
 			EchoSilhouetteBuffers buffers, PoseStack poseStack, BlockPos.MutableBlockPos cursor,
 			BlockPos center, Vec3 cameraPosition, int packed, BlockState remembered, double reach) {
 		if (remembered.isAir()) {

@@ -2,6 +2,7 @@ package dev.fimkov.echoesbeneath.client;
 
 import dev.fimkov.echoesbeneath.client.playback.EchoPlaybackReceiver;
 import dev.fimkov.echoesbeneath.client.render.EchoLensEntityRenderer;
+import dev.fimkov.echoesbeneath.client.platform.fabric.FabricRenderContext;
 import dev.fimkov.echoesbeneath.client.render.EchoPlaybackRenderer;
 import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
@@ -13,6 +14,7 @@ import dev.fimkov.echoesbeneath.registry.EchoEntities;
 import dev.fimkov.echoesbeneath.registry.EchoItems;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -26,7 +28,12 @@ public final class EchoesBeneathClient implements ClientModInitializer {
 		EchoLensTooltipContext.bindViewer(EchoesBeneathClient::localViewer);
 		EntityRendererRegistry.register(EchoEntities.ECHO_LENS, EchoLensEntityRenderer::new);
 		EchoPlaybackReceiver.register();
-		EchoPlaybackRenderer.register();
+		WorldRenderEvents.START.register(context ->
+				EchoPlaybackRenderer.frameStart(new FabricRenderContext(context)));
+		WorldRenderEvents.AFTER_ENTITIES.register(context ->
+				EchoPlaybackRenderer.afterEntities(new FabricRenderContext(context)));
+		WorldRenderEvents.END.register(context ->
+				EchoPlaybackRenderer.frameEnd(new FabricRenderContext(context)));
 		registerLensAppearance();
 		net.minecraft.client.gui.screens.MenuScreens.register(
 				dev.fimkov.echoesbeneath.registry.EchoMenus.RESONANCE_TABLE,

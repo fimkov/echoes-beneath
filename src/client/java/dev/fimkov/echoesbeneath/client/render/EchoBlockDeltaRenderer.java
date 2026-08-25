@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.fimkov.echoesbeneath.client.playback.ClientPlaybackSession;
 import dev.fimkov.echoesbeneath.client.wave.EchoWave;
 import dev.fimkov.echoesbeneath.memory.EchoCoordinates;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import dev.fimkov.echoesbeneath.client.platform.EchoRenderContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
@@ -20,7 +20,7 @@ public final class EchoBlockDeltaRenderer {
 	private EchoBlockDeltaRenderer() {
 	}
 
-	public static void render(WorldRenderContext context, ClientPlaybackSession session, Vec3 cameraPosition) {
+	public static void render(EchoRenderContext context, ClientPlaybackSession session, Vec3 cameraPosition) {
 		if (context.consumers() == null) {
 			return;
 		}

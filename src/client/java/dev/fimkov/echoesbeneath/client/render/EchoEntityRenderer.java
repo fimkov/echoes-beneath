@@ -2,7 +2,7 @@ package dev.fimkov.echoesbeneath.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.fimkov.echoesbeneath.client.playback.ClientPlaybackSession;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import dev.fimkov.echoesbeneath.client.platform.EchoRenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
@@ -22,7 +22,7 @@ public final class EchoEntityRenderer {
 	private EchoEntityRenderer() {
 	}
 
-	public static void render(WorldRenderContext context, ClientPlaybackSession session) {
+	public static void render(EchoRenderContext context, ClientPlaybackSession session) {
 		if (context.consumers() == null || session.puppets().isEmpty()) {
 			return;
 		}
@@ -55,7 +55,7 @@ public final class EchoEntityRenderer {
 		dispatcher.setRenderShadow(previousShadow);
 	}
 
-	private static void renderPuppet(WorldRenderContext context, EntityRenderDispatcher dispatcher,
+	private static void renderPuppet(EchoRenderContext context, EntityRenderDispatcher dispatcher,
 			PoseStack poseStack, Entity entity, Vec3 cameraPosition, float partialTick, float reveal,
 			float presence) {
 		EchoSilhouetteBuffers buffers = EchoSilhouetteBuffers.forEntity(context.consumers(),
