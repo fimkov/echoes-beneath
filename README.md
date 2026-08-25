@@ -206,10 +206,25 @@ supported range are clamped and unreadable values fall back to the default.
 | `entitySampleRate` | 5 | 1–20 |
 | `maxRecordedEntities` | 128 | 1–512 |
 | `maxSoundEvents` | 4096 | 64–32768 |
+| `maxParticleEvents` | 8192 | 0–65536 |
 | `maxConcurrentSoundWaves` | 64 | 4–256 |
 | `allowOverlappingPlayback` | false | boolean |
 | `suppressHostileMobs` | true | boolean |
 | `disableBlockInteractionDuringPlayback` | true | boolean |
+
+Client-side, written to `config/echoes_beneath_client.properties`. This is where to go if playback
+costs you frames — everything expensive about it is here.
+
+| Key | Default | Range | What it does |
+|---|---|---|---|
+| `waveTexelBudget` | 42000 | 2000–160000 | lit texels a frame may draw; the first thing to lower |
+| `waveDetail` | 8 | 2–16 | texels per block edge; halving it quarters the work |
+| `hologramBlockBudget` | 384 | 0–4096 | remembered blocks drawn at once; 0 turns them off |
+| `hologramDistance` | 32 | 8–96 | how far remembered blocks are drawn |
+| `showBlockHolograms` | true | boolean | remembered blocks on or off outright |
+| `hideSkyDuringPlayback` | true | boolean | whether the sky is blacked out inside a memory |
+| `transitionTicks` | 22 | 1–200 | how long the fade in and out takes |
+| `regionAmbienceVolume` | 55 | 0–100 | loudness of the drone inside a memory, per cent |
 
 ## Development commands
 
