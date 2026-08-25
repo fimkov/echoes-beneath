@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "echoes_beneath",
+  "version": "${version}",
+  "name": "Echoes Beneath",
+  "description": "The lens remembers shape and sound, but not light.",
+  "license": "MIT",
+  "icon": "assets/echoes_beneath/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.fimkov.echoesbeneath.EchoesBeneath"
+    ],
+    "client": [
+      "dev.fimkov.echoesbeneath.client.EchoesBeneathClient"
+    ]
+  },
+  "mixins": [
+    "echoes_beneath.mixins.json",
+    {
+      "config": "echoes_beneath.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "fabric-api": "*",
+    "minecraft": "~1.21.1",
+    "java": ">=21"
+  }
+}

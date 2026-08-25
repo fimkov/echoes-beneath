@@ -1,0 +1,42 @@
+{
+  "item.echoes_beneath.echo_lens": "Echo Lens",
+  "entity.echoes_beneath.echo_lens": "Echo Lens",
+
+  "tooltip.echoes_beneath.memories": "Memories: %s / %s",
+  "tooltip.echoes_beneath.silent": "The lens is silent.",
+  "tooltip.echoes_beneath.will_record": "It will record into Memory %s",
+  "tooltip.echoes_beneath.full": "This lens can remember no more.",
+  "tooltip.echoes_beneath.resonates": "Memory %s resonates here",
+  "tooltip.echoes_beneath.duration": "Duration: %s",
+
+  "message.echoes_beneath.no_more": "This Echo Lens can remember no more.",
+  "message.echoes_beneath.no_resonance": "No memory resonates with this place.",
+  "message.echoes_beneath.recording": "Recording Echo %s — %s / %s",
+  "message.echoes_beneath.recording_stopped_unloaded": "The recorded area unloaded. Memory %s was sealed early.",
+  "message.echoes_beneath.recording_sealed": "Memory %s is sealed.",
+  "message.echoes_beneath.resonates": "Memory %s resonates here",
+  "message.echoes_beneath.playback_overlap": "Another memory is already unfolding nearby.",
+  "message.echoes_beneath.playback_blocked_interaction": "The memory does not yield to the present.",
+  "message.echoes_beneath.playback_started": "Memory %s unfolds.",
+  "message.echoes_beneath.playback_finished": "Memory %s fades.",
+  "message.echoes_beneath.memory_corrupt": "This memory can no longer be read.",
+  "message.echoes_beneath.lens_returned_to_ground": "The lens waits where it remembered.",
+
+  "command.echoes_beneath.status_header": "Echo Lens %s — %s / %s memories",
+  "command.echoes_beneath.status_entry": "Memory %s: %s at %s %s %s, radius %s, duration %s",
+  "command.echoes_beneath.no_lens": "Hold an Echo Lens to use this command.",
+  "command.echoes_beneath.not_recording": "No recording is running here.",
+  "command.echoes_beneath.not_playing": "No playback is running here.",
+  "command.echoes_beneath.recovered_mobs": "Restored %s suppressed mobs.",
+  "command.echoes_beneath.memory_cleared": "Recovery: memory %s was removed.",
+  "command.echoes_beneath.debug_bounds": "Region center %s %s %s, radius %s, vertical %s, tick %s / %s",
+  "command.echoes_beneath.debug_sounds": "Sound events: %s, next at tick %s",
+  "command.echoes_beneath.debug_entities": "Echo entities: %s, keyframes: %s",
+  "command.echoes_beneath.structure_found": "%s is near %s %s %s (%s blocks away).",
+  "command.echoes_beneath.structure_missing": "Could not find %s nearby.",
+
+  "advancements.echoes_beneath.echo_shard.title": "A Shard That Listens",
+  "advancements.echoes_beneath.echo_shard.description": "Obtain an Echo Shard and learn to shape a lens from it",
+
+  "subtitles.echoes_beneath.lens_resonates": "Echo Lens resonates"
+}
