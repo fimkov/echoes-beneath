@@ -36,6 +36,8 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	private static final int PIP_PAID_V = 6;
 	private static final int GLOW_U = 176;
 	private static final int GLOW_V = 36;
+	private static final int GHOST_U = 208;
+	private static final int GHOST_V = 36;
 
 	private static final int INK = 0xB4C4C2;
 	private static final int DIM = 0x68767A;
@@ -47,7 +49,6 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	private static final float PULSE_BASE = 0.30F;
 	private static final float PULSE_SWING = 0.22F;
 	private static final float PULSE_READY_BOOST = 0.26F;
-	private static final float GHOST_ALPHA = 0.28F;
 	private static final float DENIED_PITCH = 0.65F;
 	private static final float DENIED_VOLUME = 0.7F;
 
@@ -176,10 +177,9 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		if (!menu.amethyst().isEmpty()) {
 			return;
 		}
-		graphics.setColor(1.0F, 1.0F, 1.0F, GHOST_ALPHA);
-		graphics.renderItem(amethystGhost, leftPos + ResonanceTableLayout.AMETHYST_SLOT_X,
-				topPos + ResonanceTableLayout.AMETHYST_SLOT_Y);
-		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+		graphics.blit(TEXTURE, leftPos + ResonanceTableLayout.AMETHYST_SLOT_X,
+				topPos + ResonanceTableLayout.AMETHYST_SLOT_Y, GHOST_U, GHOST_V,
+				ResonanceTableLayout.SLOT_SIZE, ResonanceTableLayout.SLOT_SIZE);
 	}
 
 	private void renderDialGlow(GuiGraphics graphics) {
