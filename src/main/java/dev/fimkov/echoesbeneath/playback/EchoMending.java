@@ -44,8 +44,9 @@ public final class EchoMending {
 		if (!level.getBlockState(target).canBeReplaced() || !remembered.canSurvive(level, target)) {
 			return false;
 		}
-		if (!level.noCollision(remembered.getCollisionShape(level, target).bounds().move(target))
-				&& !level.getEntities(null, new AABB(target)).isEmpty()) {
+		if (!remembered.getCollisionShape(level, target).isEmpty()
+				&& !level.getEntities((net.minecraft.world.entity.Entity) null,
+						new AABB(target)).isEmpty()) {
 			return false;
 		}
 		Item needed = remembered.getBlock().asItem();
@@ -54,7 +55,7 @@ public final class EchoMending {
 		}
 		int cost = EchoConfig.values().mendingExperienceCost();
 		if (!player.getAbilities().instabuild) {
-			if (player.experienceLevel < cost && player.totalExperience < cost) {
+			if (cost > 0 && player.experienceLevel <= 0 && player.experienceProgress <= 0.0F) {
 				player.displayClientMessage(
 						Component.translatable(EchoTranslations.MESSAGE_MENDING_NO_EXPERIENCE), true);
 				return false;
