@@ -18,6 +18,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
@@ -71,7 +72,8 @@ public final class EchoRecordingManager {
 		return Optional.empty();
 	}
 
-	public Optional<EchoRecordingSession> start(ServerPlayer player, ItemStack lensStack, BlockPos supportBlock) {
+	public Optional<EchoRecordingSession> start(ServerPlayer player, InteractionHand hand, BlockPos supportBlock) {
+		ItemStack lensStack = player.getItemInHand(hand);
 		EchoMemoryReferences references = EchoLensStacks.references(lensStack);
 		Optional<Integer> freeSlot = references.nextFreeSlot();
 		if (freeSlot.isEmpty()) {
@@ -94,7 +96,7 @@ public final class EchoRecordingManager {
 		if (!level.addFreshEntity(lensEntity)) {
 			return Optional.empty();
 		}
-		lensStack.setCount(0);
+		player.setItemInHand(hand, ItemStack.EMPTY);
 
 		EchoRecordingSession session = new EchoRecordingSession(sessionId, UUID.randomUUID(), player.getUUID(),
 				freeSlot.get(), level, center, EchoConfig.values(), lensEntity, System.currentTimeMillis());

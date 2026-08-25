@@ -110,6 +110,9 @@ public final class EchoPlaybackSession {
 		if (currentTick % SUPPRESSION_SWEEP_INTERVAL == 0) {
 			sweepSuppression(suppressionManager);
 		}
+		if (currentTick % PlaybackBoundaryTrace.BEAT_INTERVAL_TICKS == 0) {
+			PlaybackBoundaryTrace.sweep(level, region, currentTick);
+		}
 	}
 
 	private void sweepSuppression(HostileMobSuppressionManager suppressionManager) {

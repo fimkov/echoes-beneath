@@ -36,7 +36,7 @@ public final class EchoWaveRenderer {
 		poseStack.translate(center.getX() - cameraPosition.x,
 				center.getY() - cameraPosition.y, center.getZ() - cameraPosition.z);
 		Matrix4f matrix = poseStack.last().pose();
-		VertexConsumer consumer = context.consumers().getBuffer(RenderType.debugQuads());
+		VertexConsumer consumer = context.consumers().getBuffer(EchoRenderTypes.ECHO_WAVE);
 		emitRings(session, waves, center, partialTick, matrix, consumer);
 		poseStack.popPose();
 	}

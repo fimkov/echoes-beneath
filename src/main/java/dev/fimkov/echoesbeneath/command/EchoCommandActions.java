@@ -85,7 +85,8 @@ public final class EchoCommandActions {
 			return FAILURE;
 		}
 		BlockPos support = player.blockPosition().below();
-		return state.recordings().start(player, held, support).isPresent() ? SUCCESS : FAILURE;
+		return state.recordings().start(player, net.minecraft.world.InteractionHand.MAIN_HAND, support)
+				.isPresent() ? SUCCESS : FAILURE;
 	}
 
 	public static int stopRecording(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -120,7 +121,8 @@ public final class EchoCommandActions {
 			context.getSource().sendFailure(Component.translatable(EchoTranslations.MESSAGE_NO_RESONANCE));
 			return FAILURE;
 		}
-		return state.playbacks().start(player, held, reference.get()) ? SUCCESS : FAILURE;
+		return state.playbacks().start(player, net.minecraft.world.InteractionHand.MAIN_HAND, reference.get())
+				? SUCCESS : FAILURE;
 	}
 
 	public static int stopPlayback(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

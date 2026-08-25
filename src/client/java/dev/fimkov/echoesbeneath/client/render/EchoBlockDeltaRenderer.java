@@ -37,7 +37,7 @@ public final class EchoBlockDeltaRenderer {
 		poseStack.translate(center.getX() - cameraPosition.x,
 				center.getY() - cameraPosition.y, center.getZ() - cameraPosition.z);
 		Matrix4f matrix = poseStack.last().pose();
-		VertexConsumer consumer = context.consumers().getBuffer(RenderType.debugQuads());
+		VertexConsumer consumer = context.consumers().getBuffer(EchoRenderTypes.ECHO_WAVE);
 		float[] corners = new float[CORNERS * EchoFaceGeometry.COMPONENTS_PER_CORNER];
 		int[] cornerColors = new int[CORNERS];
 

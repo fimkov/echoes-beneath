@@ -20,6 +20,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
@@ -81,7 +82,8 @@ public final class EchoPlaybackManager {
 		return false;
 	}
 
-	public boolean start(ServerPlayer player, ItemStack lensStack, EchoMemoryReference reference) {
+	public boolean start(ServerPlayer player, InteractionHand hand, EchoMemoryReference reference) {
+		ItemStack lensStack = player.getItemInHand(hand);
 		Optional<EchoMemoryRecord> loaded = state.storage().load(reference.memoryId());
 		if (loaded.isEmpty()) {
 			player.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_MEMORY_CORRUPT), true);
@@ -116,7 +118,7 @@ public final class EchoPlaybackManager {
 		if (!level.addFreshEntity(lensEntity)) {
 			return false;
 		}
-		lensStack.setCount(0);
+		player.setItemInHand(hand, ItemStack.EMPTY);
 
 		EchoPlaybackSession session = new EchoPlaybackSession(playbackId, player.getUUID(), level,
 				region, record, lensEntity, encoded);

@@ -259,8 +259,9 @@ restarts of both single-player worlds and dedicated servers.
   example specific villager professions) is not reproduced.
 - The darkening and fog effects apply to the whole client view while the camera is inside a region.
   Other rendering mods that also override the light texture or fog may conflict.
-- The darkening leaves the full-bright lightmap texel alone so that the HUD and inventory stay readable.
-  A world block lit to both full block light and full sky light therefore keeps its brightness.
+- The darkening leaves the full-bright lightmap texel alone so that the HUD, the deployed lens and every
+  particle stay readable. A world block lit to both full block light and full sky light therefore keeps
+  its brightness; this only happens next to a light source under open sky.
 
 ## Trailer scenario
 

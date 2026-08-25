@@ -38,25 +38,25 @@ public final class EchoLensInteraction {
 		Optional<EchoMemoryReference> resonating = EchoMemoryLocator.resonating(
 				references, player.level().dimension(), player.blockPosition());
 		if (resonating.isPresent()) {
-			return startPlayback(state, player, stack, resonating.get());
+			return startPlayback(state, player, context.getHand(), resonating.get());
 		}
-		return startRecording(state, player, stack, context.getClickedPos(), references);
+		return startRecording(state, player, context.getHand(), context.getClickedPos(), references);
 	}
 
 	private static InteractionResult startPlayback(EchoServerState state, ServerPlayer player,
-			ItemStack stack, EchoMemoryReference reference) {
-		return state.playbacks().start(player, stack, reference)
+			net.minecraft.world.InteractionHand hand, EchoMemoryReference reference) {
+		return state.playbacks().start(player, hand, reference)
 				? InteractionResult.CONSUME
 				: InteractionResult.FAIL;
 	}
 
-	private static InteractionResult startRecording(EchoServerState state, ServerPlayer player, ItemStack stack,
-			BlockPos clickedPos, EchoMemoryReferences references) {
+	private static InteractionResult startRecording(EchoServerState state, ServerPlayer player,
+			net.minecraft.world.InteractionHand hand, BlockPos clickedPos, EchoMemoryReferences references) {
 		if (references.isFull()) {
 			player.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_NO_MORE), true);
 			return InteractionResult.FAIL;
 		}
-		return state.recordings().start(player, stack, clickedPos).isPresent()
+		return state.recordings().start(player, hand, clickedPos).isPresent()
 				? InteractionResult.CONSUME
 				: InteractionResult.FAIL;
 	}

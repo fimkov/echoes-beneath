@@ -34,7 +34,6 @@ public final class EchoPlaybackRenderer {
 			boolean cameraInside = EchoDarkness.enclosingSession()
 					.filter(enclosing -> enclosing == session)
 					.isPresent();
-			EchoBoundaryRenderer.render(context, session, cameraInside);
 			if (!cameraInside) {
 				continue;
 			}
