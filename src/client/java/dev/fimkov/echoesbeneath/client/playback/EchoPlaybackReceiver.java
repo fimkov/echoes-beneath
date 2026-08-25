@@ -32,13 +32,16 @@ public final class EchoPlaybackReceiver {
 				(payload, context) -> context.client().execute(
 						() -> ClientPlaybackManager.instance().onStop(payload)));
 
-		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) ->
-				ClientPlaybackManager.instance().clearAll());
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+			ClientPlaybackManager.instance().clearAll();
+			dev.fimkov.echoesbeneath.client.render.EchoDarkness.clearFrameState();
+		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (client.level != null && !client.isPaused()) {
 				ClientPlaybackManager.instance().clientTick(client.level);
 			}
+			dev.fimkov.echoesbeneath.client.render.EchoDarkness.refreshFrameState();
 		});
 	}
 }

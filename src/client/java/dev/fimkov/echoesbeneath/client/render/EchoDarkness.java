@@ -1,9 +1,9 @@
 package dev.fimkov.echoesbeneath.client.render;
 
+import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.client.playback.ClientPlaybackManager;
 import dev.fimkov.echoesbeneath.client.playback.ClientPlaybackSession;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
 
@@ -12,22 +12,35 @@ public final class EchoDarkness {
 	private static final float FOG_START_FRACTION = 0.05F;
 	private static final float FOG_END_MARGIN = 4.0F;
 
+	private static ClientPlaybackSession enclosing;
 	private static boolean restoring;
 
 	private EchoDarkness() {
 	}
 
-	public static Optional<ClientPlaybackSession> enclosingSession() {
+	public static void refreshFrameState() {
 		Minecraft client = Minecraft.getInstance();
-		if (client.level == null || client.player == null) {
-			return Optional.empty();
+		ClientPlaybackSession found = null;
+		if (client.level != null && client.player != null) {
+			found = ClientPlaybackManager.instance()
+					.sessionContaining(client.level, client.player.getEyePosition()).orElse(null);
 		}
-		return ClientPlaybackManager.instance()
-				.sessionContaining(client.level, client.player.getEyePosition());
+		if (found != enclosing) {
+			EchoesBeneath.LOGGER.info("Echo region {}", found == null ? "left" : "entered");
+		}
+		enclosing = found;
+	}
+
+	public static void clearFrameState() {
+		enclosing = null;
+	}
+
+	public static Optional<ClientPlaybackSession> enclosingSession() {
+		return Optional.ofNullable(enclosing);
 	}
 
 	public static boolean isViewerInsideRegion() {
-		return enclosingSession().isPresent();
+		return enclosing != null;
 	}
 
 	public static boolean shouldDarken() {
@@ -36,10 +49,8 @@ public final class EchoDarkness {
 
 	public static void restoreNaturalLight(float partialTick) {
 		Minecraft client = Minecraft.getInstance();
-		if (client.gameRenderer == null) {
-			return;
-		}
-		if (!(client.gameRenderer.lightTexture() instanceof EchoLightTextureAccess access)) {
+		if (client.gameRenderer == null
+				|| !(client.gameRenderer.lightTexture() instanceof EchoLightTextureAccess access)) {
 			return;
 		}
 		restoring = true;

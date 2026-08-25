@@ -11,6 +11,7 @@ public final class EchoPlaybackRenderer {
 	}
 
 	public static void register() {
+		WorldRenderEvents.START.register(context -> EchoDarkness.refreshFrameState());
 		WorldRenderEvents.AFTER_ENTITIES.register(EchoPlaybackRenderer::render);
 		WorldRenderEvents.END.register(EchoPlaybackRenderer::restoreInterfaceLight);
 	}
