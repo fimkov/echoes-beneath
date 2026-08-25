@@ -172,6 +172,11 @@ plan and charges the levels and shards.**
 Hovering a track explains what it does, what the lens carries now, what the plan would make it, and
 what the next step costs.
 
+The lens shows all of it on itself. The core widens with every memory slot and splits into one wedge
+per slot, lighting a wedge for each memory sealed. Vision opens small eyes on the body, two at first
+and four once it is sharp, their pupils glowing at the top. Radius pushes the whole rim outward.
+Hearing sets sensor points into the shell. The core breathes and the eyes blink.
+
 **Vision is the expensive one for a reason.** A memory records the whole cylinder, including what is
 buried and what sits behind walls. At low vision the region is almost black and you only make out what a
 passing wave happens to trace. Each level of vision lifts that darkness, so a fully tuned lens turns a
