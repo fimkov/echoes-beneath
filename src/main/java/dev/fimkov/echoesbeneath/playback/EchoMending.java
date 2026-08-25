@@ -54,22 +54,28 @@ public final class EchoMending {
 			return false;
 		}
 		int cost = EchoConfig.values().mendingExperienceCost();
-		if (!player.getAbilities().instabuild) {
+		boolean free = player.getAbilities().instabuild;
+		int slot = -1;
+		if (!free) {
 			if (cost > 0 && player.experienceLevel <= 0 && player.experienceProgress <= 0.0F) {
 				player.displayClientMessage(
 						Component.translatable(EchoTranslations.MESSAGE_MENDING_NO_EXPERIENCE), true);
 				return false;
 			}
-			int slot = findMaterial(player, needed);
+			slot = findMaterial(player, needed);
 			if (slot < 0) {
 				player.displayClientMessage(Component.translatable(
 						EchoTranslations.MESSAGE_MENDING_MISSING, needed.getDescription()), true);
 				return false;
 			}
+		}
+		if (!level.setBlock(target, remembered, PLACE_FLAGS)) {
+			return false;
+		}
+		if (!free) {
 			player.getInventory().removeItem(slot, 1);
 			player.giveExperiencePoints(-cost);
 		}
-		level.setBlock(target, remembered, PLACE_FLAGS);
 		level.playSound(null, target, EchoSounds.RESONANCE_PING, SoundSource.BLOCKS,
 				PLACE_VOLUME, PLACE_PITCH);
 		level.sendParticles(ParticleTypes.SCULK_SOUL, target.getX() + 0.5D, target.getY() + 0.5D,
