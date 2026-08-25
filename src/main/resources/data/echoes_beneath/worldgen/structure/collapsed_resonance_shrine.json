@@ -3,7 +3,7 @@
   "biomes": "#echoes_beneath:has_structure/collapsed_resonance_shrine",
   "step": "underground_structures",
   "spawn_overrides": {},
-  "terrain_adaptation": "beard_thin",
+  "terrain_adaptation": "beard_box",
   "start_pool": "echoes_beneath:collapsed_resonance_shrine/start",
   "size": 1,
   "start_height": {

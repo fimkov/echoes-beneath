@@ -130,7 +130,7 @@ Which mobs are affected is controlled by the `echoes_beneath:temporarily_suppres
 
 ## The Resonance Table
 
-Found only in a Resonance Vault — it has no recipe. Put a lens in the upper slot and amethyst shards in
+It has no recipe. One stands in each of the mod's four structures, so finding any of them is enough. Put a lens in the upper slot and amethyst shards in
 the lower one. Each track has a meter and a pair of buttons, and nothing is spent while you plan.
 
 A lens remembers the highest setting it ever reached. Winding a track back down is free, and climbing
@@ -148,10 +148,13 @@ plan and charges the levels and shards.**
 
 | Track | Cost per step | Range | Effect |
 |---|---|---|---|
-| Memory | 12 levels + 8 amethyst shards | 1 → 3 | one more irreversible memory slot |
-| Radius | 6 levels | 16 → 64 blocks | +8 blocks of recorded radius |
-| Hearing | 9 levels | 0 → 4 | quieter sounds still make it into the recording |
-| Clarity | 20 levels | 0 → 4 | lifts the darkness during playback |
+| Memory | 12 levels + 8 shards | 1 → 3 | one more irreversible memory slot |
+| Radius | 6 levels + 2 shards | 16 → 64 blocks | +8 blocks of recorded radius |
+| Hearing | 9 levels + 3 shards | 0 → 4 | quieter sounds still make it into the recording |
+| Clarity | 20 levels + 5 shards | 0 → 4 | lifts the darkness during playback |
+
+Hovering a track explains what it does, what the lens carries now, what the plan would make it, and
+what the next step costs.
 
 **Clarity is the expensive one for a reason.** A memory records the whole cylinder, including what is
 buried and what sits behind walls. At low clarity the region is almost black and you only make out what a
@@ -226,10 +229,13 @@ Shards; Ancient City remains the intended source.
 - **Surface Echo Ruin** — a very rare small surface ruin in common overworld biomes, carrying a compass,
   a map and a hint that the source of the echo lies below.
 - **Resonance Vault** — a sealed deep dark chamber in the ancient city style: deepslate brick walls,
-  soul lanterns on chains, sculk veins across the floor, and a **Resonance Table** standing clear on a
-  raised platform in the middle. It generates at the same depth the ancient cities sit at, so it reads as
-  another room of that world rather than something dropped above it. The table has no recipe, so this room
-  is the only place to find one.
+  soul lanterns on chains, sculk veins across the floor, and a **Resonance Table** on a raised platform in
+  the middle. It generates at the same depth the ancient cities sit at, so it reads as another room of that
+  world rather than something dropped above it.
+
+Each of the four holds a Resonance Table at its centre, standing clear of everything around it. The
+underground three beard their bounding box into the terrain so they cannot open into a lava lake, and the
+shrine seals its own dome besides.
 
 ## Building
 

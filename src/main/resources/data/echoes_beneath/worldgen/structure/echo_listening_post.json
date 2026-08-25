@@ -3,7 +3,7 @@
   "biomes": "#echoes_beneath:has_structure/echo_listening_post",
   "step": "underground_decoration",
   "spawn_overrides": {},
-  "terrain_adaptation": "beard_thin",
+  "terrain_adaptation": "beard_box",
   "start_pool": "echoes_beneath:echo_listening_post/start",
   "size": 1,
   "start_height": {
