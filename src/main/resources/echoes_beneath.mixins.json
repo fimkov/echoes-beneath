@@ -5,6 +5,7 @@
   "mixins": [
     "EntitySuppressionMixin",
     "LevelChunkBlockChangeMixin",
+    "LivingEntitySuppressionMixin",
     "ServerLevelSoundMixin"
   ],
   "injectors": {
