@@ -4,19 +4,25 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 
-public record EchoSilhouetteBuffers(MultiBufferSource delegate) implements MultiBufferSource {
-	private static final int SILHOUETTE_RED = 0;
-	private static final int SILHOUETTE_GREEN = 0;
-	private static final int SILHOUETTE_BLUE = 0;
-	private static final int OPAQUE = 255;
+public record EchoSilhouetteBuffers(MultiBufferSource delegate, int red, int green, int blue) implements MultiBufferSource {
 	private static final int NO_LIGHT = 0;
+
+	public static EchoSilhouetteBuffers black(MultiBufferSource delegate) {
+		return new EchoSilhouetteBuffers(delegate, 0, 0, 0);
+	}
+
+	public static EchoSilhouetteBuffers tinted(MultiBufferSource delegate, int argb) {
+		return new EchoSilhouetteBuffers(delegate,
+				(argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF);
+	}
 
 	@Override
 	public VertexConsumer getBuffer(RenderType renderType) {
-		return new SilhouetteConsumer(delegate.getBuffer(renderType));
+		return new SilhouetteConsumer(delegate.getBuffer(renderType), red, green, blue);
 	}
 
-	private record SilhouetteConsumer(VertexConsumer delegate) implements VertexConsumer {
+	private record SilhouetteConsumer(VertexConsumer delegate, int red, int green, int blue)
+			implements VertexConsumer {
 		@Override
 		public VertexConsumer addVertex(float x, float y, float z) {
 			delegate.addVertex(x, y, z);
@@ -24,8 +30,8 @@ public record EchoSilhouetteBuffers(MultiBufferSource delegate) implements Multi
 		}
 
 		@Override
-		public VertexConsumer setColor(int red, int green, int blue, int alpha) {
-			delegate.setColor(SILHOUETTE_RED, SILHOUETTE_GREEN, SILHOUETTE_BLUE, alpha);
+		public VertexConsumer setColor(int ignoredRed, int ignoredGreen, int ignoredBlue, int alpha) {
+			delegate.setColor(red, green, blue, alpha);
 			return this;
 		}
 
@@ -52,9 +58,5 @@ public record EchoSilhouetteBuffers(MultiBufferSource delegate) implements Multi
 			delegate.setNormal(x, y, z);
 			return this;
 		}
-	}
-
-	public static int opaqueAlpha() {
-		return OPAQUE;
 	}
 }

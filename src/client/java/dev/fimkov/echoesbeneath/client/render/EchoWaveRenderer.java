@@ -17,6 +17,7 @@ import java.util.Map;
 
 public final class EchoWaveRenderer {
 	private static final int MAX_OUTLINE_EDGES = 24000;
+	private static final int MAX_RING_FACES = 14000;
 	private static final float COLOUR_SCALE = 1.0F / 255.0F;
 
 	private EchoWaveRenderer() {
@@ -33,9 +34,120 @@ public final class EchoWaveRenderer {
 		poseStack.pushPose();
 		poseStack.translate(center.getX() - cameraPosition.x,
 				center.getY() - cameraPosition.y, center.getZ() - cameraPosition.z);
-		VertexConsumer consumer = context.consumers().getBuffer(RenderType.lines());
-		traceOutlines(session, waves, center, partialTick, poseStack, consumer);
+		float animationRow = EchoRenderTypes.animationRow(
+				context.world() == null ? 0L : context.world().getGameTime());
+		paintRings(session, waves, center, partialTick, poseStack,
+				context.consumers().getBuffer(EchoRenderTypes.ECHO_WAVE), animationRow);
+		traceOutlines(session, waves, center, partialTick, poseStack,
+				context.consumers().getBuffer(RenderType.lines()));
 		poseStack.popPose();
+	}
+
+	private static void paintRings(ClientPlaybackSession session, List<EchoWave> waves, BlockPos center,
+			float partialTick, PoseStack poseStack, VertexConsumer consumer, float animationRow) {
+		int currentTick = session.currentTick();
+		float[] basis = new float[9];
+		float[] corners = new float[EchoFaceGeometry.CORNERS_PER_FACE * 3];
+		float[] radial = new float[EchoFaceGeometry.CORNERS_PER_FACE];
+		float[] depthOut = new float[1];
+		List<EchoWave> nearby = new ArrayList<>();
+		List<EchoWave> facing = new ArrayList<>();
+		int emitted = 0;
+
+		for (Map.Entry<Integer, EchoSectionMesh> entry : session.meshes().entrySet()) {
+			EchoSectionMesh mesh = entry.getValue();
+			collectNearbyWaves(mesh, waves, center, currentTick, partialTick, nearby);
+			if (nearby.isEmpty()) {
+				continue;
+			}
+			for (int packedFace : mesh.faces()) {
+				if (emitted >= MAX_RING_FACES) {
+					return;
+				}
+				EchoFaceGeometry.faceBasis(packedFace, mesh.originX(), mesh.originY(), mesh.originZ(), basis);
+				collectFacingWaves(nearby, packedFace, basis, center, facing);
+				if (facing.isEmpty()) {
+					continue;
+				}
+				int colour = shadeFaceCentre(facing, currentTick, partialTick, center, basis, depthOut);
+				if ((colour >>> 24) == 0) {
+					continue;
+				}
+				fillCorners(basis, corners);
+				for (int corner = 0; corner < EchoFaceGeometry.CORNERS_PER_FACE; corner++) {
+					shadePoint(facing, currentTick, partialTick,
+							center.getX() + corners[corner * 3],
+							center.getY() + corners[corner * 3 + 1],
+							center.getZ() + corners[corner * 3 + 2], depthOut);
+					radial[corner] = depthOut[0];
+				}
+				for (int corner = 0; corner < EchoFaceGeometry.CORNERS_PER_FACE; corner++) {
+					EchoFaceGeometry.emitVertex(consumer, poseStack.last().pose(),
+							corners[corner * 3], corners[corner * 3 + 1], corners[corner * 3 + 2],
+							radial[corner], animationRow, colour);
+				}
+				emitted++;
+			}
+		}
+	}
+
+	private static void fillCorners(float[] basis, float[] corners) {
+		for (int index = 0; index < EchoFaceGeometry.CORNERS_PER_FACE; index++) {
+			float u = index == 1 || index == 2 ? 1.0F : 0.0F;
+			float v = index >= 2 ? 1.0F : 0.0F;
+			corners[index * 3] = basis[0] + basis[3] * u + basis[6] * v;
+			corners[index * 3 + 1] = basis[1] + basis[4] * u + basis[7] * v;
+			corners[index * 3 + 2] = basis[2] + basis[5] * u + basis[8] * v;
+		}
+	}
+
+	private static int shadeFaceCentre(List<EchoWave> waves, int currentTick, float partialTick,
+			BlockPos center, float[] basis, float[] depthOut) {
+		return shadePoint(waves, currentTick, partialTick,
+				center.getX() + basis[0] + (basis[3] + basis[6]) * 0.5F,
+				center.getY() + basis[1] + (basis[4] + basis[7]) * 0.5F,
+				center.getZ() + basis[2] + (basis[5] + basis[8]) * 0.5F, depthOut);
+	}
+
+	private static void collectFacingWaves(List<EchoWave> nearby, int packedFace, float[] basis,
+			BlockPos center, List<EchoWave> destination) {
+		destination.clear();
+		Direction direction = EchoFaceGeometry.direction(packedFace);
+		double faceCentreX = center.getX() + basis[0] + (basis[3] + basis[6]) * 0.5D;
+		double faceCentreY = center.getY() + basis[1] + (basis[4] + basis[7]) * 0.5D;
+		double faceCentreZ = center.getZ() + basis[2] + (basis[5] + basis[8]) * 0.5D;
+		for (EchoWave wave : nearby) {
+			double facing = (wave.origin().x - faceCentreX) * direction.getStepX()
+					+ (wave.origin().y - faceCentreY) * direction.getStepY()
+					+ (wave.origin().z - faceCentreZ) * direction.getStepZ();
+			if (facing > 0.0D) {
+				destination.add(wave);
+			}
+		}
+	}
+
+	public static int shadePoint(List<EchoWave> waves, int currentTick, float partialTick,
+			double worldX, double worldY, double worldZ, float[] depthOut) {
+		Vec3 point = new Vec3(worldX, worldY, worldZ);
+		int best = 0;
+		int bestAlpha = 0;
+		float bestDepth = 0.0F;
+		for (EchoWave wave : waves) {
+			float elapsed = wave.elapsedAt(currentTick, partialTick);
+			float depth = wave.depthOf(wave.origin().distanceTo(point), elapsed);
+			if (depth < 0.0F) {
+				continue;
+			}
+			int colour = EchoWavePalette.colorAt(wave.paletteIndex(), depth, wave.fadeAt(elapsed));
+			int alpha = (colour >>> 24) & 0xFF;
+			if (alpha > bestAlpha) {
+				bestAlpha = alpha;
+				best = colour;
+				bestDepth = depth;
+			}
+		}
+		depthOut[0] = bestDepth;
+		return bestAlpha == 0 ? 0 : best;
 	}
 
 	private static void traceOutlines(ClientPlaybackSession session, List<EchoWave> waves, BlockPos center,

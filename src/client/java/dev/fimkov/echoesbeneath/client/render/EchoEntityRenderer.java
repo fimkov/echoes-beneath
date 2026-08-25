@@ -46,37 +46,31 @@ public final class EchoEntityRenderer {
 			if (context.frustum() != null && !context.frustum().isVisible(entity.getBoundingBox().inflate(0.5D))) {
 				continue;
 			}
-			renderPuppet(context, dispatcher, poseStack, entity, cameraPosition, partialTick);
-			renderWaveOutline(context, poseStack, entity, waves, session.currentTick(), partialTick, cameraPosition);
+			int waveColour = waveColourFor(entity, waves, session.currentTick(), partialTick);
+			renderPuppet(context, dispatcher, poseStack, entity, cameraPosition, partialTick, waveColour);
 		}
 		dispatcher.setRenderShadow(previousShadow);
 	}
 
 	private static void renderPuppet(WorldRenderContext context, EntityRenderDispatcher dispatcher,
-			PoseStack poseStack, Entity entity, Vec3 cameraPosition, float partialTick) {
+			PoseStack poseStack, Entity entity, Vec3 cameraPosition, float partialTick, int waveColour) {
+		EchoSilhouetteBuffers buffers = waveColour == 0
+				? EchoSilhouetteBuffers.black(context.consumers())
+				: EchoSilhouetteBuffers.tinted(context.consumers(), waveColour);
 		poseStack.pushPose();
 		poseStack.translate(entity.getX() - cameraPosition.x,
 				entity.getY() - cameraPosition.y, entity.getZ() - cameraPosition.z);
 		dispatcher.render(entity, 0.0D, 0.0D, 0.0D, entity.getYRot(), partialTick,
-				poseStack, new EchoSilhouetteBuffers(context.consumers()), SILHOUETTE_LIGHT);
+				poseStack, buffers, SILHOUETTE_LIGHT);
 		poseStack.popPose();
 	}
 
-	private static void renderWaveOutline(WorldRenderContext context, PoseStack poseStack, Entity entity,
-			List<EchoWave> waves, int currentTick, float partialTick, Vec3 cameraPosition) {
+	private static int waveColourFor(Entity entity, List<EchoWave> waves, int currentTick, float partialTick) {
 		if (waves.isEmpty()) {
-			return;
+			return 0;
 		}
 		Vec3 probe = entity.position().add(0.0D, entity.getBbHeight() * 0.5D, 0.0D);
-		int color = EchoWaveRenderer.colorFromWaves(waves, currentTick, partialTick, probe.x, probe.y, probe.z);
-		if (color == 0) {
-			return;
-		}
-		AABB box = entity.getBoundingBox().move(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
-		LevelRenderer.renderLineBox(poseStack, context.consumers().getBuffer(RenderType.lines()), box,
-				((color >> 16) & 0xFF) * OUTLINE_ALPHA_SCALE,
-				((color >> 8) & 0xFF) * OUTLINE_ALPHA_SCALE,
-				(color & 0xFF) * OUTLINE_ALPHA_SCALE,
-				((color >>> 24) & 0xFF) * OUTLINE_ALPHA_SCALE);
+		return EchoWaveRenderer.colorFromWaves(waves, currentTick, partialTick, probe.x, probe.y, probe.z);
 	}
+
 }
