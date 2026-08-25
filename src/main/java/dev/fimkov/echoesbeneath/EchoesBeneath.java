@@ -1,5 +1,7 @@
 package dev.fimkov.echoesbeneath;
 
+import dev.fimkov.echoesbeneath.platform.EchoPlatforms;
+import dev.fimkov.echoesbeneath.platform.fabric.FabricPlatform;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
@@ -15,6 +17,7 @@ public final class EchoesBeneath implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		EchoPlatforms.install(new FabricPlatform());
 		EchoesBeneathBootstrap.bootstrap();
 	}
 }

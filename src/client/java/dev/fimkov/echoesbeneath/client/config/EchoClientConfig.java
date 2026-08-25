@@ -1,7 +1,7 @@
 package dev.fimkov.echoesbeneath.client.config;
 
 import dev.fimkov.echoesbeneath.EchoesBeneath;
-import net.fabricmc.loader.api.FabricLoader;
+import dev.fimkov.echoesbeneath.platform.EchoPlatforms;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,7 +58,7 @@ public final class EchoClientConfig {
 	}
 
 	public static void load() {
-		Path path = FabricLoader.getInstance().getConfigDir().resolve(FILE_NAME);
+		Path path = EchoPlatforms.configDirectory().resolve(FILE_NAME);
 		Properties properties = new Properties();
 		if (Files.isRegularFile(path)) {
 			try (InputStream stream = Files.newInputStream(path)) {
