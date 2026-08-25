@@ -11,11 +11,14 @@ import net.minecraft.world.level.levelgen.Heightmap;
 public final class PlaybackBoundaryTrace {
 	public static final int BEAT_INTERVAL_TICKS = 2;
 
-	private static final int ARC_POINTS = 26;
-	private static final double ARC_HALF_WIDTH_RADIANS = Math.PI / 3.0D;
+	private static final int ARC_POINTS = 34;
+	private static final int WALL_LAYERS = 7;
+	private static final double LAYER_HEIGHT = 2.4D;
+	private static final double ARC_HALF_WIDTH_RADIANS = Math.PI / 2.4D;
 	private static final double DRIFT_RADIANS_PER_BEAT = 0.02D;
-	private static final double VISIBLE_MARGIN = 48.0D;
+	private static final double VISIBLE_MARGIN = 56.0D;
 	private static final double SURFACE_OFFSET = 0.15D;
+	private static final double UNDULATION_BLOCKS = 1.1D;
 	private static final int ACCENT_EVERY = 6;
 	private static final int PARTICLE_COUNT = 1;
 	private static final double NO_SPREAD = 0.0D;
@@ -53,12 +56,18 @@ public final class PlaybackBoundaryTrace {
 				continue;
 			}
 			double surface = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, columnX, columnZ);
-			double y = surface + SURFACE_OFFSET + Math.abs(Math.sin(drift * 3.0D + point)) * 1.6D;
-			ParticleOptions particle = point % ACCENT_EVERY == 0
-					? ParticleTypes.SCULK_SOUL
-					: new SculkChargeParticleOptions((float) Math.cos(angle) * CHARGE_ROLL_SCALE);
-			level.sendParticles(viewer, particle, true, x, y, z,
-					PARTICLE_COUNT, NO_SPREAD, NO_SPREAD, NO_SPREAD, NO_SPEED);
+			for (int layer = 0; layer < WALL_LAYERS; layer++) {
+				if ((point + layer + tick / BEAT_INTERVAL_TICKS) % 2 != 0) {
+					continue;
+				}
+				double undulation = Math.sin(drift * 2.0D + point * 0.6D + layer) * UNDULATION_BLOCKS;
+				double y = surface + SURFACE_OFFSET + layer * LAYER_HEIGHT + undulation;
+				ParticleOptions particle = (point + layer) % ACCENT_EVERY == 0
+						? ParticleTypes.SCULK_SOUL
+						: new SculkChargeParticleOptions((float) Math.cos(angle + layer) * CHARGE_ROLL_SCALE);
+				level.sendParticles(viewer, particle, true, x, y, z,
+						PARTICLE_COUNT, NO_SPREAD, NO_SPREAD, NO_SPREAD, NO_SPEED);
+			}
 		}
 	}
 }

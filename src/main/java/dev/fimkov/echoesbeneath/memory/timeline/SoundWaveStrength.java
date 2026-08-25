@@ -3,8 +3,8 @@ package dev.fimkov.echoesbeneath.memory.timeline;
 import net.minecraft.sounds.SoundSource;
 
 public final class SoundWaveStrength {
-	public static final float WAVE_SPEED_BLOCKS_PER_TICK = 0.9F;
-	private static final float MINIMUM_RADIUS = 3.0F;
+	public static final float WAVE_SPEED_BLOCKS_PER_TICK = 0.3F;
+	private static final float MINIMUM_RADIUS = 6.0F;
 	private static final float MAXIMUM_RADIUS = 50.0F;
 	private static final float VOLUME_SCALE = 7.0F;
 	private static final float VOLUME_BASE = 2.0F;

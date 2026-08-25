@@ -4,7 +4,7 @@ import dev.fimkov.echoesbeneath.memory.timeline.SoundWaveStrength;
 import net.minecraft.world.phys.Vec3;
 
 public final class EchoWave {
-	private static final float SHELL_THICKNESS = 3.0F;
+	private static final float SHELL_THICKNESS = 4.5F;
 
 	private final Vec3 origin;
 	private final int startTick;
@@ -51,7 +51,7 @@ public final class EchoWave {
 		if (radius >= maxRadius) {
 			return 0.0F;
 		}
-		return 1.0F - radius / maxRadius;
+		return (float) Math.sqrt(1.0F - radius / maxRadius);
 	}
 
 	public float depthOf(double distance, float elapsedTicks) {

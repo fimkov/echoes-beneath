@@ -17,7 +17,7 @@ public final class EchoWavePalette {
 			{0xFFFFFF, 0xCFE0FF, 0x7A9BD6, 0x33477F, 0x141C33},
 	};
 
-	private static final float MAX_ALPHA = 195.0F;
+	private static final float MAX_ALPHA = 235.0F;
 	private static final float FRONT_RAMP = 0.14F;
 
 	private EchoWavePalette() {
@@ -44,7 +44,7 @@ public final class EchoWavePalette {
 		int green = mix(channel(stops[lower], 8), channel(stops[upper], 8), blend);
 		int blue = mix(channel(stops[lower], 0), channel(stops[upper], 0), blend);
 		float frontRamp = Math.min(1.0F, clamped / FRONT_RAMP);
-		float tail = (1.0F - clamped) * (1.0F - clamped) * (1.0F - clamped);
+		float tail = (1.0F - clamped) * (1.0F - clamped);
 		int alpha = Math.round(MAX_ALPHA * frontRamp * tail * Math.clamp(fade, 0.0F, 1.0F));
 		return (alpha << 24) | (red << 16) | (green << 8) | blue;
 	}
