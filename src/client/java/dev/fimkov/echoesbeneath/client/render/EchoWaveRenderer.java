@@ -2,6 +2,7 @@ package dev.fimkov.echoesbeneath.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
 import dev.fimkov.echoesbeneath.client.playback.ClientPlaybackSession;
 import dev.fimkov.echoesbeneath.client.wave.EchoWave;
 import dev.fimkov.echoesbeneath.client.wave.EchoWavePalette;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 public final class EchoWaveRenderer {
-	private static final int MAX_TEXELS = 42000;
+
 	private static final double FACE_REACH = 0.75D;
 	public static final int SAMPLE_SLOTS = 3;
 	private static final int SAMPLE_DEPTH = 0;
@@ -61,7 +62,7 @@ public final class EchoWaveRenderer {
 				continue;
 			}
 			for (int packedFace : mesh.faces()) {
-				if (emitted >= MAX_TEXELS) {
+				if (emitted >= EchoClientConfig.values().waveTexelBudget()) {
 					return;
 				}
 				EchoFaceGeometry.faceBasis(packedFace, mesh.originX(), mesh.originY(), mesh.originZ(), basis);
@@ -70,7 +71,7 @@ public final class EchoWaveRenderer {
 					continue;
 				}
 				emitted += lightFace(consumer, matrix, facing, center, basis, texel,
-						currentTick, partialTick, animationStep, depthOut, MAX_TEXELS - emitted);
+						currentTick, partialTick, animationStep, depthOut, EchoClientConfig.values().waveTexelBudget() - emitted);
 			}
 		}
 	}
@@ -83,8 +84,8 @@ public final class EchoWaveRenderer {
 		if (presence <= 0.0F) {
 			return 0;
 		}
-		for (int row = 0; row < EchoTexelGrid.TEXELS_PER_BLOCK && emitted < budget; row++) {
-			for (int column = 0; column < EchoTexelGrid.TEXELS_PER_BLOCK && emitted < budget; column++) {
+		for (int row = 0; row < EchoTexelGrid.texelsPerBlock() && emitted < budget; row++) {
+			for (int column = 0; column < EchoTexelGrid.texelsPerBlock() && emitted < budget; column++) {
 				float u = (column + 0.5F) * texel;
 				float v = (row + 0.5F) * texel;
 				float localX = basis[0] + basis[3] * u + basis[6] * v;

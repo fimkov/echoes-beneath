@@ -4,6 +4,7 @@ import dev.fimkov.echoesbeneath.client.playback.EchoPlaybackReceiver;
 import dev.fimkov.echoesbeneath.client.render.EchoLensEntityRenderer;
 import dev.fimkov.echoesbeneath.client.render.EchoPlaybackRenderer;
 import dev.fimkov.echoesbeneath.EchoesBeneath;
+import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
 import dev.fimkov.echoesbeneath.item.EchoLensAppearance;
 import dev.fimkov.echoesbeneath.item.EchoLensStacks;
 import dev.fimkov.echoesbeneath.item.EchoLensTooltipContext;
@@ -21,6 +22,7 @@ import java.util.Optional;
 public final class EchoesBeneathClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
+		EchoClientConfig.load();
 		EchoLensTooltipContext.bindViewer(EchoesBeneathClient::localViewer);
 		EntityRendererRegistry.register(EchoEntities.ECHO_LENS, EchoLensEntityRenderer::new);
 		EchoPlaybackReceiver.register();

@@ -1,10 +1,12 @@
 package dev.fimkov.echoesbeneath.client.render;
 
+import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
+
 public final class EchoTexelGrid {
-	public static final int TEXELS_PER_BLOCK = 8;
+
 	public static final int TICKS_PER_ANIMATION_STEP = 3;
 
-	private static final float TEXEL_SIZE = 1.0F / TEXELS_PER_BLOCK;
+
 	private static final int HASH_X = 73856093;
 	private static final int HASH_Y = 19349663;
 	private static final int HASH_Z = 83492791;
@@ -16,14 +18,18 @@ public final class EchoTexelGrid {
 	private EchoTexelGrid() {
 	}
 
+	public static int texelsPerBlock() {
+		return EchoClientConfig.values().waveDetail();
+	}
+
 	public static float texelSize() {
-		return TEXEL_SIZE;
+		return 1.0F / texelsPerBlock();
 	}
 
 	public static int hash(double worldX, double worldY, double worldZ, int animationStep) {
-		int cellX = (int) Math.floor(worldX * TEXELS_PER_BLOCK);
-		int cellY = (int) Math.floor(worldY * TEXELS_PER_BLOCK);
-		int cellZ = (int) Math.floor(worldZ * TEXELS_PER_BLOCK);
+		int cellX = (int) Math.floor(worldX * texelsPerBlock());
+		int cellY = (int) Math.floor(worldY * texelsPerBlock());
+		int cellZ = (int) Math.floor(worldZ * texelsPerBlock());
 		int mixed = cellX * HASH_X ^ cellY * HASH_Y ^ cellZ * HASH_Z ^ animationStep * ANIMATION_SALT;
 		return (mixed ^ (mixed >>> 13)) & HASH_RANGE;
 	}

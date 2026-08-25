@@ -1,5 +1,6 @@
 package dev.fimkov.echoesbeneath.client.sound;
 
+import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
 import dev.fimkov.echoesbeneath.client.render.EchoDarkness;
 import dev.fimkov.echoesbeneath.registry.EchoSounds;
 import net.minecraft.client.Minecraft;
@@ -8,7 +9,6 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundSource;
 
 public final class EchoRegionAmbience extends AbstractTickableSoundInstance {
-	private static final float MAX_VOLUME = 0.55F;
 	private static final float FOLLOW_RATE = 0.06F;
 	private static final float SILENT = 0.002F;
 
@@ -47,7 +47,7 @@ public final class EchoRegionAmbience extends AbstractTickableSoundInstance {
 
 	@Override
 	public void tick() {
-		float target = EchoDarkness.transitionProgress() * MAX_VOLUME;
+		float target = EchoDarkness.transitionProgress() * EchoClientConfig.values().regionAmbienceGain();
 		volume += (target - volume) * FOLLOW_RATE;
 		if (target <= 0.0F && volume < SILENT) {
 			stop();

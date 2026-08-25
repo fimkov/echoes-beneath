@@ -1,6 +1,7 @@
 package dev.fimkov.echoesbeneath.client.render;
 
 import dev.fimkov.echoesbeneath.EchoesBeneath;
+import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
 import dev.fimkov.echoesbeneath.client.playback.ClientPlaybackManager;
 import dev.fimkov.echoesbeneath.client.playback.ClientPlaybackSession;
 import net.minecraft.client.Minecraft;
@@ -11,7 +12,6 @@ public final class EchoDarkness {
 	public static final int EMISSIVE_TEXEL = 15;
 	public static final float FULLY_DARK = 1.0F;
 
-	private static final float TRANSITION_PER_TICK = 0.045F;
 	private static final float VISION_RELIEF = 0.55F;
 	private static final float ACTIVE_THRESHOLD = 0.002F;
 	private static final float SKY_HIDDEN_THRESHOLD = 0.9F;
@@ -47,7 +47,7 @@ public final class EchoDarkness {
 
 	public static void advanceTransition(float realtimeDeltaTicks) {
 		float target = enclosing == null ? 0.0F : darknessTargetFor(enclosing);
-		float step = Math.max(0.0F, realtimeDeltaTicks) * TRANSITION_PER_TICK;
+		float step = Math.max(0.0F, realtimeDeltaTicks) * EchoClientConfig.values().transitionPerTick();
 		if (darkness < target) {
 			darkness = Math.min(target, darkness + step);
 		} else {
@@ -78,6 +78,9 @@ public final class EchoDarkness {
 	}
 
 	public static boolean shouldHideSky() {
+		if (!EchoClientConfig.values().hideSkyDuringPlayback()) {
+			return false;
+		}
 		return darkness >= SKY_HIDDEN_THRESHOLD;
 	}
 

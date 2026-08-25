@@ -1,6 +1,7 @@
 package dev.fimkov.echoesbeneath.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
 import dev.fimkov.echoesbeneath.client.playback.ClientPlaybackSession;
 import dev.fimkov.echoesbeneath.memory.EchoCoordinates;
 import dev.fimkov.echoesbeneath.memory.snapshot.BlockPalette;
@@ -17,8 +18,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public final class EchoBlockHologramRenderer {
-	private static final double MAX_DISTANCE = 32.0D;
-	private static final int MAX_BLOCKS = 384;
 	private static final int SCAN_HALF = 14;
 	private static final int RESCAN_TICKS = 40;
 	private static final double RESCAN_MOVE = 8.0D;
@@ -43,6 +42,11 @@ public final class EchoBlockHologramRenderer {
 		if (context.consumers() == null || level == null) {
 			return;
 		}
+		int budget = EchoClientConfig.values().hologramBlockBudget();
+		double reach = EchoClientConfig.values().hologramDistance();
+		if (budget <= 0 || !EchoClientConfig.values().showBlockHolograms()) {
+			return;
+		}
 		BlockSnapshot snapshot = session.data().snapshot();
 		EchoBlockDeltaState deltas = session.blockDeltas();
 		BlockPalette palette = snapshot.palette();
@@ -59,7 +63,7 @@ public final class EchoBlockHologramRenderer {
 		int drawn = 0;
 
 		for (int packed : deltas.trackedPositions()) {
-			if (drawn >= MAX_BLOCKS) {
+			if (drawn >= budget) {
 				break;
 			}
 			int index = deltas.currentStates().getOrDefault(packed, BlockPalette.AIR_INDEX);
@@ -67,12 +71,12 @@ public final class EchoBlockHologramRenderer {
 				continue;
 			}
 			drawn += draw(context, level, blocks, buffers, poseStack, cursor, center, cameraPosition,
-					packed, palette.stateAt(index));
+					packed, palette.stateAt(index), reach);
 		}
 
-		rescanIfStale(level, snapshot, deltas, center, cameraPosition, session);
+		rescanIfStale(level, snapshot, deltas, center, cameraPosition, session, budget);
 		for (int packed : VANISHED) {
-			if (drawn >= MAX_BLOCKS) {
+			if (drawn >= budget) {
 				break;
 			}
 			int index = snapshot.paletteIndexAt(EchoCoordinates.unpackX(packed),
@@ -81,13 +85,13 @@ public final class EchoBlockHologramRenderer {
 				continue;
 			}
 			drawn += draw(context, level, blocks, buffers, poseStack, cursor, center, cameraPosition,
-					packed, palette.stateAt(index));
+					packed, palette.stateAt(index), reach);
 		}
 	}
 
 	private static int draw(WorldRenderContext context, Level level, BlockRenderDispatcher blocks,
 			EchoSilhouetteBuffers buffers, PoseStack poseStack, BlockPos.MutableBlockPos cursor,
-			BlockPos center, Vec3 cameraPosition, int packed, BlockState remembered) {
+			BlockPos center, Vec3 cameraPosition, int packed, BlockState remembered, double reach) {
 		if (remembered.isAir()) {
 			return 0;
 		}
@@ -95,7 +99,7 @@ public final class EchoBlockHologramRenderer {
 				center.getY() + EchoCoordinates.unpackY(packed),
 				center.getZ() + EchoCoordinates.unpackZ(packed));
 		if (cameraPosition.distanceToSqr(cursor.getX() + 0.5D, cursor.getY() + 0.5D, cursor.getZ() + 0.5D)
-				> MAX_DISTANCE * MAX_DISTANCE) {
+				> reach * reach) {
 			return 0;
 		}
 		if (level.getBlockState(cursor) == remembered) {
@@ -113,7 +117,7 @@ public final class EchoBlockHologramRenderer {
 	}
 
 	private static void rescanIfStale(Level level, BlockSnapshot snapshot, EchoBlockDeltaState deltas,
-			BlockPos center, Vec3 cameraPosition, ClientPlaybackSession session) {
+			BlockPos center, Vec3 cameraPosition, ClientPlaybackSession session, int budget) {
 		long now = level.getGameTime();
 		boolean stale = session != scannedSession
 				|| now - lastScanTime >= RESCAN_TICKS
@@ -160,7 +164,7 @@ public final class EchoBlockHologramRenderer {
 						continue;
 					}
 					VANISHED.add(packed);
-					if (VANISHED.size() >= MAX_BLOCKS) {
+					if (VANISHED.size() >= budget) {
 						return;
 					}
 				}
