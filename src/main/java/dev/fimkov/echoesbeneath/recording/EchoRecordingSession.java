@@ -1,0 +1,243 @@
+package dev.fimkov.echoesbeneath.recording;
+
+import dev.fimkov.echoesbeneath.EchoTranslations;
+import dev.fimkov.echoesbeneath.config.EchoConfigValues;
+import dev.fimkov.echoesbeneath.entity.EchoLensEntity;
+import dev.fimkov.echoesbeneath.memory.EchoCoordinates;
+import dev.fimkov.echoesbeneath.memory.EchoFormat;
+import dev.fimkov.echoesbeneath.memory.EchoMemoryRecord;
+import dev.fimkov.echoesbeneath.memory.EchoTextFormat;
+import dev.fimkov.echoesbeneath.memory.snapshot.BlockPalette;
+import dev.fimkov.echoesbeneath.memory.timeline.BlockTimeline;
+import dev.fimkov.echoesbeneath.memory.timeline.EchoSoundCategory;
+import dev.fimkov.echoesbeneath.memory.timeline.EntityTimeline;
+import dev.fimkov.echoesbeneath.memory.timeline.SoundTimeline;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+
+import java.util.List;
+import java.util.UUID;
+
+public final class EchoRecordingSession {
+	private static final int MAX_BLOCK_EVENTS = 65536;
+	private static final int ACTION_BAR_INTERVAL_TICKS = 10;
+
+	private final UUID sessionId;
+	private final UUID memoryId;
+	private final UUID ownerId;
+	private final int slot;
+	private final ServerLevel level;
+	private final BlockPos center;
+	private final int radius;
+	private final int verticalRadius;
+	private final int maxTicks;
+	private final long createdAtEpochMillis;
+	private final int entitySampleInterval;
+
+	private final BlockPalette palette = new BlockPalette();
+	private final SnapshotCapture snapshotCapture;
+	private final BlockTimeline blockTimeline;
+	private final EntityTimeline entityTimeline;
+	private final SoundTimeline soundTimeline;
+	private final EntityTrackRecorder entityRecorder;
+	private final EchoLensEntity lensEntity;
+
+	private int currentTick;
+	private boolean finished;
+
+	public EchoRecordingSession(UUID sessionId, UUID memoryId, UUID ownerId, int slot, ServerLevel level,
+			BlockPos center, EchoConfigValues config, EchoLensEntity lensEntity, long createdAtEpochMillis) {
+		this.sessionId = sessionId;
+		this.memoryId = memoryId;
+		this.ownerId = ownerId;
+		this.slot = slot;
+		this.level = level;
+		this.center = center;
+		this.radius = config.recordingRadius();
+		this.verticalRadius = config.recordingVerticalRadius();
+		this.maxTicks = config.maxRecordingTicks();
+		this.entitySampleInterval = config.entitySampleIntervalTicks();
+		this.createdAtEpochMillis = createdAtEpochMillis;
+		this.lensEntity = lensEntity;
+		this.snapshotCapture = new SnapshotCapture(level, center, radius, verticalRadius, palette);
+		this.blockTimeline = new BlockTimeline(MAX_BLOCK_EVENTS);
+		this.entityTimeline = new EntityTimeline(config.maxRecordedEntities());
+		this.soundTimeline = new SoundTimeline(config.maxSoundEvents());
+		this.entityRecorder = new EntityTrackRecorder(entityTimeline, center);
+	}
+
+	public UUID sessionId() {
+		return sessionId;
+	}
+
+	public UUID memoryId() {
+		return memoryId;
+	}
+
+	public UUID ownerId() {
+		return ownerId;
+	}
+
+	public int slot() {
+		return slot;
+	}
+
+	public ServerLevel level() {
+		return level;
+	}
+
+	public BlockPos center() {
+		return center;
+	}
+
+	public int currentTick() {
+		return currentTick;
+	}
+
+	public int maxTicks() {
+		return maxTicks;
+	}
+
+	public boolean isFinished() {
+		return finished;
+	}
+
+	public EchoLensEntity lensEntity() {
+		return lensEntity;
+	}
+
+	public int recordedSoundCount() {
+		return soundTimeline.size();
+	}
+
+	public int recordedEntityCount() {
+		return entityRecorder.trackedCount();
+	}
+
+	public int recordedBlockEventCount() {
+		return blockTimeline.size();
+	}
+
+	public boolean containsPosition(BlockPos position) {
+		int relativeX = position.getX() - center.getX();
+		int relativeY = position.getY() - center.getY();
+		int relativeZ = position.getZ() - center.getZ();
+		return withinRegion(relativeX, relativeY, relativeZ);
+	}
+
+	private boolean withinRegion(double relativeX, double relativeY, double relativeZ) {
+		return relativeX * relativeX + relativeZ * relativeZ <= (double) radius * radius
+				&& Math.abs(relativeY) <= verticalRadius;
+	}
+
+	public void onBlockChanged(BlockPos position, BlockState previous, BlockState current) {
+		if (finished || previous == current) {
+			return;
+		}
+		int relativeX = position.getX() - center.getX();
+		int relativeY = position.getY() - center.getY();
+		int relativeZ = position.getZ() - center.getZ();
+		if (!withinRegion(relativeX, relativeY, relativeZ)) {
+			return;
+		}
+		if (!EchoCoordinates.fitsInPackedRange(relativeX) || !EchoCoordinates.fitsInPackedRange(relativeY)
+				|| !EchoCoordinates.fitsInPackedRange(relativeZ)) {
+			return;
+		}
+		snapshotCapture.notePreChange(relativeX, relativeY, relativeZ, previous);
+		blockTimeline.record(currentTick, EchoCoordinates.packRelative(relativeX, relativeY, relativeZ),
+				palette.indexOf(previous), palette.indexOf(current));
+	}
+
+	public void onSound(double x, double y, double z, ResourceLocation soundId, SoundSource source,
+			float volume, float pitch) {
+		if (finished || !EchoSoundCategory.isRecordable(source)) {
+			return;
+		}
+		double relativeX = x - center.getX();
+		double relativeY = y - center.getY();
+		double relativeZ = z - center.getZ();
+		if (!withinRegion(relativeX, relativeY, relativeZ)) {
+			return;
+		}
+		soundTimeline.record(currentTick, relativeX, relativeY, relativeZ, soundId, source, volume, pitch);
+	}
+
+	public void tick() {
+		if (finished) {
+			return;
+		}
+		if (!snapshotCapture.isComplete()) {
+			snapshotCapture.advance();
+		}
+		if (currentTick % entitySampleInterval == 0) {
+			sampleEntities();
+		}
+		if (currentTick % ACTION_BAR_INTERVAL_TICKS == 0) {
+			updateActionBar();
+		}
+		currentTick++;
+	}
+
+	private void sampleEntities() {
+		AABB bounds = new AABB(
+				center.getX() - radius, center.getY() - verticalRadius, center.getZ() - radius,
+				center.getX() + radius + 1, center.getY() + verticalRadius + 1, center.getZ() + radius + 1);
+		List<Entity> candidates = level.getEntities((Entity) null, bounds, EntityTrackRecorder::isRecordable);
+		for (Entity entity : candidates) {
+			if (!containsPosition(entity.blockPosition())) {
+				continue;
+			}
+			entityRecorder.sample(entity, currentTick);
+		}
+	}
+
+	private void updateActionBar() {
+		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(ownerId);
+		if (owner == null) {
+			return;
+		}
+		owner.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_RECORDING,
+				EchoTextFormat.romanSlot(slot),
+				EchoTextFormat.clock(currentTick),
+				EchoTextFormat.clock(maxTicks)), true);
+	}
+
+	public boolean hasReachedDuration() {
+		return currentTick >= maxTicks;
+	}
+
+	public boolean regionStillLoaded() {
+		return level.hasChunkAt(center);
+	}
+
+	public EchoMemoryRecord seal() {
+		finished = true;
+		snapshotCapture.completeNow();
+		return new EchoMemoryRecord(
+				memoryId,
+				slot,
+				EchoFormat.CURRENT_VERSION,
+				level.dimension(),
+				center,
+				radius,
+				verticalRadius,
+				createdAtEpochMillis,
+				Math.max(1, currentTick),
+				snapshotCapture.toSnapshot(),
+				blockTimeline,
+				entityTimeline,
+				soundTimeline);
+	}
+
+	public void markFinished() {
+		finished = true;
+	}
+}

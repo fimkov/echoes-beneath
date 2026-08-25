@@ -1,7 +1,6 @@
 package dev.fimkov.echoesbeneath.item;
 
 import dev.fimkov.echoesbeneath.EchoTranslations;
-import dev.fimkov.echoesbeneath.memory.EchoMemoryLocator;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReference;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReferences;
 import dev.fimkov.echoesbeneath.memory.EchoFormat;
@@ -11,6 +10,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.InteractionResult;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,17 @@ import java.util.Optional;
 public class EchoLensItem extends Item {
 	public EchoLensItem(Properties properties) {
 		super(properties);
+	}
+
+	@Override
+	public InteractionResult useOn(UseOnContext context) {
+		return EchoLensInteraction.useOn(context);
+	}
+
+	@Override
+	public void inventoryTick(ItemStack stack, net.minecraft.world.level.Level level,
+			net.minecraft.world.entity.Entity holder, int slotId, boolean selected) {
+		EchoLensResonance.tick(stack, level, holder, selected);
 	}
 
 	@Override
