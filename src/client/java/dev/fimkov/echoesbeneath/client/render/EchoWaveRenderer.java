@@ -17,6 +17,7 @@ import java.util.Map;
 
 public final class EchoWaveRenderer {
 	private static final int MAX_TEXELS = 42000;
+	public static final int SAMPLE_SLOTS = 3;
 	private static final int SAMPLE_DEPTH = 0;
 	private static final int SAMPLE_FADE = 1;
 	private static final int SAMPLE_PALETTE = 2;
@@ -73,7 +74,7 @@ public final class EchoWaveRenderer {
 		}
 	}
 
-	private static int lightFace(VertexConsumer consumer, Matrix4f matrix, List<EchoWave> waves, BlockPos center,
+	public static int lightFace(VertexConsumer consumer, Matrix4f matrix, List<EchoWave> waves, BlockPos center,
 			float[] basis, float texel, int currentTick, float partialTick, int animationStep,
 			float[] depthOut, int budget) {
 		int emitted = 0;
@@ -129,7 +130,7 @@ public final class EchoWaveRenderer {
 				.setColor((argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF, (argb >>> 24) & 0xFF);
 	}
 
-	private static void collectFacingWaves(List<EchoWave> nearby, int packedFace, float[] basis,
+	public static void collectFacingWaves(List<EchoWave> nearby, int packedFace, float[] basis,
 			BlockPos center, List<EchoWave> destination) {
 		destination.clear();
 		Direction direction = EchoFaceGeometry.direction(packedFace);
@@ -146,7 +147,7 @@ public final class EchoWaveRenderer {
 		}
 	}
 
-	private static void collectNearbyWaves(EchoSectionMesh mesh, List<EchoWave> waves, BlockPos center,
+	public static void collectNearbyWaves(EchoSectionMesh mesh, List<EchoWave> waves, BlockPos center,
 			int currentTick, float partialTick, List<EchoWave> destination) {
 		destination.clear();
 		Vec3 sectionCentre = new Vec3(

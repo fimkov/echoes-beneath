@@ -28,7 +28,8 @@ public class EchoLensEntity extends Entity {
 	private static final float PROGRESS_SPIN_BONUS = 6.0F;
 	private static final int PARTICLE_INTERVAL_TICKS = 2;
 	private static final double PARTICLE_SPREAD = 0.35D;
-	private static final double RING_RADIUS = 1.05D;
+	private static final double AURA_SPREAD = 0.28D;
+	private static final double AURA_DRIFT = 0.012D;
 	private static final int RETURN_TRAIL_PARTICLES = 2;
 	private static final double ARRIVAL_TICKS_PER_BLOCK = 1.4D;
 	private static final int MIN_ARRIVAL_TICKS = 12;
@@ -37,9 +38,8 @@ public class EchoLensEntity extends Entity {
 	private static final float ARRIVAL_SPIN_MULTIPLIER = 4.5F;
 	private static final int ARRIVAL_BURST_PARTICLES = 30;
 	private static final double ARRIVAL_BURST_SPREAD = 0.8D;
-	private static final int MIN_ARC_POINTS = 2;
-	private static final int MAX_ARC_POINTS = 26;
-	private static final float ARC_ROLL_SCALE = 0.4F;
+	private static final int MIN_AURA_PARTICLES = 1;
+	private static final int MAX_AURA_PARTICLES = 5;
 	private static final float FULL_TURN_DEGREES = 360.0F;
 	private static final double RETURN_SPEED = 0.55D;
 	private static final double RETURN_PICKUP_DISTANCE = 1.1D;
@@ -198,36 +198,22 @@ public class EchoLensEntity extends Entity {
 		}
 		orphanTicks = 0;
 		if (this.tickCount % PARTICLE_INTERVAL_TICKS == 0) {
-			emitProgressRing(serverLevel);
+			emitProgressAura(serverLevel);
 		}
 	}
 
-	private void emitProgressRing(ServerLevel serverLevel) {
+	private void emitProgressAura(ServerLevel serverLevel) {
 		float progress = getProgress();
-		double leadingAngle = progress * Math.PI * 2.0D;
-		int arcPoints = MIN_ARC_POINTS + Math.round(progress * (MAX_ARC_POINTS - MIN_ARC_POINTS));
-		for (int point = 0; point < arcPoints; point++) {
-			double angle = leadingAngle * point / Math.max(1, arcPoints);
-			spawnRingParticle(serverLevel, trailParticle(angle), angle);
+		int count = MIN_AURA_PARTICLES + Math.round(progress * (MAX_AURA_PARTICLES - MIN_AURA_PARTICLES));
+		for (int index = 0; index < count; index++) {
+			serverLevel.sendParticles(auraParticle(),
+					this.getX(), this.getY(), this.getZ(),
+					1, AURA_SPREAD, AURA_SPREAD, AURA_SPREAD, AURA_DRIFT * progress);
 		}
-		spawnRingParticle(serverLevel, headParticle(), leadingAngle);
 	}
 
-	private void spawnRingParticle(ServerLevel serverLevel, ParticleOptions particle, double angle) {
-		serverLevel.sendParticles(particle,
-				this.getX() + Math.cos(angle) * RING_RADIUS,
-				this.getY(),
-				this.getZ() + Math.sin(angle) * RING_RADIUS,
-				1, 0.0D, 0.0D, 0.0D, 0.0D);
-	}
-
-	private ParticleOptions headParticle() {
+	private ParticleOptions auraParticle() {
 		return getMode() == EchoLensMode.PLAYBACK ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.SCULK_SOUL;
-	}
-
-	private ParticleOptions trailParticle(double angle) {
-		return new net.minecraft.core.particles.SculkChargeParticleOptions(
-				(float) Math.sin(angle) * ARC_ROLL_SCALE);
 	}
 
 	private void tickReturn(ServerLevel serverLevel) {

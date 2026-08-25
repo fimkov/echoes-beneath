@@ -51,8 +51,8 @@ Eight vanilla Echo Shards around one vanilla Amethyst Shard.
 
 1. Craft an Echo Lens.
 2. Right-click the **top face** of a block. The lens leaves your hand, flies to the spot, hovers at
-   about 1.4 blocks and starts recording. A ring of particles closes around it as the recording fills,
-   and it spins faster the closer it gets to full — there is no timer text anywhere.
+   about 1.4 blocks and starts recording. It gives off more particles and spins faster the closer it gets
+   to full — there is no timer text anywhere.
 3. For up to two minutes it records the space around it: a snapshot of the blocks, every block change,
    the movement and actions of nearby creatures, and every spatial sound that actually plays inside
    the radius.
@@ -137,9 +137,9 @@ Which mobs are affected is controlled by the `echoes_beneath:temporarily_suppres
 
 There is no GUI, and by design there is nothing to configure per-lens.
 
-While a lens is deployed, a ring of particles around it shows how far the recording or the playback has
-come: the leading particle marks the current position on the ring and the trail fills the arc behind it.
-Recording uses a teal ring, playback a violet one.
+While a lens is deployed it gives off sculk particles, and both the particle count and its spin speed rise
+as the recording or the playback fills. There is no dial and no counter — the same way vanilla never puts
+a timer on a world object.
 
 ## Configuration
 
