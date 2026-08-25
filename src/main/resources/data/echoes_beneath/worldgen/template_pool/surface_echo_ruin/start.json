@@ -1,0 +1,24 @@
+{
+  "name": "echoes_beneath:surface_echo_ruin/start",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "echoes_beneath:surface_echo_ruin/ruin_1",
+        "processors": "echoes_beneath:surface_ruin_degradation",
+        "projection": "rigid"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "echoes_beneath:surface_echo_ruin/ruin_2",
+        "processors": "echoes_beneath:surface_ruin_degradation",
+        "projection": "rigid"
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "criteria": {
+    "has_echo_shard": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:echo_shard"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.echoes_beneath.echo_shard.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:echo_shard"
+    },
+    "title": {
+      "translate": "advancements.echoes_beneath.echo_shard.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_echo_shard"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "echoes_beneath:surface_echo_ruin",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 76,
+    "separation": 32,
+    "salt": 905513374
+  }
+}

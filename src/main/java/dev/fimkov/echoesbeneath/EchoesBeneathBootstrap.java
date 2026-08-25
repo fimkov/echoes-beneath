@@ -1,5 +1,6 @@
 package dev.fimkov.echoesbeneath;
 
+import dev.fimkov.echoesbeneath.command.EchoCommands;
 import dev.fimkov.echoesbeneath.config.EchoConfig;
 import dev.fimkov.echoesbeneath.network.EchoNetworkPayloads;
 import dev.fimkov.echoesbeneath.registry.EchoComponents;
@@ -21,6 +22,7 @@ public final class EchoesBeneathBootstrap {
 		EchoEntities.register();
 		EchoTags.touch();
 		EchoNetworkPayloads.registerCommon();
+		EchoCommands.register();
 		EchoServerLifecycle.register();
 	}
 }

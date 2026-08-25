@@ -1,0 +1,24 @@
+{
+  "name": "echoes_beneath:echo_listening_post/start",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "echoes_beneath:echo_listening_post/post_1",
+        "processors": "echoes_beneath:deep_ruin_degradation",
+        "projection": "rigid"
+      }
+    },
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "echoes_beneath:echo_listening_post/post_2",
+        "processors": "echoes_beneath:deep_ruin_degradation",
+        "projection": "rigid"
+      }
+    }
+  ]
+}
