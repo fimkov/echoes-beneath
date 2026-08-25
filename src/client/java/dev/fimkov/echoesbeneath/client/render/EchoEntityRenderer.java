@@ -58,7 +58,7 @@ public final class EchoEntityRenderer {
 		poseStack.translate(entity.getX() - cameraPosition.x,
 				entity.getY() - cameraPosition.y, entity.getZ() - cameraPosition.z);
 		dispatcher.render(entity, 0.0D, 0.0D, 0.0D, entity.getYRot(), partialTick,
-				poseStack, context.consumers(), SILHOUETTE_LIGHT);
+				poseStack, new EchoSilhouetteBuffers(context.consumers()), SILHOUETTE_LIGHT);
 		poseStack.popPose();
 	}
 

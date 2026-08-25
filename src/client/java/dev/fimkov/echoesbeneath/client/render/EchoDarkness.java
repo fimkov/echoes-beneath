@@ -19,11 +19,11 @@ public final class EchoDarkness {
 
 	public static Optional<ClientPlaybackSession> enclosingSession() {
 		Minecraft client = Minecraft.getInstance();
-		if (client.level == null) {
+		if (client.level == null || client.player == null) {
 			return Optional.empty();
 		}
-		Vec3 viewpoint = client.gameRenderer.getMainCamera().getPosition();
-		return ClientPlaybackManager.instance().sessionContaining(client.level, viewpoint);
+		return ClientPlaybackManager.instance()
+				.sessionContaining(client.level, client.player.getEyePosition());
 	}
 
 	public static boolean isViewerInsideRegion() {

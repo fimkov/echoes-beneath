@@ -25,7 +25,9 @@ public final class EchoPlaybackRenderer {
 			if (!session.region().dimension().equals(context.world().dimension())) {
 				continue;
 			}
-			boolean cameraInside = session.region().contains(context.world().dimension(), cameraPosition);
+			boolean cameraInside = EchoDarkness.enclosingSession()
+					.filter(enclosing -> enclosing == session)
+					.isPresent();
 			EchoBoundaryRenderer.render(context, session, cameraInside);
 			if (!cameraInside) {
 				continue;
