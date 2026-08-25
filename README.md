@@ -50,7 +50,7 @@ Eight vanilla Echo Shards around one vanilla Amethyst Shard.
 ## Game loop
 
 1. Craft an Echo Lens.
-2. Right-click the **top face** of a block. The lens leaves your hand, flies to the spot, hovers at
+2. Right-click the ground. The lens leaves your hand, flies to the spot, hovers at
    about 1.4 blocks and starts recording. It gives off more particles and spins faster the closer it gets
    to full — there is no timer text anywhere.
 3. For up to two minutes it records the space around it: a snapshot of the blocks, every block change,

@@ -21,6 +21,8 @@ public final class EchoWavePalette {
 	private static final int BODY_ALPHA = 165;
 	private static final int GLOW_ALPHA = 240;
 	private static final int ALPHA_STEPS = 5;
+	private static final int LOCAL_ALPHA = 125;
+	public static final float LOCAL_DEPTH = 0.4F;
 
 	private EchoWavePalette() {
 	}
@@ -42,6 +44,14 @@ public final class EchoWavePalette {
 		int alpha = quantise(GLOW_ALPHA * Math.clamp(fade, 0.0F, 1.0F));
 		int[] source = ember ? EMBER_COLOURS : GLOW_COLOURS;
 		return (alpha << 24) | source[clampPalette(paletteIndex)];
+	}
+
+	public static int localColour(int paletteIndex, float proximity, float fade) {
+		int[] stops = BODY_STOPS[clampPalette(paletteIndex)];
+		float strength = Math.clamp(proximity, 0.0F, 1.0F);
+		int stop = Math.min(stops.length - 1, (int) ((1.0F - strength) * stops.length));
+		int alpha = quantise(LOCAL_ALPHA * strength * Math.clamp(fade, 0.0F, 1.0F));
+		return (alpha << 24) | stops[stop];
 	}
 
 	public static int colorAt(int paletteIndex, float depth, float fade) {

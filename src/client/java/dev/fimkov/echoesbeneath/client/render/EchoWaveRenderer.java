@@ -159,7 +159,9 @@ public final class EchoWaveRenderer {
 			double front = wave.radiusAt(elapsed);
 			double distance = wave.origin().distanceTo(sectionCentre);
 			double reach = EchoSectionMesh.CIRCUMRADIUS + wave.shellThickness();
-			if (Math.abs(distance - front) <= reach) {
+			boolean onFront = Math.abs(distance - front) <= reach;
+			boolean nearSource = distance <= EchoSectionMesh.CIRCUMRADIUS + wave.localRevealRadius();
+			if (onFront || nearSource) {
 				destination.add(wave);
 			}
 		}
@@ -175,17 +177,30 @@ public final class EchoWaveRenderer {
 		int bestPalette = EchoWavePalette.PALETTE_SCULK;
 		for (EchoWave wave : waves) {
 			float elapsed = wave.elapsedAt(currentTick, partialTick);
-			float depth = wave.depthOf(wave.origin().distanceTo(point), elapsed);
-			if (depth < 0.0F) {
+			double distance = wave.origin().distanceTo(point);
+			float fade = wave.fadeAt(elapsed);
+			float depth = wave.depthOf(distance, elapsed);
+			if (depth >= 0.0F) {
+				int colour = EchoWavePalette.colorAt(wave.paletteIndex(), depth, fade);
+				int alpha = (colour >>> 24) & 0xFF;
+				if (alpha > bestAlpha) {
+					bestAlpha = alpha;
+					best = colour;
+					bestDepth = depth;
+					bestFade = fade;
+					bestPalette = wave.paletteIndex();
+				}
+			}
+			float proximity = wave.proximityAt(distance, elapsed);
+			if (proximity <= 0.0F) {
 				continue;
 			}
-			float fade = wave.fadeAt(elapsed);
-			int colour = EchoWavePalette.colorAt(wave.paletteIndex(), depth, fade);
-			int alpha = (colour >>> 24) & 0xFF;
-			if (alpha > bestAlpha) {
-				bestAlpha = alpha;
-				best = colour;
-				bestDepth = depth;
+			int localColour = EchoWavePalette.localColour(wave.paletteIndex(), proximity, fade);
+			int localAlpha = (localColour >>> 24) & 0xFF;
+			if (localAlpha > bestAlpha) {
+				bestAlpha = localAlpha;
+				best = localColour;
+				bestDepth = EchoWavePalette.LOCAL_DEPTH;
 				bestFade = fade;
 				bestPalette = wave.paletteIndex();
 			}

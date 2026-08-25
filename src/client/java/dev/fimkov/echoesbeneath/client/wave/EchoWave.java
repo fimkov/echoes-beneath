@@ -5,6 +5,9 @@ import net.minecraft.world.phys.Vec3;
 
 public final class EchoWave {
 	private static final float SHELL_THICKNESS = 4.5F;
+	private static final float LOCAL_REVEAL_RADIUS = 7.5F;
+	private static final float LOCAL_PULSE_TICKS = 22.0F;
+	private static final float LOCAL_PULSE_DEPTH = 0.22F;
 
 	private final Vec3 origin;
 	private final int startTick;
@@ -44,6 +47,21 @@ public final class EchoWave {
 
 	public float shellThickness() {
 		return SHELL_THICKNESS;
+	}
+
+	public float localRevealRadius() {
+		return Math.min(maxRadius, LOCAL_REVEAL_RADIUS);
+	}
+
+	public float proximityAt(double distance, float elapsedTicks) {
+		float reach = Math.min(maxRadius, LOCAL_REVEAL_RADIUS);
+		if (distance >= reach) {
+			return 0.0F;
+		}
+		float falloff = 1.0F - (float) (distance / reach);
+		float pulse = 1.0F - LOCAL_PULSE_DEPTH
+				+ LOCAL_PULSE_DEPTH * (float) Math.sin(elapsedTicks / LOCAL_PULSE_TICKS * Math.PI * 2.0D);
+		return falloff * falloff * pulse;
 	}
 
 	public float fadeAt(float elapsedTicks) {

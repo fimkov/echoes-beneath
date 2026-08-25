@@ -23,9 +23,6 @@ public final class EchoLensInteraction {
 		if (context.getLevel().isClientSide()) {
 			return InteractionResult.SUCCESS;
 		}
-		if (context.getClickedFace() != Direction.UP) {
-			return InteractionResult.PASS;
-		}
 		if (!(context.getPlayer() instanceof ServerPlayer player)) {
 			return InteractionResult.PASS;
 		}
@@ -40,7 +37,21 @@ public final class EchoLensInteraction {
 		if (resonating.isPresent()) {
 			return startPlayback(state, player, context.getHand(), resonating.get());
 		}
-		return startRecording(state, player, context.getHand(), context.getClickedPos(), references);
+		return startRecording(state, player, context.getHand(), supportBlockFor(context), references);
+	}
+
+	private static BlockPos supportBlockFor(UseOnContext context) {
+		BlockPos clicked = context.getClickedPos();
+		if (context.getLevel().getBlockState(clicked).canBeReplaced()) {
+			return clicked.below();
+		}
+		if (context.getClickedFace() != Direction.UP) {
+			BlockPos against = clicked.relative(context.getClickedFace());
+			if (context.getLevel().getBlockState(against).canBeReplaced()) {
+				return against.below();
+			}
+		}
+		return clicked;
 	}
 
 	private static InteractionResult startPlayback(EchoServerState state, ServerPlayer player,

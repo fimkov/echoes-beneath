@@ -17,6 +17,10 @@ public final class EchoSoundPlayer {
 	private static final float[] ECHO_VOLUME_FACTORS = {0.45F, 0.2F};
 	private static final float[] ECHO_PITCH_FACTORS = {0.94F, 0.88F};
 	private static final int MAX_PENDING_ECHOES = 256;
+	private static final int BURST_PARTICLES = 7;
+	private static final double BURST_SPEED = 0.045D;
+	private static final float BURST_ROLL = 0.8F;
+	private static final float SONIC_BOOM_RADIUS = 26.0F;
 
 	private final SoundTimeline timeline;
 	private final EchoWaveManager waves;
@@ -58,9 +62,29 @@ public final class EchoSoundPlayer {
 		float pitch = timeline.pitchAt(index);
 		SoundSource source = timeline.categoryAt(index);
 		level.playLocalSound(position.x, position.y, position.z, event, source, volume, pitch, false);
-		waves.spawn(position, tick, timeline.waveRadiusAt(index),
+		float radius = timeline.waveRadiusAt(index);
+		waves.spawn(position, tick, radius,
 				dev.fimkov.echoesbeneath.client.wave.EchoWavePalette.paletteFor(source));
+		burst(level, position, radius);
 		scheduleEchoes(tick, event, source, position, volume, pitch);
+	}
+
+	private void burst(ClientLevel level, Vec3 position, float radius) {
+		for (int index = 0; index < BURST_PARTICLES; index++) {
+			double angle = level.random.nextDouble() * Math.PI * 2.0D;
+			double lift = (level.random.nextDouble() - 0.5D) * BURST_SPEED;
+			level.addParticle(
+					new net.minecraft.core.particles.SculkChargeParticleOptions(
+							level.random.nextFloat() * BURST_ROLL),
+					position.x, position.y, position.z,
+					Math.cos(angle) * BURST_SPEED, lift, Math.sin(angle) * BURST_SPEED);
+		}
+		level.addParticle(net.minecraft.core.particles.ParticleTypes.SCULK_SOUL,
+				position.x, position.y, position.z, 0.0D, 0.0D, 0.0D);
+		if (radius >= SONIC_BOOM_RADIUS) {
+			level.addParticle(net.minecraft.core.particles.ParticleTypes.SONIC_BOOM,
+					position.x, position.y, position.z, 0.0D, 0.0D, 0.0D);
+		}
 	}
 
 	private void scheduleEchoes(int tick, SoundEvent event, SoundSource source, Vec3 position,
