@@ -94,5 +94,9 @@
   "subtitles.echoes_beneath.resonance_ping": "Эхо-линза отзывается",
   "subtitles.echoes_beneath.wave_pulse": "Возвращается старый звук",
   "subtitles.echoes_beneath.table_tune": "Стол резонанса настраивает",
-  "subtitles.echoes_beneath.table_deny": "Стол резонанса отказывает"
+  "subtitles.echoes_beneath.table_deny": "Стол резонанса отказывает",
+  "message.echoes_beneath.mending_missing": "Воспоминанию нужен предмет: %s, а у вас его нет",
+  "message.echoes_beneath.mending_no_experience": "Не хватает опыта, чтобы удержать форму",
+  "advancements.echoes_beneath.put_it_back.title": "Вернуть на место",
+  "advancements.echoes_beneath.put_it_back.description": "Присядьте и щёлкните туда, где стоял блок, отдав воспоминанию материал, чтобы оно его удержало"
 }

@@ -94,5 +94,9 @@
   "subtitles.echoes_beneath.resonance_ping": "Echo Lens resonates",
   "subtitles.echoes_beneath.wave_pulse": "An old sound returns",
   "subtitles.echoes_beneath.table_tune": "Resonance Table tunes",
-  "subtitles.echoes_beneath.table_deny": "Resonance Table refuses"
+  "subtitles.echoes_beneath.table_deny": "Resonance Table refuses",
+  "message.echoes_beneath.mending_missing": "The memory wants %s, and you have none",
+  "message.echoes_beneath.mending_no_experience": "Not enough experience to hold the shape",
+  "advancements.echoes_beneath.put_it_back.title": "Put It Back",
+  "advancements.echoes_beneath.put_it_back.description": "Sneak and click where a block used to stand, and give the memory the material to hold it"
 }

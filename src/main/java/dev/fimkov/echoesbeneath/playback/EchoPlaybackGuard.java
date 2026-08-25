@@ -27,6 +27,13 @@ public final class EchoPlaybackGuard {
 				!isBlocked(level, player, position));
 
 		UseBlockCallback.EVENT.register((player, level, hand, hitResult) -> {
+			if (level instanceof ServerLevel serverLevel && player instanceof ServerPlayer serverPlayer
+					&& player.isShiftKeyDown()) {
+				BlockPos target = hitResult.getBlockPos().relative(hitResult.getDirection());
+				if (EchoMending.tryMend(serverLevel, serverPlayer, target, hand)) {
+					return InteractionResult.SUCCESS;
+				}
+			}
 			if (isBlocked(level, player, hitResult.getBlockPos())) {
 				return InteractionResult.FAIL;
 			}
