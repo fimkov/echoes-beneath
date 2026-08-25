@@ -1,6 +1,7 @@
 package dev.fimkov.echoesbeneath;
 
 public final class EchoTranslations {
+	public static final String ITEM_GROUP = "itemGroup.echoes_beneath";
 	public static final String ITEM_ECHO_LENS = "item.echoes_beneath.echo_lens";
 
 	public static final String TOOLTIP_MEMORIES = "tooltip.echoes_beneath.memories";
