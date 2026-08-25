@@ -31,6 +31,7 @@ public final class EchoPlaybackSession {
 	private final EchoMemoryRecord record;
 	private final EchoLensEntity lensEntity;
 	private final Map<EchoPlaybackDataPart, List<byte[]>> encodedParts;
+	private final int clarity;
 	private final Map<UUID, SuppressedMobState> suppressed = new HashMap<>();
 	private final Set<UUID> subscribers = new HashSet<>();
 
@@ -39,7 +40,7 @@ public final class EchoPlaybackSession {
 
 	public EchoPlaybackSession(UUID playbackId, UUID ownerId, ServerLevel level, EchoRegion region,
 			EchoMemoryRecord record, EchoLensEntity lensEntity,
-			Map<EchoPlaybackDataPart, List<byte[]>> encodedParts) {
+			Map<EchoPlaybackDataPart, List<byte[]>> encodedParts, int clarity) {
 		this.playbackId = playbackId;
 		this.ownerId = ownerId;
 		this.level = level;
@@ -47,6 +48,7 @@ public final class EchoPlaybackSession {
 		this.record = record;
 		this.lensEntity = lensEntity;
 		this.encodedParts = encodedParts;
+		this.clarity = clarity;
 	}
 
 	public UUID playbackId() {
@@ -140,7 +142,8 @@ public final class EchoPlaybackSession {
 	public void subscribe(ServerPlayer player) {
 		subscribers.add(player.getUUID());
 		ServerPlayNetworking.send(player, new PlaybackStartPayload(playbackId, region.dimension(),
-				region.center(), region.radius(), region.verticalRadius(), record.durationTicks(), record.slot()));
+				region.center(), region.radius(), region.verticalRadius(), record.durationTicks(),
+				record.slot(), clarity));
 		EchoPlaybackTransfer.sendTo(player, playbackId, encodedParts);
 		ServerPlayNetworking.send(player, new PlaybackTickPayload(playbackId, currentTick));
 	}
