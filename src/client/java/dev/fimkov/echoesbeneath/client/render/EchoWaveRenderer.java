@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 public final class EchoWaveRenderer {
-	private static final int MAX_HIGHLIGHT_FACES = 6000;
-	private static final int SUBDIVISIONS = 4;
+	private static final int MAX_HIGHLIGHT_FACES = 20000;
+	private static final int SUBDIVISIONS = 1;
 	private static final int GRID_POINTS = SUBDIVISIONS + 1;
 	private static final int TEXTURE_ROWS = 8;
 
@@ -92,28 +92,28 @@ public final class EchoWaveRenderer {
 	private static boolean shadeGrid(List<EchoWave> nearby, int currentTick, float partialTick, BlockPos center,
 			float[] basis, float[] gridX, float[] gridY, float[] gridZ, float[] gridU, int[] gridColor,
 			float[] depthOut) {
-		boolean anyVisible = false;
+		float faceCentreX = basis[0] + (basis[3] + basis[6]) * 0.5F;
+		float faceCentreY = basis[1] + (basis[4] + basis[7]) * 0.5F;
+		float faceCentreZ = basis[2] + (basis[5] + basis[8]) * 0.5F;
+		int flatColor = shadePoint(nearby, currentTick, partialTick,
+				center.getX() + faceCentreX, center.getY() + faceCentreY, center.getZ() + faceCentreZ, depthOut);
+		if ((flatColor >>> 24) == 0) {
+			return false;
+		}
+		float flatU = depthOut[0];
 		for (int row = 0; row < GRID_POINTS; row++) {
 			float v = (float) row / SUBDIVISIONS;
 			for (int column = 0; column < GRID_POINTS; column++) {
 				float u = (float) column / SUBDIVISIONS;
 				int index = row * GRID_POINTS + column;
-				float x = basis[0] + basis[3] * u + basis[6] * v;
-				float y = basis[1] + basis[4] * u + basis[7] * v;
-				float z = basis[2] + basis[5] * u + basis[8] * v;
-				gridX[index] = x;
-				gridY[index] = y;
-				gridZ[index] = z;
-				int color = shadePoint(nearby, currentTick, partialTick,
-						center.getX() + x, center.getY() + y, center.getZ() + z, depthOut);
-				gridColor[index] = color;
-				gridU[index] = depthOut[0];
-				if ((color >>> 24) != 0) {
-					anyVisible = true;
-				}
+				gridX[index] = basis[0] + basis[3] * u + basis[6] * v;
+				gridY[index] = basis[1] + basis[4] * u + basis[7] * v;
+				gridZ[index] = basis[2] + basis[5] * u + basis[8] * v;
+				gridColor[index] = flatColor;
+				gridU[index] = flatU;
 			}
 		}
-		return anyVisible;
+		return true;
 	}
 
 	private static void emitSubQuads(VertexConsumer consumer, Matrix4f matrix,
