@@ -7,7 +7,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -31,6 +33,10 @@ public final class EchoEntityRenderer {
 		BlockPos center = session.region().center();
 		PoseStack poseStack = context.matrixStack();
 
+		float presence = EchoDarkness.transitionProgress();
+		if (presence <= 0.0F) {
+			return;
+		}
 		boolean previousShadow = true;
 		dispatcher.setRenderShadow(false);
 		for (EchoEntityPuppet puppet : session.puppets()) {
@@ -44,14 +50,16 @@ public final class EchoEntityRenderer {
 				continue;
 			}
 			renderPuppet(context, dispatcher, poseStack, entity, cameraPosition, partialTick,
-					EchoReveal.of(session));
+					EchoReveal.of(session), presence);
 		}
 		dispatcher.setRenderShadow(previousShadow);
 	}
 
 	private static void renderPuppet(WorldRenderContext context, EntityRenderDispatcher dispatcher,
-			PoseStack poseStack, Entity entity, Vec3 cameraPosition, float partialTick, float reveal) {
-		EchoSilhouetteBuffers buffers = EchoSilhouetteBuffers.revealed(context.consumers(), reveal);
+			PoseStack poseStack, Entity entity, Vec3 cameraPosition, float partialTick, float reveal,
+			float presence) {
+		EchoSilhouetteBuffers buffers = EchoSilhouetteBuffers.forEntity(context.consumers(),
+				textureOf(dispatcher, entity), reveal, presence);
 		poseStack.pushPose();
 		poseStack.translate(entity.getX() - cameraPosition.x,
 				entity.getY() - cameraPosition.y, entity.getZ() - cameraPosition.z);
@@ -60,4 +68,13 @@ public final class EchoEntityRenderer {
 		poseStack.popPose();
 	}
 
+
+	private static ResourceLocation textureOf(EntityRenderDispatcher dispatcher, Entity entity) {
+		return castRenderer(dispatcher.getRenderer(entity)).getTextureLocation(entity);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static EntityRenderer<Entity> castRenderer(EntityRenderer<?> renderer) {
+		return (EntityRenderer<Entity>) renderer;
+	}
 }

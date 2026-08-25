@@ -20,6 +20,7 @@ public final class EchoDarkness {
 
 	private static ClientPlaybackSession enclosing;
 	private static float darkness;
+	private static float lastTarget = FULLY_DARK;
 	private static float lastFogStart;
 	private static float lastFogEnd;
 	private static boolean restoring;
@@ -57,7 +58,15 @@ public final class EchoDarkness {
 	private static float darknessTargetFor(ClientPlaybackSession session) {
 		float relief = (float) session.clarity()
 				/ dev.fimkov.echoesbeneath.item.EchoLensUpgrades.MAX_CLARITY * CLARITY_RELIEF;
-		return FULLY_DARK - relief;
+		lastTarget = FULLY_DARK - relief;
+		return lastTarget;
+	}
+
+	public static float transitionProgress() {
+		if (lastTarget <= ACTIVE_THRESHOLD) {
+			return 0.0F;
+		}
+		return Math.clamp(darkness / lastTarget, 0.0F, 1.0F);
 	}
 
 	public static float darkness() {

@@ -17,6 +17,7 @@ import java.util.Map;
 
 public final class EchoWaveRenderer {
 	private static final int MAX_TEXELS = 42000;
+	private static final double FACE_REACH = 0.75D;
 	public static final int SAMPLE_SLOTS = 3;
 	private static final int SAMPLE_DEPTH = 0;
 	private static final int SAMPLE_FADE = 1;
@@ -64,7 +65,7 @@ public final class EchoWaveRenderer {
 					return;
 				}
 				EchoFaceGeometry.faceBasis(packedFace, mesh.originX(), mesh.originY(), mesh.originZ(), basis);
-				collectFacingWaves(nearby, packedFace, basis, center, facing);
+				collectFacingWaves(nearby, packedFace, basis, center, facing, currentTick, partialTick);
 				if (facing.isEmpty()) {
 					continue;
 				}
@@ -78,6 +79,10 @@ public final class EchoWaveRenderer {
 			float[] basis, float texel, int currentTick, float partialTick, int animationStep,
 			float[] depthOut, int budget) {
 		int emitted = 0;
+		float presence = EchoDarkness.transitionProgress();
+		if (presence <= 0.0F) {
+			return 0;
+		}
 		for (int row = 0; row < EchoTexelGrid.TEXELS_PER_BLOCK && emitted < budget; row++) {
 			for (int column = 0; column < EchoTexelGrid.TEXELS_PER_BLOCK && emitted < budget; column++) {
 				float u = (column + 0.5F) * texel;
@@ -106,11 +111,17 @@ public final class EchoWaveRenderer {
 						colour = body;
 					}
 				}
-				emitTexel(consumer, matrix, basis, column * texel, row * texel, texel, colour);
+				emitTexel(consumer, matrix, basis, column * texel, row * texel, texel,
+						scaleAlpha(colour, presence));
 				emitted++;
 			}
 		}
 		return emitted;
+	}
+
+	private static int scaleAlpha(int argb, float presence) {
+		int alpha = Math.round(((argb >>> 24) & 0xFF) * presence);
+		return (alpha << 24) | (argb & 0x00FFFFFF);
 	}
 
 	private static void emitTexel(VertexConsumer consumer, Matrix4f matrix, float[] basis,
@@ -131,7 +142,7 @@ public final class EchoWaveRenderer {
 	}
 
 	public static void collectFacingWaves(List<EchoWave> nearby, int packedFace, float[] basis,
-			BlockPos center, List<EchoWave> destination) {
+			BlockPos center, List<EchoWave> destination, int currentTick, float partialTick) {
 		destination.clear();
 		Direction direction = EchoFaceGeometry.direction(packedFace);
 		double faceCentreX = center.getX() + basis[0] + (basis[3] + basis[6]) * 0.5D;
@@ -141,9 +152,20 @@ public final class EchoWaveRenderer {
 			double facing = (wave.origin().x - faceCentreX) * direction.getStepX()
 					+ (wave.origin().y - faceCentreY) * direction.getStepY()
 					+ (wave.origin().z - faceCentreZ) * direction.getStepZ();
-			if (facing > 0.0D) {
-				destination.add(wave);
+			if (facing <= 0.0D) {
+				continue;
 			}
+			double deltaX = wave.origin().x - faceCentreX;
+			double deltaY = wave.origin().y - faceCentreY;
+			double deltaZ = wave.origin().z - faceCentreZ;
+			double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+			float elapsed = wave.elapsedAt(currentTick, partialTick);
+			double reach = wave.shellThickness() + FACE_REACH;
+			if (Math.abs(distance - wave.radiusAt(elapsed)) > reach
+					&& distance > wave.localRevealRadius() + FACE_REACH) {
+				continue;
+			}
+			destination.add(wave);
 		}
 	}
 
@@ -169,7 +191,6 @@ public final class EchoWaveRenderer {
 
 	public static int shadePoint(List<EchoWave> waves, int currentTick, float partialTick,
 			double worldX, double worldY, double worldZ, float[] sampleOut) {
-		Vec3 point = new Vec3(worldX, worldY, worldZ);
 		int best = 0;
 		int bestAlpha = 0;
 		float bestDepth = 0.0F;
@@ -177,7 +198,10 @@ public final class EchoWaveRenderer {
 		int bestPalette = EchoWavePalette.PALETTE_SCULK;
 		for (EchoWave wave : waves) {
 			float elapsed = wave.elapsedAt(currentTick, partialTick);
-			double distance = wave.origin().distanceTo(point);
+			double deltaX = wave.origin().x - worldX;
+			double deltaY = wave.origin().y - worldY;
+			double deltaZ = wave.origin().z - worldZ;
+			double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
 			float fade = wave.fadeAt(elapsed);
 			float depth = wave.depthOf(distance, elapsed);
 			if (depth >= 0.0F) {

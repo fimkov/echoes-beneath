@@ -4,32 +4,81 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public record EchoSilhouetteBuffers(MultiBufferSource delegate, int red, int green, int blue, int light)
-		implements MultiBufferSource {
-	private static final int NO_LIGHT = 0;
+public record EchoSilhouetteBuffers(MultiBufferSource delegate, RenderType layer,
+		int red, int green, int blue, int alpha, int light, boolean fading) implements MultiBufferSource {
+	private static final int OPAQUE = 255;
 	private static final int REVEAL_BLOCK_LIGHT = 11;
 
-	public static EchoSilhouetteBuffers revealed(MultiBufferSource delegate, float reveal) {
-		float clamped = Mth.clamp(reveal, 0.0F, 1.0F);
-		int level = Math.round(clamped * 255.0F);
-		return new EchoSilhouetteBuffers(delegate, level, level, level,
-				LightTexture.pack(Math.round(clamped * REVEAL_BLOCK_LIGHT), 0));
+	public static EchoSilhouetteBuffers forEntity(MultiBufferSource delegate, ResourceLocation texture,
+			float reveal, float presence) {
+		return of(delegate, RenderType.entityTranslucent(texture), reveal, presence);
 	}
 
-	public static EchoSilhouetteBuffers tinted(MultiBufferSource delegate, int argb) {
-		return new EchoSilhouetteBuffers(delegate,
-				(argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF, NO_LIGHT);
+	public static EchoSilhouetteBuffers forBlocks(MultiBufferSource delegate, float reveal, float presence) {
+		return of(delegate, RenderType.translucent(), reveal, presence);
+	}
+
+	private static EchoSilhouetteBuffers of(MultiBufferSource delegate, RenderType layer,
+			float reveal, float presence) {
+		int level = Math.round(Mth.clamp(reveal, 0.0F, 1.0F) * OPAQUE);
+		int visible = Math.round(Mth.clamp(presence, 0.0F, 1.0F) * OPAQUE);
+		return new EchoSilhouetteBuffers(delegate, layer, level, level, level, visible,
+				LightTexture.pack(Math.round(Mth.clamp(reveal, 0.0F, 1.0F) * REVEAL_BLOCK_LIGHT), 0),
+				visible < OPAQUE);
+	}
+
+	public boolean isInvisible() {
+		return alpha <= 0;
 	}
 
 	@Override
 	public VertexConsumer getBuffer(RenderType renderType) {
-		return new SilhouetteConsumer(delegate.getBuffer(renderType), red, green, blue, light);
+		if (!fading) {
+			return new SilhouetteConsumer(delegate.getBuffer(renderType), red, green, blue, OPAQUE, light);
+		}
+		if (renderType.format() != layer.format()) {
+			return DISCARD;
+		}
+		return new SilhouetteConsumer(delegate.getBuffer(layer), red, green, blue, alpha, light);
 	}
 
-	private record SilhouetteConsumer(VertexConsumer delegate, int red, int green, int blue, int light)
-			implements VertexConsumer {
+	private static final VertexConsumer DISCARD = new VertexConsumer() {
+		@Override
+		public VertexConsumer addVertex(float x, float y, float z) {
+			return this;
+		}
+
+		@Override
+		public VertexConsumer setColor(int red, int green, int blue, int alpha) {
+			return this;
+		}
+
+		@Override
+		public VertexConsumer setUv(float u, float v) {
+			return this;
+		}
+
+		@Override
+		public VertexConsumer setUv1(int u, int v) {
+			return this;
+		}
+
+		@Override
+		public VertexConsumer setUv2(int u, int v) {
+			return this;
+		}
+
+		@Override
+		public VertexConsumer setNormal(float x, float y, float z) {
+			return this;
+		}
+	};
+
+	private record SilhouetteConsumer(VertexConsumer delegate, int red, int green, int blue,
+			int alpha, int light) implements VertexConsumer {
 		@Override
 		public VertexConsumer addVertex(float x, float y, float z) {
 			delegate.addVertex(x, y, z);
@@ -37,8 +86,8 @@ public record EchoSilhouetteBuffers(MultiBufferSource delegate, int red, int gre
 		}
 
 		@Override
-		public VertexConsumer setColor(int ignoredRed, int ignoredGreen, int ignoredBlue, int alpha) {
-			delegate.setColor(red, green, blue, alpha);
+		public VertexConsumer setColor(int ignoredRed, int ignoredGreen, int ignoredBlue, int sourceAlpha) {
+			delegate.setColor(red, green, blue, alpha * sourceAlpha / OPAQUE);
 			return this;
 		}
 

@@ -17,10 +17,10 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public final class EchoBlockHologramRenderer {
-	private static final double MAX_DISTANCE = 48.0D;
-	private static final int MAX_BLOCKS = 900;
-	private static final int SCAN_HALF = 20;
-	private static final int RESCAN_TICKS = 20;
+	private static final double MAX_DISTANCE = 32.0D;
+	private static final int MAX_BLOCKS = 384;
+	private static final int SCAN_HALF = 14;
+	private static final int RESCAN_TICKS = 40;
 	private static final double RESCAN_MOVE = 8.0D;
 
 	private static ClientPlaybackSession scannedSession;
@@ -47,8 +47,12 @@ public final class EchoBlockHologramRenderer {
 		EchoBlockDeltaState deltas = session.blockDeltas();
 		BlockPalette palette = snapshot.palette();
 		BlockRenderDispatcher blocks = client.getBlockRenderer();
-		EchoSilhouetteBuffers buffers =
-				EchoSilhouetteBuffers.revealed(context.consumers(), EchoReveal.of(session));
+		float presence = EchoDarkness.transitionProgress();
+		if (presence <= 0.0F) {
+			return;
+		}
+		EchoSilhouetteBuffers buffers = EchoSilhouetteBuffers.forBlocks(context.consumers(),
+				EchoReveal.of(session), presence);
 		BlockPos center = session.region().center();
 		PoseStack poseStack = context.matrixStack();
 		BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();

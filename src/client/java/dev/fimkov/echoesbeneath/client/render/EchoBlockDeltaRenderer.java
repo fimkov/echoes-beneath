@@ -69,7 +69,7 @@ public final class EchoBlockDeltaRenderer {
 				}
 				int packedFace = EchoFaceGeometry.pack(0, 0, 0, direction);
 				EchoFaceGeometry.faceBasis(packedFace, relativeX, relativeY, relativeZ, basis);
-				EchoWaveRenderer.collectFacingWaves(waves, packedFace, basis, center, facing);
+				EchoWaveRenderer.collectFacingWaves(waves, packedFace, basis, center, facing, currentTick, partialTick);
 				if (facing.isEmpty()) {
 					continue;
 				}
