@@ -1,8 +1,10 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "echoes_beneath:item/echo_lens_v0",
-    "layer1": "echoes_beneath:item/echo_lens_marks_1_0"
+    "layer0": "echoes_beneath:item/echo_lens_shell_0",
+    "layer1": "echoes_beneath:item/echo_lens_core_1_0",
+    "layer2": "echoes_beneath:item/echo_lens_eyes_0",
+    "layer3": "echoes_beneath:item/echo_lens_ears_0"
   },
   "overrides": [
     {
@@ -13,267 +15,2427 @@
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.022727
+        "echoes_beneath:tuning": 0.002475
       },
       "model": "echoes_beneath:item/echo_lens_1"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.045455
+        "echoes_beneath:tuning": 0.00495
       },
       "model": "echoes_beneath:item/echo_lens_2"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.068182
+        "echoes_beneath:tuning": 0.007426
       },
       "model": "echoes_beneath:item/echo_lens_3"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.090909
+        "echoes_beneath:tuning": 0.009901
       },
       "model": "echoes_beneath:item/echo_lens_4"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.113636
+        "echoes_beneath:tuning": 0.012376
       },
       "model": "echoes_beneath:item/echo_lens_5"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.136364
+        "echoes_beneath:tuning": 0.014851
       },
       "model": "echoes_beneath:item/echo_lens_6"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.159091
+        "echoes_beneath:tuning": 0.017327
       },
       "model": "echoes_beneath:item/echo_lens_7"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.181818
+        "echoes_beneath:tuning": 0.019802
       },
       "model": "echoes_beneath:item/echo_lens_8"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.204545
+        "echoes_beneath:tuning": 0.022277
       },
       "model": "echoes_beneath:item/echo_lens_9"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.227273
+        "echoes_beneath:tuning": 0.024752
       },
       "model": "echoes_beneath:item/echo_lens_10"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.25
+        "echoes_beneath:tuning": 0.027228
       },
       "model": "echoes_beneath:item/echo_lens_11"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.272727
+        "echoes_beneath:tuning": 0.029703
       },
       "model": "echoes_beneath:item/echo_lens_12"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.295455
+        "echoes_beneath:tuning": 0.032178
       },
       "model": "echoes_beneath:item/echo_lens_13"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.318182
+        "echoes_beneath:tuning": 0.034653
       },
       "model": "echoes_beneath:item/echo_lens_14"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.340909
+        "echoes_beneath:tuning": 0.037129
       },
       "model": "echoes_beneath:item/echo_lens_15"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.363636
+        "echoes_beneath:tuning": 0.039604
       },
       "model": "echoes_beneath:item/echo_lens_16"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.386364
+        "echoes_beneath:tuning": 0.042079
       },
       "model": "echoes_beneath:item/echo_lens_17"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.409091
+        "echoes_beneath:tuning": 0.044554
       },
       "model": "echoes_beneath:item/echo_lens_18"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.431818
+        "echoes_beneath:tuning": 0.04703
       },
       "model": "echoes_beneath:item/echo_lens_19"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.454545
+        "echoes_beneath:tuning": 0.049505
       },
       "model": "echoes_beneath:item/echo_lens_20"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.477273
+        "echoes_beneath:tuning": 0.05198
       },
       "model": "echoes_beneath:item/echo_lens_21"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.5
+        "echoes_beneath:tuning": 0.054455
       },
       "model": "echoes_beneath:item/echo_lens_22"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.522727
+        "echoes_beneath:tuning": 0.056931
       },
       "model": "echoes_beneath:item/echo_lens_23"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.545455
+        "echoes_beneath:tuning": 0.059406
       },
       "model": "echoes_beneath:item/echo_lens_24"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.568182
+        "echoes_beneath:tuning": 0.061881
       },
       "model": "echoes_beneath:item/echo_lens_25"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.590909
+        "echoes_beneath:tuning": 0.064356
       },
       "model": "echoes_beneath:item/echo_lens_26"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.613636
+        "echoes_beneath:tuning": 0.066832
       },
       "model": "echoes_beneath:item/echo_lens_27"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.636364
+        "echoes_beneath:tuning": 0.069307
       },
       "model": "echoes_beneath:item/echo_lens_28"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.659091
+        "echoes_beneath:tuning": 0.071782
       },
       "model": "echoes_beneath:item/echo_lens_29"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.681818
+        "echoes_beneath:tuning": 0.074257
       },
       "model": "echoes_beneath:item/echo_lens_30"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.704545
+        "echoes_beneath:tuning": 0.076733
       },
       "model": "echoes_beneath:item/echo_lens_31"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.727273
+        "echoes_beneath:tuning": 0.079208
       },
       "model": "echoes_beneath:item/echo_lens_32"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.75
+        "echoes_beneath:tuning": 0.081683
       },
       "model": "echoes_beneath:item/echo_lens_33"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.772727
+        "echoes_beneath:tuning": 0.084158
       },
       "model": "echoes_beneath:item/echo_lens_34"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.795455
+        "echoes_beneath:tuning": 0.086634
       },
       "model": "echoes_beneath:item/echo_lens_35"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.818182
+        "echoes_beneath:tuning": 0.089109
       },
       "model": "echoes_beneath:item/echo_lens_36"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.840909
+        "echoes_beneath:tuning": 0.091584
       },
       "model": "echoes_beneath:item/echo_lens_37"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.863636
+        "echoes_beneath:tuning": 0.094059
       },
       "model": "echoes_beneath:item/echo_lens_38"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.886364
+        "echoes_beneath:tuning": 0.096535
       },
       "model": "echoes_beneath:item/echo_lens_39"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.909091
+        "echoes_beneath:tuning": 0.09901
       },
       "model": "echoes_beneath:item/echo_lens_40"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.931818
+        "echoes_beneath:tuning": 0.101485
       },
       "model": "echoes_beneath:item/echo_lens_41"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.954545
+        "echoes_beneath:tuning": 0.10396
       },
       "model": "echoes_beneath:item/echo_lens_42"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 0.977273
+        "echoes_beneath:tuning": 0.106436
       },
       "model": "echoes_beneath:item/echo_lens_43"
     },
     {
       "predicate": {
-        "echoes_beneath:tuning": 1.0
+        "echoes_beneath:tuning": 0.108911
       },
       "model": "echoes_beneath:item/echo_lens_44"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.111386
+      },
+      "model": "echoes_beneath:item/echo_lens_45"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.113861
+      },
+      "model": "echoes_beneath:item/echo_lens_46"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.116337
+      },
+      "model": "echoes_beneath:item/echo_lens_47"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.118812
+      },
+      "model": "echoes_beneath:item/echo_lens_48"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.121287
+      },
+      "model": "echoes_beneath:item/echo_lens_49"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.123762
+      },
+      "model": "echoes_beneath:item/echo_lens_50"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.126238
+      },
+      "model": "echoes_beneath:item/echo_lens_51"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.128713
+      },
+      "model": "echoes_beneath:item/echo_lens_52"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.131188
+      },
+      "model": "echoes_beneath:item/echo_lens_53"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.133663
+      },
+      "model": "echoes_beneath:item/echo_lens_54"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.136139
+      },
+      "model": "echoes_beneath:item/echo_lens_55"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.138614
+      },
+      "model": "echoes_beneath:item/echo_lens_56"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.141089
+      },
+      "model": "echoes_beneath:item/echo_lens_57"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.143564
+      },
+      "model": "echoes_beneath:item/echo_lens_58"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.14604
+      },
+      "model": "echoes_beneath:item/echo_lens_59"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.148515
+      },
+      "model": "echoes_beneath:item/echo_lens_60"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.15099
+      },
+      "model": "echoes_beneath:item/echo_lens_61"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.153465
+      },
+      "model": "echoes_beneath:item/echo_lens_62"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.155941
+      },
+      "model": "echoes_beneath:item/echo_lens_63"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.158416
+      },
+      "model": "echoes_beneath:item/echo_lens_64"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.160891
+      },
+      "model": "echoes_beneath:item/echo_lens_65"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.163366
+      },
+      "model": "echoes_beneath:item/echo_lens_66"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.165842
+      },
+      "model": "echoes_beneath:item/echo_lens_67"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.168317
+      },
+      "model": "echoes_beneath:item/echo_lens_68"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.170792
+      },
+      "model": "echoes_beneath:item/echo_lens_69"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.173267
+      },
+      "model": "echoes_beneath:item/echo_lens_70"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.175743
+      },
+      "model": "echoes_beneath:item/echo_lens_71"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.178218
+      },
+      "model": "echoes_beneath:item/echo_lens_72"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.180693
+      },
+      "model": "echoes_beneath:item/echo_lens_73"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.183168
+      },
+      "model": "echoes_beneath:item/echo_lens_74"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.185644
+      },
+      "model": "echoes_beneath:item/echo_lens_75"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.188119
+      },
+      "model": "echoes_beneath:item/echo_lens_76"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.190594
+      },
+      "model": "echoes_beneath:item/echo_lens_77"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.193069
+      },
+      "model": "echoes_beneath:item/echo_lens_78"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.195545
+      },
+      "model": "echoes_beneath:item/echo_lens_79"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.19802
+      },
+      "model": "echoes_beneath:item/echo_lens_80"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.200495
+      },
+      "model": "echoes_beneath:item/echo_lens_81"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.20297
+      },
+      "model": "echoes_beneath:item/echo_lens_82"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.205446
+      },
+      "model": "echoes_beneath:item/echo_lens_83"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.207921
+      },
+      "model": "echoes_beneath:item/echo_lens_84"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.210396
+      },
+      "model": "echoes_beneath:item/echo_lens_85"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.212871
+      },
+      "model": "echoes_beneath:item/echo_lens_86"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.215347
+      },
+      "model": "echoes_beneath:item/echo_lens_87"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.217822
+      },
+      "model": "echoes_beneath:item/echo_lens_88"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.220297
+      },
+      "model": "echoes_beneath:item/echo_lens_89"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.222772
+      },
+      "model": "echoes_beneath:item/echo_lens_90"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.225248
+      },
+      "model": "echoes_beneath:item/echo_lens_91"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.227723
+      },
+      "model": "echoes_beneath:item/echo_lens_92"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.230198
+      },
+      "model": "echoes_beneath:item/echo_lens_93"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.232673
+      },
+      "model": "echoes_beneath:item/echo_lens_94"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.235149
+      },
+      "model": "echoes_beneath:item/echo_lens_95"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.237624
+      },
+      "model": "echoes_beneath:item/echo_lens_96"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.240099
+      },
+      "model": "echoes_beneath:item/echo_lens_97"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.242574
+      },
+      "model": "echoes_beneath:item/echo_lens_98"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.24505
+      },
+      "model": "echoes_beneath:item/echo_lens_99"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.247525
+      },
+      "model": "echoes_beneath:item/echo_lens_100"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.25
+      },
+      "model": "echoes_beneath:item/echo_lens_101"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.252475
+      },
+      "model": "echoes_beneath:item/echo_lens_102"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.25495
+      },
+      "model": "echoes_beneath:item/echo_lens_103"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.257426
+      },
+      "model": "echoes_beneath:item/echo_lens_104"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.259901
+      },
+      "model": "echoes_beneath:item/echo_lens_105"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.262376
+      },
+      "model": "echoes_beneath:item/echo_lens_106"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.264851
+      },
+      "model": "echoes_beneath:item/echo_lens_107"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.267327
+      },
+      "model": "echoes_beneath:item/echo_lens_108"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.269802
+      },
+      "model": "echoes_beneath:item/echo_lens_109"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.272277
+      },
+      "model": "echoes_beneath:item/echo_lens_110"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.274752
+      },
+      "model": "echoes_beneath:item/echo_lens_111"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.277228
+      },
+      "model": "echoes_beneath:item/echo_lens_112"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.279703
+      },
+      "model": "echoes_beneath:item/echo_lens_113"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.282178
+      },
+      "model": "echoes_beneath:item/echo_lens_114"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.284653
+      },
+      "model": "echoes_beneath:item/echo_lens_115"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.287129
+      },
+      "model": "echoes_beneath:item/echo_lens_116"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.289604
+      },
+      "model": "echoes_beneath:item/echo_lens_117"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.292079
+      },
+      "model": "echoes_beneath:item/echo_lens_118"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.294554
+      },
+      "model": "echoes_beneath:item/echo_lens_119"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.29703
+      },
+      "model": "echoes_beneath:item/echo_lens_120"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.299505
+      },
+      "model": "echoes_beneath:item/echo_lens_121"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.30198
+      },
+      "model": "echoes_beneath:item/echo_lens_122"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.304455
+      },
+      "model": "echoes_beneath:item/echo_lens_123"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.306931
+      },
+      "model": "echoes_beneath:item/echo_lens_124"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.309406
+      },
+      "model": "echoes_beneath:item/echo_lens_125"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.311881
+      },
+      "model": "echoes_beneath:item/echo_lens_126"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.314356
+      },
+      "model": "echoes_beneath:item/echo_lens_127"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.316832
+      },
+      "model": "echoes_beneath:item/echo_lens_128"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.319307
+      },
+      "model": "echoes_beneath:item/echo_lens_129"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.321782
+      },
+      "model": "echoes_beneath:item/echo_lens_130"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.324257
+      },
+      "model": "echoes_beneath:item/echo_lens_131"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.326733
+      },
+      "model": "echoes_beneath:item/echo_lens_132"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.329208
+      },
+      "model": "echoes_beneath:item/echo_lens_133"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.331683
+      },
+      "model": "echoes_beneath:item/echo_lens_134"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.334158
+      },
+      "model": "echoes_beneath:item/echo_lens_135"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.336634
+      },
+      "model": "echoes_beneath:item/echo_lens_136"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.339109
+      },
+      "model": "echoes_beneath:item/echo_lens_137"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.341584
+      },
+      "model": "echoes_beneath:item/echo_lens_138"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.344059
+      },
+      "model": "echoes_beneath:item/echo_lens_139"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.346535
+      },
+      "model": "echoes_beneath:item/echo_lens_140"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.34901
+      },
+      "model": "echoes_beneath:item/echo_lens_141"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.351485
+      },
+      "model": "echoes_beneath:item/echo_lens_142"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.35396
+      },
+      "model": "echoes_beneath:item/echo_lens_143"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.356436
+      },
+      "model": "echoes_beneath:item/echo_lens_144"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.358911
+      },
+      "model": "echoes_beneath:item/echo_lens_145"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.361386
+      },
+      "model": "echoes_beneath:item/echo_lens_146"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.363861
+      },
+      "model": "echoes_beneath:item/echo_lens_147"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.366337
+      },
+      "model": "echoes_beneath:item/echo_lens_148"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.368812
+      },
+      "model": "echoes_beneath:item/echo_lens_149"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.371287
+      },
+      "model": "echoes_beneath:item/echo_lens_150"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.373762
+      },
+      "model": "echoes_beneath:item/echo_lens_151"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.376238
+      },
+      "model": "echoes_beneath:item/echo_lens_152"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.378713
+      },
+      "model": "echoes_beneath:item/echo_lens_153"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.381188
+      },
+      "model": "echoes_beneath:item/echo_lens_154"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.383663
+      },
+      "model": "echoes_beneath:item/echo_lens_155"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.386139
+      },
+      "model": "echoes_beneath:item/echo_lens_156"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.388614
+      },
+      "model": "echoes_beneath:item/echo_lens_157"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.391089
+      },
+      "model": "echoes_beneath:item/echo_lens_158"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.393564
+      },
+      "model": "echoes_beneath:item/echo_lens_159"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.39604
+      },
+      "model": "echoes_beneath:item/echo_lens_160"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.398515
+      },
+      "model": "echoes_beneath:item/echo_lens_161"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.40099
+      },
+      "model": "echoes_beneath:item/echo_lens_162"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.403465
+      },
+      "model": "echoes_beneath:item/echo_lens_163"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.405941
+      },
+      "model": "echoes_beneath:item/echo_lens_164"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.408416
+      },
+      "model": "echoes_beneath:item/echo_lens_165"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.410891
+      },
+      "model": "echoes_beneath:item/echo_lens_166"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.413366
+      },
+      "model": "echoes_beneath:item/echo_lens_167"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.415842
+      },
+      "model": "echoes_beneath:item/echo_lens_168"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.418317
+      },
+      "model": "echoes_beneath:item/echo_lens_169"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.420792
+      },
+      "model": "echoes_beneath:item/echo_lens_170"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.423267
+      },
+      "model": "echoes_beneath:item/echo_lens_171"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.425743
+      },
+      "model": "echoes_beneath:item/echo_lens_172"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.428218
+      },
+      "model": "echoes_beneath:item/echo_lens_173"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.430693
+      },
+      "model": "echoes_beneath:item/echo_lens_174"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.433168
+      },
+      "model": "echoes_beneath:item/echo_lens_175"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.435644
+      },
+      "model": "echoes_beneath:item/echo_lens_176"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.438119
+      },
+      "model": "echoes_beneath:item/echo_lens_177"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.440594
+      },
+      "model": "echoes_beneath:item/echo_lens_178"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.443069
+      },
+      "model": "echoes_beneath:item/echo_lens_179"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.445545
+      },
+      "model": "echoes_beneath:item/echo_lens_180"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.44802
+      },
+      "model": "echoes_beneath:item/echo_lens_181"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.450495
+      },
+      "model": "echoes_beneath:item/echo_lens_182"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.45297
+      },
+      "model": "echoes_beneath:item/echo_lens_183"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.455446
+      },
+      "model": "echoes_beneath:item/echo_lens_184"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.457921
+      },
+      "model": "echoes_beneath:item/echo_lens_185"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.460396
+      },
+      "model": "echoes_beneath:item/echo_lens_186"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.462871
+      },
+      "model": "echoes_beneath:item/echo_lens_187"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.465347
+      },
+      "model": "echoes_beneath:item/echo_lens_188"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.467822
+      },
+      "model": "echoes_beneath:item/echo_lens_189"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.470297
+      },
+      "model": "echoes_beneath:item/echo_lens_190"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.472772
+      },
+      "model": "echoes_beneath:item/echo_lens_191"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.475248
+      },
+      "model": "echoes_beneath:item/echo_lens_192"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.477723
+      },
+      "model": "echoes_beneath:item/echo_lens_193"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.480198
+      },
+      "model": "echoes_beneath:item/echo_lens_194"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.482673
+      },
+      "model": "echoes_beneath:item/echo_lens_195"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.485149
+      },
+      "model": "echoes_beneath:item/echo_lens_196"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.487624
+      },
+      "model": "echoes_beneath:item/echo_lens_197"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.490099
+      },
+      "model": "echoes_beneath:item/echo_lens_198"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.492574
+      },
+      "model": "echoes_beneath:item/echo_lens_199"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.49505
+      },
+      "model": "echoes_beneath:item/echo_lens_200"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.497525
+      },
+      "model": "echoes_beneath:item/echo_lens_201"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.5
+      },
+      "model": "echoes_beneath:item/echo_lens_202"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.502475
+      },
+      "model": "echoes_beneath:item/echo_lens_203"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.50495
+      },
+      "model": "echoes_beneath:item/echo_lens_204"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.507426
+      },
+      "model": "echoes_beneath:item/echo_lens_205"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.509901
+      },
+      "model": "echoes_beneath:item/echo_lens_206"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.512376
+      },
+      "model": "echoes_beneath:item/echo_lens_207"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.514851
+      },
+      "model": "echoes_beneath:item/echo_lens_208"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.517327
+      },
+      "model": "echoes_beneath:item/echo_lens_209"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.519802
+      },
+      "model": "echoes_beneath:item/echo_lens_210"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.522277
+      },
+      "model": "echoes_beneath:item/echo_lens_211"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.524752
+      },
+      "model": "echoes_beneath:item/echo_lens_212"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.527228
+      },
+      "model": "echoes_beneath:item/echo_lens_213"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.529703
+      },
+      "model": "echoes_beneath:item/echo_lens_214"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.532178
+      },
+      "model": "echoes_beneath:item/echo_lens_215"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.534653
+      },
+      "model": "echoes_beneath:item/echo_lens_216"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.537129
+      },
+      "model": "echoes_beneath:item/echo_lens_217"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.539604
+      },
+      "model": "echoes_beneath:item/echo_lens_218"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.542079
+      },
+      "model": "echoes_beneath:item/echo_lens_219"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.544554
+      },
+      "model": "echoes_beneath:item/echo_lens_220"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.54703
+      },
+      "model": "echoes_beneath:item/echo_lens_221"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.549505
+      },
+      "model": "echoes_beneath:item/echo_lens_222"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.55198
+      },
+      "model": "echoes_beneath:item/echo_lens_223"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.554455
+      },
+      "model": "echoes_beneath:item/echo_lens_224"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.556931
+      },
+      "model": "echoes_beneath:item/echo_lens_225"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.559406
+      },
+      "model": "echoes_beneath:item/echo_lens_226"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.561881
+      },
+      "model": "echoes_beneath:item/echo_lens_227"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.564356
+      },
+      "model": "echoes_beneath:item/echo_lens_228"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.566832
+      },
+      "model": "echoes_beneath:item/echo_lens_229"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.569307
+      },
+      "model": "echoes_beneath:item/echo_lens_230"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.571782
+      },
+      "model": "echoes_beneath:item/echo_lens_231"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.574257
+      },
+      "model": "echoes_beneath:item/echo_lens_232"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.576733
+      },
+      "model": "echoes_beneath:item/echo_lens_233"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.579208
+      },
+      "model": "echoes_beneath:item/echo_lens_234"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.581683
+      },
+      "model": "echoes_beneath:item/echo_lens_235"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.584158
+      },
+      "model": "echoes_beneath:item/echo_lens_236"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.586634
+      },
+      "model": "echoes_beneath:item/echo_lens_237"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.589109
+      },
+      "model": "echoes_beneath:item/echo_lens_238"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.591584
+      },
+      "model": "echoes_beneath:item/echo_lens_239"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.594059
+      },
+      "model": "echoes_beneath:item/echo_lens_240"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.596535
+      },
+      "model": "echoes_beneath:item/echo_lens_241"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.59901
+      },
+      "model": "echoes_beneath:item/echo_lens_242"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.601485
+      },
+      "model": "echoes_beneath:item/echo_lens_243"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.60396
+      },
+      "model": "echoes_beneath:item/echo_lens_244"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.606436
+      },
+      "model": "echoes_beneath:item/echo_lens_245"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.608911
+      },
+      "model": "echoes_beneath:item/echo_lens_246"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.611386
+      },
+      "model": "echoes_beneath:item/echo_lens_247"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.613861
+      },
+      "model": "echoes_beneath:item/echo_lens_248"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.616337
+      },
+      "model": "echoes_beneath:item/echo_lens_249"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.618812
+      },
+      "model": "echoes_beneath:item/echo_lens_250"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.621287
+      },
+      "model": "echoes_beneath:item/echo_lens_251"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.623762
+      },
+      "model": "echoes_beneath:item/echo_lens_252"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.626238
+      },
+      "model": "echoes_beneath:item/echo_lens_253"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.628713
+      },
+      "model": "echoes_beneath:item/echo_lens_254"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.631188
+      },
+      "model": "echoes_beneath:item/echo_lens_255"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.633663
+      },
+      "model": "echoes_beneath:item/echo_lens_256"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.636139
+      },
+      "model": "echoes_beneath:item/echo_lens_257"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.638614
+      },
+      "model": "echoes_beneath:item/echo_lens_258"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.641089
+      },
+      "model": "echoes_beneath:item/echo_lens_259"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.643564
+      },
+      "model": "echoes_beneath:item/echo_lens_260"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.64604
+      },
+      "model": "echoes_beneath:item/echo_lens_261"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.648515
+      },
+      "model": "echoes_beneath:item/echo_lens_262"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.65099
+      },
+      "model": "echoes_beneath:item/echo_lens_263"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.653465
+      },
+      "model": "echoes_beneath:item/echo_lens_264"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.655941
+      },
+      "model": "echoes_beneath:item/echo_lens_265"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.658416
+      },
+      "model": "echoes_beneath:item/echo_lens_266"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.660891
+      },
+      "model": "echoes_beneath:item/echo_lens_267"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.663366
+      },
+      "model": "echoes_beneath:item/echo_lens_268"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.665842
+      },
+      "model": "echoes_beneath:item/echo_lens_269"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.668317
+      },
+      "model": "echoes_beneath:item/echo_lens_270"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.670792
+      },
+      "model": "echoes_beneath:item/echo_lens_271"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.673267
+      },
+      "model": "echoes_beneath:item/echo_lens_272"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.675743
+      },
+      "model": "echoes_beneath:item/echo_lens_273"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.678218
+      },
+      "model": "echoes_beneath:item/echo_lens_274"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.680693
+      },
+      "model": "echoes_beneath:item/echo_lens_275"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.683168
+      },
+      "model": "echoes_beneath:item/echo_lens_276"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.685644
+      },
+      "model": "echoes_beneath:item/echo_lens_277"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.688119
+      },
+      "model": "echoes_beneath:item/echo_lens_278"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.690594
+      },
+      "model": "echoes_beneath:item/echo_lens_279"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.693069
+      },
+      "model": "echoes_beneath:item/echo_lens_280"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.695545
+      },
+      "model": "echoes_beneath:item/echo_lens_281"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.69802
+      },
+      "model": "echoes_beneath:item/echo_lens_282"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.700495
+      },
+      "model": "echoes_beneath:item/echo_lens_283"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.70297
+      },
+      "model": "echoes_beneath:item/echo_lens_284"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.705446
+      },
+      "model": "echoes_beneath:item/echo_lens_285"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.707921
+      },
+      "model": "echoes_beneath:item/echo_lens_286"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.710396
+      },
+      "model": "echoes_beneath:item/echo_lens_287"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.712871
+      },
+      "model": "echoes_beneath:item/echo_lens_288"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.715347
+      },
+      "model": "echoes_beneath:item/echo_lens_289"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.717822
+      },
+      "model": "echoes_beneath:item/echo_lens_290"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.720297
+      },
+      "model": "echoes_beneath:item/echo_lens_291"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.722772
+      },
+      "model": "echoes_beneath:item/echo_lens_292"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.725248
+      },
+      "model": "echoes_beneath:item/echo_lens_293"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.727723
+      },
+      "model": "echoes_beneath:item/echo_lens_294"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.730198
+      },
+      "model": "echoes_beneath:item/echo_lens_295"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.732673
+      },
+      "model": "echoes_beneath:item/echo_lens_296"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.735149
+      },
+      "model": "echoes_beneath:item/echo_lens_297"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.737624
+      },
+      "model": "echoes_beneath:item/echo_lens_298"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.740099
+      },
+      "model": "echoes_beneath:item/echo_lens_299"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.742574
+      },
+      "model": "echoes_beneath:item/echo_lens_300"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.74505
+      },
+      "model": "echoes_beneath:item/echo_lens_301"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.747525
+      },
+      "model": "echoes_beneath:item/echo_lens_302"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.75
+      },
+      "model": "echoes_beneath:item/echo_lens_303"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.752475
+      },
+      "model": "echoes_beneath:item/echo_lens_304"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.75495
+      },
+      "model": "echoes_beneath:item/echo_lens_305"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.757426
+      },
+      "model": "echoes_beneath:item/echo_lens_306"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.759901
+      },
+      "model": "echoes_beneath:item/echo_lens_307"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.762376
+      },
+      "model": "echoes_beneath:item/echo_lens_308"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.764851
+      },
+      "model": "echoes_beneath:item/echo_lens_309"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.767327
+      },
+      "model": "echoes_beneath:item/echo_lens_310"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.769802
+      },
+      "model": "echoes_beneath:item/echo_lens_311"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.772277
+      },
+      "model": "echoes_beneath:item/echo_lens_312"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.774752
+      },
+      "model": "echoes_beneath:item/echo_lens_313"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.777228
+      },
+      "model": "echoes_beneath:item/echo_lens_314"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.779703
+      },
+      "model": "echoes_beneath:item/echo_lens_315"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.782178
+      },
+      "model": "echoes_beneath:item/echo_lens_316"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.784653
+      },
+      "model": "echoes_beneath:item/echo_lens_317"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.787129
+      },
+      "model": "echoes_beneath:item/echo_lens_318"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.789604
+      },
+      "model": "echoes_beneath:item/echo_lens_319"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.792079
+      },
+      "model": "echoes_beneath:item/echo_lens_320"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.794554
+      },
+      "model": "echoes_beneath:item/echo_lens_321"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.79703
+      },
+      "model": "echoes_beneath:item/echo_lens_322"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.799505
+      },
+      "model": "echoes_beneath:item/echo_lens_323"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.80198
+      },
+      "model": "echoes_beneath:item/echo_lens_324"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.804455
+      },
+      "model": "echoes_beneath:item/echo_lens_325"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.806931
+      },
+      "model": "echoes_beneath:item/echo_lens_326"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.809406
+      },
+      "model": "echoes_beneath:item/echo_lens_327"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.811881
+      },
+      "model": "echoes_beneath:item/echo_lens_328"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.814356
+      },
+      "model": "echoes_beneath:item/echo_lens_329"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.816832
+      },
+      "model": "echoes_beneath:item/echo_lens_330"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.819307
+      },
+      "model": "echoes_beneath:item/echo_lens_331"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.821782
+      },
+      "model": "echoes_beneath:item/echo_lens_332"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.824257
+      },
+      "model": "echoes_beneath:item/echo_lens_333"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.826733
+      },
+      "model": "echoes_beneath:item/echo_lens_334"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.829208
+      },
+      "model": "echoes_beneath:item/echo_lens_335"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.831683
+      },
+      "model": "echoes_beneath:item/echo_lens_336"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.834158
+      },
+      "model": "echoes_beneath:item/echo_lens_337"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.836634
+      },
+      "model": "echoes_beneath:item/echo_lens_338"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.839109
+      },
+      "model": "echoes_beneath:item/echo_lens_339"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.841584
+      },
+      "model": "echoes_beneath:item/echo_lens_340"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.844059
+      },
+      "model": "echoes_beneath:item/echo_lens_341"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.846535
+      },
+      "model": "echoes_beneath:item/echo_lens_342"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.84901
+      },
+      "model": "echoes_beneath:item/echo_lens_343"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.851485
+      },
+      "model": "echoes_beneath:item/echo_lens_344"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.85396
+      },
+      "model": "echoes_beneath:item/echo_lens_345"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.856436
+      },
+      "model": "echoes_beneath:item/echo_lens_346"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.858911
+      },
+      "model": "echoes_beneath:item/echo_lens_347"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.861386
+      },
+      "model": "echoes_beneath:item/echo_lens_348"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.863861
+      },
+      "model": "echoes_beneath:item/echo_lens_349"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.866337
+      },
+      "model": "echoes_beneath:item/echo_lens_350"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.868812
+      },
+      "model": "echoes_beneath:item/echo_lens_351"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.871287
+      },
+      "model": "echoes_beneath:item/echo_lens_352"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.873762
+      },
+      "model": "echoes_beneath:item/echo_lens_353"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.876238
+      },
+      "model": "echoes_beneath:item/echo_lens_354"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.878713
+      },
+      "model": "echoes_beneath:item/echo_lens_355"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.881188
+      },
+      "model": "echoes_beneath:item/echo_lens_356"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.883663
+      },
+      "model": "echoes_beneath:item/echo_lens_357"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.886139
+      },
+      "model": "echoes_beneath:item/echo_lens_358"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.888614
+      },
+      "model": "echoes_beneath:item/echo_lens_359"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.891089
+      },
+      "model": "echoes_beneath:item/echo_lens_360"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.893564
+      },
+      "model": "echoes_beneath:item/echo_lens_361"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.89604
+      },
+      "model": "echoes_beneath:item/echo_lens_362"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.898515
+      },
+      "model": "echoes_beneath:item/echo_lens_363"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.90099
+      },
+      "model": "echoes_beneath:item/echo_lens_364"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.903465
+      },
+      "model": "echoes_beneath:item/echo_lens_365"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.905941
+      },
+      "model": "echoes_beneath:item/echo_lens_366"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.908416
+      },
+      "model": "echoes_beneath:item/echo_lens_367"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.910891
+      },
+      "model": "echoes_beneath:item/echo_lens_368"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.913366
+      },
+      "model": "echoes_beneath:item/echo_lens_369"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.915842
+      },
+      "model": "echoes_beneath:item/echo_lens_370"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.918317
+      },
+      "model": "echoes_beneath:item/echo_lens_371"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.920792
+      },
+      "model": "echoes_beneath:item/echo_lens_372"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.923267
+      },
+      "model": "echoes_beneath:item/echo_lens_373"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.925743
+      },
+      "model": "echoes_beneath:item/echo_lens_374"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.928218
+      },
+      "model": "echoes_beneath:item/echo_lens_375"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.930693
+      },
+      "model": "echoes_beneath:item/echo_lens_376"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.933168
+      },
+      "model": "echoes_beneath:item/echo_lens_377"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.935644
+      },
+      "model": "echoes_beneath:item/echo_lens_378"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.938119
+      },
+      "model": "echoes_beneath:item/echo_lens_379"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.940594
+      },
+      "model": "echoes_beneath:item/echo_lens_380"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.943069
+      },
+      "model": "echoes_beneath:item/echo_lens_381"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.945545
+      },
+      "model": "echoes_beneath:item/echo_lens_382"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.94802
+      },
+      "model": "echoes_beneath:item/echo_lens_383"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.950495
+      },
+      "model": "echoes_beneath:item/echo_lens_384"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.95297
+      },
+      "model": "echoes_beneath:item/echo_lens_385"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.955446
+      },
+      "model": "echoes_beneath:item/echo_lens_386"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.957921
+      },
+      "model": "echoes_beneath:item/echo_lens_387"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.960396
+      },
+      "model": "echoes_beneath:item/echo_lens_388"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.962871
+      },
+      "model": "echoes_beneath:item/echo_lens_389"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.965347
+      },
+      "model": "echoes_beneath:item/echo_lens_390"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.967822
+      },
+      "model": "echoes_beneath:item/echo_lens_391"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.970297
+      },
+      "model": "echoes_beneath:item/echo_lens_392"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.972772
+      },
+      "model": "echoes_beneath:item/echo_lens_393"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.975248
+      },
+      "model": "echoes_beneath:item/echo_lens_394"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.977723
+      },
+      "model": "echoes_beneath:item/echo_lens_395"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.980198
+      },
+      "model": "echoes_beneath:item/echo_lens_396"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.982673
+      },
+      "model": "echoes_beneath:item/echo_lens_397"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.985149
+      },
+      "model": "echoes_beneath:item/echo_lens_398"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.987624
+      },
+      "model": "echoes_beneath:item/echo_lens_399"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.990099
+      },
+      "model": "echoes_beneath:item/echo_lens_400"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.992574
+      },
+      "model": "echoes_beneath:item/echo_lens_401"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.99505
+      },
+      "model": "echoes_beneath:item/echo_lens_402"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 0.997525
+      },
+      "model": "echoes_beneath:item/echo_lens_403"
+    },
+    {
+      "predicate": {
+        "echoes_beneath:tuning": 1.0
+      },
+      "model": "echoes_beneath:item/echo_lens_404"
     }
   ]
 }

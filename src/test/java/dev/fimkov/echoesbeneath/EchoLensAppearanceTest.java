@@ -9,13 +9,15 @@ import dev.fimkov.echoesbeneath.memory.EchoFormat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
+import javax.imageio.ImageIO;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,7 +32,7 @@ class EchoLensAppearanceTest {
 		}
 	}
 
-	private record State(int vision, int capacity, int filled) {
+	private record State(int vision, int capacity, int filled, int radiusTier, int hearingTier) {
 	}
 
 	private static List<State> everyState() {
@@ -39,12 +41,33 @@ class EchoLensAppearanceTest {
 			for (int capacity = EchoFormat.DEFAULT_MEMORY_SLOTS;
 					capacity <= EchoFormat.MAX_MEMORY_SLOTS; capacity++) {
 				for (int filled = 0; filled <= capacity; filled++) {
-					states.add(new State(vision, capacity, filled));
+					for (int radius = 0; radius < EchoLensAppearance.RADIUS_TIERS; radius++) {
+						for (int hearing = 0; hearing < EchoLensAppearance.HEARING_TIERS; hearing++) {
+							states.add(new State(vision, capacity, filled, radius, hearing));
+						}
+					}
 				}
 			}
 		}
 		return states;
 	}
+
+	private static int indexOf(State state) {
+		int radius = EchoLensUpgrades.MIN_RADIUS
+				+ RADIUS_STEP_FOR_TIER[state.radiusTier()] * EchoLensUpgrades.RADIUS_STEP;
+		return EchoLensAppearance.stateIndex(state.vision(), state.capacity(), state.filled(),
+				radius, HEARING_FOR_TIER[state.hearingTier()]);
+	}
+
+	private static float valueOf(State state) {
+		int radius = EchoLensUpgrades.MIN_RADIUS
+				+ RADIUS_STEP_FOR_TIER[state.radiusTier()] * EchoLensUpgrades.RADIUS_STEP;
+		return EchoLensAppearance.tuningValue(state.vision(), state.capacity(), state.filled(),
+				radius, HEARING_FOR_TIER[state.hearingTier()]);
+	}
+
+	private static final int[] RADIUS_STEP_FOR_TIER = {0, 2, 5};
+	private static final int[] HEARING_FOR_TIER = {0, 1, 4};
 
 	@Test
 	@DisplayName("every lens state has its own index, in order and without gaps")
@@ -53,9 +76,7 @@ class EchoLensAppearanceTest {
 		assertEquals(EchoLensAppearance.STATE_COUNT, states.size());
 		for (int expected = 0; expected < states.size(); expected++) {
 			State state = states.get(expected);
-			assertEquals(expected,
-					EchoLensAppearance.stateIndex(state.vision(), state.capacity(), state.filled()),
-					"state " + state + " landed on the wrong index");
+			assertEquals(expected, indexOf(state), "state " + state + " landed on the wrong index");
 		}
 	}
 
@@ -73,7 +94,7 @@ class EchoLensAppearanceTest {
 			JsonObject override = overrides.get(index).getAsJsonObject();
 			float declared = override.getAsJsonObject("predicate")
 					.get("echoes_beneath:tuning").getAsFloat();
-			float expected = EchoLensAppearance.tuningValue(state.vision(), state.capacity(), state.filled());
+			float expected = valueOf(state);
 			if (Math.abs(declared - expected) > 1.0E-4F) {
 				wrong.add(state + " predicate " + declared + " but the item reports " + expected);
 				continue;
@@ -81,33 +102,56 @@ class EchoLensAppearanceTest {
 			String path = override.get("model").getAsString().replace("echoes_beneath:item/", "");
 			JsonObject child = asset("/assets/echoes_beneath/models/item/" + path + ".json");
 			JsonObject textures = child.getAsJsonObject("textures");
-			String body = "echoes_beneath:item/echo_lens_v" + state.vision();
-			String marks = "echoes_beneath:item/echo_lens_marks_" + state.capacity() + "_" + state.filled();
-			if (!body.equals(textures.get("layer0").getAsString())) {
-				wrong.add(state + " uses body " + textures.get("layer0").getAsString());
-			}
-			if (!marks.equals(textures.get("layer1").getAsString())) {
-				wrong.add(state + " uses marks " + textures.get("layer1").getAsString());
+			String[] expectedLayers = {
+					"echoes_beneath:item/echo_lens_shell_" + state.radiusTier(),
+					"echoes_beneath:item/echo_lens_core_" + state.capacity() + "_" + state.filled(),
+					"echoes_beneath:item/echo_lens_eyes_" + state.vision(),
+					"echoes_beneath:item/echo_lens_ears_" + state.hearingTier(),
+			};
+			for (int layer = 0; layer < expectedLayers.length; layer++) {
+				String actual = textures.get("layer" + layer).getAsString();
+				if (!expectedLayers[layer].equals(actual)) {
+					wrong.add(state + " layer" + layer + " is " + actual);
+				}
 			}
 		}
 		assertTrue(wrong.isEmpty(), String.join("; ", wrong));
 	}
 
-	@Test
-	@DisplayName("an untouched lens looks exactly like the plain item texture")
-	void visionZeroIsThePlainLens() throws Exception {
-		byte[] plain;
-		byte[] visionZero;
-		try (InputStream a = EchoLensAppearanceTest.class
-				.getResourceAsStream("/assets/echoes_beneath/textures/item/echo_lens.png");
-				InputStream b = EchoLensAppearanceTest.class
-						.getResourceAsStream("/assets/echoes_beneath/textures/item/echo_lens_v0.png")) {
-			assertNotNull(a, "the fallback lens texture is missing");
-			assertNotNull(b, "the vision 0 lens texture is missing");
-			plain = a.readAllBytes();
-			visionZero = b.readAllBytes();
+	private static BufferedImage texture(String name) throws IOException {
+		try (InputStream stream = EchoLensAppearanceTest.class
+				.getResourceAsStream("/assets/echoes_beneath/textures/item/" + name + ".png")) {
+			assertNotNull(stream, name + " is missing");
+			return ImageIO.read(stream);
 		}
-		assertArrayEquals(plain, visionZero, "vision 0 has drifted away from the plain lens");
+	}
+
+	@Test
+	@DisplayName("the plain item texture is exactly the untouched lens, layer for layer")
+	void plainTextureIsTheUntouchedComposite() throws IOException {
+		BufferedImage plain = texture("echo_lens");
+		BufferedImage[] layers = {
+				texture("echo_lens_shell_0"),
+				texture("echo_lens_core_1_0"),
+				texture("echo_lens_eyes_0"),
+				texture("echo_lens_ears_0"),
+		};
+		List<String> wrong = new ArrayList<>();
+		for (int y = 0; y < plain.getHeight(); y++) {
+			for (int x = 0; x < plain.getWidth(); x++) {
+				int composed = 0;
+				for (BufferedImage layer : layers) {
+					int pixel = layer.getRGB(x, y);
+					if ((pixel >>> 24) != 0) {
+						composed = pixel;
+					}
+				}
+				if (composed != plain.getRGB(x, y) && wrong.size() < 8) {
+					wrong.add(x + "," + y);
+				}
+			}
+		}
+		assertTrue(wrong.isEmpty(), "the layers do not rebuild the plain lens at " + String.join(" ", wrong));
 	}
 
 	@Test

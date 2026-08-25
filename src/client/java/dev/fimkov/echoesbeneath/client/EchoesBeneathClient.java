@@ -35,7 +35,8 @@ public final class EchoesBeneathClient implements ClientModInitializer {
 		ItemProperties.register(EchoItems.ECHO_LENS, EchoesBeneath.id("tuning"), (stack, level, holder, seed) -> {
 			EchoLensUpgrades upgrades = EchoLensStacks.upgrades(stack);
 			return EchoLensAppearance.tuningValue(upgrades.vision(), upgrades.memorySlots(),
-					EchoLensStacks.references(stack).filledSlots());
+					EchoLensStacks.references(stack).filledSlots(), upgrades.radius(),
+					upgrades.sensitivity());
 		});
 	}
 
