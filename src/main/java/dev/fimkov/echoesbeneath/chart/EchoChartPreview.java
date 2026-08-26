@@ -46,8 +46,6 @@ public final class EchoChartPreview {
 			return null;
 		}
 		Optional<EchoMemoryRecord> record = state.storage().load(reference.memoryId());
-		return record
-				.map(held -> EchoSounding.of(held, lowestY, highestY, EchoChartLimits.MAX_CHARTED_BLOCKS))
-				.orElse(null);
+		return record.map(held -> state.charts().shapeOf(held, lowestY, highestY)).orElse(null);
 	}
 }

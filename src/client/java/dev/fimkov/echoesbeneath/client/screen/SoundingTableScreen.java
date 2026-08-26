@@ -52,6 +52,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	private static final float MIN_PITCH_DEGREES = -80.0F;
 	private static final float MAX_PITCH_DEGREES = 80.0F;
 	private static final float OVER_STAGE_Z = 320.0F;
+	private static final int TICKS_BETWEEN_DRAGS = 3;
 	private static final float DENIED_PITCH = 0.65F;
 	private static final float DENIED_VOLUME = 0.7F;
 
@@ -60,6 +61,8 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	private float heldPitch = TILT_DEGREES;
 	private boolean turnedByHand;
 	private int dragging = -1;
+	private int pendingValue = Integer.MIN_VALUE;
+	private int sinceSent;
 	private boolean turningStage;
 
 	public SoundingTableScreen(SoundingTableMenu menu, Inventory inventory, Component title) {
@@ -83,6 +86,11 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		spin += SPIN_DEGREES_PER_TICK;
 		if (spin >= 360.0F) {
 			spin -= 360.0F;
+		}
+		if (pendingValue != Integer.MIN_VALUE && ++sinceSent >= TICKS_BETWEEN_DRAGS) {
+			sendWindow(pendingValue);
+			pendingValue = Integer.MIN_VALUE;
+			sinceSent = 0;
 		}
 	}
 
@@ -153,6 +161,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 				return true;
 			}
 			if (overRuler((int) mouseX, (int) mouseY)) {
+				pendingValue = Integer.MIN_VALUE;
 				dragging = Math.abs(rulerY(menu.lowestY()) - (mouseY - topPos))
 						<= Math.abs(rulerY(menu.highestY()) - (mouseY - topPos)) ? 0 : 1;
 				dragTo(mouseY);
@@ -179,18 +188,38 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 
 	@Override
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+		if (pendingValue != Integer.MIN_VALUE) {
+			sendWindow(pendingValue);
+			pendingValue = Integer.MIN_VALUE;
+		}
 		dragging = -1;
 		turningStage = false;
 		return super.mouseReleased(mouseX, mouseY, button);
 	}
 
 	private void dragTo(double mouseY) {
-		int value = rulerValue(mouseY);
-		if (dragging == 0) {
-			press(SoundingTablePlan.lowestButton(value, menu.floor()));
-		} else {
-			press(SoundingTablePlan.highestButton(value, menu.floor()));
+		int value = dragging == 0
+				? Math.min(rulerValue(mouseY), shownHighest())
+				: Math.max(rulerValue(mouseY), shownLowest());
+		if (value == (dragging == 0 ? shownLowest() : shownHighest())) {
+			return;
 		}
+		pendingValue = value;
+	}
+
+	private int shownLowest() {
+		return dragging == 0 && pendingValue != Integer.MIN_VALUE ? pendingValue : menu.lowestY();
+	}
+
+	private int shownHighest() {
+		return dragging == 1 && pendingValue != Integer.MIN_VALUE ? pendingValue : menu.highestY();
+	}
+
+	private void sendWindow(int value) {
+		press(dragging == 0
+				? SoundingTablePlan.lowestButton(value, menu.floor())
+				: SoundingTablePlan.highestButton(value, menu.floor()));
+		sinceSent = 0;
 	}
 
 	private void press(int buttonId) {
@@ -248,8 +277,8 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		int width = SoundingTableLayout.RULER_WIDTH;
 		graphics.fill(x + 1, topPos + SoundingTableLayout.RULER_Y, x + width - 1,
 				topPos + SoundingTableLayout.RULER_Y + SoundingTableLayout.RULER_HEIGHT, BAND);
-		int windowTop = topPos + rulerY(menu.highestY());
-		int windowBottom = topPos + rulerY(menu.lowestY());
+		int windowTop = topPos + rulerY(shownHighest());
+		int windowBottom = topPos + rulerY(shownLowest());
 		graphics.fill(x + 2, windowTop, x + width - 2, windowBottom + 1, WINDOW);
 		handle(graphics, windowTop);
 		handle(graphics, windowBottom);
@@ -336,7 +365,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		}
 		if (chosen() != null) {
 			Component window = Component.translatable(EchoTranslations.SOUNDING_WINDOW,
-					menu.lowestY(), menu.highestY());
+					shownLowest(), shownHighest());
 			graphics.pose().pushPose();
 			graphics.pose().translate(0.0F, 0.0F, OVER_STAGE_Z);
 			graphics.drawString(font, window,

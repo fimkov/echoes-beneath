@@ -20,8 +20,8 @@ public class EchoChartEntity extends net.minecraft.world.entity.Entity {
 	public static final int TURN_STEPS = 16;
 	public static final int FREE_SPIN = -1;
 	private static final float DEGREES_PER_STEP = 360.0F / TURN_STEPS;
-	private static final float BOB_PERIOD_TICKS = 150.0F;
-	private static final double BOB_HEIGHT = 0.025D;
+	private static final float BOB_PERIOD_TICKS = 120.0F;
+	private static final double BOB_HEIGHT = 0.045D;
 	private static final String TAG_CHART = "chart";
 	private static final String TAG_TURN = "turn";
 

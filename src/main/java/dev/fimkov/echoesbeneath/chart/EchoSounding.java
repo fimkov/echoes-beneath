@@ -17,22 +17,28 @@ public final class EchoSounding {
 	}
 
 	public static EchoChartShape of(EchoMemoryRecord record, int minY, int maxY, int budget) {
+		return of(record, reach(record), minY, maxY, budget);
+	}
+
+	public static Columns reach(EchoMemoryRecord record) {
+		Columns columns = new Columns(record.radius(), record.verticalRadius(), record.snapshot());
+		seed(record.soundTimeline(), columns, record.radius());
+		columns.flood();
+		return columns;
+	}
+
+	public static EchoChartShape of(EchoMemoryRecord record, Columns columns, int minY, int maxY,
+			int budget) {
 		BlockSnapshot snapshot = record.snapshot();
-		int radius = record.radius();
 		int vertical = record.verticalRadius();
 		int lowest = Math.max(-vertical, minY - record.center().getY());
 		int highest = Math.min(vertical, maxY - record.center().getY());
 		if (lowest > highest || budget <= 0) {
 			return EchoChartShape.empty(record.id(), lowest, highest, record.recordedVision());
 		}
-
-		Columns columns = new Columns(radius, vertical, snapshot);
-		seed(record.soundTimeline(), columns, radius);
-		columns.flood();
-
 		IntList positions = new IntArrayList();
 		IntList states = new IntArrayList();
-		gather(snapshot, columns, radius, lowest, highest, budget, positions, states);
+		gather(snapshot, columns, record.radius(), lowest, highest, budget, positions, states);
 		return new EchoChartShape(record.id(), snapshot.palette(), positions, states, lowest, highest,
 				record.recordedVision());
 	}
@@ -78,7 +84,7 @@ public final class EchoSounding {
 				|| snapshot.paletteIndexAt(x, y, z - 1) == BlockPalette.AIR_INDEX;
 	}
 
-	private static final class Columns {
+	public static final class Columns {
 		private final int radius;
 		private final int width;
 		private final int[] carried;
