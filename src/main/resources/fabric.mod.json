@@ -5,6 +5,13 @@
   "name": "Echoes Beneath",
   "description": "Record a place with an Echo Lens: its blocks, the creatures moving through it, and the real sounds that played there. Come back later and stand inside that memory. The world goes near black, remembered shapes are silhouettes, and every old sound returns at its own moment as a wave that briefly lights the surfaces it touches. Tune the lens at a Resonance Table, read what a recording heard at a Sounding Table, and draw a memory out as an Echo Chart you can set down and walk around. The lens remembers shape and sound, but not light.",
   "license": "MIT",
+  "authors": [
+    "fimkov"
+  ],
+  "contact": {
+    "sources": "https://github.com/fimkov/echoes-beneath",
+    "issues": "https://github.com/fimkov/echoes-beneath/issues"
+  },
   "icon": "assets/echoes_beneath/icon.png",
   "environment": "*",
   "accessWidener": "echoes_beneath.accesswidener",
