@@ -204,7 +204,8 @@ stage to turn the model and tilt it.
 the reason the table is worth building: a lens holds at most three memories and a sealed memory can
 never be cleared any other way. What you get is an Echo Chart.
 
-Place a chart anywhere and the model hangs in the block you placed it in, turning slowly. Use it to step it a sixteenth of a turn and hold it there; after a full circle it drifts
+Place a chart anywhere and the model hangs in the block you placed it in, turning slowly inside runs of
+light and a slow orbit of warden-coloured motes. Use it to step it a sixteenth of a turn and hold it there; after a full circle it drifts
 again. Sneak and use it, or hit it, to take it back.
 
 **A chart can go back into a lens.** Put one in the table's second slot with a lens that still has a free

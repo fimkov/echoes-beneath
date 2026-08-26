@@ -3,21 +3,25 @@ package dev.fimkov.echoesbeneath;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import dev.fimkov.echoesbeneath.block.EchoTableShapes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class EchoBlockShapeTest {
-	private static final Map<String, Double> DECLARED_HEIGHT = Map.of(
-			"resonance_table", 12.0D,
-			"sounding_table", 13.0D);
+	private static final Map<String, double[][]> DECLARED = Map.of(
+			"resonance_table", EchoTableShapes.RESONANCE_BOXES,
+			"sounding_table", EchoTableShapes.SOUNDING_BOXES);
 
 	private static JsonObject model(String name) {
 		try (InputStream stream = EchoBlockShapeTest.class
@@ -30,19 +34,38 @@ class EchoBlockShapeTest {
 		}
 	}
 
+	private static List<String> boxesOf(double[][] boxes) {
+		TreeSet<String> sorted = new TreeSet<>();
+		for (double[] box : boxes) {
+			sorted.add(describe(box[0], box[1], box[2], box[3], box[4], box[5]));
+		}
+		return new ArrayList<>(sorted);
+	}
+
+	private static String describe(double... values) {
+		StringBuilder text = new StringBuilder();
+		for (double value : values) {
+			text.append(Math.round(value)).append(' ');
+		}
+		return text.toString();
+	}
+
 	@Test
-	@DisplayName("what you bump into is as tall as what you can see")
+	@DisplayName("what you bump into is exactly what is drawn")
 	void outlinesMatchTheirModels() {
-		for (Map.Entry<String, Double> entry : DECLARED_HEIGHT.entrySet()) {
+		for (Map.Entry<String, double[][]> entry : DECLARED.entrySet()) {
 			JsonArray elements = model(entry.getKey()).getAsJsonArray("elements");
-			double tallest = 0.0D;
+			TreeSet<String> drawn = new TreeSet<>();
 			for (int index = 0; index < elements.size(); index++) {
-				double top = elements.get(index).getAsJsonObject()
-						.getAsJsonArray("to").get(1).getAsDouble();
-				tallest = Math.max(tallest, top);
+				JsonObject element = elements.get(index).getAsJsonObject();
+				JsonArray from = element.getAsJsonArray("from");
+				JsonArray to = element.getAsJsonArray("to");
+				drawn.add(describe(from.get(0).getAsDouble(), from.get(1).getAsDouble(),
+						from.get(2).getAsDouble(), to.get(0).getAsDouble(),
+						to.get(1).getAsDouble(), to.get(2).getAsDouble()));
 			}
-			assertEquals(entry.getValue(), tallest, entry.getKey()
-					+ " is drawn " + tallest + " tall but its outline says " + entry.getValue());
+			assertEquals(new ArrayList<>(drawn), boxesOf(entry.getValue()),
+					entry.getKey() + " is outlined differently from how it is drawn");
 		}
 	}
 }

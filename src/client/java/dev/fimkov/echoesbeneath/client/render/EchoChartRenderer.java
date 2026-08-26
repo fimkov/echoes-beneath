@@ -32,6 +32,8 @@ public class EchoChartRenderer extends EntityRenderer<EchoChartEntity> {
 		if (model == null || model.size() == 0) {
 			return;
 		}
+		EchoChartAura.render(poseStack, consumers, entity.tickCount + partialTick,
+				entityRenderDispatcher.cameraOrientation(), model.brightness());
 		poseStack.pushPose();
 		poseStack.translate(0.0D, MODEL_REST + entity.bob(partialTick), 0.0D);
 		poseStack.mulPose(Axis.YP.rotationDegrees(entity.spin(partialTick)));
