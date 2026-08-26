@@ -55,19 +55,17 @@ public final class EchoChartCage {
 		for (int index = 0; index < POST_COUNT; index++) {
 			float x = Mth.cos(ANGLE[index]) * REACH[index];
 			float z = Mth.sin(ANGLE[index]) * REACH[index];
-			float drift = (age * DRIFT_PER_TICK + PHASE[index]) % 1.0F;
+			float drift = wrap(age * DRIFT_PER_TICK + PHASE[index]);
 			float cursor = 0.0F;
-			for (int gap = 0; gap <= GAPS_PER_POST; gap++) {
-				float mouth = wrap(drift + gap / (float) (GAPS_PER_POST + 1));
-				float end = Math.min(1.0F, mouth);
-				if (end > cursor) {
-					post(consumer, pose, x, z, cursor, end, TOP[index]);
+			for (int gap = 0; gap < GAPS_PER_POST; gap++) {
+				float mouth = wrap(drift + gap / (float) GAPS_PER_POST);
+				if (mouth <= cursor || mouth >= 1.0F) {
+					continue;
 				}
+				post(consumer, pose, x, z, cursor, mouth, TOP[index]);
 				cursor = Math.min(1.0F, mouth + GAP_WIDTH);
 			}
-			if (cursor < 1.0F) {
-				post(consumer, pose, x, z, cursor, 1.0F, TOP[index]);
-			}
+			post(consumer, pose, x, z, cursor, 1.0F, TOP[index]);
 		}
 	}
 
