@@ -1,12 +1,12 @@
 package dev.fimkov.echoesbeneath.chart;
 
-import dev.fimkov.echoesbeneath.entity.EchoChartEntity;
+import dev.fimkov.echoesbeneath.blockentity.EchoChartBlockEntity;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryRecord;
 import dev.fimkov.echoesbeneath.memory.storage.EchoMemoryStorage;
 import dev.fimkov.echoesbeneath.network.ChartShapePayload;
 import dev.fimkov.echoesbeneath.platform.EchoPlatforms;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.core.BlockPos;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -18,6 +18,7 @@ import java.util.UUID;
 public final class EchoChartService {
 	private final EchoMemoryStorage storage;
 	private static final int MAX_REMEMBERED_FLOODS = 4;
+	private static final double REACH = 96.0D;
 
 	private final Map<String, List<byte[]>> encoded = new HashMap<>();
 	private final Map<UUID, EchoSounding.Columns> floods = new LinkedHashMap<>() {
@@ -45,11 +46,16 @@ public final class EchoChartService {
 		return EchoSounding.of(record, reach, lowestY, highestY, EchoChartLimits.MAX_CHARTED_BLOCKS);
 	}
 
-	public void sendTo(Entity tracked, ServerPlayer viewer) {
-		if (!(tracked instanceof EchoChartEntity chart)) {
+	public void answer(ServerPlayer viewer, BlockPos position) {
+		if (!viewer.level().isLoaded(position)
+				|| viewer.distanceToSqr(position.getX() + 0.5D, position.getY() + 0.5D,
+						position.getZ() + 0.5D) > REACH * REACH) {
 			return;
 		}
-		EchoChartData data = chart.chartData();
+		if (!(viewer.level().getBlockEntity(position) instanceof EchoChartBlockEntity chart)) {
+			return;
+		}
+		EchoChartData data = chart.chart();
 		if (data == null) {
 			return;
 		}
@@ -59,7 +65,7 @@ public final class EchoChartService {
 		}
 		for (int index = 0; index < chunks.size(); index++) {
 			EchoPlatforms.network().sendToPlayer(viewer,
-					new ChartShapePayload(chart.getId(), index, chunks.size(), chunks.get(index)));
+					new ChartShapePayload(position.asLong(), index, chunks.size(), chunks.get(index)));
 		}
 	}
 

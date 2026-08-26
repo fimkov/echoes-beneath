@@ -13,6 +13,12 @@ import java.util.function.Consumer;
 public interface EchoClientHooks {
 	<T extends CustomPacketPayload> void receive(CustomPacketPayload.Type<T> type, Consumer<T> handler);
 
+	void sendToServer(CustomPacketPayload payload);
+
+	<T extends net.minecraft.world.level.block.entity.BlockEntity> void registerBlockEntityRenderer(
+			net.minecraft.world.level.block.entity.BlockEntityType<T> type,
+			net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider<T> provider);
+
 	void onClientTick(Runnable handler);
 
 	void onDisconnect(Runnable handler);

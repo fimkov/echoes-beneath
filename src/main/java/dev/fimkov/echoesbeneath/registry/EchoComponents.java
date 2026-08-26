@@ -2,6 +2,7 @@ package dev.fimkov.echoesbeneath.registry;
 
 import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.chart.EchoChartData;
+import dev.fimkov.echoesbeneath.chart.EchoChartLook;
 import dev.fimkov.echoesbeneath.item.EchoLensUpgrades;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReferences;
 import net.minecraft.core.Registry;
@@ -37,6 +38,11 @@ public final class EchoComponents {
 			.networkSynchronized(EchoChartData.STREAM_CODEC)
 			.build();
 
+	public static final DataComponentType<EchoChartLook> CHART_LOOK = DataComponentType.<EchoChartLook>builder()
+			.persistent(EchoChartLook.CODEC)
+			.networkSynchronized(EchoChartLook.STREAM_CODEC)
+			.build();
+
 	private EchoComponents() {
 	}
 
@@ -46,5 +52,6 @@ public final class EchoComponents {
 		Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, EchoesBeneath.id("lens_upgrades"), LENS_UPGRADES);
 		Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, EchoesBeneath.id("lens_peak"), LENS_PEAK);
 		Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, EchoesBeneath.id("chart_data"), CHART_DATA);
+		Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, EchoesBeneath.id("chart_look"), CHART_LOOK);
 	}
 }

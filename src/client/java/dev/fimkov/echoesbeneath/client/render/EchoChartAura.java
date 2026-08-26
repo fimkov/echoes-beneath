@@ -65,10 +65,14 @@ public final class EchoChartAura {
 	}
 
 	public static void render(PoseStack poseStack, MultiBufferSource consumers, float age,
-			Quaternionf camera, float brightness) {
+			boolean withMotes, boolean withRuns, Quaternionf camera, float brightness) {
 		VertexConsumer consumer = consumers.getBuffer(EchoRenderTypes.ECHO_TEXELS);
-		runs(consumer, poseStack.last().pose(), age, brightness);
-		motes(poseStack, consumer, age, camera, brightness);
+		if (withRuns) {
+			runs(consumer, poseStack.last().pose(), age, brightness);
+		}
+		if (withMotes) {
+			motes(poseStack, consumer, age, camera, brightness);
+		}
 	}
 
 	private static void runs(VertexConsumer consumer, Matrix4f pose, float age, float brightness) {

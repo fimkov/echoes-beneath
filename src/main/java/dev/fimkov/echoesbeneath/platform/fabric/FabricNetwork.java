@@ -16,6 +16,15 @@ public final class FabricNetwork implements EchoNetwork {
 	}
 
 	@Override
+	public <T extends CustomPacketPayload> void clientToServer(CustomPacketPayload.Type<T> type,
+			StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
+			java.util.function.BiConsumer<ServerPlayer, T> handler) {
+		PayloadTypeRegistry.playC2S().register(type, cast(codec));
+		ServerPlayNetworking.registerGlobalReceiver(type, (payload, context) ->
+				context.player().server.execute(() -> handler.accept(context.player(), payload)));
+	}
+
+	@Override
 	public void sendToPlayer(ServerPlayer player, CustomPacketPayload payload) {
 		ServerPlayNetworking.send(player, payload);
 	}

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public final class EchoChartPreview {
-	public static final int MENU_TARGET = -1;
+	public static final long MENU_TARGET = ChartShapePayload.PREVIEW_TARGET;
 
 	private EchoChartPreview() {
 	}

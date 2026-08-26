@@ -123,5 +123,20 @@
   "sounding.echoes_beneath.warning": "Drawing a memory out empties its slot",
   "sounding.echoes_beneath.turn": "Drag to turn it",
   "sounding.echoes_beneath.put_back": "Fold it back in",
-  "sounding.echoes_beneath.put_back_hint": "Returns the memory to a free slot"
+  "sounding.echoes_beneath.put_back_hint": "Returns the memory to a free slot",
+  "block.echoes_beneath.echo_chart": "Echo Chart",
+  "container.echoes_beneath.chart_look": "Chart Display",
+  "look.echoes_beneath.drift": "Drift",
+  "look.echoes_beneath.spin": "Turn",
+  "look.echoes_beneath.motes": "Motes",
+  "look.echoes_beneath.runs": "Light",
+  "look.echoes_beneath.size": "Size",
+  "look.echoes_beneath.on": "On",
+  "look.echoes_beneath.off": "Off",
+  "look.echoes_beneath.spin.still": "Still",
+  "look.echoes_beneath.spin.slow": "Slow",
+  "look.echoes_beneath.spin.brisk": "Brisk",
+  "look.echoes_beneath.size.small": "Small",
+  "look.echoes_beneath.size.medium": "Medium",
+  "look.echoes_beneath.size.large": "Large"
 }

@@ -54,13 +54,6 @@ public final class EchoServerLifecycle {
 			}
 		});
 
-		EchoPlatforms.server().onStartTracking((entity, viewer) -> {
-			EchoServerState state = EchoServerState.current();
-			if (state != null) {
-				state.charts().sendTo(entity, viewer);
-			}
-		});
-
 		EchoPlatforms.server().onEntityChangedLevel((entity, level) -> {
 			EchoServerState state = EchoServerState.current();
 			if (state != null) {

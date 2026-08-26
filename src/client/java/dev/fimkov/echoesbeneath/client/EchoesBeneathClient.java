@@ -28,8 +28,9 @@ public final class EchoesBeneathClient implements ClientModInitializer {
 		EchoLensTooltipContext.bindViewer(EchoesBeneathClient::localViewer);
 		EchoClientPlatforms.get().registerEntityRenderer(EchoEntities.ECHO_LENS,
 				EchoLensEntityRenderer::new);
-		EchoClientPlatforms.get().registerEntityRenderer(EchoEntities.ECHO_CHART,
-				dev.fimkov.echoesbeneath.client.render.EchoChartRenderer::new);
+		EchoClientPlatforms.get().registerBlockEntityRenderer(
+				dev.fimkov.echoesbeneath.registry.EchoBlockEntities.ECHO_CHART,
+				dev.fimkov.echoesbeneath.client.render.EchoChartBlockRenderer::new);
 		EchoClientPlatforms.get().registerKey(
 				dev.fimkov.echoesbeneath.client.input.EchoKeys.OPEN_CONFIG);
 		EchoPlaybackReceiver.register();
@@ -43,6 +44,9 @@ public final class EchoesBeneathClient implements ClientModInitializer {
 		EchoClientPlatforms.get().registerScreen(
 				dev.fimkov.echoesbeneath.registry.EchoMenus.SOUNDING_TABLE,
 				dev.fimkov.echoesbeneath.client.screen.SoundingTableScreen::new);
+		EchoClientPlatforms.get().registerScreen(
+				dev.fimkov.echoesbeneath.registry.EchoMenus.CHART_LOOK,
+				dev.fimkov.echoesbeneath.client.screen.ChartLookScreen::new);
 	}
 
 	private static void registerLensAppearance() {

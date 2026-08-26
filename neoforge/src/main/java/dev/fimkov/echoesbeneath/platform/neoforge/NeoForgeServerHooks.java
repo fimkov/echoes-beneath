@@ -75,15 +75,6 @@ public final class NeoForgeServerHooks implements EchoServerHooks {
 	}
 
 	@Override
-	public void onStartTracking(BiConsumer<Entity, ServerPlayer> handler) {
-		bus.addListener(PlayerEvent.StartTracking.class, event -> {
-			if (event.getEntity() instanceof ServerPlayer player) {
-				handler.accept(event.getTarget(), player);
-			}
-		});
-	}
-
-	@Override
 	public void onEntityChangedLevel(BiConsumer<Entity, ServerLevel> handler) {
 		onEntityLoad(handler);
 	}

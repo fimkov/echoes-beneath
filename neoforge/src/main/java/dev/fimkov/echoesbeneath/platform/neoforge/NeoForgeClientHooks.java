@@ -32,6 +32,24 @@ public final class NeoForgeClientHooks implements EchoClientHooks {
 	private final IEventBus bus = NeoForge.EVENT_BUS;
 	private final java.util.List<net.minecraft.client.KeyMapping> pendingKeys =
 			new java.util.ArrayList<>();
+	private final java.util.List<BlockEntityBinding<?>> blockEntityRenderers =
+			new java.util.ArrayList<>();
+
+	private record BlockEntityBinding<T extends net.minecraft.world.level.block.entity.BlockEntity>(
+			net.minecraft.world.level.block.entity.BlockEntityType<T> type,
+			net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider<T> provider) {
+		@SuppressWarnings("unchecked")
+		void bind(net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
+			event.registerBlockEntityRenderer(type, provider);
+		}
+	}
+
+	public void bindBlockEntityRenderers(
+			net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
+		for (BlockEntityBinding<?> binding : blockEntityRenderers) {
+			binding.bind(event);
+		}
+	}
 
 	public NeoForgeClientHooks(NeoForgeNetwork network) {
 		this.network = network;
@@ -41,6 +59,18 @@ public final class NeoForgeClientHooks implements EchoClientHooks {
 	public <T extends CustomPacketPayload> void receive(CustomPacketPayload.Type<T> type,
 			Consumer<T> handler) {
 		network.bind(type, handler);
+	}
+
+	@Override
+	public void sendToServer(CustomPacketPayload payload) {
+		net.neoforged.neoforge.network.PacketDistributor.sendToServer(payload);
+	}
+
+	@Override
+	public <T extends net.minecraft.world.level.block.entity.BlockEntity> void registerBlockEntityRenderer(
+			net.minecraft.world.level.block.entity.BlockEntityType<T> type,
+			net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider<T> provider) {
+		blockEntityRenderers.add(new BlockEntityBinding<>(type, provider));
 	}
 
 	@Override

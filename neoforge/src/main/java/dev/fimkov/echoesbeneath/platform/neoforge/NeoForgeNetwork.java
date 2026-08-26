@@ -19,7 +19,13 @@ public final class NeoForgeNetwork implements EchoNetwork {
 			StreamCodec<? super RegistryFriendlyByteBuf, T> codec) {
 	}
 
+	private record Inbound<T extends CustomPacketPayload>(CustomPacketPayload.Type<T> type,
+			StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
+			java.util.function.BiConsumer<ServerPlayer, T> handler) {
+	}
+
 	private final List<Declaration<?>> declared = new ArrayList<>();
+	private final List<Inbound<?>> inbound = new ArrayList<>();
 	private final Map<CustomPacketPayload.Type<?>, Consumer<CustomPacketPayload>> handlers =
 			new ConcurrentHashMap<>();
 
@@ -27,6 +33,13 @@ public final class NeoForgeNetwork implements EchoNetwork {
 	public <T extends CustomPacketPayload> void serverToClient(CustomPacketPayload.Type<T> type,
 			StreamCodec<? super RegistryFriendlyByteBuf, T> codec) {
 		declared.add(new Declaration<>(type, codec));
+	}
+
+	@Override
+	public <T extends CustomPacketPayload> void clientToServer(CustomPacketPayload.Type<T> type,
+			StreamCodec<? super RegistryFriendlyByteBuf, T> codec,
+			java.util.function.BiConsumer<ServerPlayer, T> handler) {
+		inbound.add(new Inbound<>(type, codec, handler));
 	}
 
 	@Override
@@ -44,6 +57,21 @@ public final class NeoForgeNetwork implements EchoNetwork {
 		for (Declaration<?> declaration : declared) {
 			register(registrar, declaration);
 		}
+		for (Inbound<?> declaration : inbound) {
+			registerInbound(registrar, declaration);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends CustomPacketPayload> void registerInbound(PayloadRegistrar registrar,
+			Inbound<?> declaration) {
+		Inbound<T> typed = (Inbound<T>) declaration;
+		registrar.playToServer(typed.type(), typed.codec(), (payload, context) ->
+				context.enqueueWork(() -> {
+					if (context.player() instanceof ServerPlayer player) {
+						typed.handler().accept(player, payload);
+					}
+				}));
 	}
 
 	@SuppressWarnings("unchecked")

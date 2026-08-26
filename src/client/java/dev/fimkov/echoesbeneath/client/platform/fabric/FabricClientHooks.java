@@ -28,6 +28,18 @@ public final class FabricClientHooks implements EchoClientHooks {
 	}
 
 	@Override
+	public void sendToServer(CustomPacketPayload payload) {
+		ClientPlayNetworking.send(payload);
+	}
+
+	@Override
+	public <T extends net.minecraft.world.level.block.entity.BlockEntity> void registerBlockEntityRenderer(
+			net.minecraft.world.level.block.entity.BlockEntityType<T> type,
+			net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider<T> provider) {
+		net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry.register(type, provider);
+	}
+
+	@Override
 	public void onClientTick(Runnable handler) {
 		ClientTickEvents.END_CLIENT_TICK.register(client -> handler.run());
 	}

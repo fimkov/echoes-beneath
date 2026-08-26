@@ -1,7 +1,6 @@
 package dev.fimkov.echoesbeneath.registry;
 
 import dev.fimkov.echoesbeneath.EchoesBeneath;
-import dev.fimkov.echoesbeneath.entity.EchoChartEntity;
 import dev.fimkov.echoesbeneath.entity.EchoLensEntity;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -10,7 +9,6 @@ import net.minecraft.world.entity.MobCategory;
 
 public final class EchoEntities {
 	private static final float LENS_SIZE = 0.6F;
-	private static final float CHART_SIZE = 0.9F;
 	private static final int TRACKING_RANGE_CHUNKS = 8;
 	private static final int UPDATE_INTERVAL_TICKS = 2;
 
@@ -22,19 +20,10 @@ public final class EchoEntities {
 			.updateInterval(UPDATE_INTERVAL_TICKS)
 			.build("echo_lens");
 
-	public static final EntityType<EchoChartEntity> ECHO_CHART = EntityType.Builder
-			.<EchoChartEntity>of(EchoChartEntity::new, MobCategory.MISC)
-			.sized(CHART_SIZE, CHART_SIZE)
-			.noSummon()
-			.clientTrackingRange(TRACKING_RANGE_CHUNKS)
-			.updateInterval(UPDATE_INTERVAL_TICKS)
-			.build("echo_chart");
-
 	private EchoEntities() {
 	}
 
 	public static void register() {
 		Registry.register(BuiltInRegistries.ENTITY_TYPE, EchoesBeneath.id("echo_lens"), ECHO_LENS);
-		Registry.register(BuiltInRegistries.ENTITY_TYPE, EchoesBeneath.id("echo_chart"), ECHO_CHART);
 	}
 }

@@ -2,47 +2,19 @@ package dev.fimkov.echoesbeneath.item;
 
 import dev.fimkov.echoesbeneath.EchoTranslations;
 import dev.fimkov.echoesbeneath.chart.EchoChartData;
-import dev.fimkov.echoesbeneath.entity.EchoChartEntity;
 import dev.fimkov.echoesbeneath.registry.EchoComponents;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 
 import java.util.List;
 
-public class EchoChartItem extends Item {
-	public static final double HOVER_HEIGHT = 0.0D;
-
-	public EchoChartItem(Properties properties) {
-		super(properties);
-	}
-
-	@Override
-	public InteractionResult useOn(UseOnContext context) {
-		Level level = context.getLevel();
-		ItemStack stack = context.getItemInHand();
-		if (stack.get(EchoComponents.CHART_DATA) == null) {
-			return InteractionResult.PASS;
-		}
-		if (level.isClientSide()) {
-			return InteractionResult.SUCCESS;
-		}
-		BlockPos above = context.getClickedPos().relative(context.getClickedFace());
-		EchoChartEntity chart = new EchoChartEntity(level, stack);
-		chart.setPos(above.getX() + 0.5D, above.getY() + HOVER_HEIGHT, above.getZ() + 0.5D);
-		if (!level.addFreshEntity(chart)) {
-			return InteractionResult.PASS;
-		}
-		if (context.getPlayer() == null || !context.getPlayer().getAbilities().instabuild) {
-			stack.shrink(1);
-		}
-		return InteractionResult.CONSUME;
+public class EchoChartItem extends BlockItem {
+	public EchoChartItem(Block block, Properties properties) {
+		super(block, properties);
 	}
 
 	@Override

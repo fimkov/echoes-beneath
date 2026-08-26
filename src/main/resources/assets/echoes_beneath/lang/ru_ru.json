@@ -123,5 +123,20 @@
   "sounding.echoes_beneath.warning": "Вынутое воспоминание освобождает слот",
   "sounding.echoes_beneath.turn": "Тяните мышью, чтобы повернуть",
   "sounding.echoes_beneath.put_back": "Вложить обратно",
-  "sounding.echoes_beneath.put_back_hint": "Вернёт воспоминание в свободный слот"
+  "sounding.echoes_beneath.put_back_hint": "Вернёт воспоминание в свободный слот",
+  "block.echoes_beneath.echo_chart": "Эхо-карта",
+  "container.echoes_beneath.chart_look": "Вид карты",
+  "look.echoes_beneath.drift": "Парение",
+  "look.echoes_beneath.spin": "Вращение",
+  "look.echoes_beneath.motes": "Искры",
+  "look.echoes_beneath.runs": "Свет",
+  "look.echoes_beneath.size": "Размер",
+  "look.echoes_beneath.on": "Вкл",
+  "look.echoes_beneath.off": "Выкл",
+  "look.echoes_beneath.spin.still": "Стоит",
+  "look.echoes_beneath.spin.slow": "Медленно",
+  "look.echoes_beneath.spin.brisk": "Быстро",
+  "look.echoes_beneath.size.small": "Малый",
+  "look.echoes_beneath.size.medium": "Средний",
+  "look.echoes_beneath.size.large": "Большой"
 }

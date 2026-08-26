@@ -1,0 +1,126 @@
+package dev.fimkov.echoesbeneath.blockentity;
+
+import dev.fimkov.echoesbeneath.chart.EchoChartData;
+import dev.fimkov.echoesbeneath.chart.EchoChartLook;
+import dev.fimkov.echoesbeneath.registry.EchoBlockEntities;
+import dev.fimkov.echoesbeneath.registry.EchoComponents;
+import dev.fimkov.echoesbeneath.registry.EchoItems;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
+
+public class EchoChartBlockEntity extends BlockEntity {
+	public static final int TURN_STEPS = 16;
+	private static final String TAG_CHART = "chart";
+	private static final String TAG_LOOK = "look";
+	private static final String TAG_TURN = "turn";
+
+	private EchoChartData chart;
+	private EchoChartLook look = EchoChartLook.DEFAULT;
+	private int turn;
+	private int age;
+
+	public EchoChartBlockEntity(BlockPos position, BlockState state) {
+		super(EchoBlockEntities.ECHO_CHART, position, state);
+	}
+
+	@Nullable
+	public EchoChartData chart() {
+		return chart;
+	}
+
+	public EchoChartLook look() {
+		return look;
+	}
+
+	public int turn() {
+		return turn;
+	}
+
+	public float age(float partialTick) {
+		return age + partialTick;
+	}
+
+	public void tickVisuals() {
+		age++;
+	}
+
+	public void adopt(ItemStack stack) {
+		chart = stack.get(EchoComponents.CHART_DATA);
+		EchoChartLook held = stack.get(EchoComponents.CHART_LOOK);
+		look = held == null ? EchoChartLook.DEFAULT : held;
+		publish();
+	}
+
+	public void setLook(EchoChartLook value) {
+		look = value;
+		publish();
+	}
+
+	public void turnOnce() {
+		turn = turn + 1 >= TURN_STEPS ? 0 : turn + 1;
+		publish();
+	}
+
+	public ItemStack asItem() {
+		ItemStack stack = new ItemStack(EchoItems.ECHO_CHART);
+		if (chart != null) {
+			stack.set(EchoComponents.CHART_DATA, chart);
+		}
+		stack.set(EchoComponents.CHART_LOOK, look);
+		return stack;
+	}
+
+	private void publish() {
+		setChanged();
+		if (level != null && !level.isClientSide()) {
+			level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+		}
+	}
+
+	@Override
+	protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+		super.loadAdditional(tag, registries);
+		chart = tag.contains(TAG_CHART)
+				? EchoChartData.CODEC.parse(NbtOps.INSTANCE, tag.get(TAG_CHART)).result().orElse(null)
+				: null;
+		look = tag.contains(TAG_LOOK)
+				? EchoChartLook.CODEC.parse(NbtOps.INSTANCE, tag.get(TAG_LOOK)).result()
+						.orElse(EchoChartLook.DEFAULT)
+				: EchoChartLook.DEFAULT;
+		turn = Math.clamp(tag.getInt(TAG_TURN), 0, TURN_STEPS - 1);
+	}
+
+	@Override
+	protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+		super.saveAdditional(tag, registries);
+		if (chart != null) {
+			EchoChartData.CODEC.encodeStart(NbtOps.INSTANCE, chart).result()
+					.ifPresent(encoded -> tag.put(TAG_CHART, encoded));
+		}
+		EchoChartLook.CODEC.encodeStart(NbtOps.INSTANCE, look).result()
+				.ifPresent(encoded -> tag.put(TAG_LOOK, encoded));
+		tag.putInt(TAG_TURN, turn);
+	}
+
+	@Override
+	public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+		CompoundTag tag = new CompoundTag();
+		saveAdditional(tag, registries);
+		return tag;
+	}
+
+	@Nullable
+	@Override
+	public Packet<ClientGamePacketListener> getUpdatePacket() {
+		return ClientboundBlockEntityDataPacket.create(this);
+	}
+}

@@ -63,11 +63,6 @@ public final class FabricServerHooks implements EchoServerHooks {
 	}
 
 	@Override
-	public void onStartTracking(BiConsumer<Entity, ServerPlayer> handler) {
-		EntityTrackingEvents.START_TRACKING.register(handler::accept);
-	}
-
-	@Override
 	public void onEntityChangedLevel(BiConsumer<Entity, ServerLevel> handler) {
 		ServerEntityWorldChangeEvents.AFTER_ENTITY_CHANGE_WORLD.register(
 				(originalEntity, newEntity, origin, destination) -> handler.accept(newEntity, origin));

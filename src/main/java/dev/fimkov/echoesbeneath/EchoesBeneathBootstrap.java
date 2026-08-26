@@ -4,6 +4,7 @@ import dev.fimkov.echoesbeneath.advancement.EchoCriteria;
 import dev.fimkov.echoesbeneath.command.EchoCommands;
 import dev.fimkov.echoesbeneath.config.EchoConfig;
 import dev.fimkov.echoesbeneath.network.EchoNetworkPayloads;
+import dev.fimkov.echoesbeneath.registry.EchoBlockEntities;
 import dev.fimkov.echoesbeneath.registry.EchoBlocks;
 import dev.fimkov.echoesbeneath.registry.EchoComponents;
 import dev.fimkov.echoesbeneath.registry.EchoEntities;
@@ -22,6 +23,7 @@ public final class EchoesBeneathBootstrap {
 		EchoCriteria.register();
 		EchoComponents.register();
 		EchoBlocks.register();
+		EchoBlockEntities.register();
 		EchoItems.register();
 		EchoMenus.register();
 		EchoItemGroups.register();
