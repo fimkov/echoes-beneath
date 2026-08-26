@@ -49,8 +49,8 @@ public class EchoChartBlockRenderer implements BlockEntityRenderer<EchoChartBloc
 					Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation(),
 					brightness,
 					Mth.clamp(halfWide + AURA_MARGIN, AURA_NEAREST, AURA_FARTHEST),
-					Math.max(AURA_LOWEST, (float) lift - halfTall - AURA_MARGIN),
-					Math.min(AURA_HIGHEST, (float) lift + halfTall + AURA_MARGIN));
+					AURA_LOWEST,
+					Math.min(AURA_HIGHEST, (float) MODEL_REST + halfTall + AURA_MARGIN));
 		}
 		if (model == null || model.size() == 0) {
 			poseStack.popPose();
