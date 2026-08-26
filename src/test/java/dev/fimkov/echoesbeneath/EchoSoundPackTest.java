@@ -83,6 +83,29 @@ class EchoSoundPackTest {
 	}
 
 	@Test
+	@DisplayName("every registered sound event is named by the pack, under the key the game looks up")
+	void registeredEventsAreDeclared() throws IllegalAccessException {
+		JsonObject definitions = definitions();
+		List<String> missing = new ArrayList<>();
+		for (java.lang.reflect.Field field : dev.fimkov.echoesbeneath.registry.EchoSounds.class.getFields()) {
+			if (!net.minecraft.sounds.SoundEvent.class.isAssignableFrom(field.getType())) {
+				continue;
+			}
+			net.minecraft.sounds.SoundEvent event =
+					(net.minecraft.sounds.SoundEvent) field.get(null);
+			String key = event.getLocation().getPath();
+			if (!event.getLocation().getNamespace().equals(NAMESPACE)) {
+				continue;
+			}
+			if (!definitions.has(key)) {
+				missing.add(field.getName() + " is registered as " + event.getLocation()
+						+ " but the pack has no entry named " + key);
+			}
+		}
+		assertTrue(missing.isEmpty(), String.join("; ", missing));
+	}
+
+	@Test
 	@DisplayName("the sound pack is not empty and every entry names a category")
 	void definitionsAreComplete() {
 		JsonObject definitions = definitions();

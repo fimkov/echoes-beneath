@@ -1,5 +1,5 @@
 {
-  "echoes_beneath.lens_deploy": {
+  "lens_deploy": {
     "category": "ambient",
     "subtitle": "subtitles.echoes_beneath.lens_deploy",
     "sounds": [
@@ -9,7 +9,7 @@
       }
     ]
   },
-  "echoes_beneath.lens_return": {
+  "lens_return": {
     "category": "ambient",
     "subtitle": "subtitles.echoes_beneath.lens_return",
     "sounds": [
@@ -19,7 +19,7 @@
       }
     ]
   },
-  "echoes_beneath.memory_seal": {
+  "memory_seal": {
     "category": "ambient",
     "subtitle": "subtitles.echoes_beneath.memory_seal",
     "sounds": [
@@ -29,7 +29,7 @@
       }
     ]
   },
-  "echoes_beneath.playback_end": {
+  "playback_end": {
     "category": "ambient",
     "subtitle": "subtitles.echoes_beneath.playback_end",
     "sounds": [
@@ -39,7 +39,7 @@
       }
     ]
   },
-  "echoes_beneath.playback_start": {
+  "playback_start": {
     "category": "ambient",
     "subtitle": "subtitles.echoes_beneath.playback_start",
     "sounds": [
@@ -49,7 +49,7 @@
       }
     ]
   },
-  "echoes_beneath.recording_pulse": {
+  "recording_pulse": {
     "category": "ambient",
     "subtitle": "subtitles.echoes_beneath.recording_pulse",
     "sounds": [
@@ -59,7 +59,7 @@
       }
     ]
   },
-  "echoes_beneath.recording_start": {
+  "recording_start": {
     "category": "ambient",
     "subtitle": "subtitles.echoes_beneath.recording_start",
     "sounds": [
@@ -69,7 +69,7 @@
       }
     ]
   },
-  "echoes_beneath.region_ambient": {
+  "region_ambient": {
     "category": "ambient",
     "subtitle": "subtitles.echoes_beneath.region_ambient",
     "sounds": [
@@ -79,7 +79,7 @@
       }
     ]
   },
-  "echoes_beneath.resonance_ping": {
+  "resonance_ping": {
     "category": "ambient",
     "subtitle": "subtitles.echoes_beneath.resonance_ping",
     "sounds": [
@@ -89,7 +89,7 @@
       }
     ]
   },
-  "echoes_beneath.table_deny": {
+  "table_deny": {
     "category": "block",
     "subtitle": "subtitles.echoes_beneath.table_deny",
     "sounds": [
@@ -99,7 +99,7 @@
       }
     ]
   },
-  "echoes_beneath.table_tune": {
+  "table_tune": {
     "category": "block",
     "subtitle": "subtitles.echoes_beneath.table_tune",
     "sounds": [
@@ -109,7 +109,7 @@
       }
     ]
   },
-  "echoes_beneath.wave_pulse": {
+  "wave_pulse": {
     "category": "ambient",
     "subtitle": "subtitles.echoes_beneath.wave_pulse",
     "sounds": [
