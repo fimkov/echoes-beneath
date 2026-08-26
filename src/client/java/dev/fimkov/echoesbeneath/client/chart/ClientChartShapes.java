@@ -10,11 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 public final class ClientChartShapes {
-	private static final long ASK_INTERVAL_MILLIS = 1500L;
-
 	private static final Map<Long, byte[][]> PENDING = new HashMap<>();
 	private static final Map<Long, EchoChartModel> READY = new HashMap<>();
-	private static final Map<Long, Long> ASKED = new HashMap<>();
 
 	private ClientChartShapes() {
 	}
@@ -22,25 +19,11 @@ public final class ClientChartShapes {
 	public static void forget() {
 		PENDING.clear();
 		READY.clear();
-		ASKED.clear();
-	}
-
-	public static void ask(net.minecraft.core.BlockPos position) {
-		long key = position.asLong();
-		long now = System.currentTimeMillis();
-		Long last = ASKED.get(key);
-		if (last != null && now - last < ASK_INTERVAL_MILLIS) {
-			return;
-		}
-		ASKED.put(key, now);
-		dev.fimkov.echoesbeneath.client.platform.EchoClientPlatforms.get().sendToServer(
-				new dev.fimkov.echoesbeneath.network.ChartShapeRequestPayload(position));
 	}
 
 	public static void forget(long target) {
 		PENDING.remove(target);
 		READY.remove(target);
-		ASKED.remove(target);
 	}
 
 	public static EchoChartModel of(long target) {

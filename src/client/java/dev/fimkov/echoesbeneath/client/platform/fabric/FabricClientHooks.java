@@ -28,11 +28,6 @@ public final class FabricClientHooks implements EchoClientHooks {
 	}
 
 	@Override
-	public void sendToServer(CustomPacketPayload payload) {
-		ClientPlayNetworking.send(payload);
-	}
-
-	@Override
 	public <T extends net.minecraft.world.level.block.entity.BlockEntity> void registerBlockEntityRenderer(
 			net.minecraft.world.level.block.entity.BlockEntityType<T> type,
 			net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider<T> provider) {

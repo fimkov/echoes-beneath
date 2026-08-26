@@ -24,22 +24,23 @@ public class EchoChartBlockRenderer implements BlockEntityRenderer<EchoChartBloc
 	@Override
 	public void render(EchoChartBlockEntity chart, float partialTick, PoseStack poseStack,
 			MultiBufferSource consumers, int light, int overlay) {
+		if (chart.chart() == null) {
+			return;
+		}
 		EchoChartModel model = ClientChartShapes.of(chart.getBlockPos().asLong());
-		if (model == null) {
-			ClientChartShapes.ask(chart.getBlockPos());
-			return;
-		}
-		if (model.size() == 0) {
-			return;
-		}
 		EchoChartLook look = chart.look();
 		float age = chart.age(partialTick);
+		float brightness = model == null ? 1.0F : model.brightness();
 		poseStack.pushPose();
 		poseStack.translate(0.5D, 0.0D, 0.5D);
 		if (look.runs() || look.motes()) {
 			EchoChartAura.render(poseStack, consumers, age, look.motes(), look.runs(),
 					Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation(),
-					model.brightness());
+					brightness);
+		}
+		if (model == null || model.size() == 0) {
+			poseStack.popPose();
+			return;
 		}
 		double lift = MODEL_REST + (look.drifts() ? bob(age) : 0.0D);
 		poseStack.translate(0.0D, lift, 0.0D);

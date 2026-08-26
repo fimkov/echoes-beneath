@@ -47,6 +47,15 @@ public class EchoChartBlock extends BaseEntityBlock {
 		return new EchoChartBlockEntity(position, state);
 	}
 
+	@Nullable
+	@Override
+	public <T extends BlockEntity> net.minecraft.world.level.block.entity.BlockEntityTicker<T> getTicker(
+			Level level, BlockState state,
+			net.minecraft.world.level.block.entity.BlockEntityType<T> type) {
+		return createTickerHelper(type, dev.fimkov.echoesbeneath.registry.EchoBlockEntities.ECHO_CHART,
+				level.isClientSide() ? EchoChartBlockEntity::clientTick : EchoChartBlockEntity::serverTick);
+	}
+
 	@Override
 	protected RenderShape getRenderShape(BlockState state) {
 		return RenderShape.INVISIBLE;

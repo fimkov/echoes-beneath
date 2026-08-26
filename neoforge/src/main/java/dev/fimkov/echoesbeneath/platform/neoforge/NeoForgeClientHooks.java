@@ -62,11 +62,6 @@ public final class NeoForgeClientHooks implements EchoClientHooks {
 	}
 
 	@Override
-	public void sendToServer(CustomPacketPayload payload) {
-		net.neoforged.neoforge.network.PacketDistributor.sendToServer(payload);
-	}
-
-	@Override
 	public <T extends net.minecraft.world.level.block.entity.BlockEntity> void registerBlockEntityRenderer(
 			net.minecraft.world.level.block.entity.BlockEntityType<T> type,
 			net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider<T> provider) {

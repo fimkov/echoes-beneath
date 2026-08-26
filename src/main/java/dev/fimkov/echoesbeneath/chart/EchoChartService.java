@@ -18,7 +18,6 @@ import java.util.UUID;
 public final class EchoChartService {
 	private final EchoMemoryStorage storage;
 	private static final int MAX_REMEMBERED_FLOODS = 4;
-	private static final double REACH = 96.0D;
 
 	private final Map<String, List<byte[]>> encoded = new HashMap<>();
 	private final Map<UUID, EchoSounding.Columns> floods = new LinkedHashMap<>() {
@@ -46,27 +45,16 @@ public final class EchoChartService {
 		return EchoSounding.of(record, reach, lowestY, highestY, EchoChartLimits.MAX_CHARTED_BLOCKS);
 	}
 
-	public void answer(ServerPlayer viewer, BlockPos position) {
-		if (!viewer.level().isLoaded(position)
-				|| viewer.distanceToSqr(position.getX() + 0.5D, position.getY() + 0.5D,
-						position.getZ() + 0.5D) > REACH * REACH) {
-			return;
-		}
-		if (!(viewer.level().getBlockEntity(position) instanceof EchoChartBlockEntity chart)) {
-			return;
-		}
-		EchoChartData data = chart.chart();
-		if (data == null) {
-			return;
-		}
+	public boolean send(ServerPlayer viewer, BlockPos position, EchoChartData data) {
 		List<byte[]> chunks = chunksFor(data);
 		if (chunks == null) {
-			return;
+			return false;
 		}
 		for (int index = 0; index < chunks.size(); index++) {
 			EchoPlatforms.network().sendToPlayer(viewer,
 					new ChartShapePayload(position.asLong(), index, chunks.size(), chunks.get(index)));
 		}
+		return true;
 	}
 
 	private List<byte[]> chunksFor(EchoChartData data) {

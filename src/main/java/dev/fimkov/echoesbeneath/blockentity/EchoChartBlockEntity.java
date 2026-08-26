@@ -22,11 +22,15 @@ public class EchoChartBlockEntity extends BlockEntity {
 	private static final String TAG_CHART = "chart";
 	private static final String TAG_LOOK = "look";
 	private static final String TAG_TURN = "turn";
+	private static final int TELL_INTERVAL_TICKS = 20;
+	private static final double TELL_REACH = 80.0D;
 
 	private EchoChartData chart;
 	private EchoChartLook look = EchoChartLook.DEFAULT;
 	private int turn;
 	private int age;
+	private final java.util.Set<net.minecraft.server.level.ServerPlayer> told =
+			java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
 
 	public EchoChartBlockEntity(BlockPos position, BlockState state) {
 		super(EchoBlockEntities.ECHO_CHART, position, state);
@@ -51,6 +55,36 @@ public class EchoChartBlockEntity extends BlockEntity {
 
 	public void tickVisuals() {
 		age++;
+	}
+
+	public static void serverTick(net.minecraft.world.level.Level level, BlockPos position,
+			BlockState state, EchoChartBlockEntity chart) {
+		chart.age++;
+		if (chart.chart == null || chart.age % TELL_INTERVAL_TICKS != 0) {
+			return;
+		}
+		dev.fimkov.echoesbeneath.runtime.EchoServerState server =
+				dev.fimkov.echoesbeneath.runtime.EchoServerState.current();
+		if (server == null) {
+			return;
+		}
+		chart.told.removeIf(net.minecraft.server.level.ServerPlayer::hasDisconnected);
+		for (net.minecraft.world.entity.player.Player nearby : level.players()) {
+			if (!(nearby instanceof net.minecraft.server.level.ServerPlayer viewer)
+					|| chart.told.contains(viewer)
+					|| viewer.distanceToSqr(position.getX() + 0.5D, position.getY() + 0.5D,
+							position.getZ() + 0.5D) > TELL_REACH * TELL_REACH) {
+				continue;
+			}
+			if (server.charts().send(viewer, position, chart.chart)) {
+				chart.told.add(viewer);
+			}
+		}
+	}
+
+	public static void clientTick(net.minecraft.world.level.Level level, BlockPos position,
+			BlockState state, EchoChartBlockEntity chart) {
+		chart.age++;
 	}
 
 	public void adopt(ItemStack stack) {
@@ -80,6 +114,7 @@ public class EchoChartBlockEntity extends BlockEntity {
 	}
 
 	private void publish() {
+		told.clear();
 		setChanged();
 		if (level != null && !level.isClientSide()) {
 			level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
