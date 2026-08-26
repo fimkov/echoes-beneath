@@ -64,7 +64,8 @@ public final class EchoServerLifecycle {
 		EchoPlatforms.server().onPlayerDisconnect(player -> {
 			EchoServerState state = EchoServerState.current();
 			if (state != null) {
-				state.playbacks().onOwnerDisconnected(player.getUUID());
+				state.recordings().handOverTo(player);
+				state.playbacks().onOwnerDisconnected(player);
 			}
 		});
 	}

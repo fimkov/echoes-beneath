@@ -25,6 +25,7 @@ import java.util.UUID;
 public class EchoLensEntity extends Entity {
 	public static final double HOVER_HEIGHT = 1.375D;
 	private static final float BASE_SPIN_DEGREES_PER_TICK = 2.0F;
+	private static final int GLOW_COLOUR = 0x29DFEB;
 	private static final float PROGRESS_SPIN_BONUS = 6.0F;
 	private static final int PARTICLE_INTERVAL_TICKS = 2;
 	private static final double PARTICLE_SPREAD = 0.35D;
@@ -246,6 +247,16 @@ public class EchoLensEntity extends Entity {
 			return InteractionResult.PASS;
 		}
 		return EchoLensReturn.requestEarlyStop(this, player) ? InteractionResult.CONSUME : InteractionResult.PASS;
+	}
+
+	@Override
+	public boolean isCurrentlyGlowing() {
+		return true;
+	}
+
+	@Override
+	public int getTeamColor() {
+		return GLOW_COLOUR;
 	}
 
 	@Override

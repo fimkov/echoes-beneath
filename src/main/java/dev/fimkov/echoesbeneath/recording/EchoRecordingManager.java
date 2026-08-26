@@ -40,8 +40,6 @@ public final class EchoRecordingManager {
 	private static final double COMPLETION_PARTICLE_SPREAD = 1.5D;
 	private static final float COMPLETION_VOLUME = 0.9F;
 	private static final float COMPLETION_PITCH = 1.2F;
-	private static final float DEPLOY_VOLUME = 0.7F;
-	private static final float DEPLOY_PITCH = 0.8F;
 
 	private final EchoServerState state;
 	private final Map<UUID, EchoRecordingSession> sessions = new HashMap<>();
@@ -108,9 +106,6 @@ public final class EchoRecordingManager {
 				lensEntity, System.currentTimeMillis());
 		sessions.put(sessionId, session);
 		EchoRecordingHooks.setAnyRecordingActive(true);
-		EchoRecordingHooks.runWithoutCapture(() -> level.playSound(null,
-				launchPosition.x, launchPosition.y, launchPosition.z,
-				EchoSounds.LENS_DEPLOY, SoundSource.BLOCKS, DEPLOY_VOLUME, DEPLOY_PITCH));
 		return Optional.of(session);
 	}
 
@@ -209,7 +204,20 @@ public final class EchoRecordingManager {
 			heard.add(sounds.soundAt(index));
 		}
 		EchoCriteria.MEMORY_RECORDED.trigger(owner, sounds.size(),
-				EchoLensStacks.references(stack).filledSlots(), heard);
+				EchoLensStacks.references(stack).filledSlots(), record.durationTicks(), heard);
+	}
+
+	public void handOverTo(ServerPlayer owner) {
+		for (EchoRecordingSession session : List.copyOf(sessions.values())) {
+			if (!session.ownerId().equals(owner.getUUID())) {
+				continue;
+			}
+			stop(session, EchoRecordingStopReason.OWNER_LEFT);
+			EchoLensEntity lens = session.lensEntity();
+			if (!lens.isRemoved()) {
+				EchoLensReturn.deliverTo(lens, owner);
+			}
+		}
 	}
 
 	private void releaseWithoutSealing(EchoRecordingSession session) {

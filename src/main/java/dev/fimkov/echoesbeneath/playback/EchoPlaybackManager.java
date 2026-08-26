@@ -126,8 +126,7 @@ public final class EchoPlaybackManager {
 			session.rememberSuppressed(state.suppression().suppressRegion(level, region));
 		}
 		sessions.put(playbackId, session);
-		EchoRecordingHooks.runWithoutCapture(() -> level.playSound(null,
-				launchPosition.x, launchPosition.y, launchPosition.z,
+		EchoRecordingHooks.runWithoutCapture(() -> level.playSound(null, region.center(),
 				EchoSounds.PLAYBACK_START, SoundSource.AMBIENT, START_VOLUME, START_PITCH));
 		return true;
 	}
@@ -232,10 +231,14 @@ public final class EchoPlaybackManager {
 		return true;
 	}
 
-	public void onOwnerDisconnected(UUID ownerId) {
+	public void onOwnerDisconnected(ServerPlayer owner) {
 		for (EchoPlaybackSession session : List.copyOf(sessions.values())) {
-			if (session.ownerId().equals(ownerId)) {
-				stop(session, EchoPlaybackStopReason.OWNER_LEFT);
+			if (!session.ownerId().equals(owner.getUUID())) {
+				continue;
+			}
+			stop(session, EchoPlaybackStopReason.OWNER_LEFT);
+			if (!session.lensEntity().isRemoved()) {
+				dev.fimkov.echoesbeneath.runtime.EchoLensReturn.deliverTo(session.lensEntity(), owner);
 			}
 		}
 	}

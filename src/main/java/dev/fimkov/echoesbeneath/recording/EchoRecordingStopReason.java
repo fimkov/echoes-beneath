@@ -5,6 +5,7 @@ public enum EchoRecordingStopReason {
 	OWNER_REQUEST(true),
 	CHUNKS_UNLOADED(true),
 	SERVER_STOPPING(true),
+	OWNER_LEFT(true),
 	DIMENSION_UNLOADED(true),
 	LENS_LOST(false),
 	FAILURE(false);

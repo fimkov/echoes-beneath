@@ -19,24 +19,30 @@ public class MemoryRecordedTrigger extends SimpleCriterionTrigger<MemoryRecorded
 		return Instance.CODEC;
 	}
 
-	public void trigger(ServerPlayer player, int sounds, int filledSlots, Collection<ResourceLocation> heard) {
-		trigger(player, instance -> instance.matches(sounds, filledSlots, heard));
+	public void trigger(ServerPlayer player, int sounds, int filledSlots, int durationTicks,
+			Collection<ResourceLocation> heard) {
+		trigger(player, instance -> instance.matches(sounds, filledSlots, durationTicks, heard));
 	}
 
 	public record Instance(Optional<ContextAwarePredicate> player, MinMaxBounds.Ints sounds,
-			MinMaxBounds.Ints filledSlots, List<ResourceLocation> heardAny) implements SimpleInstance {
+			MinMaxBounds.Ints filledSlots, MinMaxBounds.Ints durationTicks,
+			List<ResourceLocation> heardAny) implements SimpleInstance {
 		public static final Codec<Instance> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 				EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(Instance::player),
 				MinMaxBounds.Ints.CODEC.optionalFieldOf("sounds", MinMaxBounds.Ints.ANY)
 						.forGetter(Instance::sounds),
 				MinMaxBounds.Ints.CODEC.optionalFieldOf("filled_slots", MinMaxBounds.Ints.ANY)
 						.forGetter(Instance::filledSlots),
+				MinMaxBounds.Ints.CODEC.optionalFieldOf("duration_ticks", MinMaxBounds.Ints.ANY)
+						.forGetter(Instance::durationTicks),
 				ResourceLocation.CODEC.listOf().optionalFieldOf("heard_any", List.of())
 						.forGetter(Instance::heardAny)
 		).apply(instance, Instance::new));
 
-		public boolean matches(int recordedSounds, int slots, Collection<ResourceLocation> heard) {
-			if (!sounds.matches(recordedSounds) || !filledSlots.matches(slots)) {
+		public boolean matches(int recordedSounds, int slots, int ticks,
+				Collection<ResourceLocation> heard) {
+			if (!sounds.matches(recordedSounds) || !filledSlots.matches(slots)
+					|| !durationTicks.matches(ticks)) {
 				return false;
 			}
 			return heardAny.isEmpty() || heardAny.stream().anyMatch(heard::contains);

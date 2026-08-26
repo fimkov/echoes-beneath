@@ -3,6 +3,9 @@
   "criteria": {
     "silent": {
       "conditions": {
+        "duration_ticks": {
+          "min": 2200
+        },
         "sounds": 0
       },
       "trigger": "echoes_beneath:memory_recorded"

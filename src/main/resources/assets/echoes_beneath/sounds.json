@@ -1,14 +1,4 @@
 {
-  "lens_deploy": {
-    "category": "ambient",
-    "subtitle": "subtitles.echoes_beneath.lens_deploy",
-    "sounds": [
-      {
-        "name": "echoes_beneath:lens_deploy",
-        "stream": false
-      }
-    ]
-  },
   "lens_return": {
     "category": "ambient",
     "subtitle": "subtitles.echoes_beneath.lens_return",

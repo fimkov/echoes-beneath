@@ -29,6 +29,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class EchoAdvancementProvider extends FabricAdvancementProvider {
+	private static final int FULL_RECORDING_TICKS = 2200;
+
 	private static final List<ResourceLocation> WARDEN_SOUNDS = List.of(
 			ResourceLocation.withDefaultNamespace("entity.warden.roar"),
 			ResourceLocation.withDefaultNamespace("entity.warden.heartbeat"),
@@ -49,9 +51,9 @@ public class EchoAdvancementProvider extends FabricAdvancementProvider {
 	}
 
 	private static Criterion<MemoryRecordedTrigger.Instance> recorded(MinMaxBounds.Ints sounds,
-			MinMaxBounds.Ints slots, List<ResourceLocation> heardAny) {
+			MinMaxBounds.Ints slots, MinMaxBounds.Ints duration, List<ResourceLocation> heardAny) {
 		return EchoCriteria.MEMORY_RECORDED.createCriterion(
-				new MemoryRecordedTrigger.Instance(Optional.empty(), sounds, slots, heardAny));
+				new MemoryRecordedTrigger.Instance(Optional.empty(), sounds, slots, duration, heardAny));
 	}
 
 	private static Criterion<MemoryPlayedTrigger.Instance> played(Optional<Boolean> watched,
@@ -92,7 +94,7 @@ public class EchoAdvancementProvider extends FabricAdvancementProvider {
 
 		AdvancementHolder firstRecording = step(EchoItems.ECHO_LENS, "first_recording", AdvancementType.TASK)
 				.parent(lens)
-				.addCriterion("recorded", recorded(MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY, List.of()))
+				.addCriterion("recorded", recorded(MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY, List.of()))
 				.save(consumer, EchoesBeneath.id("first_recording").toString());
 
 		AdvancementHolder firstPlayback = step(Items.SCULK_SHRIEKER, "first_playback", AdvancementType.TASK)
@@ -132,18 +134,20 @@ public class EchoAdvancementProvider extends FabricAdvancementProvider {
 
 		step(Items.SCULK_VEIN, "growing_sculk", AdvancementType.CHALLENGE)
 				.parent(firstRecording)
-				.addCriterion("silent", recorded(MinMaxBounds.Ints.exactly(0), MinMaxBounds.Ints.ANY, List.of()))
+				.addCriterion("silent", recorded(MinMaxBounds.Ints.exactly(0), MinMaxBounds.Ints.ANY,
+						MinMaxBounds.Ints.atLeast(FULL_RECORDING_TICKS), List.of()))
 				.save(consumer, EchoesBeneath.id("growing_sculk").toString());
 
 		step(Items.ECHO_SHARD, "thunder_below", AdvancementType.CHALLENGE)
 				.parent(firstRecording)
-				.addCriterion("heard_warden", recorded(MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY, WARDEN_SOUNDS))
+				.addCriterion("heard_warden", recorded(MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY, WARDEN_SOUNDS))
 				.save(consumer, EchoesBeneath.id("thunder_below").toString());
 
 		step(EchoItems.ECHO_LENS, "three_times", AdvancementType.GOAL)
 				.parent(firstUpgrade)
 				.addCriterion("filled_every_slot", recorded(MinMaxBounds.Ints.ANY,
-						MinMaxBounds.Ints.atLeast(EchoFormat.MAX_MEMORY_SLOTS), List.of()))
+						MinMaxBounds.Ints.atLeast(EchoFormat.MAX_MEMORY_SLOTS), MinMaxBounds.Ints.ANY,
+						List.of()))
 				.save(consumer, EchoesBeneath.id("three_times").toString());
 
 		step(Items.SPYGLASS, "echolocation", AdvancementType.GOAL)

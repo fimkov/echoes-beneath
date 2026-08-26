@@ -7,7 +7,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 
 public final class EchoSounds {
-	public static final SoundEvent LENS_DEPLOY = of("lens_deploy");
 	public static final SoundEvent LENS_RECORDING_START = of("recording_start");
 	public static final SoundEvent LENS_RECORDING_PULSE = of("recording_pulse");
 	public static final SoundEvent LENS_RECORDING_COMPLETE = of("memory_seal");
@@ -29,7 +28,6 @@ public final class EchoSounds {
 	}
 
 	public static void register() {
-		put("lens_deploy", LENS_DEPLOY);
 		put("recording_start", LENS_RECORDING_START);
 		put("recording_pulse", LENS_RECORDING_PULSE);
 		put("memory_seal", LENS_RECORDING_COMPLETE);
