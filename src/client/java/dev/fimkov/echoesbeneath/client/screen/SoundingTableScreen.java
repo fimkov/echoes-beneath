@@ -106,6 +106,9 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	}
 
 	private float pulse(float partialTick) {
+		if (!dev.fimkov.echoesbeneath.client.config.EchoClientConfig.values().tableAnimations()) {
+			return PULSE_BASE + PULSE_SWING * 0.5F;
+		}
 		double phase = (animation + partialTick) / PULSE_PERIOD_TICKS * Math.PI * 2.0;
 		return PULSE_BASE + PULSE_SWING * (float) ((Math.sin(phase) + 1.0) * 0.5);
 	}

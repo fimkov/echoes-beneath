@@ -31,6 +31,12 @@ class EchoConfigScreenTest {
 			new Option("ambience", ": 100"),
 			new Option("show_holograms", ": OFF"),
 			new Option("hide_sky", ": OFF"),
+			new Option("darkness", ": 100"),
+			new Option("wave_volume", ": 100"),
+			new Option("chart_budget", ": 20000"),
+			new Option("chart_distance", ": 128"),
+			new Option("chart_aura", ": OFF"),
+			new Option("table_animations", ": OFF"),
 	};
 	private static final int WIDGET_WIDTH = 150;
 	private static final int LABEL_BUDGET = WIDGET_WIDTH - 8;

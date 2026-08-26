@@ -23,6 +23,13 @@ public final class EchoConfig {
 	private static final int DEFAULT_MAX_CONCURRENT_SOUND_WAVES = 64;
 	private static final boolean DEFAULT_ALLOW_OVERLAPPING_PLAYBACK = false;
 	private static final boolean DEFAULT_SUPPRESS_HOSTILE_MOBS = true;
+	private static final boolean DEFAULT_ALLOW_CHARTS = true;
+	private static final int DEFAULT_CHART_BLOCK_LIMIT = 60000;
+	private static final int DEFAULT_SOUND_CARRY_BLOCKS = 16;
+	private static final int MIN_CHART_BLOCK_LIMIT = 1000;
+	private static final int MAX_CHART_BLOCK_LIMIT = 200000;
+	private static final int MIN_SOUND_CARRY = 4;
+	private static final int MAX_SOUND_CARRY = 64;
 	private static final boolean DEFAULT_DISABLE_BLOCK_INTERACTION_DURING_PLAYBACK = true;
 
 	private static final int MIN_RADIUS = 8;
@@ -63,7 +70,10 @@ public final class EchoConfig {
 				DEFAULT_MAX_CONCURRENT_SOUND_WAVES,
 				DEFAULT_ALLOW_OVERLAPPING_PLAYBACK,
 				DEFAULT_SUPPRESS_HOSTILE_MOBS,
-				DEFAULT_DISABLE_BLOCK_INTERACTION_DURING_PLAYBACK);
+				DEFAULT_DISABLE_BLOCK_INTERACTION_DURING_PLAYBACK,
+				DEFAULT_ALLOW_CHARTS,
+				DEFAULT_CHART_BLOCK_LIMIT,
+				DEFAULT_SOUND_CARRY_BLOCKS);
 	}
 
 	public static void load() {
@@ -92,7 +102,12 @@ public final class EchoConfig {
 				clampInt(properties, "maxConcurrentSoundWaves", DEFAULT_MAX_CONCURRENT_SOUND_WAVES, MIN_CONCURRENT_WAVES, MAX_CONCURRENT_WAVES),
 				readBoolean(properties, "allowOverlappingPlayback", DEFAULT_ALLOW_OVERLAPPING_PLAYBACK),
 				readBoolean(properties, "suppressHostileMobs", DEFAULT_SUPPRESS_HOSTILE_MOBS),
-				readBoolean(properties, "disableBlockInteractionDuringPlayback", DEFAULT_DISABLE_BLOCK_INTERACTION_DURING_PLAYBACK));
+				readBoolean(properties, "disableBlockInteractionDuringPlayback", DEFAULT_DISABLE_BLOCK_INTERACTION_DURING_PLAYBACK),
+				readBoolean(properties, "allowCharts", DEFAULT_ALLOW_CHARTS),
+				clampInt(properties, "chartBlockLimit", DEFAULT_CHART_BLOCK_LIMIT,
+						MIN_CHART_BLOCK_LIMIT, MAX_CHART_BLOCK_LIMIT),
+				clampInt(properties, "soundCarryBlocks", DEFAULT_SOUND_CARRY_BLOCKS,
+						MIN_SOUND_CARRY, MAX_SOUND_CARRY));
 	}
 
 	private static void write(Path path) {
@@ -109,6 +124,9 @@ public final class EchoConfig {
 		out.setProperty("allowOverlappingPlayback", Boolean.toString(current.allowOverlappingPlayback()));
 		out.setProperty("suppressHostileMobs", Boolean.toString(current.suppressHostileMobs()));
 		out.setProperty("disableBlockInteractionDuringPlayback", Boolean.toString(current.disableBlockInteractionDuringPlayback()));
+		out.setProperty("allowCharts", Boolean.toString(current.allowCharts()));
+		out.setProperty("chartBlockLimit", Integer.toString(current.chartBlockLimit()));
+		out.setProperty("soundCarryBlocks", Integer.toString(current.soundCarryBlocks()));
 		try {
 			Files.createDirectories(path.getParent());
 			try (OutputStream stream = Files.newOutputStream(path)) {

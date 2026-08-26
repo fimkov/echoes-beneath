@@ -193,6 +193,9 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	}
 
 	private float pulse() {
+		if (!dev.fimkov.echoesbeneath.client.config.EchoClientConfig.values().tableAnimations()) {
+			return PULSE_BASE + PULSE_SWING * 0.5F;
+		}
 		double phase = animation / PULSE_PERIOD_TICKS * Math.PI * 2.0;
 		return PULSE_BASE + PULSE_SWING * (float) ((Math.sin(phase) + 1.0) * 0.5);
 	}

@@ -138,5 +138,11 @@
   "look.echoes_beneath.spin.brisk": "Быстро",
   "look.echoes_beneath.size.small": "Малый",
   "look.echoes_beneath.size.medium": "Средний",
-  "look.echoes_beneath.size.large": "Большой"
+  "look.echoes_beneath.size.large": "Большой",
+  "config.echoes_beneath.darkness": "Темнота",
+  "config.echoes_beneath.wave_volume": "Громкость волн",
+  "config.echoes_beneath.chart_budget": "Детализация карт",
+  "config.echoes_beneath.chart_distance": "Дальность карт",
+  "config.echoes_beneath.chart_aura": "Свет вокруг карт",
+  "config.echoes_beneath.table_animations": "Анимация столов"
 }

@@ -58,7 +58,8 @@ public final class EchoDarkness {
 	private static float darknessTargetFor(ClientPlaybackSession session) {
 		float relief = (float) session.vision()
 				/ dev.fimkov.echoesbeneath.item.EchoLensUpgrades.MAX_VISION * VISION_RELIEF;
-		lastTarget = FULLY_DARK - relief;
+		lastTarget = (FULLY_DARK - relief)
+				* dev.fimkov.echoesbeneath.client.config.EchoClientConfig.values().darknessFactor();
 		return lastTarget;
 	}
 

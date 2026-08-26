@@ -8,13 +8,27 @@ public record EchoClientConfigValues(
 		boolean hideSkyDuringPlayback,
 		int transitionTicks,
 		int regionAmbienceVolume,
-		int waveDetail) {
+		int waveDetail,
+		boolean showChartAura,
+		int chartDistance,
+		int chartBlockBudget,
+		boolean tableAnimations,
+		int darknessStrength,
+		int waveVolume) {
 
 	private static final float PERCENT = 100.0F;
 	private static final float TICKS_TO_RATE = 1.0F;
 
 	public float regionAmbienceGain() {
 		return regionAmbienceVolume / PERCENT;
+	}
+
+	public float darknessFactor() {
+		return darknessStrength / PERCENT;
+	}
+
+	public float waveGain() {
+		return waveVolume / PERCENT;
 	}
 
 	public float transitionPerTick() {

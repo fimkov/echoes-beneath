@@ -36,6 +36,12 @@ public final class EchoConfigScreen extends Screen {
 	private boolean hideSkyDuringPlayback;
 	private int transitionTicks;
 	private int regionAmbienceVolume;
+	private boolean showChartAura;
+	private int chartDistance;
+	private int chartBlockBudget;
+	private boolean tableAnimations;
+	private int darknessStrength;
+	private int waveVolume;
 
 	private record Setting(String key, int min, int max) {
 	}
@@ -52,6 +58,12 @@ public final class EchoConfigScreen extends Screen {
 		hideSkyDuringPlayback = current.hideSkyDuringPlayback();
 		transitionTicks = current.transitionTicks();
 		regionAmbienceVolume = current.regionAmbienceVolume();
+		showChartAura = current.showChartAura();
+		chartDistance = current.chartDistance();
+		chartBlockBudget = current.chartBlockBudget();
+		tableAnimations = current.tableAnimations();
+		darknessStrength = current.darknessStrength();
+		waveVolume = current.waveVolume();
 	}
 
 	@Override
@@ -68,8 +80,16 @@ public final class EchoConfigScreen extends Screen {
 		addSlider(left, row, "transition", 1, 200, transitionTicks, value -> transitionTicks = value);
 		addSlider(right, row++, "ambience", 0, 100, regionAmbienceVolume,
 				value -> regionAmbienceVolume = value);
+		addSlider(left, row, "darkness", 0, 100, darknessStrength, value -> darknessStrength = value);
+		addSlider(right, row++, "wave_volume", 0, 100, waveVolume, value -> waveVolume = value);
+		addSlider(left, row, "chart_budget", 256, 20000, chartBlockBudget,
+				value -> chartBlockBudget = value);
+		addSlider(right, row++, "chart_distance", 16, 128, chartDistance,
+				value -> chartDistance = value);
 		addToggle(left, row, "show_holograms", showBlockHolograms, value -> showBlockHolograms = value);
 		addToggle(right, row++, "hide_sky", hideSkyDuringPlayback, value -> hideSkyDuringPlayback = value);
+		addToggle(left, row, "chart_aura", showChartAura, value -> showChartAura = value);
+		addToggle(right, row++, "table_animations", tableAnimations, value -> tableAnimations = value);
 
 		addRenderableWidget(Button.builder(CommonLabels.done(), button -> saveAndClose())
 				.bounds(width / 2 - DONE_WIDTH / 2, height - BOTTOM_MARGIN, DONE_WIDTH, WIDGET_HEIGHT)
@@ -99,7 +119,8 @@ public final class EchoConfigScreen extends Screen {
 	private void saveAndClose() {
 		EchoClientConfig.apply(new EchoClientConfigValues(waveTexelBudget, hologramBlockBudget,
 				hologramDistance, showBlockHolograms, hideSkyDuringPlayback, transitionTicks,
-				regionAmbienceVolume, waveDetail));
+				regionAmbienceVolume, waveDetail, showChartAura, chartDistance, chartBlockBudget,
+				tableAnimations, darknessStrength, waveVolume));
 		onClose();
 	}
 

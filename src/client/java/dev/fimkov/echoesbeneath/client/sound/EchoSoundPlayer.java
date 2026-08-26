@@ -61,7 +61,8 @@ public final class EchoSoundPlayer {
 		}
 		Vec3 position = center.add(
 				timeline.relativeXAt(index), timeline.relativeYAt(index), timeline.relativeZAt(index));
-		float volume = timeline.volumeAt(index);
+		float volume = timeline.volumeAt(index)
+				* dev.fimkov.echoesbeneath.client.config.EchoClientConfig.values().waveGain();
 		float pitch = timeline.pitchAt(index);
 		SoundSource source = timeline.categoryAt(index);
 		level.playLocalSound(position.x, position.y, position.z, event, source,

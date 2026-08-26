@@ -231,7 +231,8 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 	}
 
 	public boolean canExtract() {
-		return chosen() != null && output.getItem(0).isEmpty();
+		return dev.fimkov.echoesbeneath.config.EchoConfig.values().allowCharts()
+				&& chosen() != null && output.getItem(0).isEmpty();
 	}
 
 	public boolean canReturn() {

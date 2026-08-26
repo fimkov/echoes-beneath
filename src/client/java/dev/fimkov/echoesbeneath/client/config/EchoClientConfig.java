@@ -22,6 +22,12 @@ public final class EchoClientConfig {
 	private static final int DEFAULT_TRANSITION_TICKS = 22;
 	private static final int DEFAULT_AMBIENCE_VOLUME = 55;
 	private static final int DEFAULT_WAVE_DETAIL = 8;
+	private static final boolean DEFAULT_SHOW_CHART_AURA = true;
+	private static final int DEFAULT_CHART_DISTANCE = 48;
+	private static final int DEFAULT_CHART_BLOCK_BUDGET = 6000;
+	private static final boolean DEFAULT_TABLE_ANIMATIONS = true;
+	private static final int DEFAULT_DARKNESS_STRENGTH = 100;
+	private static final int DEFAULT_WAVE_VOLUME = 80;
 
 	private static final int MIN_WAVE_TEXEL_BUDGET = 2000;
 	private static final int MAX_WAVE_TEXEL_BUDGET = 160000;
@@ -35,6 +41,10 @@ public final class EchoClientConfig {
 	private static final int MAX_VOLUME = 100;
 	private static final int MIN_WAVE_DETAIL = 2;
 	private static final int MAX_WAVE_DETAIL = 16;
+	private static final int MIN_CHART_DISTANCE = 16;
+	private static final int MAX_CHART_DISTANCE = 128;
+	private static final int MIN_CHART_BLOCK_BUDGET = 256;
+	private static final int MAX_CHART_BLOCK_BUDGET = 20000;
 
 	private static volatile EchoClientConfigValues values = defaults();
 
@@ -54,7 +64,13 @@ public final class EchoClientConfig {
 				DEFAULT_HIDE_SKY,
 				DEFAULT_TRANSITION_TICKS,
 				DEFAULT_AMBIENCE_VOLUME,
-				DEFAULT_WAVE_DETAIL);
+				DEFAULT_WAVE_DETAIL,
+				DEFAULT_SHOW_CHART_AURA,
+				DEFAULT_CHART_DISTANCE,
+				DEFAULT_CHART_BLOCK_BUDGET,
+				DEFAULT_TABLE_ANIMATIONS,
+				DEFAULT_DARKNESS_STRENGTH,
+				DEFAULT_WAVE_VOLUME);
 	}
 
 	public static void apply(EchoClientConfigValues updated) {
@@ -93,7 +109,15 @@ public final class EchoClientConfig {
 				clampInt(properties, "transitionTicks", DEFAULT_TRANSITION_TICKS,
 						MIN_TRANSITION_TICKS, MAX_TRANSITION_TICKS),
 				clampInt(properties, "regionAmbienceVolume", DEFAULT_AMBIENCE_VOLUME, MIN_VOLUME, MAX_VOLUME),
-				clampInt(properties, "waveDetail", DEFAULT_WAVE_DETAIL, MIN_WAVE_DETAIL, MAX_WAVE_DETAIL));
+				clampInt(properties, "waveDetail", DEFAULT_WAVE_DETAIL, MIN_WAVE_DETAIL, MAX_WAVE_DETAIL),
+				readBoolean(properties, "showChartAura", DEFAULT_SHOW_CHART_AURA),
+				clampInt(properties, "chartDistance", DEFAULT_CHART_DISTANCE,
+						MIN_CHART_DISTANCE, MAX_CHART_DISTANCE),
+				clampInt(properties, "chartBlockBudget", DEFAULT_CHART_BLOCK_BUDGET,
+						MIN_CHART_BLOCK_BUDGET, MAX_CHART_BLOCK_BUDGET),
+				readBoolean(properties, "tableAnimations", DEFAULT_TABLE_ANIMATIONS),
+				clampInt(properties, "darknessStrength", DEFAULT_DARKNESS_STRENGTH, MIN_VOLUME, MAX_VOLUME),
+				clampInt(properties, "waveVolume", DEFAULT_WAVE_VOLUME, MIN_VOLUME, MAX_VOLUME));
 	}
 
 	private static void write(Path path) {
@@ -107,6 +131,12 @@ public final class EchoClientConfig {
 		out.setProperty("transitionTicks", Integer.toString(current.transitionTicks()));
 		out.setProperty("regionAmbienceVolume", Integer.toString(current.regionAmbienceVolume()));
 		out.setProperty("waveDetail", Integer.toString(current.waveDetail()));
+		out.setProperty("showChartAura", Boolean.toString(current.showChartAura()));
+		out.setProperty("chartDistance", Integer.toString(current.chartDistance()));
+		out.setProperty("chartBlockBudget", Integer.toString(current.chartBlockBudget()));
+		out.setProperty("tableAnimations", Boolean.toString(current.tableAnimations()));
+		out.setProperty("darknessStrength", Integer.toString(current.darknessStrength()));
+		out.setProperty("waveVolume", Integer.toString(current.waveVolume()));
 		try {
 			Files.createDirectories(path.getParent());
 			try (OutputStream stream = Files.newOutputStream(path)) {

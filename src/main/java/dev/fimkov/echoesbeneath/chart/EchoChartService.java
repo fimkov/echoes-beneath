@@ -42,7 +42,8 @@ public final class EchoChartService {
 			reach = EchoSounding.reach(record);
 			floods.put(record.id(), reach);
 		}
-		return EchoSounding.of(record, reach, lowestY, highestY, EchoChartLimits.MAX_CHARTED_BLOCKS);
+		return EchoSounding.of(record, reach, lowestY, highestY,
+				dev.fimkov.echoesbeneath.config.EchoConfig.values().chartBlockLimit());
 	}
 
 	public boolean send(ServerPlayer viewer, BlockPos position, EchoChartData data) {

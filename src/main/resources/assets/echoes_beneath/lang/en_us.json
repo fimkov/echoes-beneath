@@ -138,5 +138,11 @@
   "look.echoes_beneath.spin.brisk": "Brisk",
   "look.echoes_beneath.size.small": "Small",
   "look.echoes_beneath.size.medium": "Medium",
-  "look.echoes_beneath.size.large": "Large"
+  "look.echoes_beneath.size.large": "Large",
+  "config.echoes_beneath.darkness": "Darkness",
+  "config.echoes_beneath.wave_volume": "Wave volume",
+  "config.echoes_beneath.chart_budget": "Chart detail",
+  "config.echoes_beneath.chart_distance": "Chart range",
+  "config.echoes_beneath.chart_aura": "Chart light",
+  "config.echoes_beneath.table_animations": "Table motion"
 }

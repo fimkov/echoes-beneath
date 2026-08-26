@@ -6,6 +6,7 @@ import dev.fimkov.echoesbeneath.blockentity.EchoChartBlockEntity;
 import dev.fimkov.echoesbeneath.chart.EchoChartLook;
 import dev.fimkov.echoesbeneath.client.chart.ClientChartShapes;
 import dev.fimkov.echoesbeneath.client.chart.EchoChartModel;
+import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -37,7 +38,7 @@ public class EchoChartBlockRenderer implements BlockEntityRenderer<EchoChartBloc
 		double lift = look.restHeight() + (look.drifts() ? bob(age) * look.modelScale() : 0.0D);
 		poseStack.pushPose();
 		poseStack.translate(0.5D, 0.0D, 0.5D);
-		if (look.runs() || look.motes()) {
+		if (EchoClientConfig.values().showChartAura() && (look.runs() || look.motes())) {
 			EchoChartAura.render(poseStack, consumers, age, look.motes(), look.runs(),
 					Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation(),
 					brightness,
@@ -60,6 +61,11 @@ public class EchoChartBlockRenderer implements BlockEntityRenderer<EchoChartBloc
 
 	private static double bob(float age) {
 		return Mth.sin(age / BOB_PERIOD_TICKS * Mth.TWO_PI) * BOB_HEIGHT;
+	}
+
+	@Override
+	public int getViewDistance() {
+		return EchoClientConfig.values().chartDistance();
 	}
 
 	@Override

@@ -17,7 +17,9 @@ public final class EchoChartGeometry {
 	public static void emit(EchoChartModel model, MultiBufferSource consumers, PoseStack poseStack) {
 		BlockRenderDispatcher blocks = Minecraft.getInstance().getBlockRenderer();
 		int light = LightTexture.pack(Math.round(FULL_BLOCK_LIGHT * model.brightness()), 0);
-		for (int index = 0; index < model.size(); index++) {
+		int budget = dev.fimkov.echoesbeneath.client.config.EchoClientConfig.values().chartBlockBudget();
+		int drawn = 0;
+		for (int index = 0; index < model.size() && drawn < budget; index++) {
 			int cell = model.cellAt(index);
 			if (model.isBuried(cell)) {
 				continue;
@@ -28,6 +30,7 @@ public final class EchoChartGeometry {
 			blocks.renderSingleBlock(model.stateAt(index), poseStack, consumers, light,
 					OverlayTexture.NO_OVERLAY);
 			poseStack.popPose();
+			drawn++;
 		}
 	}
 }

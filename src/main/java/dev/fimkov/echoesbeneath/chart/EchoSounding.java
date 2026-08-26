@@ -47,7 +47,8 @@ public final class EchoSounding {
 		for (int index = 0; index < sounds.size(); index++) {
 			int x = (int) Math.floor(sounds.relativeXAt(index));
 			int z = (int) Math.floor(sounds.relativeZAt(index));
-			int carry = Math.clamp(Math.round(sounds.volumeAt(index) * BLOCKS_PER_VOLUME),
+			int carry = Math.clamp(Math.round(sounds.volumeAt(index)
+							* dev.fimkov.echoesbeneath.config.EchoConfig.values().soundCarryBlocks()),
 					MIN_CARRY, radius);
 			columns.raise(x, z, carry);
 		}
