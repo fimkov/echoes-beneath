@@ -45,6 +45,27 @@ public class EchoSoundingTableGameTest implements FabricGameTest {
 	}
 
 	@GameTest(template = EMPTY_STRUCTURE)
+	public void shiftClickSendsEachItemToItsOwnSlot(GameTestHelper helper) {
+		Player player = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+		player.getInventory().add(chart());
+		player.getInventory().add(new ItemStack(EchoItems.ECHO_LENS));
+		SoundingTableMenu menu = new SoundingTableMenu(1, player.getInventory(),
+				ContainerLevelAccess.NULL);
+		for (int slot = 2; slot < menu.slots.size(); slot++) {
+			if (!menu.slots.get(slot).getItem().isEmpty()) {
+				menu.quickMoveStack(player, slot);
+			}
+		}
+		if (menu.slots.get(SoundingTableMenu.LENS_SLOT).getItem().isEmpty()) {
+			helper.fail("a shift clicked lens should land in the lens slot");
+		}
+		if (menu.slots.get(SoundingTableMenu.RESULT_SLOT).getItem().isEmpty()) {
+			helper.fail("a shift clicked chart should land in the chart slot");
+		}
+		helper.succeed();
+	}
+
+	@GameTest(template = EMPTY_STRUCTURE)
 	public void theResultSlotTakesChartsAndNothingElse(GameTestHelper helper) {
 		Player player = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
 		SoundingTableMenu menu = new SoundingTableMenu(1, player.getInventory(),

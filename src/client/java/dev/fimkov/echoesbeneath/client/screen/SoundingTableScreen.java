@@ -56,8 +56,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	private static final float PULSE_PERIOD_TICKS = 48.0F;
 	private static final float PULSE_BASE = 0.18F;
 	private static final float PULSE_SWING = 0.82F;
-	private static final float SWEEP_PERIOD_TICKS = 96.0F;
-	private static final int SWEEP_ALPHA = 52;
+	private static final float ANIMATION_CYCLE_TICKS = 4608.0F;
 	private static final int BRACKET_LENGTH = 7;
 	private static final int EDGE_RGB = 0x29DFEB;
 	private static final float DENIED_PITCH = 0.65F;
@@ -96,7 +95,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 			spin -= 360.0F;
 		}
 		animation += 1.0F;
-		if (animation >= PULSE_PERIOD_TICKS * SWEEP_PERIOD_TICKS) {
+		if (animation >= ANIMATION_CYCLE_TICKS) {
 			animation = 0.0F;
 		}
 		if (pendingValue != Integer.MIN_VALUE && ++sinceSent >= TICKS_BETWEEN_DRAGS) {
@@ -299,12 +298,6 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 			graphics.fill(x, y + height - step - 1, x + 1, y + height - step, lit);
 			graphics.fill(x + width - 1, y + height - step - 1, x + width, y + height - step, lit);
 		}
-		if (chosen() == null) {
-			return;
-		}
-		float sweep = ((animation + partialTick) % SWEEP_PERIOD_TICKS) / SWEEP_PERIOD_TICKS;
-		int line = y + 1 + Math.round(sweep * (height - 3));
-		graphics.fill(x + 1, line, x + width - 1, line + 1, (SWEEP_ALPHA << 24) | EDGE_RGB);
 	}
 
 	private void renderRows(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {

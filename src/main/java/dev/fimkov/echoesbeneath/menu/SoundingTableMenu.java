@@ -312,7 +312,16 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 			if (!moveItemStackTo(stack, 2, slots.size(), true)) {
 				return ItemStack.EMPTY;
 			}
-		} else if (!moveItemStackTo(stack, 0, 1, false)) {
+		} else if (EchoLensStacks.isLens(stack)) {
+			if (!moveItemStackTo(stack, LENS_SLOT, LENS_SLOT + 1, false)) {
+				return ItemStack.EMPTY;
+			}
+		} else if (stack.getItem() instanceof EchoChartItem
+				&& stack.get(EchoComponents.CHART_DATA) != null) {
+			if (!moveItemStackTo(stack, RESULT_SLOT, RESULT_SLOT + 1, false)) {
+				return ItemStack.EMPTY;
+			}
+		} else {
 			return ItemStack.EMPTY;
 		}
 		if (stack.isEmpty()) {
