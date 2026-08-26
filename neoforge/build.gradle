@@ -1,0 +1,60 @@
+plugins {
+    id 'java'
+    id 'net.neoforged.moddev' version "${moddev_version}"
+}
+
+version = rootProject.mod_version
+group = rootProject.maven_group
+
+base {
+    archivesName = "${rootProject.archives_base_name}-neoforge"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+neoForge {
+    version = rootProject.neoforge_version
+    accessTransformers.from file('src/main/resources/META-INF/accesstransformer.cfg')
+    runs {
+        client {
+            client()
+            programArguments.addAll '--username', 'EchoDev'
+        }
+        server {
+            server()
+        }
+    }
+    mods {
+        echoes_beneath {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', '../src/main/java', '../src/client/java']
+            exclude 'dev/fimkov/echoesbeneath/platform/fabric/**'
+            exclude 'dev/fimkov/echoesbeneath/client/platform/fabric/**'
+            exclude 'dev/fimkov/echoesbeneath/datagen/**'
+            exclude 'dev/fimkov/echoesbeneath/EchoesBeneathFabric.java'
+            exclude 'dev/fimkov/echoesbeneath/client/EchoesBeneathClient.java'
+        }
+        resources {
+            srcDirs = ['src/main/resources', '../src/main/resources', '../src/client/resources', '../src/main/generated']
+            exclude 'fabric.mod.json'
+            exclude 'echoes_beneath.accesswidener'
+            exclude '.cache/**'
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}

@@ -10,7 +10,7 @@
   "accessWidener": "echoes_beneath.accesswidener",
   "entrypoints": {
     "main": [
-      "dev.fimkov.echoesbeneath.EchoesBeneath"
+      "dev.fimkov.echoesbeneath.EchoesBeneathFabric"
     ],
     "client": [
       "dev.fimkov.echoesbeneath.client.EchoesBeneathClient"
