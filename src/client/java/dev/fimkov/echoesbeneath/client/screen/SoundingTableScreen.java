@@ -9,6 +9,7 @@ import dev.fimkov.echoesbeneath.client.chart.ClientChartShapes;
 import dev.fimkov.echoesbeneath.client.chart.EchoChartModel;
 import dev.fimkov.echoesbeneath.client.render.EchoChartGeometry;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReference;
+import dev.fimkov.echoesbeneath.memory.EchoTextFormat;
 import dev.fimkov.echoesbeneath.menu.SoundingTableLayout;
 import dev.fimkov.echoesbeneath.menu.SoundingTableMenu;
 import dev.fimkov.echoesbeneath.menu.SoundingTablePlan;
@@ -34,7 +35,14 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	private static final int SELECTED_INK = 0xE8FFFF;
 	private static final int BAND = 0x5529DFEB;
 	private static final int WINDOW = 0xAA29DFEB;
-	private static final int RULER_BACK = 0xFF162024;
+	private static final int ROW_CHOSEN = 0xFF1B3238;
+	private static final int ROW_HOVER = 0xFF232B2C;
+	private static final int EDGE = 0xFF29DFEB;
+	private static final int EDGE_SPENT = 0xFF2C3334;
+	private static final int HANDLE_FACE = 0xFFE8FFFF;
+	private static final int BUTTON_READY = 0xFF2F3637;
+	private static final int BUTTON_HOVER = 0xFF3A4344;
+	private static final int BUTTON_SPENT = 0xFF202526;
 
 	private static final float SPIN_DEGREES_PER_TICK = 0.6F;
 	private static final float TILT_DEGREES = 22.0F;
@@ -211,13 +219,23 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	private void renderRows(GuiGraphics graphics, int mouseX, int mouseY) {
 		List<EchoMemoryReference> memories = menu.memories();
 		for (int index = 0; index < memories.size(); index++) {
-			if (index != menu.selectedSlot() && !overRow(mouseX, mouseY, index)) {
+			boolean chosen = index == menu.selectedSlot();
+			boolean hovered = overRow(mouseX, mouseY, index);
+			if (!chosen && !hovered) {
 				continue;
 			}
-			graphics.blit(TEXTURE, leftPos + SoundingTableLayout.LIST_X,
-					topPos + SoundingTableLayout.rowY(index),
-					SoundingTableLayout.ROW_SPRITE_U, SoundingTableLayout.ROW_SPRITE_V,
-					SoundingTableLayout.LIST_WIDTH, SoundingTableLayout.ROW_HEIGHT);
+			int x = leftPos + SoundingTableLayout.LIST_X;
+			int y = topPos + SoundingTableLayout.rowY(index);
+			int width = SoundingTableLayout.LIST_WIDTH;
+			int height = SoundingTableLayout.ROW_HEIGHT;
+			graphics.fill(x + 1, y + 1, x + width - 1, y + height - 1,
+					chosen ? ROW_CHOSEN : ROW_HOVER);
+			if (chosen) {
+				graphics.fill(x, y, x + width, y + 1, EDGE);
+				graphics.fill(x, y + height - 1, x + width, y + height, EDGE);
+				graphics.fill(x, y, x + 1, y + height, EDGE);
+				graphics.fill(x + width - 1, y, x + width, y + height, EDGE);
+			}
 		}
 	}
 
@@ -238,19 +256,27 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	}
 
 	private void handle(GuiGraphics graphics, int y) {
-		graphics.blit(TEXTURE,
-				leftPos + SoundingTableLayout.RULER_X - 2, y - 1,
-				SoundingTableLayout.HANDLE_SPRITE_U, SoundingTableLayout.HANDLE_SPRITE_V,
-				SoundingTableLayout.HANDLE_WIDTH, SoundingTableLayout.HANDLE_HEIGHT);
+		int x = leftPos + SoundingTableLayout.RULER_X
+				- (SoundingTableLayout.HANDLE_WIDTH - SoundingTableLayout.RULER_WIDTH) / 2;
+		graphics.fill(x, y - 1, x + SoundingTableLayout.HANDLE_WIDTH,
+				y + SoundingTableLayout.HANDLE_HEIGHT - 1, EDGE);
+		graphics.fill(x + 1, y, x + SoundingTableLayout.HANDLE_WIDTH - 1, y + 1, HANDLE_FACE);
 	}
 
 	private void renderExtract(GuiGraphics graphics, int mouseX, int mouseY) {
-		int state = menu.canExtract() ? (overExtract(mouseX, mouseY) ? 1 : 0) : 2;
-		graphics.blit(TEXTURE, leftPos + SoundingTableLayout.EXTRACT_X,
-				topPos + SoundingTableLayout.EXTRACT_Y,
-				SoundingTableLayout.BUTTON_SPRITE_U + state * SoundingTableLayout.EXTRACT_WIDTH / 2,
-				SoundingTableLayout.BUTTON_SPRITE_V,
-				SoundingTableLayout.EXTRACT_WIDTH, SoundingTableLayout.EXTRACT_HEIGHT);
+		boolean ready = menu.canExtract();
+		boolean hovered = ready && overExtract(mouseX, mouseY);
+		int x = leftPos + SoundingTableLayout.EXTRACT_X;
+		int y = topPos + SoundingTableLayout.EXTRACT_Y;
+		int width = SoundingTableLayout.EXTRACT_WIDTH;
+		int height = SoundingTableLayout.EXTRACT_HEIGHT;
+		graphics.fill(x + 1, y + 1, x + width - 1, y + height - 1,
+				ready ? (hovered ? BUTTON_HOVER : BUTTON_READY) : BUTTON_SPENT);
+		int edge = ready ? EDGE : EDGE_SPENT;
+		graphics.fill(x, y, x + width, y + 1, edge);
+		graphics.fill(x, y + height - 1, x + width, y + height, edge);
+		graphics.fill(x, y, x + 1, y + height, edge);
+		graphics.fill(x + width - 1, y, x + width, y + height, edge);
 	}
 
 	private void renderStage(GuiGraphics graphics, float partialTick) {
@@ -296,11 +322,15 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 			centred(graphics, Component.translatable(EchoTranslations.SOUNDING_NO_MEMORIES), DIM);
 		}
 		for (int index = 0; index < memories.size(); index++) {
-			Component label = Component.translatable(EchoTranslations.SOUNDING_SLOT,
-					dev.fimkov.echoesbeneath.memory.EchoTextFormat.romanSlot(memories.get(index).slot()));
-			graphics.drawString(font, label, SoundingTableLayout.LIST_X + 4,
-					SoundingTableLayout.rowY(index) + 3,
-					index == menu.selectedSlot() ? SELECTED_INK : INK, true);
+			EchoMemoryReference memory = memories.get(index);
+			int colour = index == menu.selectedSlot() ? SELECTED_INK : INK;
+			int y = SoundingTableLayout.rowY(index) + 4;
+			graphics.drawString(font, EchoTextFormat.romanSlot(memory.slot()),
+					SoundingTableLayout.LIST_X + 5, y, colour, true);
+			Component clock = Component.literal(EchoTextFormat.clock(memory.durationTicks()));
+			graphics.drawString(font, clock,
+					SoundingTableLayout.LIST_X + SoundingTableLayout.LIST_WIDTH - 5 - font.width(clock),
+					y, DIM, true);
 		}
 		Component window = Component.translatable(EchoTranslations.SOUNDING_WINDOW,
 				menu.lowestY(), menu.highestY());

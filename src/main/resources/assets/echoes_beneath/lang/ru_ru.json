@@ -114,7 +114,7 @@
   "tooltip.echoes_beneath.chart_slice": "От y %s до y %s",
   "tooltip.echoes_beneath.chart_sounded": "Звук нашёл блоков: %s",
   "sounding.echoes_beneath.no_lens": "Положите эхо-линзу",
-  "sounding.echoes_beneath.no_memories": "В этой линзе пусто",
+  "sounding.echoes_beneath.no_memories": "Линза пуста",
   "sounding.echoes_beneath.slot": "Воспоминание %s",
   "sounding.echoes_beneath.extract": "Достать наружу",
   "sounding.echoes_beneath.silent": "Здесь ничто не издало звука",

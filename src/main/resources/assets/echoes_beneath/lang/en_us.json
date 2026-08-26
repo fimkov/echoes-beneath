@@ -114,7 +114,7 @@
   "tooltip.echoes_beneath.chart_slice": "Between y %s and y %s",
   "tooltip.echoes_beneath.chart_sounded": "%s blocks the sound found",
   "sounding.echoes_beneath.no_lens": "Place an Echo Lens",
-  "sounding.echoes_beneath.no_memories": "This lens holds nothing",
+  "sounding.echoes_beneath.no_memories": "The lens is empty",
   "sounding.echoes_beneath.slot": "Memory %s",
   "sounding.echoes_beneath.extract": "Draw it out",
   "sounding.echoes_beneath.silent": "Nothing here made a sound",
