@@ -118,7 +118,8 @@ public class EchoChartEntity extends net.minecraft.world.entity.Entity {
 
 	private void giveBack(Player player) {
 		ItemStack stack = chart();
-		if (!stack.isEmpty() && !player.getInventory().add(stack.copy())) {
+		if (!stack.isEmpty() && !player.getAbilities().instabuild
+				&& !player.getInventory().add(stack.copy())) {
 			player.drop(stack.copy(), false);
 		}
 		discard();

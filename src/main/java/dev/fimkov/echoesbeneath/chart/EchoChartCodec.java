@@ -46,6 +46,9 @@ public final class EchoChartCodec {
 	}
 
 	public static EchoChartCloud decode(byte[] encoded) {
+		if (encoded.length == 0) {
+			throw new IllegalArgumentException("Chart carries no bytes");
+		}
 		try (DataInputStream in = new DataInputStream(
 				new GZIPInputStream(new ByteArrayInputStream(encoded)))) {
 			int paletteSize = in.readInt();

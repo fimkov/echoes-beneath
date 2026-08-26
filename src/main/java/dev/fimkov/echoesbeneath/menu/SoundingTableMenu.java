@@ -49,6 +49,8 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 	private final DataSlot highest = DataSlot.standalone();
 	private final DataSlot worldBottom = DataSlot.standalone();
 	private final DataSlot worldTop = DataSlot.standalone();
+	private final DataSlot floor = DataSlot.standalone();
+	private final DataSlot ceiling = DataSlot.standalone();
 	private ItemStack seededFrom = ItemStack.EMPTY;
 
 	public SoundingTableMenu(int containerId, Inventory inventory, BlockPos position) {
@@ -99,10 +101,14 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 		addDataSlot(highest);
 		addDataSlot(worldBottom);
 		addDataSlot(worldTop);
+		addDataSlot(floor);
+		addDataSlot(ceiling);
 		selected.set(-1);
 		access.execute((level, position) -> {
 			worldBottom.set(level.getMinBuildHeight());
 			worldTop.set(level.getMaxBuildHeight() - 1);
+			floor.set(worldBottom.get());
+			ceiling.set(worldTop.get());
 		});
 	}
 
@@ -134,6 +140,14 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 		return worldTop.get();
 	}
 
+	public int floor() {
+		return floor.get();
+	}
+
+	public int ceiling() {
+		return ceiling.get();
+	}
+
 	@Override
 	public void slotsChanged(Container container) {
 		super.slotsChanged(container);
@@ -152,12 +166,14 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 	private void resetWindow() {
 		EchoMemoryReference chosen = chosen();
 		if (chosen == null) {
-			lowest.set(worldBottom.get());
-			highest.set(worldTop.get());
-			return;
+			floor.set(worldBottom.get());
+			ceiling.set(worldTop.get());
+		} else {
+			floor.set(Math.max(worldBottom.get(), chosen.center().getY() - chosen.verticalRadius()));
+			ceiling.set(Math.min(worldTop.get(), chosen.center().getY() + chosen.verticalRadius()));
 		}
-		lowest.set(Math.max(worldBottom.get(), chosen.center().getY() - chosen.verticalRadius()));
-		highest.set(Math.min(worldTop.get(), chosen.center().getY() + chosen.verticalRadius()));
+		lowest.set(floor.get());
+		highest.set(ceiling.get());
 	}
 
 	private EchoMemoryReference chosen() {
@@ -177,15 +193,15 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 			return true;
 		}
 		if (SoundingTablePlan.isLowest(button)) {
-			int value = worldBottom.get() + SoundingTablePlan.offsetOf(button, SoundingTablePlan.LOWEST_BASE);
-			lowest.set(Math.clamp(value, worldBottom.get(), highest.get()));
+			int value = floor.get() + SoundingTablePlan.offsetOf(button, SoundingTablePlan.LOWEST_BASE);
+			lowest.set(Math.clamp(value, floor.get(), highest.get()));
 			output.setItem(0, ItemStack.EMPTY);
 			pushPreview();
 			return true;
 		}
 		if (SoundingTablePlan.isHighest(button)) {
-			int value = worldBottom.get() + SoundingTablePlan.offsetOf(button, SoundingTablePlan.HIGHEST_BASE);
-			highest.set(Math.clamp(value, lowest.get(), worldTop.get()));
+			int value = floor.get() + SoundingTablePlan.offsetOf(button, SoundingTablePlan.HIGHEST_BASE);
+			highest.set(Math.clamp(value, lowest.get(), ceiling.get()));
 			output.setItem(0, ItemStack.EMPTY);
 			pushPreview();
 			return true;

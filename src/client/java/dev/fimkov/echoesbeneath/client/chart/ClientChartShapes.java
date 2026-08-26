@@ -57,7 +57,12 @@ public final class ClientChartShapes {
 		for (byte[] chunk : chunks) {
 			ordered.add(chunk);
 		}
-		EchoChartCloud cloud = EchoChartCodec.decode(EchoChartCodec.join(ordered));
+		byte[] joined = EchoChartCodec.join(ordered);
+		if (joined.length == 0) {
+			READY.remove(payload.entityId());
+			return;
+		}
+		EchoChartCloud cloud = EchoChartCodec.decode(joined);
 		READY.put(payload.entityId(), EchoChartModel.of(cloud));
 	}
 }

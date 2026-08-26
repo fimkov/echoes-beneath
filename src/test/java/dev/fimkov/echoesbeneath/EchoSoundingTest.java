@@ -147,6 +147,18 @@ class EchoSoundingTest {
 	}
 
 	@Test
+	@DisplayName("asking for more height than was recorded gives back only what was recorded")
+	void windowCannotOutgrowTheRecording() {
+		EchoChartShape wide = EchoSounding.of(recordWith(oneSoundInTheOpenRoom()),
+				CENTRE.getY() - 400, CENTRE.getY() + 400, BUDGET);
+		EchoChartShape exact = EchoSounding.of(recordWith(oneSoundInTheOpenRoom()),
+				CENTRE.getY() - VERTICAL, CENTRE.getY() + VERTICAL, BUDGET);
+		assertEquals(exact.size(), wide.size());
+		assertEquals(-VERTICAL, wide.lowestRelativeY());
+		assertEquals(VERTICAL, wide.highestRelativeY());
+	}
+
+	@Test
 	@DisplayName("silence charts nothing at all")
 	void silenceChartsNothing() {
 		EchoChartShape shape = EchoSounding.of(recordWith(new SoundTimeline(64)),

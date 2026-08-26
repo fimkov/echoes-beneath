@@ -51,6 +51,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	private static final float TURN_PER_PIXEL = 1.6F;
 	private static final float MIN_PITCH_DEGREES = -80.0F;
 	private static final float MAX_PITCH_DEGREES = 80.0F;
+	private static final float OVER_STAGE_Z = 320.0F;
 	private static final float DENIED_PITCH = 0.65F;
 	private static final float DENIED_VOLUME = 0.7F;
 
@@ -115,12 +116,12 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		float span = SoundingTableLayout.RULER_HEIGHT - 1;
 		float fraction = 1.0F - Mth.clamp(
 				((float) mouseY - topPos - SoundingTableLayout.RULER_Y) / span, 0.0F, 1.0F);
-		return Math.round(menu.worldBottom() + fraction * (menu.worldTop() - menu.worldBottom()));
+		return Math.round(menu.floor() + fraction * (menu.ceiling() - menu.floor()));
 	}
 
 	private int rulerY(int worldY) {
-		float span = Math.max(1, menu.worldTop() - menu.worldBottom());
-		float fraction = (worldY - menu.worldBottom()) / span;
+		float span = Math.max(1, menu.ceiling() - menu.floor());
+		float fraction = Mth.clamp((worldY - menu.floor()) / span, 0.0F, 1.0F);
 		return SoundingTableLayout.RULER_Y
 				+ Math.round((1.0F - fraction) * (SoundingTableLayout.RULER_HEIGHT - 1));
 	}
@@ -186,9 +187,9 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	private void dragTo(double mouseY) {
 		int value = rulerValue(mouseY);
 		if (dragging == 0) {
-			press(SoundingTablePlan.lowestButton(value, menu.worldBottom()));
+			press(SoundingTablePlan.lowestButton(value, menu.floor()));
 		} else {
-			press(SoundingTablePlan.highestButton(value, menu.worldBottom()));
+			press(SoundingTablePlan.highestButton(value, menu.floor()));
 		}
 	}
 
@@ -240,14 +241,13 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	}
 
 	private void renderRuler(GuiGraphics graphics) {
+		if (chosen() == null) {
+			return;
+		}
 		int x = leftPos + SoundingTableLayout.RULER_X;
 		int width = SoundingTableLayout.RULER_WIDTH;
-		EchoMemoryReference chosen = chosen();
-		if (chosen != null) {
-			int top = topPos + rulerY(chosen.center().getY() + chosen.verticalRadius());
-			int bottom = topPos + rulerY(chosen.center().getY() - chosen.verticalRadius());
-			graphics.fill(x + 1, top, x + width - 1, bottom + 1, BAND);
-		}
+		graphics.fill(x + 1, topPos + SoundingTableLayout.RULER_Y, x + width - 1,
+				topPos + SoundingTableLayout.RULER_Y + SoundingTableLayout.RULER_HEIGHT, BAND);
 		int windowTop = topPos + rulerY(menu.highestY());
 		int windowBottom = topPos + rulerY(menu.lowestY());
 		graphics.fill(x + 2, windowTop, x + width - 2, windowBottom + 1, WINDOW);
@@ -334,11 +334,16 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 					SoundingTableLayout.LIST_X + SoundingTableLayout.LIST_WIDTH - 5 - font.width(clock),
 					y, DIM, true);
 		}
-		Component window = Component.translatable(EchoTranslations.SOUNDING_WINDOW,
-				menu.lowestY(), menu.highestY());
-		graphics.drawString(font, window,
-				SoundingTableLayout.STAGE_X + STAGE_LABEL_INSET,
-				SoundingTableLayout.STAGE_Y + SoundingTableLayout.STAGE_HEIGHT - 11, DIM, true);
+		if (chosen() != null) {
+			Component window = Component.translatable(EchoTranslations.SOUNDING_WINDOW,
+					menu.lowestY(), menu.highestY());
+			graphics.pose().pushPose();
+			graphics.pose().translate(0.0F, 0.0F, OVER_STAGE_Z);
+			graphics.drawString(font, window,
+					SoundingTableLayout.STAGE_X + STAGE_LABEL_INSET,
+					SoundingTableLayout.STAGE_Y + SoundingTableLayout.STAGE_HEIGHT - 11, DIM, true);
+			graphics.pose().popPose();
+		}
 		Component extract = Component.translatable(EchoTranslations.SOUNDING_EXTRACT)
 				.withStyle(menu.canExtract() ? ChatFormatting.WHITE : ChatFormatting.DARK_GRAY);
 		graphics.drawString(font, extract,
@@ -347,9 +352,12 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	}
 
 	private void centred(GuiGraphics graphics, Component text, int colour) {
+		graphics.pose().pushPose();
+		graphics.pose().translate(0.0F, 0.0F, OVER_STAGE_Z);
 		graphics.drawString(font, text,
 				SoundingTableLayout.STAGE_X + (SoundingTableLayout.STAGE_WIDTH - font.width(text)) / 2,
 				SoundingTableLayout.STAGE_Y + SoundingTableLayout.STAGE_HEIGHT / 2 - 4, colour, true);
+		graphics.pose().popPose();
 	}
 
 	@Override

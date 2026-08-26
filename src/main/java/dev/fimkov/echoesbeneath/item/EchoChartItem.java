@@ -39,7 +39,9 @@ public class EchoChartItem extends Item {
 		if (!level.addFreshEntity(chart)) {
 			return InteractionResult.PASS;
 		}
-		stack.shrink(1);
+		if (context.getPlayer() == null || !context.getPlayer().getAbilities().instabuild) {
+			stack.shrink(1);
+		}
 		return InteractionResult.CONSUME;
 	}
 
