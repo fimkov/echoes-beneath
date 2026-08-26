@@ -15,9 +15,8 @@ import java.util.concurrent.CompletableFuture;
 public class EchoRecipeProvider extends FabricRecipeProvider {
 	private static final char ECHO_SHARD_KEY = 'E';
 	private static final char AMETHYST_KEY = 'A';
-	private static final char TABLE_KEY = 'T';
+	private static final char BLOCK_KEY = 'B';
 	private static final char MAP_KEY = 'M';
-	private static final char RESONANCE_KEY = 'R';
 	private static final char DEEPSLATE_KEY = 'D';
 
 	public EchoRecipeProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> lookup) {
@@ -37,24 +36,24 @@ public class EchoRecipeProvider extends FabricRecipeProvider {
 
 		ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, EchoBlocks.RESONANCE_TABLE_ITEM)
 				.pattern(" E ")
-				.pattern("ATA")
+				.pattern("ABA")
 				.pattern("DDD")
 				.define(ECHO_SHARD_KEY, Items.ECHO_SHARD)
 				.define(AMETHYST_KEY, Items.AMETHYST_SHARD)
-				.define(TABLE_KEY, Items.ENCHANTING_TABLE)
+				.define(BLOCK_KEY, Items.AMETHYST_BLOCK)
 				.define(DEEPSLATE_KEY, Items.DEEPSLATE_TILES)
 				.unlockedBy(getHasName(Items.ECHO_SHARD), has(Items.ECHO_SHARD))
 				.save(exporter);
 
 		ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, EchoBlocks.SOUNDING_TABLE_ITEM)
 				.pattern(" M ")
-				.pattern("ARA")
+				.pattern("EBE")
 				.pattern("DDD")
-				.define(AMETHYST_KEY, Items.AMETHYST_SHARD)
+				.define(ECHO_SHARD_KEY, Items.ECHO_SHARD)
+				.define(BLOCK_KEY, Items.AMETHYST_BLOCK)
 				.define(MAP_KEY, Items.MAP)
-				.define(RESONANCE_KEY, EchoBlocks.RESONANCE_TABLE_ITEM)
 				.define(DEEPSLATE_KEY, Items.DEEPSLATE_TILES)
-				.unlockedBy(getHasName(EchoBlocks.RESONANCE_TABLE_ITEM), has(EchoBlocks.RESONANCE_TABLE_ITEM))
+				.unlockedBy(getHasName(Items.ECHO_SHARD), has(Items.ECHO_SHARD))
 				.save(exporter);
 	}
 }

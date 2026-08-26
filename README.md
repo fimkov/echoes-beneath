@@ -140,11 +140,11 @@ Which mobs are affected is controlled by the `echoes_beneath:temporarily_suppres
 ## The Resonance Table
 
 One stands in each of the mod's four structures, so finding any of them is enough. It can also be built
-by retuning an enchanting table, which is the expensive way in:
+outright:
 
 ```
 _ E _     E  echo shard
-A T A     T  enchanting table
+A B A     B  amethyst block
 D D D     A  amethyst shard      D  deepslate tiles
 ``` Put a lens in the upper slot and amethyst shards in
 the lower one. Each track has a meter and a pair of buttons, and nothing is spent while you plan.
@@ -215,7 +215,15 @@ So the slot you spend is never lost, only moved.
 A chart is only as bright as the lens that recorded it could see. A memory taken at no vision reads as
 a faint sketch; one taken at full vision reads as a survey.
 
-Craft: a Resonance Table above three deepslate tiles, a map above it, an amethyst shard on each side.
+Craft:
+
+```
+_ M _     M  map
+E B E     B  amethyst block
+D D D     E  echo shard          D  deepslate tiles
+```
+
+Neither table needs the other, and neither needs an enchanting table.
 
 ## Controls
 

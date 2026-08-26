@@ -5,19 +5,19 @@
     "A": {
       "item": "minecraft:amethyst_shard"
     },
+    "B": {
+      "item": "minecraft:amethyst_block"
+    },
     "D": {
       "item": "minecraft:deepslate_tiles"
     },
     "E": {
       "item": "minecraft:echo_shard"
-    },
-    "T": {
-      "item": "minecraft:enchanting_table"
     }
   },
   "pattern": [
     " E ",
-    "ATA",
+    "ABA",
     "DDD"
   ],
   "result": {

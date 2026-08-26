@@ -53,10 +53,18 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	private static final float MAX_PITCH_DEGREES = 80.0F;
 	private static final float OVER_STAGE_Z = 320.0F;
 	private static final int TICKS_BETWEEN_DRAGS = 3;
+	private static final float PULSE_PERIOD_TICKS = 52.0F;
+	private static final float PULSE_BASE = 0.42F;
+	private static final float PULSE_SWING = 0.36F;
+	private static final float SWEEP_PERIOD_TICKS = 96.0F;
+	private static final int SWEEP_ALPHA = 34;
+	private static final int BRACKET_LENGTH = 6;
+	private static final int EDGE_RGB = 0x29DFEB;
 	private static final float DENIED_PITCH = 0.65F;
 	private static final float DENIED_VOLUME = 0.7F;
 
 	private float spin;
+	private float animation;
 	private float heldYaw;
 	private float heldPitch = TILT_DEGREES;
 	private boolean turnedByHand;
@@ -87,11 +95,24 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		if (spin >= 360.0F) {
 			spin -= 360.0F;
 		}
+		animation += 1.0F;
+		if (animation >= PULSE_PERIOD_TICKS * SWEEP_PERIOD_TICKS) {
+			animation = 0.0F;
+		}
 		if (pendingValue != Integer.MIN_VALUE && ++sinceSent >= TICKS_BETWEEN_DRAGS) {
 			sendWindow(pendingValue);
 			pendingValue = Integer.MIN_VALUE;
 			sinceSent = 0;
 		}
+	}
+
+	private float pulse(float partialTick) {
+		double phase = (animation + partialTick) / PULSE_PERIOD_TICKS * Math.PI * 2.0;
+		return PULSE_BASE + PULSE_SWING * (float) ((Math.sin(phase) + 1.0) * 0.5);
+	}
+
+	private static int glow(float strength) {
+		return (Math.round(Mth.clamp(strength, 0.0F, 1.0F) * 255) << 24) | EDGE_RGB;
 	}
 
 	private boolean over(int mouseX, int mouseY, int x, int y, int width, int height) {
@@ -240,13 +261,53 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	@Override
 	protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
 		graphics.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
-		renderRows(graphics, mouseX, mouseY);
-		renderRuler(graphics);
-		renderExtract(graphics, mouseX, mouseY);
+		renderRows(graphics, mouseX, mouseY, partialTick);
+		renderRuler(graphics, partialTick);
+		renderExtract(graphics, mouseX, mouseY, partialTick);
 		renderStage(graphics, partialTick);
+		renderStageEdge(graphics, partialTick);
+		renderResultGlow(graphics, partialTick);
 	}
 
-	private void renderRows(GuiGraphics graphics, int mouseX, int mouseY) {
+	private void renderResultGlow(GuiGraphics graphics, float partialTick) {
+		if (menu.chart().isEmpty()) {
+			return;
+		}
+		int x = leftPos + SoundingTableLayout.RESULT_SLOT_X - 2;
+		int y = topPos + SoundingTableLayout.RESULT_SLOT_Y - 2;
+		int size = SoundingTableLayout.SLOT_SIZE + 4;
+		int lit = glow(0.45F + pulse(partialTick) * 0.55F);
+		graphics.fill(x, y, x + size, y + 1, lit);
+		graphics.fill(x, y + size - 1, x + size, y + size, lit);
+		graphics.fill(x, y, x + 1, y + size, lit);
+		graphics.fill(x + size - 1, y, x + size, y + size, lit);
+	}
+
+	private void renderStageEdge(GuiGraphics graphics, float partialTick) {
+		int x = leftPos + SoundingTableLayout.STAGE_X;
+		int y = topPos + SoundingTableLayout.STAGE_Y;
+		int width = SoundingTableLayout.STAGE_WIDTH;
+		int height = SoundingTableLayout.STAGE_HEIGHT;
+		int lit = glow(pulse(partialTick));
+		for (int step = 0; step < BRACKET_LENGTH; step++) {
+			graphics.fill(x + step, y, x + step + 1, y + 1, lit);
+			graphics.fill(x + width - step - 1, y, x + width - step, y + 1, lit);
+			graphics.fill(x + step, y + height - 1, x + step + 1, y + height, lit);
+			graphics.fill(x + width - step - 1, y + height - 1, x + width - step, y + height, lit);
+			graphics.fill(x, y + step, x + 1, y + step + 1, lit);
+			graphics.fill(x + width - 1, y + step, x + width, y + step + 1, lit);
+			graphics.fill(x, y + height - step - 1, x + 1, y + height - step, lit);
+			graphics.fill(x + width - 1, y + height - step - 1, x + width, y + height - step, lit);
+		}
+		if (chosen() == null) {
+			return;
+		}
+		float sweep = ((animation + partialTick) % SWEEP_PERIOD_TICKS) / SWEEP_PERIOD_TICKS;
+		int line = y + 1 + Math.round(sweep * (height - 3));
+		graphics.fill(x + 1, line, x + width - 1, line + 1, (SWEEP_ALPHA << 24) | EDGE_RGB);
+	}
+
+	private void renderRows(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		List<EchoMemoryReference> memories = menu.memories();
 		for (int index = 0; index < memories.size(); index++) {
 			boolean chosen = index == menu.selectedSlot();
@@ -261,15 +322,16 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 			graphics.fill(x + 1, y + 1, x + width - 1, y + height - 1,
 					chosen ? ROW_CHOSEN : ROW_HOVER);
 			if (chosen) {
-				graphics.fill(x, y, x + width, y + 1, EDGE);
-				graphics.fill(x, y + height - 1, x + width, y + height, EDGE);
-				graphics.fill(x, y, x + 1, y + height, EDGE);
-				graphics.fill(x + width - 1, y, x + width, y + height, EDGE);
+				int lit = glow(0.55F + pulse(partialTick) * 0.45F);
+				graphics.fill(x, y, x + width, y + 1, lit);
+				graphics.fill(x, y + height - 1, x + width, y + height, lit);
+				graphics.fill(x, y, x + 1, y + height, lit);
+				graphics.fill(x + width - 1, y, x + width, y + height, lit);
 			}
 		}
 	}
 
-	private void renderRuler(GuiGraphics graphics) {
+	private void renderRuler(GuiGraphics graphics, float partialTick) {
 		if (chosen() == null) {
 			return;
 		}
@@ -279,7 +341,8 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 				topPos + SoundingTableLayout.RULER_Y + SoundingTableLayout.RULER_HEIGHT, BAND);
 		int windowTop = topPos + rulerY(shownHighest());
 		int windowBottom = topPos + rulerY(shownLowest());
-		graphics.fill(x + 2, windowTop, x + width - 2, windowBottom + 1, WINDOW);
+		graphics.fill(x + 2, windowTop, x + width - 2, windowBottom + 1,
+				glow(0.50F + pulse(partialTick) * 0.30F));
 		handle(graphics, windowTop);
 		handle(graphics, windowBottom);
 	}
@@ -292,7 +355,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		graphics.fill(x + 1, y, x + SoundingTableLayout.HANDLE_WIDTH - 1, y + 1, HANDLE_FACE);
 	}
 
-	private void renderExtract(GuiGraphics graphics, int mouseX, int mouseY) {
+	private void renderExtract(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		boolean ready = menu.canExtract() || menu.canReturn();
 		boolean hovered = ready && overExtract(mouseX, mouseY);
 		int x = leftPos + SoundingTableLayout.EXTRACT_X;
@@ -301,7 +364,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		int height = SoundingTableLayout.EXTRACT_HEIGHT;
 		graphics.fill(x + 1, y + 1, x + width - 1, y + height - 1,
 				ready ? (hovered ? BUTTON_HOVER : BUTTON_READY) : BUTTON_SPENT);
-		int edge = ready ? EDGE : EDGE_SPENT;
+		int edge = ready ? glow(0.55F + pulse(partialTick) * 0.45F) : EDGE_SPENT;
 		graphics.fill(x, y, x + width, y + 1, edge);
 		graphics.fill(x, y + height - 1, x + width, y + height, edge);
 		graphics.fill(x, y, x + 1, y + height, edge);
