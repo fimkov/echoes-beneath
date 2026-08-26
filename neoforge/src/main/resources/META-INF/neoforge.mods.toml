@@ -27,13 +27,13 @@ config = "echoes_beneath.client.mixins.json"
 [[dependencies.echoes_beneath]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.1.219,)"
+versionRange = "[21.1.219,21.2)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.echoes_beneath]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.1,1.22)"
+versionRange = "[1.21.1]"
 ordering = "NONE"
 side = "BOTH"
