@@ -2,6 +2,7 @@ package dev.fimkov.echoesbeneath.registry;
 
 import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.block.ResonanceTableBlock;
+import dev.fimkov.echoesbeneath.block.SoundingTableBlock;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.BlockItem;
@@ -24,6 +25,16 @@ public final class EchoBlocks {
 					.lightLevel(state -> GLOW_LEVEL)
 					.noOcclusion());
 
+	public static final Block SOUNDING_TABLE = new SoundingTableBlock(
+			BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_TILES)
+					.strength(HARDNESS, BLAST_RESISTANCE)
+					.sound(SoundType.DEEPSLATE_TILES)
+					.lightLevel(state -> GLOW_LEVEL)
+					.noOcclusion());
+
+	public static final BlockItem SOUNDING_TABLE_ITEM = new BlockItem(SOUNDING_TABLE,
+			new Item.Properties().rarity(Rarity.RARE));
+
 	public static final BlockItem RESONANCE_TABLE_ITEM = new BlockItem(RESONANCE_TABLE,
 			new Item.Properties().rarity(Rarity.RARE));
 
@@ -33,5 +44,7 @@ public final class EchoBlocks {
 	public static void register() {
 		Registry.register(BuiltInRegistries.BLOCK, EchoesBeneath.id("resonance_table"), RESONANCE_TABLE);
 		Registry.register(BuiltInRegistries.ITEM, EchoesBeneath.id("resonance_table"), RESONANCE_TABLE_ITEM);
+		Registry.register(BuiltInRegistries.BLOCK, EchoesBeneath.id("sounding_table"), SOUNDING_TABLE);
+		Registry.register(BuiltInRegistries.ITEM, EchoesBeneath.id("sounding_table"), SOUNDING_TABLE_ITEM);
 	}
 }

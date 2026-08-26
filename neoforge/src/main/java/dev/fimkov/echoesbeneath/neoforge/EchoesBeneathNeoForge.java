@@ -74,9 +74,12 @@ public final class EchoesBeneathNeoForge {
 		});
 		modBus.addListener(net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent.class,
 				hooks::bindKeys);
-		modBus.addListener(RegisterMenuScreensEvent.class, event ->
-				event.register(EchoMenus.RESONANCE_TABLE,
-						dev.fimkov.echoesbeneath.client.screen.ResonanceTableScreen::new));
+		modBus.addListener(RegisterMenuScreensEvent.class, event -> {
+			event.register(EchoMenus.RESONANCE_TABLE,
+					dev.fimkov.echoesbeneath.client.screen.ResonanceTableScreen::new);
+			event.register(EchoMenus.SOUNDING_TABLE,
+					dev.fimkov.echoesbeneath.client.screen.SoundingTableScreen::new);
+		});
 	}
 
 	private static Optional<EchoLensTooltipContext.TooltipViewer> localViewer() {

@@ -104,5 +104,21 @@
   "config.echoes_beneath.show_holograms": "Запомненные блоки",
   "config.echoes_beneath.hide_sky": "Затемнять небо",
   "key.echoes_beneath.open_config": "Открыть настройки",
-  "key.categories.echoes_beneath": "Echoes Beneath"
+  "key.categories.echoes_beneath": "Echoes Beneath",
+  "block.echoes_beneath.sounding_table": "Стол промера",
+  "container.echoes_beneath.sounding_table": "Стол промера",
+  "item.echoes_beneath.echo_chart": "Эхо-карта",
+  "entity.echoes_beneath.echo_chart": "Эхо-карта",
+  "tooltip.echoes_beneath.chart_blank": "Эта карта пока пуста.",
+  "tooltip.echoes_beneath.chart_place": "Промер снят на %s %s %s",
+  "tooltip.echoes_beneath.chart_slice": "От y %s до y %s",
+  "tooltip.echoes_beneath.chart_sounded": "Звук нашёл блоков: %s",
+  "sounding.echoes_beneath.no_lens": "Положите эхо-линзу",
+  "sounding.echoes_beneath.no_memories": "В этой линзе пусто",
+  "sounding.echoes_beneath.slot": "Воспоминание %s",
+  "sounding.echoes_beneath.extract": "Достать наружу",
+  "sounding.echoes_beneath.silent": "Здесь ничто не издало звука",
+  "sounding.echoes_beneath.window": "от y %s до y %s",
+  "sounding.echoes_beneath.sounded": "блоков: %s",
+  "sounding.echoes_beneath.warning": "Вынутое воспоминание освобождает слот"
 }

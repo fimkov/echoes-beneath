@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_resonance_table": {
+      "conditions": {
+        "items": [
+          {
+            "items": "echoes_beneath:resonance_table"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "echoes_beneath:sounding_table"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_resonance_table"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "echoes_beneath:sounding_table"
+    ]
+  }
+}

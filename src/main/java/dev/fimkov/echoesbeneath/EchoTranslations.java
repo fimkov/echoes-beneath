@@ -14,6 +14,14 @@ public final class EchoTranslations {
 	public static final String TOOLTIP_CHART_PLACE = "tooltip.echoes_beneath.chart_place";
 	public static final String TOOLTIP_CHART_SLICE = "tooltip.echoes_beneath.chart_slice";
 	public static final String TOOLTIP_CHART_SOUNDED = "tooltip.echoes_beneath.chart_sounded";
+	public static final String SOUNDING_NO_LENS = "sounding.echoes_beneath.no_lens";
+	public static final String SOUNDING_NO_MEMORIES = "sounding.echoes_beneath.no_memories";
+	public static final String SOUNDING_SLOT = "sounding.echoes_beneath.slot";
+	public static final String SOUNDING_EXTRACT = "sounding.echoes_beneath.extract";
+	public static final String SOUNDING_SILENT = "sounding.echoes_beneath.silent";
+	public static final String SOUNDING_WINDOW = "sounding.echoes_beneath.window";
+	public static final String SOUNDING_SOUNDED = "sounding.echoes_beneath.sounded";
+	public static final String SOUNDING_WARNING = "sounding.echoes_beneath.warning";
 	public static final String TOOLTIP_TUNING = "tooltip.echoes_beneath.tuning";
 
 	public static final String MESSAGE_NO_MORE = "message.echoes_beneath.no_more";
@@ -40,6 +48,10 @@ public final class EchoTranslations {
 	public static final String ENTITY_ECHO_LENS = "entity.echoes_beneath.echo_lens";
 	public static final String BLOCK_RESONANCE_TABLE = "block.echoes_beneath.resonance_table";
 	public static final String CONTAINER_RESONANCE_TABLE = "container.echoes_beneath.resonance_table";
+	public static final String BLOCK_SOUNDING_TABLE = "block.echoes_beneath.sounding_table";
+	public static final String CONTAINER_SOUNDING_TABLE = "container.echoes_beneath.sounding_table";
+	public static final String ITEM_ECHO_CHART = "item.echoes_beneath.echo_chart";
+	public static final String ENTITY_ECHO_CHART = "entity.echoes_beneath.echo_chart";
 	public static final String UPGRADE_MEMORY_SLOT = "upgrade.echoes_beneath.memory_slot";
 	public static final String UPGRADE_RADIUS = "upgrade.echoes_beneath.radius";
 	public static final String UPGRADE_SENSITIVITY = "upgrade.echoes_beneath.sensitivity";

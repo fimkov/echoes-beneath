@@ -16,6 +16,8 @@ public class EchoRecipeProvider extends FabricRecipeProvider {
 	private static final char ECHO_SHARD_KEY = 'E';
 	private static final char AMETHYST_KEY = 'A';
 	private static final char TABLE_KEY = 'T';
+	private static final char MAP_KEY = 'M';
+	private static final char RESONANCE_KEY = 'R';
 	private static final char DEEPSLATE_KEY = 'D';
 
 	public EchoRecipeProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> lookup) {
@@ -42,6 +44,17 @@ public class EchoRecipeProvider extends FabricRecipeProvider {
 				.define(TABLE_KEY, Items.ENCHANTING_TABLE)
 				.define(DEEPSLATE_KEY, Items.DEEPSLATE_TILES)
 				.unlockedBy(getHasName(Items.ECHO_SHARD), has(Items.ECHO_SHARD))
+				.save(exporter);
+
+		ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, EchoBlocks.SOUNDING_TABLE_ITEM)
+				.pattern(" M ")
+				.pattern("ARA")
+				.pattern("DDD")
+				.define(AMETHYST_KEY, Items.AMETHYST_SHARD)
+				.define(MAP_KEY, Items.MAP)
+				.define(RESONANCE_KEY, EchoBlocks.RESONANCE_TABLE_ITEM)
+				.define(DEEPSLATE_KEY, Items.DEEPSLATE_TILES)
+				.unlockedBy(getHasName(EchoBlocks.RESONANCE_TABLE_ITEM), has(EchoBlocks.RESONANCE_TABLE_ITEM))
 				.save(exporter);
 	}
 }

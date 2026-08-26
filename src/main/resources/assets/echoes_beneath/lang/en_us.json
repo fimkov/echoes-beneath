@@ -104,5 +104,21 @@
   "config.echoes_beneath.show_holograms": "Remembered blocks",
   "config.echoes_beneath.hide_sky": "Black out sky",
   "key.echoes_beneath.open_config": "Open settings",
-  "key.categories.echoes_beneath": "Echoes Beneath"
+  "key.categories.echoes_beneath": "Echoes Beneath",
+  "block.echoes_beneath.sounding_table": "Sounding Table",
+  "container.echoes_beneath.sounding_table": "Sounding Table",
+  "item.echoes_beneath.echo_chart": "Echo Chart",
+  "entity.echoes_beneath.echo_chart": "Echo Chart",
+  "tooltip.echoes_beneath.chart_blank": "This chart holds nothing yet.",
+  "tooltip.echoes_beneath.chart_place": "Charted at %s %s %s",
+  "tooltip.echoes_beneath.chart_slice": "Between y %s and y %s",
+  "tooltip.echoes_beneath.chart_sounded": "%s blocks the sound found",
+  "sounding.echoes_beneath.no_lens": "Place an Echo Lens",
+  "sounding.echoes_beneath.no_memories": "This lens holds nothing",
+  "sounding.echoes_beneath.slot": "Memory %s",
+  "sounding.echoes_beneath.extract": "Draw it out",
+  "sounding.echoes_beneath.silent": "Nothing here made a sound",
+  "sounding.echoes_beneath.window": "y %s to y %s",
+  "sounding.echoes_beneath.sounded": "%s blocks",
+  "sounding.echoes_beneath.warning": "Drawing a memory out empties its slot"
 }

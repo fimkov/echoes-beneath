@@ -40,6 +40,9 @@ public final class EchoesBeneathClient implements ClientModInitializer {
 		EchoClientPlatforms.get().registerScreen(
 				dev.fimkov.echoesbeneath.registry.EchoMenus.RESONANCE_TABLE,
 				dev.fimkov.echoesbeneath.client.screen.ResonanceTableScreen::new);
+		EchoClientPlatforms.get().registerScreen(
+				dev.fimkov.echoesbeneath.registry.EchoMenus.SOUNDING_TABLE,
+				dev.fimkov.echoesbeneath.client.screen.SoundingTableScreen::new);
 	}
 
 	private static void registerLensAppearance() {
