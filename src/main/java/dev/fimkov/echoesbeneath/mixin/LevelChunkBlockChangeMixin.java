@@ -22,10 +22,13 @@ public abstract class LevelChunkBlockChangeMixin {
 		if (!EchoRecordingHooks.isCapturing()) {
 			return;
 		}
+
 		BlockState previous = callback.getReturnValue();
+
 		if (previous == null || previous == state) {
 			return;
 		}
+
 		EchoRecordingHooks.onBlockChanged(getLevel(), position, previous, state);
 	}
 }

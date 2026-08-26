@@ -26,6 +26,7 @@ class ResonanceTableWiringTest {
 		for (int[][] corners : EVERY_RUN) {
 			List<int[]> path = ResonanceTableLayout.trace(corners);
 			assertFalse(path.isEmpty(), "a wire traced to nothing");
+
 			for (int index = 1; index < path.size(); index++) {
 				int[] previous = path.get(index - 1);
 				int[] current = path.get(index);
@@ -42,6 +43,7 @@ class ResonanceTableWiringTest {
 	void wiresDoNotRepeat() {
 		for (int[][] corners : EVERY_RUN) {
 			Set<String> seen = new HashSet<>();
+
 			for (int[] point : ResonanceTableLayout.trace(corners)) {
 				assertTrue(seen.add(point[0] + "," + point[1]),
 						"wire revisits " + point[0] + "," + point[1]);

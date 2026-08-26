@@ -48,10 +48,12 @@ class EchoSoundingTest {
 		BlockPalette palette = new BlockPalette();
 		int stone = palette.indexOf(Blocks.STONE.defaultBlockState());
 		Int2ObjectMap<SnapshotSection> sections = new Int2ObjectOpenHashMap<>();
+
 		for (int sectionX = -1; sectionX <= 0; sectionX++) {
 			for (int sectionY = -1; sectionY <= 0; sectionY++) {
 				for (int sectionZ = -1; sectionZ <= 0; sectionZ++) {
 					int[] cells = new int[SnapshotSection.CELLS_PER_SECTION];
+
 					for (int cell = 0; cell < cells.length; cell++) {
 						cells[cell] = stone;
 					}
@@ -61,6 +63,7 @@ class EchoSoundingTest {
 								int x = sectionX * 16 + localX;
 								int y = sectionY * 16 + localY;
 								int z = sectionZ * 16 + localZ;
+
 								if (inOpenRoom(x, y, z) || inSealedRoom(x, y, z) || inUpperVoid(x, y, z)) {
 									cells[SnapshotSection.cellIndex(localX, localY, localZ)] =
 											BlockPalette.AIR_INDEX;
@@ -73,6 +76,7 @@ class EchoSoundingTest {
 				}
 			}
 		}
+
 		return new BlockSnapshot(palette, sections, RADIUS, -VERTICAL, VERTICAL);
 	}
 
@@ -99,6 +103,7 @@ class EchoSoundingTest {
 		SoundTimeline sounds = new SoundTimeline(64);
 		sounds.record(10, 0.5D, 0.5D, 0.5D, ResourceLocation.withDefaultNamespace("block.stone.break"),
 				SoundSource.BLOCKS, 1.0F, 1.0F);
+
 		return sounds;
 	}
 
@@ -127,11 +132,13 @@ class EchoSoundingTest {
 				Integer.MIN_VALUE / 2, Integer.MAX_VALUE / 2, BUDGET);
 		int lowestCharted = Integer.MAX_VALUE;
 		int highestCharted = Integer.MIN_VALUE;
+
 		for (int index = 0; index < shape.size(); index++) {
 			int y = EchoCoordinates.unpackY(shape.positions().getInt(index));
 			lowestCharted = Math.min(lowestCharted, y);
 			highestCharted = Math.max(highestCharted, y);
 		}
+
 		assertTrue(holds(shape, 0, 6, 0),
 				"the floor of the void above should be charted, though no sound could reach it");
 		assertTrue(highestCharted - lowestCharted > 6,
@@ -172,6 +179,7 @@ class EchoSoundingTest {
 		EchoChartShape shape = EchoSounding.of(recordWith(oneSoundInTheOpenRoom()),
 				CENTRE.getY(), CENTRE.getY(), BUDGET);
 		assertFalse(shape.isEmpty());
+
 		for (int index = 0; index < shape.size(); index++) {
 			assertEquals(0, EchoCoordinates.unpackY(shape.positions().getInt(index)));
 		}
@@ -179,11 +187,13 @@ class EchoSoundingTest {
 
 	private static boolean holds(EchoChartShape shape, int x, int y, int z) {
 		int wanted = EchoCoordinates.packRelative(x, y, z);
+
 		for (int index = 0; index < shape.size(); index++) {
 			if (shape.positions().getInt(index) == wanted) {
 				return true;
 			}
 		}
+
 		return false;
 	}
 }

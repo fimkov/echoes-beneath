@@ -28,6 +28,7 @@ public class EchoChartBlockRenderer implements BlockEntityRenderer<EchoChartBloc
 		if (chart.chart() == null) {
 			return;
 		}
+
 		EchoChartModel model = ClientChartShapes.of(chart.getBlockPos().asLong());
 		EchoChartLook look = chart.look();
 		float age = chart.age(partialTick);
@@ -38,6 +39,7 @@ public class EchoChartBlockRenderer implements BlockEntityRenderer<EchoChartBloc
 		double lift = look.restHeight() + (look.drifts() ? bob(age) * look.modelScale() : 0.0D);
 		poseStack.pushPose();
 		poseStack.translate(0.5D, 0.0D, 0.5D);
+
 		if (EchoClientConfig.values().showChartAura() && (look.runs() || look.motes())) {
 			EchoChartAura.render(poseStack, consumers, age, look.motes(), look.runs(),
 					Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation(),
@@ -46,10 +48,13 @@ public class EchoChartBlockRenderer implements BlockEntityRenderer<EchoChartBloc
 					look.boxFloor(),
 					look.boxCeiling());
 		}
+
 		if (model == null || model.size() == 0) {
 			poseStack.popPose();
+
 			return;
 		}
+
 		poseStack.translate(0.0D, lift, 0.0D);
 		poseStack.mulPose(Axis.YP.rotationDegrees(
 				chart.turn() * DEGREES_PER_STEP + age * look.spinDegreesPerTick()));

@@ -34,23 +34,27 @@ class EchoStructureTemplateTest {
 
 	private static Placed read(String name) {
 		try (InputStream stream = EchoStructureTemplateTest.class
+
 				.getResourceAsStream("/data/echoes_beneath/structure/" + name + ".nbt")) {
 			assertNotNull(stream, name + " is missing");
 			CompoundTag root = NbtIo.readCompressed(stream, NbtAccounter.unlimitedHeap());
 			ListTag palette = root.getList("palette", Tag.TAG_COMPOUND);
 			List<String> names = new ArrayList<>();
+
 			for (int index = 0; index < palette.size(); index++) {
 				names.add(palette.getCompound(index).getString("Name"));
 			}
 			Map<List<Integer>, String> blocks = new HashMap<>();
 			List<List<Integer>> tables = new ArrayList<>();
 			ListTag placed = root.getList("blocks", Tag.TAG_COMPOUND);
+
 			for (int index = 0; index < placed.size(); index++) {
 				CompoundTag entry = placed.getCompound(index);
 				ListTag position = entry.getList("pos", Tag.TAG_INT);
 				List<Integer> key = List.of(position.getInt(0), position.getInt(1), position.getInt(2));
 				String block = names.get(entry.getInt("state"));
 				blocks.put(key, block);
+
 				if (block.equals(TABLE)) {
 					tables.add(key);
 				}
@@ -73,9 +77,11 @@ class EchoStructureTemplateTest {
 	@DisplayName("a table's own level is cleared to air, not left to the world")
 	void tablesStandClear() {
 		List<String> failures = new ArrayList<>();
+
 		for (String name : TEMPLATES) {
 			Placed placed = read(name);
 			List<Integer> table = placed.tables().getFirst();
+
 			for (int dx = -1; dx <= 1; dx++) {
 				for (int dz = -1; dz <= 1; dz++) {
 					if (dx == 0 && dz == 0) {
@@ -83,6 +89,7 @@ class EchoStructureTemplateTest {
 					}
 					List<Integer> key = List.of(table.get(0) + dx, table.get(1), table.get(2) + dz);
 					String neighbour = placed.blocks().get(key);
+
 					if (neighbour == null) {
 						failures.add(name + " leaves " + key + " to the world instead of clearing it");
 					} else if (!neighbour.equals(AIR)) {
@@ -91,6 +98,7 @@ class EchoStructureTemplateTest {
 				}
 			}
 		}
+
 		assertTrue(failures.isEmpty(), String.join("; ", failures));
 	}
 
@@ -103,15 +111,18 @@ class EchoStructureTemplateTest {
 			int width = 13;
 			int height = 9;
 			List<String> open = new ArrayList<>();
+
 			for (Map.Entry<List<Integer>, String> entry : placed.blocks().entrySet()) {
 				if (!entry.getValue().equals(AIR)) {
 					continue;
 				}
 				List<Integer> at = entry.getKey();
+
 				for (int[] step : new int[][] {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}}) {
 					int nx = at.get(0) + step[0];
 					int ny = at.get(1) + step[1];
 					int nz = at.get(2) + step[2];
+
 					if (nx < 0 || ny < 0 || nz < 0 || nx >= width || ny >= height || nz >= width) {
 						continue;
 					}

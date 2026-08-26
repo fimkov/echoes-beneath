@@ -79,6 +79,7 @@ public final class EchoConfig {
 	public static void load() {
 		Path path = EchoPlatforms.configDirectory().resolve(FILE_NAME);
 		Properties properties = new Properties();
+
 		if (Files.isRegularFile(path)) {
 			try (InputStream in = Files.newInputStream(path)) {
 				properties.load(in);
@@ -86,6 +87,7 @@ public final class EchoConfig {
 				EchoesBeneath.LOGGER.warn("Falling back to default configuration, unable to read {}", path, failure);
 			}
 		}
+
 		values = sanitize(properties);
 		write(path);
 	}
@@ -127,8 +129,10 @@ public final class EchoConfig {
 		out.setProperty("allowCharts", Boolean.toString(current.allowCharts()));
 		out.setProperty("chartBlockLimit", Integer.toString(current.chartBlockLimit()));
 		out.setProperty("soundCarryBlocks", Integer.toString(current.soundCarryBlocks()));
+
 		try {
 			Files.createDirectories(path.getParent());
+
 			try (OutputStream stream = Files.newOutputStream(path)) {
 				out.store(stream, "Echoes Beneath server configuration");
 			}
@@ -139,27 +143,35 @@ public final class EchoConfig {
 
 	private static int clampInt(Properties properties, String key, int fallback, int min, int max) {
 		String raw = properties.getProperty(key);
+
 		if (raw == null) {
 			return fallback;
 		}
+
 		try {
 			return Math.clamp(Integer.parseInt(raw.trim()), min, max);
 		} catch (NumberFormatException invalid) {
 			EchoesBeneath.LOGGER.warn("Configuration key {} is not an integer, using {}", key, fallback);
+
 			return fallback;
 		}
 	}
 
 	private static boolean readBoolean(Properties properties, String key, boolean fallback) {
 		String raw = properties.getProperty(key);
+
 		if (raw == null) {
 			return fallback;
 		}
+
 		String normalized = raw.trim().toLowerCase(Locale.ROOT);
+
 		if (normalized.equals("true") || normalized.equals("false")) {
 			return Boolean.parseBoolean(normalized);
 		}
+
 		EchoesBeneath.LOGGER.warn("Configuration key {} is not a boolean, using {}", key, fallback);
+
 		return fallback;
 	}
 }

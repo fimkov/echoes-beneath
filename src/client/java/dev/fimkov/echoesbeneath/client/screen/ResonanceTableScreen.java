@@ -96,29 +96,37 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	protected void containerTick() {
 		super.containerTick();
 		animation += 1.0F;
+
 		if (animation >= PULSE_PERIOD_TICKS) {
 			animation -= PULSE_PERIOD_TICKS;
 		}
+
 		for (int index = 0; index < shown.length; index++) {
 			float target = menu.lens().isEmpty() ? 0.0F
 					: ResonanceTableUpgrade.fromIndex(index).stepsOf(menu.targetUpgrades());
 			shown[index] += (target - shown[index]) * FILL_RATE;
+
 			if (Math.abs(target - shown[index]) < FILL_SNAP) {
 				shown[index] = target;
 			}
 		}
+
 		float target = menu.slots.get(ResonanceTableMenu.RESULT_SLOT).getItem().isEmpty() ? 0.0F : 1.0F;
 		charge += (target - charge) * CHARGE_RATE;
+
 		if (Math.abs(target - charge) < FILL_SNAP) {
 			charge = target;
 		}
+
 		if (charge >= WIRES_COMPLETE) {
 			dialFill = Math.min(1.0F, dialFill + DIAL_FILL_RATE);
 		} else {
 			dialFill = Math.max(0.0F, dialFill - DIAL_DRAIN_RATE);
 		}
+
 		if (dialFill > 0.0F) {
 			spin += RING_DEGREES_PER_TICK;
+
 			if (spin >= 360.0F) {
 				spin -= 360.0F;
 			}
@@ -128,6 +136,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	private boolean over(int mouseX, int mouseY, int x, int y, int width, int height) {
 		int localX = mouseX - leftPos;
 		int localY = mouseY - topPos;
+
 		return localX >= x && localX < x + width && localY >= y && localY < y + height;
 	}
 
@@ -138,6 +147,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 
 	private boolean overButton(int mouseX, int mouseY, int index, boolean increase) {
 		int x = increase ? ResonanceTableLayout.PLUS_X : ResonanceTableLayout.MINUS_X;
+
 		return over(mouseX, mouseY, x, ResonanceTableLayout.rowY(index) + ResonanceTableLayout.BUTTON_Y_OFFSET,
 				ResonanceTableLayout.BUTTON_SIZE, ResonanceTableLayout.BUTTON_SIZE);
 	}
@@ -156,6 +166,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		if (button == 0) {
 			for (int index = 0; index < ResonanceTableLayout.ROW_COUNT; index++) {
 				ResonanceTableUpgrade upgrade = ResonanceTableUpgrade.fromIndex(index);
+
 				for (boolean increase : new boolean[] {false, true}) {
 					if (!overButton((int) mouseX, (int) mouseY, index, increase)) {
 						continue;
@@ -170,9 +181,11 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 					.getItem().isEmpty() && minecraft != null && minecraft.player != null
 					&& !menu.canApply(minecraft.player)) {
 				deny();
+
 				return true;
 			}
 		}
+
 		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
@@ -180,6 +193,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		if (minecraft == null || minecraft.gameMode == null) {
 			return;
 		}
+
 		minecraft.gameMode.handleInventoryButtonClick(menu.containerId, buttonId);
 		minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 	}
@@ -188,6 +202,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		if (minecraft == null) {
 			return;
 		}
+
 		minecraft.getSoundManager().play(
 				SimpleSoundInstance.forUI(EchoSounds.TABLE_DENY, DENIED_PITCH, DENIED_VOLUME));
 	}
@@ -196,7 +211,9 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		if (!EchoClientConfig.values().tableAnimations()) {
 			return PULSE_BASE + PULSE_SWING * 0.5F;
 		}
+
 		double phase = animation / PULSE_PERIOD_TICKS * Math.PI * 2.0;
+
 		return PULSE_BASE + PULSE_SWING * (float) ((Math.sin(phase) + 1.0) * 0.5);
 	}
 
@@ -207,8 +224,10 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		renderRing(graphics, partialTick);
 		renderWires(graphics);
 		renderDialGlow(graphics, partialTick);
+
 		for (int index = 0; index < ResonanceTableLayout.ROW_COUNT; index++) {
 			int y = topPos + ResonanceTableLayout.rowY(index);
+
 			if (overRow(mouseX, mouseY, index)) {
 				graphics.blit(TEXTURE, leftPos + ResonanceTableLayout.ROW_X, y, ROW_HOVER_U, ROW_HOVER_V,
 						ResonanceTableLayout.ROW_WIDTH, ResonanceTableLayout.ROW_HEIGHT);
@@ -228,6 +247,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		if (!menu.amethyst().isEmpty()) {
 			return;
 		}
+
 		graphics.blit(TEXTURE, leftPos + ResonanceTableLayout.AMETHYST_SLOT_X,
 				topPos + ResonanceTableLayout.AMETHYST_SLOT_Y, GHOST_U, GHOST_V,
 				ResonanceTableLayout.SLOT_SIZE, ResonanceTableLayout.SLOT_SIZE);
@@ -239,13 +259,17 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		int y = topPos + ResonanceTableLayout.DIAL_CENTRE_Y - size / 2;
 		blitDial(graphics, x, y, DIAL_IDLE_ALPHA);
 		float fill = filledDial(partialTick);
+
 		if (fill <= 0.0F) {
 			return;
 		}
+
 		float alpha = pulse();
+
 		if (minecraft != null && minecraft.player != null && menu.canApply(minecraft.player)) {
 			alpha += PULSE_READY_BOOST;
 		}
+
 		int wetLine = y + Math.round(size * fill);
 		graphics.enableScissor(x, y, x + size, wetLine);
 		blitDial(graphics, x, y, Math.min(1.0F, alpha));
@@ -261,6 +285,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 
 	private float filledDial(float partialTick) {
 		float rate = charge >= WIRES_COMPLETE ? DIAL_FILL_RATE : -DIAL_DRAIN_RATE;
+
 		return Mth.clamp(dialFill + rate * partialTick, 0.0F, 1.0F);
 	}
 
@@ -287,6 +312,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		if (charge <= 0.0F) {
 			return;
 		}
+
 		List<int[]> lens = ResonanceTableLayout.trace(ResonanceTableLayout.FEEDER_FROM_LENS);
 		List<int[]> amethyst = ResonanceTableLayout.trace(ResonanceTableLayout.FEEDER_FROM_AMETHYST);
 		List<int[]> trunk = ResonanceTableLayout.trace(ResonanceTableLayout.TRUNK_TO_DIAL);
@@ -299,6 +325,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 
 	private void drawWire(GuiGraphics graphics, List<int[]> path, float share) {
 		int lit = Math.round(Mth.clamp(share, 0.0F, 1.0F) * path.size());
+
 		for (int index = 0; index < lit; index++) {
 			int[] point = path.get(index);
 			int x = leftPos + point[0];
@@ -315,11 +342,14 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		int staged = empty ? 0 : upgrade.stepsOf(menu.targetUpgrades());
 		float filled = empty ? 0.0F : shown[index];
 		int left = leftPos + ResonanceTableLayout.pipsLeft(count);
+
 		for (int pip = 0; pip < count; pip++) {
 			int u = PIP_EMPTY_U;
 			int v = 0;
+
 			if (pip < staged) {
 				u = PIP_OWNED_U;
+
 				if (pip >= peak) {
 					v = PIP_PAID_V;
 				}
@@ -329,9 +359,11 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 			int x = left + pip * (ResonanceTableLayout.PIP_WIDTH + ResonanceTableLayout.PIP_GAP);
 			int y = rowScreenY + ResonanceTableLayout.PIP_Y_OFFSET;
 			float reached = Mth.clamp(filled - pip, 0.0F, 1.0F);
+
 			if (u != PIP_EMPTY_U && reached < 1.0F) {
 				graphics.blit(TEXTURE, x, y, PIP_EMPTY_U, 0,
 						ResonanceTableLayout.PIP_WIDTH, ResonanceTableLayout.PIP_HEIGHT);
+
 				if (reached <= 0.0F) {
 					continue;
 				}
@@ -346,9 +378,11 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	private void renderButton(GuiGraphics graphics, int mouseX, int mouseY, int index, boolean increase) {
 		ResonanceTableUpgrade upgrade = ResonanceTableUpgrade.fromIndex(index);
 		int state = STATE_DISABLED;
+
 		if (allowed(upgrade, increase)) {
 			state = overButton(mouseX, mouseY, index, increase) ? STATE_HOVERED : STATE_NORMAL;
 		}
+
 		int x = increase ? ResonanceTableLayout.PLUS_X : ResonanceTableLayout.MINUS_X;
 		graphics.blit(TEXTURE, leftPos + x,
 				topPos + ResonanceTableLayout.rowY(index) + ResonanceTableLayout.BUTTON_Y_OFFSET,
@@ -360,11 +394,13 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
 		graphics.drawString(font, title, titleLabelX, titleLabelY, TITLE, true);
 		graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, INK, true);
+
 		for (int index = 0; index < ResonanceTableLayout.ROW_COUNT; index++) {
 			ResonanceTableUpgrade upgrade = ResonanceTableUpgrade.fromIndex(index);
 			graphics.drawString(font, Component.translatable(upgrade.nameKey()), ResonanceTableLayout.LABEL_X,
 					ResonanceTableLayout.rowY(index) + ResonanceTableLayout.LABEL_Y_OFFSET, INK, true);
 		}
+
 		renderCost(graphics);
 	}
 
@@ -372,19 +408,24 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		if (menu.lens().isEmpty()) {
 			return;
 		}
+
 		ResonanceTablePlan plan = menu.plan();
+
 		if (!plan.changed() || plan.isFree()) {
 			return;
 		}
+
 		boolean affordable = minecraft != null && minecraft.player != null && menu.canApply(minecraft.player);
 		int colour = affordable ? COST_OK : COST_BAD;
 		drawRight(graphics, Component.literal(Integer.toString(plan.experienceLevels())),
 				ResonanceTableLayout.COST_Y, colour);
 		drawRight(graphics, Component.translatable(EchoTranslations.UPGRADE_LEVELS),
 				ResonanceTableLayout.COST_Y + ResonanceTableLayout.COST_LINE, DIM);
+
 		if (plan.amethystShards() <= 0) {
 			return;
 		}
+
 		boolean enough = minecraft != null && minecraft.player != null
 				&& (minecraft.player.getAbilities().instabuild
 				|| menu.amethyst().getCount() >= plan.amethystShards());
@@ -403,12 +444,15 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		super.render(graphics, mouseX, mouseY, partialTick);
 		renderTooltip(graphics, mouseX, mouseY);
+
 		if (hoveredSlot != null && hoveredSlot.hasItem()) {
 			return;
 		}
+
 		for (int index = 0; index < ResonanceTableLayout.ROW_COUNT; index++) {
 			if (overRow(mouseX, mouseY, index)) {
 				graphics.renderTooltip(font, rowTooltip(index), mouseX, mouseY);
+
 				return;
 			}
 		}
@@ -422,11 +466,14 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		lines.addAll(font.split(Component.translatable(upgrade.descriptionKey())
 				.withStyle(ChatFormatting.GRAY), TOOLTIP_WIDTH));
 		lines.add(FormattedCharSequence.EMPTY);
+
 		if (menu.lens().isEmpty()) {
 			lines.add(Component.translatable(EchoTranslations.UPGRADE_NO_LENS)
 					.withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
+
 			return lines;
 		}
+
 		int owned = upgrade.stepsOf(menu.currentUpgrades());
 		int staged = upgrade.stepsOf(menu.targetUpgrades());
 		int reached = upgrade.stepsOf(menu.peakUpgrades());
@@ -436,19 +483,24 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 				: Component.translatable(EchoTranslations.UPGRADE_CHANGE, now,
 						Component.translatable(upgrade.unitKey(), upgrade.displayValue(staged))))
 				.copy().withStyle(ChatFormatting.AQUA).getVisualOrderText());
+
 		if (reached > owned) {
 			lines.add(Component.translatable(EchoTranslations.UPGRADE_REMEMBERED,
 							upgrade.displayValue(reached))
 					.withStyle(ChatFormatting.DARK_AQUA).getVisualOrderText());
 		}
+
 		if (staged >= upgrade.maxSteps()) {
 			lines.add(Component.translatable(EchoTranslations.UPGRADE_MAXED)
 					.withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
+
 			return lines;
 		}
+
 		lines.add(Component.translatable(EchoTranslations.UPGRADE_PER_STEP_SHARDS,
 						upgrade.experiencePerStep(), upgrade.shardsPerStep())
 				.withStyle(ChatFormatting.GRAY).getVisualOrderText());
+
 		return lines;
 	}
 }

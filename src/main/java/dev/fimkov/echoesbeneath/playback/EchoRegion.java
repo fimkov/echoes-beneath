@@ -26,6 +26,7 @@ public record EchoRegion(ResourceKey<Level> dimension, BlockPos center, int radi
 		double dx = position.x - (center.getX() + 0.5D);
 		double dz = position.z - (center.getZ() + 0.5D);
 		double dy = position.y - (center.getY() + 0.5D);
+
 		return dx * dx + dz * dz <= (double) radius * radius && Math.abs(dy) <= verticalRadius + 1;
 	}
 
@@ -33,12 +34,15 @@ public record EchoRegion(ResourceKey<Level> dimension, BlockPos center, int radi
 		if (!dimension.equals(other.dimension)) {
 			return false;
 		}
+
 		double dx = center.getX() - other.center.getX();
 		double dz = center.getZ() - other.center.getZ();
 		double horizontal = Math.sqrt(dx * dx + dz * dz);
+
 		if (horizontal > radius + other.radius) {
 			return false;
 		}
+
 		return Math.abs(center.getY() - other.center.getY()) <= verticalRadius + other.verticalRadius;
 	}
 

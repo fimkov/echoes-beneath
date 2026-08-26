@@ -22,6 +22,7 @@ public final class EchoEntityRenderer {
 		if (context.consumers() == null || session.puppets().isEmpty()) {
 			return;
 		}
+
 		Minecraft client = Minecraft.getInstance();
 		EntityRenderDispatcher dispatcher = client.getEntityRenderDispatcher();
 		float partialTick = context.tickCounter().getGameTimeDeltaPartialTick(false);
@@ -30,11 +31,14 @@ public final class EchoEntityRenderer {
 		PoseStack poseStack = context.matrixStack();
 
 		float presence = EchoDarkness.transitionProgress();
+
 		if (presence <= 0.0F) {
 			return;
 		}
+
 		boolean previousShadow = true;
 		dispatcher.setRenderShadow(false);
+
 		for (EchoEntityPuppet puppet : session.puppets()) {
 			if (!puppet.isVisibleAt(session.currentTick())) {
 				continue;
@@ -42,12 +46,14 @@ public final class EchoEntityRenderer {
 			puppet.updateTo(session.data().entityTimeline(), center.getX(), center.getY(), center.getZ(),
 					session.currentTick(), partialTick);
 			Entity entity = puppet.entity();
+
 			if (context.frustum() != null && !context.frustum().isVisible(entity.getBoundingBox().inflate(0.5D))) {
 				continue;
 			}
 			renderPuppet(context, dispatcher, poseStack, entity, cameraPosition, partialTick,
 					EchoReveal.of(session), presence);
 		}
+
 		dispatcher.setRenderShadow(previousShadow);
 	}
 

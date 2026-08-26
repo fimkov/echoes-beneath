@@ -99,6 +99,7 @@ public class EchoLensEntity extends Entity {
 	public ItemStack takeLens() {
 		ItemStack held = getLens();
 		this.entityData.set(DATA_LENS, ItemStack.EMPTY);
+
 		return held;
 	}
 
@@ -157,6 +158,7 @@ public class EchoLensEntity extends Entity {
 		this.entityData.set(DATA_SPIN,
 				(getSpin() + BASE_SPIN_DEGREES_PER_TICK * ARRIVAL_SPIN_MULTIPLIER) % FULL_TURN_DEGREES);
 		emitTrailParticles(serverLevel);
+
 		if (arrivalTicksRemaining == 0) {
 			this.setPos(arrivalTarget);
 			serverLevel.sendParticles(ParticleTypes.SCULK_CHARGE_POP,
@@ -170,6 +172,7 @@ public class EchoLensEntity extends Entity {
 	public void tick() {
 		super.tick();
 		this.entityData.set(DATA_SPIN, (getSpin() + spinStep()) % FULL_TURN_DEGREES);
+
 		if (this.level() instanceof ServerLevel serverLevel) {
 			serverTick(serverLevel);
 		}
@@ -182,24 +185,33 @@ public class EchoLensEntity extends Entity {
 	private void serverTick(ServerLevel serverLevel) {
 		if (isArriving()) {
 			tickArrival(serverLevel);
+
 			return;
 		}
+
 		if (getMode() == EchoLensMode.RETURNING) {
 			tickReturn(serverLevel);
+
 			return;
 		}
+
 		if (getMode() == EchoLensMode.ABANDONED) {
 			EchoLensReturn.dropAtSelf(this);
+
 			return;
 		}
+
 		if (!EchoLensReturn.hasLiveSession(serverLevel, this)) {
 			orphanTicks++;
+
 			if (orphanTicks > ORPHAN_GRACE_TICKS) {
 				EchoLensReturn.dropAtSelf(this);
 			}
 			return;
 		}
+
 		orphanTicks = 0;
+
 		if (this.tickCount % PARTICLE_INTERVAL_TICKS == 0) {
 			emitProgressAura(serverLevel);
 		}
@@ -208,6 +220,7 @@ public class EchoLensEntity extends Entity {
 	private void emitProgressAura(ServerLevel serverLevel) {
 		float progress = getProgress();
 		int count = MIN_AURA_PARTICLES + Math.round(progress * (MAX_AURA_PARTICLES - MIN_AURA_PARTICLES));
+
 		for (int index = 0; index < count; index++) {
 			serverLevel.sendParticles(auraParticle(),
 					this.getX(), this.getY(), this.getZ(),
@@ -221,16 +234,22 @@ public class EchoLensEntity extends Entity {
 
 	private void tickReturn(ServerLevel serverLevel) {
 		Player owner = ownerId == null ? null : serverLevel.getPlayerByUUID(ownerId);
+
 		if (owner == null) {
 			EchoLensReturn.dropAtSelf(this);
+
 			return;
 		}
+
 		Vec3 target = owner.position().add(0.0D, owner.getBbHeight() * 0.5D, 0.0D);
 		Vec3 delta = target.subtract(this.position());
+
 		if (delta.length() <= RETURN_PICKUP_DISTANCE) {
 			EchoLensReturn.deliverTo(this, owner);
+
 			return;
 		}
+
 		this.setPos(this.position().add(delta.normalize().scale(RETURN_SPEED)));
 		emitTrailParticles(serverLevel);
 	}
@@ -245,9 +264,11 @@ public class EchoLensEntity extends Entity {
 		if (this.level().isClientSide()) {
 			return InteractionResult.SUCCESS;
 		}
+
 		if (ownerId != null && !ownerId.equals(player.getUUID())) {
 			return InteractionResult.PASS;
 		}
+
 		return EchoLensReturn.requestEarlyStop(this, player) ? InteractionResult.CONSUME : InteractionResult.PASS;
 	}
 
@@ -285,10 +306,13 @@ public class EchoLensEntity extends Entity {
 		if (!tag.contains(key)) {
 			return Vec3.ZERO;
 		}
+
 		ListTag values = tag.getList(key, Tag.TAG_DOUBLE);
+
 		if (values.size() != 3) {
 			return Vec3.ZERO;
 		}
+
 		return new Vec3(values.getDouble(0), values.getDouble(1), values.getDouble(2));
 	}
 
@@ -310,6 +334,7 @@ public class EchoLensEntity extends Entity {
 		this.arrivalTicksRemaining = tag.getInt("arrival_left");
 		this.arrivalOrigin = readVector(tag, "arrival_origin");
 		this.arrivalTarget = readVector(tag, "arrival_target");
+
 		if (tag.contains("lens")) {
 			this.setLens(ItemStack.parse(this.registryAccess(), tag.getCompound("lens")).orElse(ItemStack.EMPTY));
 		}
@@ -318,18 +343,22 @@ public class EchoLensEntity extends Entity {
 	@Override
 	protected void addAdditionalSaveData(CompoundTag tag) {
 		tag.putInt("mode", this.entityData.get(DATA_MODE));
+
 		if (ownerId != null) {
 			tag.putUUID("owner", ownerId);
 		}
+
 		if (sessionId != null) {
 			tag.putUUID("session", sessionId);
 		}
+
 		tag.putInt("orphan_ticks", orphanTicks);
 		tag.putInt("arrival_total", arrivalTicksTotal);
 		tag.putInt("arrival_left", arrivalTicksRemaining);
 		writeVector(tag, "arrival_origin", arrivalOrigin);
 		writeVector(tag, "arrival_target", arrivalTarget);
 		ItemStack lens = getLens();
+
 		if (!lens.isEmpty()) {
 			tag.put("lens", lens.save(this.registryAccess()));
 		}

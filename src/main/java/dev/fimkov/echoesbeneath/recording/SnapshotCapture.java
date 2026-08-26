@@ -47,6 +47,7 @@ public final class SnapshotCapture {
 		int maxSectionX = Math.floorDiv(radius, SECTION_SIZE);
 		int minSectionY = Math.floorDiv(minRelativeY, SECTION_SIZE);
 		int maxSectionY = Math.floorDiv(maxRelativeY, SECTION_SIZE);
+
 		for (int sectionX = minSectionX; sectionX <= maxSectionX; sectionX++) {
 			for (int sectionZ = minSectionX; sectionZ <= maxSectionX; sectionZ++) {
 				if (!sectionTouchesCylinder(sectionX, sectionZ)) {
@@ -62,6 +63,7 @@ public final class SnapshotCapture {
 	private boolean sectionTouchesCylinder(int sectionX, int sectionZ) {
 		int nearestX = nearestCoordinate(sectionX * SECTION_SIZE, sectionX * SECTION_SIZE + SECTION_SIZE - 1);
 		int nearestZ = nearestCoordinate(sectionZ * SECTION_SIZE, sectionZ * SECTION_SIZE + SECTION_SIZE - 1);
+
 		return (long) nearestX * nearestX + (long) nearestZ * nearestZ <= (long) radius * radius;
 	}
 
@@ -69,9 +71,11 @@ public final class SnapshotCapture {
 		if (low > 0) {
 			return low;
 		}
+
 		if (high < 0) {
 			return high;
 		}
+
 		return 0;
 	}
 
@@ -80,9 +84,11 @@ public final class SnapshotCapture {
 				Math.floorDiv(relativeX, SECTION_SIZE),
 				Math.floorDiv(relativeY, SECTION_SIZE),
 				Math.floorDiv(relativeZ, SECTION_SIZE));
+
 		if (capturedSections.contains(sectionKey)) {
 			return;
 		}
+
 		preChangeOverrides.putIfAbsent(EchoCoordinates.packRelative(relativeX, relativeY, relativeZ), previous);
 	}
 
@@ -94,11 +100,13 @@ public final class SnapshotCapture {
 		if (pendingSections.isEmpty()) {
 			return 1.0F;
 		}
+
 		return (float) cursor / pendingSections.size();
 	}
 
 	public void advance() {
 		int processed = 0;
+
 		while (processed < SECTIONS_PER_TICK && !isComplete()) {
 			int[] coordinates = pendingSections.get(cursor++);
 			captureSection(coordinates[0], coordinates[1], coordinates[2]);
@@ -116,25 +124,31 @@ public final class SnapshotCapture {
 	private void captureSection(int sectionX, int sectionY, int sectionZ) {
 		int[] cells = new int[SnapshotSection.CELLS_PER_SECTION];
 		boolean anySolid = false;
+
 		for (int localY = 0; localY < SECTION_SIZE; localY++) {
 			int relativeY = sectionY * SECTION_SIZE + localY;
+
 			if (relativeY < minRelativeY || relativeY > maxRelativeY) {
 				continue;
 			}
 			for (int localZ = 0; localZ < SECTION_SIZE; localZ++) {
 				int relativeZ = sectionZ * SECTION_SIZE + localZ;
+
 				for (int localX = 0; localX < SECTION_SIZE; localX++) {
 					int relativeX = sectionX * SECTION_SIZE + localX;
+
 					if ((long) relativeX * relativeX + (long) relativeZ * relativeZ > (long) radius * radius) {
 						continue;
 					}
 					scratch.set(center.getX() + relativeX, center.getY() + relativeY, center.getZ() + relativeZ);
+
 					if (!level.hasChunkAt(scratch)) {
 						continue;
 					}
 					BlockState state = preChangeOverrides.getOrDefault(
 							EchoCoordinates.packRelative(relativeX, relativeY, relativeZ),
 							level.getBlockState(scratch));
+
 					if (state.isAir()) {
 						continue;
 					}
@@ -143,10 +157,13 @@ public final class SnapshotCapture {
 				}
 			}
 		}
+
 		capturedSections.add(BlockSnapshot.sectionKey(sectionX, sectionY, sectionZ));
+
 		if (!anySolid) {
 			return;
 		}
+
 		sections.put(BlockSnapshot.sectionKey(sectionX, sectionY, sectionZ), SnapshotSection.compact(cells));
 	}
 

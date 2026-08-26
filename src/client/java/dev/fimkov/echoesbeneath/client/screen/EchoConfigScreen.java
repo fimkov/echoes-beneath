@@ -166,12 +166,14 @@ public final class EchoConfigScreen extends Screen {
 		}
 
 		@Override
+
 		protected void updateMessage() {
 			setMessage(Component.translatable(optionKey(key)).append(": ")
 					.append(Component.literal(Integer.toString(current()))));
 		}
 
 		@Override
+
 		protected void applyValue() {
 			sink.accept(current());
 		}

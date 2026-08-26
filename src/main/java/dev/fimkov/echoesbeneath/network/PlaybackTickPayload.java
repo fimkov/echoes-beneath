@@ -20,9 +20,11 @@ public record PlaybackTickPayload(UUID playbackId, int currentTick) implements C
 					buffer -> {
 						UUID playbackId = buffer.readUUID();
 						int tick = buffer.readVarInt();
+
 						if (tick < 0 || tick > EchoPayloadLimits.MAX_DURATION_TICKS) {
 							throw new IllegalArgumentException("Playback tick " + tick + " is outside the accepted range");
 						}
+
 						return new PlaybackTickPayload(playbackId, tick);
 					});
 

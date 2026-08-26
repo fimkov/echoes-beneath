@@ -43,8 +43,10 @@ class EchoConfigScreenTest {
 
 	private static JsonObject language(String code) {
 		try (InputStream stream = EchoConfigScreenTest.class
+
 				.getResourceAsStream("/assets/echoes_beneath/lang/" + code + ".json")) {
 			assertNotNull(stream, code + " is missing");
+
 			return JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8))
 					.getAsJsonObject();
 		} catch (Exception failure) {
@@ -58,8 +60,10 @@ class EchoConfigScreenTest {
 		JsonObject english = language("en_us");
 		JsonObject russian = language("ru_ru");
 		List<String> missing = new ArrayList<>();
+
 		for (Option option : OPTIONS) {
 			String key = "config.echoes_beneath." + option.key();
+
 			if (!english.has(key)) {
 				missing.add("en_us " + key);
 			}
@@ -67,6 +71,7 @@ class EchoConfigScreenTest {
 				missing.add("ru_ru " + key);
 			}
 		}
+
 		for (String key : new String[] {"config.echoes_beneath.title",
 				"key.echoes_beneath.open_config", "key.categories.echoes_beneath"}) {
 			if (!english.has(key)) {
@@ -76,6 +81,7 @@ class EchoConfigScreenTest {
 				missing.add("ru_ru " + key);
 			}
 		}
+
 		assertTrue(missing.isEmpty(), String.join("; ", missing));
 	}
 
@@ -84,28 +90,36 @@ class EchoConfigScreenTest {
 	void labelsFitTheirWidgets() {
 		Map<Integer, Integer> advances = advances();
 		List<String> tooWide = new ArrayList<>();
+
 		for (String code : new String[] {"en_us", "ru_ru"}) {
 			JsonObject language = language(code);
+
 			for (Option option : OPTIONS) {
 				String label = language.get("config.echoes_beneath." + option.key()).getAsString();
 				int width = measure(advances, label + option.widestValue());
+
 				if (width > LABEL_BUDGET) {
 					tooWide.add(code + " " + option.key() + " is " + width
 							+ "px against " + LABEL_BUDGET);
 				}
 			}
 		}
+
 		assertTrue(tooWide.isEmpty(), String.join("; ", tooWide));
 	}
 
 	private static Map<Integer, Integer> advances() {
 		Map<Integer, Integer> table = new HashMap<>();
+
 		try (InputStream stream = EchoConfigScreenTest.class
+
 				.getResourceAsStream("/echo_font_advances.txt")) {
 			assertNotNull(stream, "the font advance table is missing");
 			Scanner scanner = new Scanner(stream, StandardCharsets.UTF_8);
+
 			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine().trim();
+
 				if (line.isEmpty()) {
 					continue;
 				}
@@ -115,14 +129,17 @@ class EchoConfigScreenTest {
 		} catch (Exception failure) {
 			throw new IllegalStateException(failure);
 		}
+
 		return table;
 	}
 
 	private static int measure(Map<Integer, Integer> advances, String text) {
 		int total = 0;
+
 		for (int index = 0; index < text.length(); index++) {
 			total += advances.getOrDefault((int) text.charAt(index), 6);
 		}
+
 		return total;
 	}
 

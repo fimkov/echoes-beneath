@@ -36,16 +36,20 @@ public final class EchoLensStacks {
 	public static EchoLensUpgrades peak(ItemStack stack) {
 		EchoLensUpgrades reached = stack.get(EchoComponents.LENS_PEAK);
 		EchoLensUpgrades current = upgrades(stack);
+
 		return reached == null ? current : EchoLensUpgrades.highestOf(reached, current);
 	}
 
 	public static UUID identityOrAssign(ItemStack stack) {
 		UUID existing = stack.get(EchoComponents.LENS_IDENTITY);
+
 		if (existing != null) {
 			return existing;
 		}
+
 		UUID assigned = UUID.randomUUID();
 		stack.set(EchoComponents.LENS_IDENTITY, assigned);
+
 		return assigned;
 	}
 

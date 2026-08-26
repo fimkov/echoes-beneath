@@ -67,18 +67,24 @@ public class EchoChartBlockEntity extends BlockEntity {
 	public static void serverTick(Level level, BlockPos position,
 			BlockState state, EchoChartBlockEntity chart) {
 		chart.age++;
+
 		if (chart.age % TELL_INTERVAL_TICKS != 0) {
 			return;
 		}
+
 		if (chart.chart == null) {
 			return;
 		}
+
 		EchoServerState server =
 				EchoServerState.current();
+
 		if (server == null) {
 			return;
 		}
+
 		chart.told.removeIf(ServerPlayer::hasDisconnected);
+
 		for (Player nearby : level.players()) {
 			if (!(nearby instanceof ServerPlayer viewer)
 					|| chart.told.contains(viewer)
@@ -116,16 +122,20 @@ public class EchoChartBlockEntity extends BlockEntity {
 
 	public ItemStack asItem() {
 		ItemStack stack = new ItemStack(EchoItems.ECHO_CHART);
+
 		if (chart != null) {
 			stack.set(EchoComponents.CHART_DATA, chart);
 		}
+
 		stack.set(EchoComponents.CHART_LOOK, look);
+
 		return stack;
 	}
 
 	private void publish() {
 		told.clear();
 		setChanged();
+
 		if (level != null && !level.isClientSide()) {
 			level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
 		}
@@ -147,10 +157,12 @@ public class EchoChartBlockEntity extends BlockEntity {
 	@Override
 	protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
 		super.saveAdditional(tag, registries);
+
 		if (chart != null) {
 			EchoChartData.CODEC.encodeStart(NbtOps.INSTANCE, chart).result()
 					.ifPresent(encoded -> tag.put(TAG_CHART, encoded));
 		}
+
 		EchoChartLook.CODEC.encodeStart(NbtOps.INSTANCE, look).result()
 				.ifPresent(encoded -> tag.put(TAG_LOOK, encoded));
 		tag.putInt(TAG_TURN, turn);
@@ -160,6 +172,7 @@ public class EchoChartBlockEntity extends BlockEntity {
 	public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
 		CompoundTag tag = new CompoundTag();
 		saveAdditional(tag, registries);
+
 		return tag;
 	}
 

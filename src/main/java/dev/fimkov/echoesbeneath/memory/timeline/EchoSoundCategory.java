@@ -16,6 +16,7 @@ public final class EchoSoundCategory {
 		if (index < 0 || index >= VALUES.length) {
 			return SoundSource.AMBIENT;
 		}
+
 		return VALUES[index];
 	}
 

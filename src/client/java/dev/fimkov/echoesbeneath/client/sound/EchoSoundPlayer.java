@@ -42,6 +42,7 @@ public final class EchoSoundPlayer {
 	public void resyncTo(int tick) {
 		pendingEchoes.clear();
 		cursor = 0;
+
 		while (cursor < timeline.size() && timeline.tickAt(cursor) < tick) {
 			cursor++;
 		}
@@ -52,6 +53,7 @@ public final class EchoSoundPlayer {
 			emit(level, cursor, tick);
 			cursor++;
 		}
+
 		playPendingEchoes(level, tick);
 	}
 
@@ -59,9 +61,11 @@ public final class EchoSoundPlayer {
 		ResourceLocation soundId = timeline.soundAt(index);
 		SoundEvent event = BuiltInRegistries.SOUND_EVENT.get(soundId);
 		boolean remembered = event != null;
+
 		if (!remembered) {
 			event = EchoSounds.WAVE_ECHO;
 		}
+
 		Vec3 position = center.add(
 				timeline.relativeXAt(index), timeline.relativeYAt(index), timeline.relativeZAt(index));
 		float volume = timeline.volumeAt(index)
@@ -74,6 +78,7 @@ public final class EchoSoundPlayer {
 		waves.spawn(position, tick, radius,
 				EchoWavePalette.paletteFor(source));
 		burst(level, position, radius);
+
 		if (remembered) {
 			scheduleEchoes(tick, event, source, position, volume, pitch);
 		}
@@ -89,8 +94,10 @@ public final class EchoSoundPlayer {
 					position.x, position.y, position.z,
 					Math.cos(angle) * BURST_SPEED, lift, Math.sin(angle) * BURST_SPEED);
 		}
+
 		level.addParticle(ParticleTypes.SCULK_SOUL,
 				position.x, position.y, position.z, 0.0D, 0.0D, 0.0D);
+
 		if (radius >= SONIC_BOOM_RADIUS) {
 			level.addParticle(ParticleTypes.SONIC_BOOM,
 					position.x, position.y, position.z, 0.0D, 0.0D, 0.0D);
@@ -102,6 +109,7 @@ public final class EchoSoundPlayer {
 		if (pendingEchoes.size() + ECHO_DELAY_TICKS.length > MAX_PENDING_ECHOES) {
 			return;
 		}
+
 		for (int step = 0; step < ECHO_DELAY_TICKS.length; step++) {
 			pendingEchoes.add(new PendingEcho(tick + ECHO_DELAY_TICKS[step], event, source, position,
 					volume * ECHO_VOLUME_FACTORS[step], pitch * ECHO_PITCH_FACTORS[step]));
@@ -115,6 +123,7 @@ public final class EchoSoundPlayer {
 			}
 			level.playLocalSound(echo.position.x, echo.position.y, echo.position.z,
 					echo.event, echo.source, echo.volume, echo.pitch, false);
+
 			return true;
 		});
 	}

@@ -33,9 +33,11 @@ public final class HostileMobSuppressionManager {
 		Map<UUID, SuppressedMobState> captured = new HashMap<>();
 		List<Entity> candidates = level.getEntities((Entity) null, region.bounds(),
 				entity -> isSuppressible(entity) && region.contains(level.dimension(), entity.position()));
+
 		for (Entity entity : candidates) {
 			suppress(entity).ifPresent(state -> captured.put(state.entityId(), state));
 		}
+
 		return captured;
 	}
 
@@ -43,10 +45,12 @@ public final class HostileMobSuppressionManager {
 		if (!(entity instanceof EchoSuppressedEntity suppressible) || suppressible.echoesBeneath$isSuppressed()) {
 			return Optional.empty();
 		}
+
 		SuppressedMobState state = SuppressedMobState.capture(entity);
 		store().remember(state);
 		applySuppression(entity);
 		suppressible.echoesBeneath$setSuppressed(true);
+
 		return Optional.of(state);
 	}
 
@@ -55,6 +59,7 @@ public final class HostileMobSuppressionManager {
 		entity.setSilent(true);
 		entity.setInvulnerable(true);
 		entity.setDeltaMovement(Vec3.ZERO);
+
 		if (entity instanceof Mob mob) {
 			mob.setNoAi(true);
 			mob.setTarget(null);
@@ -70,46 +75,57 @@ public final class HostileMobSuppressionManager {
 
 	public boolean restore(UUID entityId, SuppressedMobState state) {
 		ServerLevel level = server.getLevel(state.dimension());
+
 		if (level == null) {
 			return false;
 		}
+
 		Entity entity = level.getEntity(entityId);
+
 		if (entity == null) {
 			return false;
 		}
+
 		return restoreEntity(entity, state);
 	}
 
 	public boolean restoreEntity(Entity entity, SuppressedMobState state) {
 		try {
 			state.restoreTo(entity);
+
 			if (entity instanceof EchoSuppressedEntity suppressible) {
 				suppressible.echoesBeneath$setSuppressed(false);
 			}
 			store().forget(entity.getUUID());
+
 			return true;
 		} catch (RuntimeException failure) {
 			EchoesBeneath.LOGGER.error("Unable to restore suppressed mob {}", entity.getUUID(), failure);
+
 			return false;
 		}
 	}
 
 	public boolean restoreOnLoad(Entity entity) {
 		Optional<SuppressedMobState> remembered = Optional.ofNullable(store().snapshot().get(entity.getUUID()));
+
 		if (remembered.isEmpty()) {
 			return false;
 		}
+
 		return restoreEntity(entity, remembered.get());
 	}
 
 	public int recoverEverything() {
 		Map<UUID, SuppressedMobState> pending = store().snapshot();
 		int restored = 0;
+
 		for (Map.Entry<UUID, SuppressedMobState> entry : pending.entrySet()) {
 			if (restore(entry.getKey(), entry.getValue())) {
 				restored++;
 			}
 		}
+
 		return restored;
 	}
 

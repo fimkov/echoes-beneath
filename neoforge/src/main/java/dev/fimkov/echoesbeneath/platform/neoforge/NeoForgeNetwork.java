@@ -56,6 +56,7 @@ public final class NeoForgeNetwork implements EchoNetwork {
 
 	private void dispatch(CustomPacketPayload payload) {
 		Consumer<CustomPacketPayload> handler = handlers.get(payload.type());
+
 		if (handler != null) {
 			handler.accept(payload);
 		}

@@ -24,11 +24,14 @@ public final class EchoBlockDeltaRenderer {
 		if (context.consumers() == null) {
 			return;
 		}
+
 		EchoBlockDeltaState deltas = session.blockDeltas();
 		List<EchoWave> waves = session.waves().active();
+
 		if (deltas.trackedPositions().isEmpty() || waves.isEmpty()) {
 			return;
 		}
+
 		BlockPos center = session.region().center();
 		float partialTick = context.tickCounter().getGameTimeDeltaPartialTick(false);
 		int currentTick = session.currentTick();
@@ -59,6 +62,7 @@ public final class EchoBlockDeltaRenderer {
 			double worldX = center.getX() + relativeX;
 			double worldY = center.getY() + relativeY;
 			double worldZ = center.getZ() + relativeZ;
+
 			if (cameraPosition.distanceToSqr(worldX, worldY, worldZ) > MAX_DELTA_DISTANCE * MAX_DELTA_DISTANCE) {
 				continue;
 			}
@@ -70,6 +74,7 @@ public final class EchoBlockDeltaRenderer {
 				int packedFace = EchoFaceGeometry.pack(0, 0, 0, direction);
 				EchoFaceGeometry.faceBasis(packedFace, relativeX, relativeY, relativeZ, basis);
 				EchoWaveRenderer.collectFacingWaves(waves, packedFace, basis, center, facing, currentTick, partialTick);
+
 				if (facing.isEmpty()) {
 					continue;
 				}
@@ -78,6 +83,7 @@ public final class EchoBlockDeltaRenderer {
 						MAX_DELTA_TEXELS - emitted);
 			}
 		}
+
 		poseStack.popPose();
 	}
 }

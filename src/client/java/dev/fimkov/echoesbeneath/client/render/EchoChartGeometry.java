@@ -20,8 +20,10 @@ public final class EchoChartGeometry {
 		int light = LightTexture.pack(Math.round(FULL_BLOCK_LIGHT * model.brightness()), 0);
 		int budget = EchoClientConfig.values().chartBlockBudget();
 		int drawn = 0;
+
 		for (int index = 0; index < model.size() && drawn < budget; index++) {
 			int cell = model.cellAt(index);
+
 			if (model.isBuried(cell)) {
 				continue;
 			}

@@ -31,10 +31,12 @@ public final class PlaybackBoundaryTrace {
 	public static void sweep(ServerLevel level, EchoRegion region, int tick) {
 		BlockPos center = region.center();
 		double radius = region.radius();
+
 		for (ServerPlayer viewer : level.players()) {
 			double toViewerX = viewer.getX() - (center.getX() + 0.5D);
 			double toViewerZ = viewer.getZ() - (center.getZ() + 0.5D);
 			double distance = Math.sqrt(toViewerX * toViewerX + toViewerZ * toViewerZ);
+
 			if (Math.abs(distance - radius) > VISIBLE_MARGIN) {
 				continue;
 			}
@@ -45,6 +47,7 @@ public final class PlaybackBoundaryTrace {
 	private static void emitArc(ServerLevel level, ServerPlayer viewer, BlockPos center,
 			double radius, double facingAngle, int tick) {
 		double drift = tick * DRIFT_RADIANS_PER_BEAT;
+
 		for (int point = 0; point < ARC_POINTS; point++) {
 			double offset = (point / (double) (ARC_POINTS - 1) - 0.5D) * 2.0D * ARC_HALF_WIDTH_RADIANS;
 			double angle = facingAngle + offset + Math.sin(drift + point) * 0.02D;
@@ -52,10 +55,12 @@ public final class PlaybackBoundaryTrace {
 			double z = center.getZ() + 0.5D + Math.sin(angle) * radius;
 			int columnX = (int) Math.floor(x);
 			int columnZ = (int) Math.floor(z);
+
 			if (!level.hasChunkAt(new BlockPos(columnX, center.getY(), columnZ))) {
 				continue;
 			}
 			double surface = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, columnX, columnZ);
+
 			for (int layer = 0; layer < WALL_LAYERS; layer++) {
 				if ((point + layer + tick / BEAT_INTERVAL_TICKS) % 2 != 0) {
 					continue;

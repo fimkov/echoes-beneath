@@ -125,6 +125,7 @@ class ResonanceTablePlanTest {
 		EchoLensUpgrades wild = new EchoLensUpgrades(EchoFormat.MAX_MEMORY_SLOTS, EchoLensUpgrades.MAX_RADIUS,
 				EchoLensUpgrades.MAX_SENSITIVITY, EchoLensUpgrades.MAX_VISION);
 		EchoLensUpgrades clamped = ResonanceTableUpgrade.clampToFloor(EchoLensUpgrades.DEFAULT, wild);
+
 		for (ResonanceTableUpgrade upgrade : ResonanceTableUpgrade.all()) {
 			assertEquals(upgrade.maxSteps(), upgrade.stepsOf(clamped), upgrade + " did not reach its ceiling");
 			assertEquals(upgrade.maxSteps(), upgrade.stepsOf(upgrade.withSteps(clamped, upgrade.maxSteps() + 5)),

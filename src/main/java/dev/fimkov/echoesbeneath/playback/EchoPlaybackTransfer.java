@@ -30,22 +30,26 @@ public final class EchoPlaybackTransfer {
 		parts.put(EchoPlaybackDataPart.SOUND_TIMELINE, split(compress(record.soundTimeline().toNbt())));
 		parts.put(EchoPlaybackDataPart.PARTICLE_TIMELINE,
 				split(compress(record.particleTimeline().toNbt())));
+
 		return parts;
 	}
 
 	private static byte[] compress(CompoundTag tag) {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
 		try {
 			NbtIo.writeCompressed(tag, buffer);
 		} catch (IOException failure) {
 			throw new IllegalStateException("Unable to encode playback data", failure);
 		}
+
 		return buffer.toByteArray();
 	}
 
 	private static List<byte[]> split(byte[] data) {
 		List<byte[]> chunks = new ArrayList<>();
 		int offset = 0;
+
 		while (offset < data.length) {
 			int length = Math.min(EchoPayloadLimits.MAX_CHUNK_BYTES, data.length - offset);
 			byte[] chunk = new byte[length];
@@ -53,23 +57,28 @@ public final class EchoPlaybackTransfer {
 			chunks.add(chunk);
 			offset += length;
 		}
+
 		if (chunks.isEmpty()) {
 			chunks.add(new byte[0]);
 		}
+
 		if (chunks.size() > EchoPayloadLimits.MAX_CHUNKS_PER_PART) {
 			throw new IllegalStateException("Playback data needs " + chunks.size() + " chunks, which exceeds the limit");
 		}
+
 		return chunks;
 	}
 
 	public static void sendTo(ServerPlayer player, UUID playbackId, Map<EchoPlaybackDataPart, List<byte[]>> parts) {
 		for (Map.Entry<EchoPlaybackDataPart, List<byte[]>> entry : parts.entrySet()) {
 			List<byte[]> chunks = entry.getValue();
+
 			for (int index = 0; index < chunks.size(); index++) {
 				EchoPlatforms.network().sendToPlayer(player,
 						new PlaybackDataPayload(playbackId, entry.getKey(), index, chunks.size(), chunks.get(index)));
 			}
 		}
+
 		EchoesBeneath.LOGGER.debug("Sent playback {} data to {}", playbackId, player.getGameProfile().getName());
 	}
 }

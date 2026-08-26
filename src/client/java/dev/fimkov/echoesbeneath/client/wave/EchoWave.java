@@ -55,29 +55,36 @@ public final class EchoWave {
 
 	public float proximityAt(double distance, float elapsedTicks) {
 		float reach = Math.min(maxRadius, LOCAL_REVEAL_RADIUS);
+
 		if (distance >= reach) {
 			return 0.0F;
 		}
+
 		float falloff = 1.0F - (float) (distance / reach);
 		float pulse = 1.0F - LOCAL_PULSE_DEPTH
 				+ LOCAL_PULSE_DEPTH * (float) Math.sin(elapsedTicks / LOCAL_PULSE_TICKS * Math.PI * 2.0D);
+
 		return falloff * falloff * pulse;
 	}
 
 	public float fadeAt(float elapsedTicks) {
 		float radius = radiusAt(elapsedTicks);
+
 		if (radius >= maxRadius) {
 			return 0.0F;
 		}
+
 		return (float) Math.sqrt(1.0F - radius / maxRadius);
 	}
 
 	public float depthOf(double distance, float elapsedTicks) {
 		float front = radiusAt(elapsedTicks);
 		float delta = (float) (front - distance);
+
 		if (delta < 0.0F || delta > SHELL_THICKNESS) {
 			return -1.0F;
 		}
+
 		return delta / SHELL_THICKNESS;
 	}
 }

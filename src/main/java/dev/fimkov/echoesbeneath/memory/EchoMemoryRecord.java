@@ -66,32 +66,44 @@ public record EchoMemoryRecord(
 		tag.put("sound_timeline", soundTimeline.toNbt());
 		tag.put("particle_timeline", particleTimeline.toNbt());
 		ListTag players = new ListTag();
+
 		for (UUID player : recordedPlayers) {
 			players.add(NbtUtils.createUUID(player));
 		}
+
 		tag.put("recorded_players", players);
+
 		return tag;
 	}
 
 	public static EchoMemoryRecord fromNbt(CompoundTag tag, HolderGetter<Block> blockLookup,
 			int maxBlockEvents, int maxEntityTracks, int maxSoundEvents, int maxParticleEvents) {
 		int formatVersion = tag.getInt("format_version");
+
 		if (!EchoFormat.isSupported(formatVersion)) {
 			throw new EchoMemoryFormatException("Unsupported memory format version " + formatVersion);
 		}
+
 		UUID id = tag.contains("id") ? NbtUtils.loadUUID(tag.get("id")) : null;
+
 		if (id == null) {
 			throw new EchoMemoryFormatException("Memory record has no identity");
 		}
+
 		ResourceLocation dimensionId = ResourceLocation.tryParse(tag.getString("dimension"));
+
 		if (dimensionId == null) {
 			throw new EchoMemoryFormatException("Memory record has an unreadable dimension");
 		}
+
 		int slot = tag.getInt("slot");
+
 		if (slot < 0 || slot >= EchoFormat.MAX_MEMORY_SLOTS) {
 			throw new EchoMemoryFormatException("Memory record has an out of range slot " + slot);
 		}
+
 		BlockPos center = new BlockPos(tag.getInt("center_x"), tag.getInt("center_y"), tag.getInt("center_z"));
+
 		return new EchoMemoryRecord(
 				id,
 				slot,
@@ -115,9 +127,11 @@ public record EchoMemoryRecord(
 
 	private static List<UUID> readPlayers(CompoundTag tag) {
 		List<UUID> players = new ArrayList<>();
+
 		for (Tag element : tag.getList("recorded_players", Tag.TAG_INT_ARRAY)) {
 			players.add(NbtUtils.loadUUID(element));
 		}
+
 		return List.copyOf(players);
 	}
 
@@ -127,6 +141,7 @@ public record EchoMemoryRecord(
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -134,12 +149,15 @@ public record EchoMemoryRecord(
 		if (!EchoFormat.isSupported(formatVersion)) {
 			throw new EchoMemoryFormatException("Unsupported memory format version " + formatVersion);
 		}
+
 		if (radius <= 0 || verticalRadius <= 0) {
 			throw new EchoMemoryFormatException("Memory record has a degenerate region");
 		}
+
 		if (durationTicks <= 0) {
 			throw new EchoMemoryFormatException("Memory record has no duration");
 		}
+
 		if (!EchoCoordinates.fitsInPackedRange(radius) || !EchoCoordinates.fitsInPackedRange(verticalRadius)) {
 			throw new EchoMemoryFormatException("Memory record exceeds the packed coordinate range");
 		}

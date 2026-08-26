@@ -19,9 +19,11 @@ public final class EchoBlockDeltaState {
 	public EchoBlockDeltaState(BlockSnapshot snapshot, BlockTimeline timeline) {
 		this.snapshot = snapshot;
 		this.timeline = timeline;
+
 		for (int index = 0; index < timeline.size(); index++) {
 			trackedPositions.add(timeline.packedPositionAt(index));
 		}
+
 		resetToStart();
 	}
 
@@ -36,6 +38,7 @@ public final class EchoBlockDeltaState {
 	private void resetToStart() {
 		currentStates.clear();
 		appliedEvents = 0;
+
 		for (int packed : trackedPositions) {
 			currentStates.put(packed, snapshot.paletteIndexAt(
 					EchoCoordinates.unpackX(packed),
@@ -48,6 +51,7 @@ public final class EchoBlockDeltaState {
 		if (appliedEvents > 0 && timeline.tickAt(appliedEvents - 1) > tick) {
 			resetToStart();
 		}
+
 		while (appliedEvents < timeline.size() && timeline.tickAt(appliedEvents) <= tick) {
 			currentStates.put(timeline.packedPositionAt(appliedEvents), timeline.newStateAt(appliedEvents));
 			appliedEvents++;
@@ -56,14 +60,17 @@ public final class EchoBlockDeltaState {
 
 	public boolean isSolidAt(int packedPosition) {
 		int index = currentStates.getOrDefault(packedPosition, BlockPalette.AIR_INDEX);
+
 		return index != BlockPalette.AIR_INDEX;
 	}
 
 	public boolean isSolidAt(int relativeX, int relativeY, int relativeZ) {
 		int packed = EchoCoordinates.packRelative(relativeX, relativeY, relativeZ);
+
 		if (trackedPositions.contains(packed)) {
 			return isSolidAt(packed);
 		}
+
 		return snapshot.paletteIndexAt(relativeX, relativeY, relativeZ) != BlockPalette.AIR_INDEX;
 	}
 }

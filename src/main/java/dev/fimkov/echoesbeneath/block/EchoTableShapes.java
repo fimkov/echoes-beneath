@@ -28,9 +28,11 @@ public final class EchoTableShapes {
 
 	private static VoxelShape of(double[][] boxes) {
 		VoxelShape shape = Shapes.empty();
+
 		for (double[] box : boxes) {
 			shape = Shapes.or(shape, Block.box(box[0], box[1], box[2], box[3], box[4], box[5]));
 		}
+
 		return shape;
 	}
 }

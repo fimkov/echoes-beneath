@@ -23,35 +23,45 @@ public final class EchoLensInteraction {
 		if (context.getLevel().isClientSide()) {
 			return InteractionResult.SUCCESS;
 		}
+
 		if (!(context.getPlayer() instanceof ServerPlayer player)) {
 			return InteractionResult.PASS;
 		}
+
 		EchoServerState state = EchoServerState.current();
+
 		if (state == null) {
 			return InteractionResult.PASS;
 		}
+
 		ItemStack stack = context.getItemInHand();
 		EchoMemoryReferences references = EchoLensStacks.references(stack);
 		Optional<EchoMemoryReference> resonating = EchoMemoryLocator.resonating(
 				references, player.level().dimension(), player.blockPosition());
+
 		if (resonating.isPresent()) {
 			return startPlayback(state, player, context.getHand(), resonating.get());
 		}
+
 		return startRecording(state, player, context.getHand(), supportBlockFor(context), references,
 				EchoLensStacks.upgrades(stack).memorySlots());
 	}
 
 	private static BlockPos supportBlockFor(UseOnContext context) {
 		BlockPos clicked = context.getClickedPos();
+
 		if (context.getLevel().getBlockState(clicked).canBeReplaced()) {
 			return clicked.below();
 		}
+
 		if (context.getClickedFace() != Direction.UP) {
 			BlockPos against = clicked.relative(context.getClickedFace());
+
 			if (context.getLevel().getBlockState(against).canBeReplaced()) {
 				return against.below();
 			}
 		}
+
 		return clicked;
 	}
 
@@ -67,8 +77,10 @@ public final class EchoLensInteraction {
 			int capacity) {
 		if (references.isFull(capacity)) {
 			player.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_NO_MORE), true);
+
 			return InteractionResult.FAIL;
 		}
+
 		return state.recordings().start(player, hand, clickedPos).isPresent()
 				? InteractionResult.CONSUME
 				: InteractionResult.FAIL;

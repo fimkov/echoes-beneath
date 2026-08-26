@@ -12,9 +12,11 @@ public final class EchoClientPlatforms {
 
 	public static EchoClientHooks get() {
 		EchoClientHooks hooks = current;
+
 		if (hooks == null) {
 			throw new IllegalStateException("No client loader hooks have been installed");
 		}
+
 		return hooks;
 	}
 }

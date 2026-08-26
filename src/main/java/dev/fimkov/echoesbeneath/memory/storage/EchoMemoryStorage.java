@@ -36,6 +36,7 @@ public final class EchoMemoryStorage {
 	public EchoMemoryStorage(Path root, HolderGetter<Block> blockLookup) {
 		this.root = root;
 		this.blockLookup = blockLookup;
+
 		this.cache = new LinkedHashMap<>(CACHE_CAPACITY, 0.75F, true) {
 			@Override
 			protected boolean removeEldestEntry(Map.Entry<UUID, EchoMemoryRecord> eldest) {
@@ -46,6 +47,7 @@ public final class EchoMemoryStorage {
 
 	public static EchoMemoryStorage forServer(MinecraftServer server) {
 		Path root = server.getWorldPath(LevelResource.ROOT).resolve(DIRECTORY_NAME);
+
 		return new EchoMemoryStorage(root, server.registryAccess().<Block>registryOrThrow(Registries.BLOCK).asLookup());
 	}
 
@@ -65,35 +67,44 @@ public final class EchoMemoryStorage {
 		record.validate();
 		Path target = fileFor(record.id());
 		Path temporary = root.resolve(record.id() + TEMPORARY_SUFFIX);
+
 		try {
 			Files.createDirectories(root);
 			NbtIo.writeCompressed(record.toNbt(), temporary);
 			long written = Files.size(temporary);
+
 			if (written > MAX_RECORD_BYTES) {
 				Files.deleteIfExists(temporary);
 				EchoesBeneath.LOGGER.error("Refusing to store memory {}: {} bytes exceeds the {} byte limit",
 						record.id(), written, MAX_RECORD_BYTES);
+
 				return false;
 			}
 			Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
 			cache.put(record.id(), record);
+
 			return true;
 		} catch (IOException failure) {
 			EchoesBeneath.LOGGER.error("Unable to store memory {}", record.id(), failure);
 			deleteQuietly(temporary);
+
 			return false;
 		}
 	}
 
 	public synchronized Optional<EchoMemoryRecord> load(UUID id) {
 		EchoMemoryRecord cached = cache.get(id);
+
 		if (cached != null) {
 			return Optional.of(cached);
 		}
+
 		Path source = fileFor(id);
+
 		if (!Files.isRegularFile(source)) {
 			return Optional.empty();
 		}
+
 		try {
 			CompoundTag tag = NbtIo.readCompressed(source, NbtAccounter.create(MAX_RECORD_BYTES));
 			EchoMemoryRecord record = EchoMemoryRecord.fromNbt(tag, blockLookup, MAX_BLOCK_EVENTS,
@@ -101,19 +112,23 @@ public final class EchoMemoryStorage {
 					EchoConfig.values().maxParticleEvents());
 			record.validate();
 			cache.put(id, record);
+
 			return Optional.of(record);
 		} catch (IOException | RuntimeException failure) {
 			EchoesBeneath.LOGGER.error("Memory {} could not be read and will be ignored", id, failure);
+
 			return Optional.empty();
 		}
 	}
 
 	public synchronized boolean delete(UUID id) {
 		cache.remove(id);
+
 		try {
 			return Files.deleteIfExists(fileFor(id));
 		} catch (IOException failure) {
 			EchoesBeneath.LOGGER.error("Unable to delete memory {}", id, failure);
+
 			return false;
 		}
 	}

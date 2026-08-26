@@ -22,9 +22,11 @@ public final class SnapshotSection {
 		int[] distinct = distinctSorted(globalIndices);
 		int bits = Math.max(MINIMUM_BITS, requiredBits(distinct.length));
 		SimpleBitStorage storage = new SimpleBitStorage(bits, CELLS_PER_SECTION);
+
 		for (int cell = 0; cell < CELLS_PER_SECTION; cell++) {
 			storage.set(cell, Arrays.binarySearch(distinct, globalIndices[cell]));
 		}
+
 		return new SnapshotSection(distinct, storage);
 	}
 
@@ -32,11 +34,13 @@ public final class SnapshotSection {
 		int[] copy = values.clone();
 		Arrays.sort(copy);
 		int unique = 0;
+
 		for (int index = 0; index < copy.length; index++) {
 			if (index == 0 || copy[index] != copy[index - 1]) {
 				copy[unique++] = copy[index];
 			}
 		}
+
 		return Arrays.copyOf(copy, unique);
 	}
 
@@ -50,9 +54,11 @@ public final class SnapshotSection {
 
 	public int globalIndexAt(int localX, int localY, int localZ) {
 		int local = cells.get(cellIndex(localX, localY, localZ));
+
 		if (local < 0 || local >= localPalette.length) {
 			return BlockPalette.AIR_INDEX;
 		}
+
 		return localPalette[local];
 	}
 
@@ -65,6 +71,7 @@ public final class SnapshotSection {
 		tag.putIntArray("palette", localPalette);
 		tag.putInt("bits", cells.getBits());
 		tag.putLongArray("cells", cells.getRaw());
+
 		return tag;
 	}
 
@@ -72,9 +79,11 @@ public final class SnapshotSection {
 		int[] palette = tag.getIntArray("palette");
 		int bits = tag.getInt("bits");
 		long[] raw = tag.getLongArray("cells");
+
 		if (palette.length == 0 || bits <= 0) {
 			throw new IllegalArgumentException("Snapshot section has no palette");
 		}
+
 		return new SnapshotSection(palette, new SimpleBitStorage(bits, CELLS_PER_SECTION, raw));
 	}
 }

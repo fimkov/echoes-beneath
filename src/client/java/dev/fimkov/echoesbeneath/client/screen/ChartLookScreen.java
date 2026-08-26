@@ -42,6 +42,7 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 	protected void containerTick() {
 		super.containerTick();
 		animation += 1.0F;
+
 		if (animation >= PULSE_PERIOD_TICKS) {
 			animation -= PULSE_PERIOD_TICKS;
 		}
@@ -50,12 +51,14 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 	private int glow(float partialTick) {
 		double phase = (animation + partialTick) / PULSE_PERIOD_TICKS * Math.PI * 2.0;
 		float strength = 0.45F + 0.55F * (float) ((Math.sin(phase) + 1.0) * 0.5);
+
 		return (Math.round(Mth.clamp(strength, 0.0F, 1.0F) * 255) << 24) | LIT;
 	}
 
 	private boolean overRow(int mouseX, int mouseY, int index) {
 		int localX = mouseX - leftPos;
 		int localY = mouseY - topPos;
+
 		return localX >= ChartLookLayout.ROW_X && localX < ChartLookLayout.ROW_X + ChartLookLayout.ROW_WIDTH
 				&& localY >= ChartLookLayout.rowY(index)
 				&& localY < ChartLookLayout.rowY(index) + ChartLookLayout.ROW_HEIGHT;
@@ -75,6 +78,7 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 				}
 			}
 		}
+
 		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
@@ -87,6 +91,7 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 		graphics.fill(leftPos, topPos, leftPos + 1, topPos + imageHeight, PANEL_EDGE);
 		graphics.fill(leftPos + imageWidth - 1, topPos, leftPos + imageWidth,
 				topPos + imageHeight, PANEL_EDGE);
+
 		for (int index = 0; index < ChartLookLayout.ROW_COUNT; index++) {
 			int x = leftPos + ChartLookLayout.ROW_X;
 			int y = topPos + ChartLookLayout.rowY(index);
@@ -96,6 +101,7 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 			int wellX = leftPos + ChartLookLayout.valueX();
 			graphics.fill(wellX, y + 3, wellX + ChartLookLayout.VALUE_WIDTH,
 					y + ChartLookLayout.ROW_HEIGHT - 3, VALUE_WELL);
+
 			if (hovered) {
 				int lit = glow(partialTick);
 				graphics.fill(x, y, x + ChartLookLayout.ROW_WIDTH, y + 1, lit);
@@ -112,11 +118,14 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 	protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
 		graphics.drawString(font, title, titleLabelX, titleLabelY, TITLE, true);
 		EchoChartLook look = menu.look();
+
 		String[] names = {EchoTranslations.LOOK_DRIFT, EchoTranslations.LOOK_SPIN,
 				EchoTranslations.LOOK_MOTES, EchoTranslations.LOOK_RUNS, EchoTranslations.LOOK_SIZE};
+
 		Component[] values = {
 				toggle(look.drifts()), spinName(look.spin()), toggle(look.motes()),
 				toggle(look.runs()), sizeName(look.size())};
+
 		for (int index = 0; index < ChartLookLayout.ROW_COUNT; index++) {
 			int y = ChartLookLayout.rowY(index) + 5;
 			graphics.drawString(font, Component.translatable(names[index]),

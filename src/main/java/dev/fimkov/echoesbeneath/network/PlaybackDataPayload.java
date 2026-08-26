@@ -33,11 +33,15 @@ public record PlaybackDataPayload(
 		EchoPlaybackDataPart part = EchoPlaybackDataPart.fromIndex(buffer.readVarInt());
 		int chunkIndex = buffer.readVarInt();
 		int chunkCount = buffer.readVarInt();
+
 		if (chunkCount <= 0 || chunkCount > EchoPayloadLimits.MAX_CHUNKS_PER_PART
+
 				|| chunkIndex < 0 || chunkIndex >= chunkCount) {
 			throw new IllegalArgumentException("Playback data chunk " + chunkIndex + "/" + chunkCount + " is invalid");
 		}
+
 		byte[] chunk = buffer.readByteArray(EchoPayloadLimits.MAX_CHUNK_BYTES);
+
 		return new PlaybackDataPayload(playbackId, part, chunkIndex, chunkCount, chunk);
 	}
 

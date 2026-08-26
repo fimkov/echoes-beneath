@@ -24,6 +24,7 @@ public final class EchoSounds {
 
 	private static SoundEvent of(String path) {
 		ResourceLocation id = EchoesBeneath.id(path);
+
 		return SoundEvent.createVariableRangeEvent(id);
 	}
 

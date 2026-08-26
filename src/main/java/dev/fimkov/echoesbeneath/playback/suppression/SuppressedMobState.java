@@ -41,18 +41,23 @@ public record SuppressedMobState(
 		float health = entity instanceof LivingEntity living ? living.getHealth() : 0.0F;
 		boolean noAi = entity instanceof Mob mob && mob.isNoAi();
 		UUID targetId = null;
+
 		if (entity instanceof Mob mob && mob.getTarget() != null) {
 			targetId = mob.getTarget().getUUID();
 		}
+
 		List<CompoundTag> effects = new ArrayList<>();
+
 		if (entity instanceof LivingEntity living) {
 			for (MobEffectInstance instance : living.getActiveEffects()) {
 				Tag saved = instance.save();
+
 				if (saved instanceof CompoundTag compound) {
 					effects.add(compound);
 				}
 			}
 		}
+
 		return new SuppressedMobState(
 				entity.getUUID(),
 				entity.level().dimension(),
@@ -81,15 +86,19 @@ public record SuppressedMobState(
 		entity.setInvisible(invisible);
 		entity.setSilent(silent);
 		entity.setInvulnerable(invulnerable);
+
 		if (entity instanceof Mob mob) {
 			mob.setNoAi(noAi);
 			mob.setTarget(null);
 		}
+
 		if (entity instanceof LivingEntity living) {
 			living.setHealth(health);
 			living.removeAllEffects();
+
 			for (CompoundTag saved : effects) {
 				MobEffectInstance instance = MobEffectInstance.load(saved);
+
 				if (instance != null) {
 					living.addEffect(instance);
 				}
@@ -116,24 +125,31 @@ public record SuppressedMobState(
 		tag.putBoolean("silent", silent);
 		tag.putBoolean("invulnerable", invulnerable);
 		tag.putBoolean("no_ai", noAi);
+
 		if (targetId != null) {
 			tag.putUUID("target", targetId);
 		}
+
 		ListTag effectList = new ListTag();
 		effectList.addAll(effects);
 		tag.put("effects", effectList);
+
 		return tag;
 	}
 
 	public static SuppressedMobState fromNbt(CompoundTag tag) {
 		ResourceLocation dimensionId = ResourceLocation.tryParse(tag.getString("dimension"));
+
 		if (dimensionId == null) {
 			throw new IllegalArgumentException("Suppressed mob state has an unreadable dimension");
 		}
+
 		List<CompoundTag> effects = new ArrayList<>();
+
 		for (Tag element : tag.getList("effects", NBT_COMPOUND_TYPE)) {
 			effects.add((CompoundTag) element);
 		}
+
 		return new SuppressedMobState(
 				tag.getUUID("entity"),
 				ResourceKey.create(Registries.DIMENSION, dimensionId),

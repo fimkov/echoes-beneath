@@ -18,12 +18,16 @@ public final class EchoChartPreview {
 
 	public static void send(ServerPlayer viewer, EchoMemoryReference reference, int lowestY, int highestY) {
 		EchoChartShape shape = shapeOf(viewer, reference, lowestY, highestY);
+
 		if (shape == null) {
 			EchoPlatforms.network().sendToPlayer(viewer,
 					new ChartShapePayload(MENU_TARGET, 0, 1, new byte[0]));
+
 			return;
 		}
+
 		List<byte[]> chunks = EchoChartCodec.split(EchoChartCodec.encode(shape));
+
 		for (int index = 0; index < chunks.size(); index++) {
 			EchoPlatforms.network().sendToPlayer(viewer,
 					new ChartShapePayload(MENU_TARGET, index, chunks.size(), chunks.get(index)));
@@ -33,6 +37,7 @@ public final class EchoChartPreview {
 	public static int soundedCount(ServerPlayer viewer, EchoMemoryReference reference,
 			int lowestY, int highestY) {
 		EchoChartShape shape = shapeOf(viewer, reference, lowestY, highestY);
+
 		return shape == null ? 0 : shape.size();
 	}
 
@@ -41,11 +46,15 @@ public final class EchoChartPreview {
 		if (reference == null) {
 			return null;
 		}
+
 		EchoServerState state = EchoServerState.current();
+
 		if (state == null) {
 			return null;
 		}
+
 		Optional<EchoMemoryRecord> record = state.storage().load(reference.memoryId());
+
 		return record.map(held -> state.charts().shapeOf(held, lowestY, highestY)).orElse(null);
 	}
 }

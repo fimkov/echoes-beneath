@@ -27,46 +27,61 @@ public class EchoLensGameTest implements FabricGameTest {
 		ItemStack lens = new ItemStack(EchoItems.ECHO_LENS);
 		EchoLensUpgrades raised = new EchoLensUpgrades(2, 32, 2, 1);
 		EchoLensStacks.setUpgrades(lens, raised);
+
 		if (!EchoLensStacks.peak(lens).equals(raised)) {
 			helper.fail("a tuned lens must record the height it reached");
 		}
+
 		EchoLensStacks.setUpgrades(lens, EchoLensUpgrades.DEFAULT);
+
 		if (EchoLensStacks.upgrades(lens).memorySlots() != EchoFormat.DEFAULT_MEMORY_SLOTS) {
 			helper.fail("winding a lens back down must actually lower it");
 		}
+
 		if (!EchoLensStacks.peak(lens).equals(raised)) {
 			helper.fail("winding a lens back down must not erase what it already paid for");
 		}
+
 		ResonanceTablePlan back = ResonanceTablePlan.of(EchoLensStacks.upgrades(lens),
 				ResonanceTableUpgrade.lowestSetting(0), EchoLensStacks.peak(lens), raised);
+
 		if (!back.isFree()) {
 			helper.fail("climbing back to a level this lens already bought must cost nothing");
 		}
+
 		if (!back.changed()) {
 			helper.fail("climbing back must still count as a change to apply");
 		}
+
 		helper.succeed();
 	}
 
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void aCraftedLensStartsWithNoMemories(GameTestHelper helper) {
 		ItemStack lens = new ItemStack(EchoItems.ECHO_LENS);
+
 		if (EchoLensStacks.references(lens).filledSlots() != 0) {
 			helper.fail("a crafted lens must hold no memories");
 		}
+
 		if (!EchoLensStacks.references(lens).nextFreeSlot(
+
 				EchoLensStacks.upgrades(lens).memorySlots()).orElseThrow().equals(0)) {
 			helper.fail("a fresh lens must record into Memory I first");
 		}
+
 		if (EchoLensStacks.identityOrNull(lens) != null) {
 			helper.fail("a crafted lens must not carry an identity before it is used");
 		}
+
 		if (EchoLensStacks.upgrades(lens).memorySlots() != EchoFormat.DEFAULT_MEMORY_SLOTS) {
 			helper.fail("a fresh lens must start with a single memory slot");
 		}
+
 		if (EchoFormat.MAX_MEMORY_SLOTS != 3) {
 			helper.fail("a fully upgraded lens must top out at three memory slots");
 		}
+
 		helper.succeed();
 	}
 
@@ -82,16 +97,21 @@ public class EchoLensGameTest implements FabricGameTest {
 		if (!identity.equals(EchoLensStacks.identityOrNull(deployed.getLens()))) {
 			helper.fail("a deployed lens must keep the identity of the stack it came from");
 		}
+
 		if (deployed.getMode() != EchoLensMode.RECORDING) {
 			helper.fail("a deployed lens must be in recording mode");
 		}
+
 		ItemStack returned = deployed.takeLens();
+
 		if (!identity.equals(EchoLensStacks.identityOrNull(returned))) {
 			helper.fail("the returned stack must be the same lens");
 		}
+
 		if (!deployed.getLens().isEmpty()) {
 			helper.fail("a lens can only be taken once, so no duplicate can be produced");
 		}
+
 		deployed.discard();
 		helper.succeed();
 	}
@@ -107,12 +127,15 @@ public class EchoLensGameTest implements FabricGameTest {
 		if (!deployed.getType().is(EchoTags.RECORDING_BLACKLIST)) {
 			helper.fail("the lens entity must sit in the recording blacklist tag");
 		}
+
 		if (deployed.isPushable()) {
 			helper.fail("the lens entity must not be pushable");
 		}
+
 		if (deployed.hurt(helper.getLevel().damageSources().generic(), 100.0F)) {
 			helper.fail("the lens entity must not take damage");
 		}
+
 		deployed.discard();
 		helper.succeed();
 	}
@@ -122,12 +145,15 @@ public class EchoLensGameTest implements FabricGameTest {
 		if (!EntityType.MARKER.is(EchoTags.RECORDING_BLACKLIST)) {
 			helper.fail("marker entities must never be recorded");
 		}
+
 		if (!EntityType.BLOCK_DISPLAY.is(EchoTags.RECORDING_BLACKLIST)) {
 			helper.fail("display entities must never be recorded");
 		}
+
 		if (EntityType.ZOMBIE.is(EchoTags.RECORDING_BLACKLIST)) {
 			helper.fail("ordinary mobs must be recorded");
 		}
+
 		helper.succeed();
 	}
 }

@@ -37,6 +37,7 @@ class ResonanceTableLayoutTest {
 				ResonanceTableLayout.BUTTON_SIZE, ResonanceTableLayout.BUTTON_SIZE));
 		boxes.add(new Box("plus " + index, ResonanceTableLayout.PLUS_X, y + ResonanceTableLayout.BUTTON_Y_OFFSET,
 				ResonanceTableLayout.BUTTON_SIZE, ResonanceTableLayout.BUTTON_SIZE));
+
 		return boxes;
 	}
 
@@ -45,6 +46,7 @@ class ResonanceTableLayoutTest {
 	void rowContentsDoNotCollide() {
 		for (int index = 0; index < ResonanceTableLayout.ROW_COUNT; index++) {
 			List<Box> boxes = rowBoxes(index);
+
 			for (int a = 0; a < boxes.size(); a++) {
 				for (int b = a + 1; b < boxes.size(); b++) {
 					assertFalse(boxes.get(a).overlaps(boxes.get(b)),
@@ -59,6 +61,7 @@ class ResonanceTableLayoutTest {
 	void rowContentsStayInsideTheRow() {
 		for (int index = 0; index < ResonanceTableLayout.ROW_COUNT; index++) {
 			int top = ResonanceTableLayout.rowY(index);
+
 			for (Box box : rowBoxes(index)) {
 				assertTrue(box.x() >= ResonanceTableLayout.ROW_X, box.name() + " starts left of the row");
 				assertTrue(box.x() + box.width() <= ResonanceTableLayout.ROW_X + ResonanceTableLayout.ROW_WIDTH,
@@ -74,10 +77,12 @@ class ResonanceTableLayoutTest {
 	@DisplayName("rows, slots and the inventory never overlap each other")
 	void panelRegionsAreDisjoint() {
 		List<Box> boxes = new ArrayList<>();
+
 		for (int index = 0; index < ResonanceTableLayout.ROW_COUNT; index++) {
 			boxes.add(new Box("row " + index, ResonanceTableLayout.ROW_X, ResonanceTableLayout.rowY(index),
 					ResonanceTableLayout.ROW_WIDTH, ResonanceTableLayout.ROW_HEIGHT));
 		}
+
 		boxes.add(new Box("lens slot", ResonanceTableLayout.LENS_SLOT_X, ResonanceTableLayout.LENS_SLOT_Y,
 				ResonanceTableLayout.SLOT_SIZE, ResonanceTableLayout.SLOT_SIZE));
 		boxes.add(new Box("amethyst slot", ResonanceTableLayout.AMETHYST_SLOT_X, ResonanceTableLayout.AMETHYST_SLOT_Y,
@@ -90,6 +95,7 @@ class ResonanceTableLayoutTest {
 		boxes.add(new Box("hotbar", ResonanceTableLayout.INVENTORY_LEFT, ResonanceTableLayout.HOTBAR_TOP,
 				ResonanceTableLayout.INVENTORY_COLUMNS * ResonanceTableLayout.SLOT_SPACING,
 				ResonanceTableLayout.SLOT_SIZE));
+
 		for (int a = 0; a < boxes.size(); a++) {
 			for (int b = a + 1; b < boxes.size(); b++) {
 				assertFalse(boxes.get(a).overlaps(boxes.get(b)),

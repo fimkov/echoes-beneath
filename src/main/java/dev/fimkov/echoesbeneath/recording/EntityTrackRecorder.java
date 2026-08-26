@@ -40,11 +40,13 @@ public final class EntityTrackRecorder {
 		if (entity instanceof EchoLensEntity) {
 			return false;
 		}
+
 		return !entity.getType().is(EchoTags.RECORDING_BLACKLIST);
 	}
 
 	public void sample(Entity entity, int tick) {
 		TrackedEntity state = tracked.get(entity.getUUID());
+
 		if (state == null) {
 			if (!timeline.hasCapacity()) {
 				return;
@@ -54,16 +56,21 @@ public final class EntityTrackRecorder {
 			tracked.put(entity.getUUID(), state);
 			writeKeyframe(state, entity, tick);
 			captureEquipment(state, entity, tick, true);
+
 			return;
 		}
+
 		double distance = distanceMovedSince(state, entity);
 		boolean teleported = distance > TELEPORT_DISTANCE;
+
 		if (teleported) {
 			state.track.addAction(tick, EchoEntityAction.TELEPORT);
 		}
+
 		if (teleported || needsKeyframe(state, entity, tick)) {
 			writeKeyframe(state, entity, tick);
 		}
+
 		captureActions(state, entity, tick);
 		captureEquipment(state, entity, tick, false);
 	}
@@ -72,6 +79,7 @@ public final class EntityTrackRecorder {
 		double dx = entity.getX() - (center.getX() + state.lastX);
 		double dy = entity.getY() - (center.getY() + state.lastY);
 		double dz = entity.getZ() - (center.getZ() + state.lastZ);
+
 		return Math.sqrt(dx * dx + dy * dy + dz * dz);
 	}
 
@@ -79,15 +87,19 @@ public final class EntityTrackRecorder {
 		if (tick - state.lastKeyframeTick >= FORCED_KEYFRAME_INTERVAL) {
 			return true;
 		}
+
 		if (distanceMovedSince(state, entity) > POSITION_EPSILON) {
 			return true;
 		}
+
 		if (Math.abs(entity.getYRot() - state.lastYaw) > ROTATION_EPSILON) {
 			return true;
 		}
+
 		if (Math.abs(entity.getXRot() - state.lastPitch) > ROTATION_EPSILON) {
 			return true;
 		}
+
 		return entity.onGround() != state.lastOnGround || entity.getPose().ordinal() != state.lastPose;
 	}
 
@@ -113,33 +125,43 @@ public final class EntityTrackRecorder {
 		if (!(entity instanceof LivingEntity living)) {
 			return;
 		}
+
 		if (living.swinging && !state.wasSwinging) {
 			state.track.addAction(tick, EchoEntityAction.SWING);
 		}
+
 		state.wasSwinging = living.swinging;
 
 		boolean hurt = living.hurtTime > 0;
+
 		if (hurt && !state.wasHurt) {
 			state.track.addAction(tick, EchoEntityAction.HURT);
 		}
+
 		state.wasHurt = hurt;
 
 		boolean using = living.isUsingItem();
+
 		if (using && !state.wasUsingItem) {
 			state.track.addAction(tick, EchoEntityAction.USE_ITEM);
 		}
+
 		state.wasUsingItem = using;
 
 		boolean dead = living.isDeadOrDying();
+
 		if (dead && !state.wasDead) {
 			state.track.addAction(tick, EchoEntityAction.DEATH);
 		}
+
 		state.wasDead = dead;
 
 		boolean airborne = !living.onGround();
+
 		if (airborne && !state.wasAirborne && living.getDeltaMovement().y > 0.0D) {
 			state.track.addAction(tick, EchoEntityAction.JUMP);
 		}
+
 		state.wasAirborne = airborne;
 	}
 
@@ -147,10 +169,12 @@ public final class EntityTrackRecorder {
 		if (!(entity instanceof LivingEntity living)) {
 			return;
 		}
+
 		for (int slotIndex = 0; slotIndex < TRACKED_SLOTS.length; slotIndex++) {
 			ItemStack stack = living.getItemBySlot(TRACKED_SLOTS[slotIndex]);
 			ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
 			int itemIndex = timeline.internItem(itemId);
+
 			if (force || state.lastEquipment[slotIndex] != itemIndex) {
 				state.track.addEquipment(tick, slotIndex, itemIndex);
 				state.lastEquipment[slotIndex] = itemIndex;

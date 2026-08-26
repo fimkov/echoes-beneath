@@ -27,9 +27,11 @@ public abstract class FogRendererEchoMixin {
 	private static void echoesBeneath$tightenFog(Camera camera, FogRenderer.FogMode fogMode,
 			float renderDistance, boolean thickFog, float partialTick, CallbackInfo callback) {
 		float darkness = EchoDarkness.darkness();
+
 		if (darkness <= 0.0F) {
 			return;
 		}
+
 		RenderSystem.setShaderFogStart(blend(RenderSystem.getShaderFogStart(),
 				EchoDarkness.regionFogStart(), darkness));
 		RenderSystem.setShaderFogEnd(blend(RenderSystem.getShaderFogEnd(),
@@ -41,9 +43,11 @@ public abstract class FogRendererEchoMixin {
 	private static void echoesBeneath$blackenFogColor(Camera camera, float partialTick, ClientLevel level,
 			int renderDistanceChunks, float darkenWorldAmount, CallbackInfo callback) {
 		float darkness = EchoDarkness.darkness();
+
 		if (darkness <= 0.0F) {
 			return;
 		}
+
 		float retained = 1.0F - darkness;
 		fogRed *= retained;
 		fogGreen *= retained;

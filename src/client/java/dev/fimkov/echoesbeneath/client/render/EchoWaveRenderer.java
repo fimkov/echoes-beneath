@@ -30,9 +30,11 @@ public final class EchoWaveRenderer {
 
 	public static void render(EchoRenderContext context, ClientPlaybackSession session, Vec3 cameraPosition) {
 		List<EchoWave> waves = session.waves().active();
+
 		if (waves.isEmpty() || context.consumers() == null) {
 			return;
 		}
+
 		float partialTick = context.tickCounter().getGameTimeDeltaPartialTick(false);
 		BlockPos center = session.region().center();
 		PoseStack poseStack = context.matrixStack();
@@ -58,6 +60,7 @@ public final class EchoWaveRenderer {
 		for (Map.Entry<Integer, EchoSectionMesh> entry : session.meshes().entrySet()) {
 			EchoSectionMesh mesh = entry.getValue();
 			collectNearbyWaves(mesh, waves, center, currentTick, partialTick, nearby);
+
 			if (nearby.isEmpty()) {
 				continue;
 			}
@@ -67,6 +70,7 @@ public final class EchoWaveRenderer {
 				}
 				EchoFaceGeometry.faceBasis(packedFace, mesh.originX(), mesh.originY(), mesh.originZ(), basis);
 				collectFacingWaves(nearby, packedFace, basis, center, facing, currentTick, partialTick);
+
 				if (facing.isEmpty()) {
 					continue;
 				}
@@ -81,9 +85,11 @@ public final class EchoWaveRenderer {
 			float[] depthOut, int budget) {
 		int emitted = 0;
 		float presence = EchoDarkness.transitionProgress();
+
 		if (presence <= 0.0F) {
 			return 0;
 		}
+
 		for (int row = 0; row < EchoTexelGrid.texelsPerBlock() && emitted < budget; row++) {
 			for (int column = 0; column < EchoTexelGrid.texelsPerBlock() && emitted < budget; column++) {
 				float u = (column + 0.5F) * texel;
@@ -93,17 +99,20 @@ public final class EchoWaveRenderer {
 				float localZ = basis[2] + basis[5] * u + basis[8] * v;
 				int body = shadePoint(waves, currentTick, partialTick,
 						center.getX() + localX, center.getY() + localY, center.getZ() + localZ, depthOut);
+
 				if ((body >>> 24) == 0) {
 					continue;
 				}
 				int paletteIndex = (int) depthOut[SAMPLE_PALETTE];
 				float fade = depthOut[SAMPLE_FADE];
 				int colour;
+
 				if (EchoWavePalette.isFront(depthOut[SAMPLE_DEPTH])) {
 					colour = EchoWavePalette.outlineColour(paletteIndex, fade);
 				} else {
 					int hash = EchoTexelGrid.hash(center.getX() + localX, center.getY() + localY,
 							center.getZ() + localZ, animationStep);
+
 					if (EchoTexelGrid.isGlow(hash)) {
 						colour = EchoWavePalette.glowColour(paletteIndex, fade, false);
 					} else if (EchoTexelGrid.isEmber(hash)) {
@@ -117,11 +126,13 @@ public final class EchoWaveRenderer {
 				emitted++;
 			}
 		}
+
 		return emitted;
 	}
 
 	private static int scaleAlpha(int argb, float presence) {
 		int alpha = Math.round(((argb >>> 24) & 0xFF) * presence);
+
 		return (alpha << 24) | (argb & 0x00FFFFFF);
 	}
 
@@ -149,10 +160,12 @@ public final class EchoWaveRenderer {
 		double faceCentreX = center.getX() + basis[0] + (basis[3] + basis[6]) * 0.5D;
 		double faceCentreY = center.getY() + basis[1] + (basis[4] + basis[7]) * 0.5D;
 		double faceCentreZ = center.getZ() + basis[2] + (basis[5] + basis[8]) * 0.5D;
+
 		for (EchoWave wave : nearby) {
 			double facing = (wave.origin().x - faceCentreX) * direction.getStepX()
 					+ (wave.origin().y - faceCentreY) * direction.getStepY()
 					+ (wave.origin().z - faceCentreZ) * direction.getStepZ();
+
 			if (facing <= 0.0D) {
 				continue;
 			}
@@ -162,6 +175,7 @@ public final class EchoWaveRenderer {
 			double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
 			float elapsed = wave.elapsedAt(currentTick, partialTick);
 			double reach = wave.shellThickness() + FACE_REACH;
+
 			if (Math.abs(distance - wave.radiusAt(elapsed)) > reach
 					&& distance > wave.localRevealRadius() + FACE_REACH) {
 				continue;
@@ -177,6 +191,7 @@ public final class EchoWaveRenderer {
 				center.getX() + mesh.originX() + 8.0D,
 				center.getY() + mesh.originY() + 8.0D,
 				center.getZ() + mesh.originZ() + 8.0D);
+
 		for (EchoWave wave : waves) {
 			float elapsed = wave.elapsedAt(currentTick, partialTick);
 			double front = wave.radiusAt(elapsed);
@@ -184,6 +199,7 @@ public final class EchoWaveRenderer {
 			double reach = EchoSectionMesh.CIRCUMRADIUS + wave.shellThickness();
 			boolean onFront = Math.abs(distance - front) <= reach;
 			boolean nearSource = distance <= EchoSectionMesh.CIRCUMRADIUS + wave.localRevealRadius();
+
 			if (onFront || nearSource) {
 				destination.add(wave);
 			}
@@ -197,6 +213,7 @@ public final class EchoWaveRenderer {
 		float bestDepth = 0.0F;
 		float bestFade = 0.0F;
 		int bestPalette = EchoWavePalette.PALETTE_SCULK;
+
 		for (EchoWave wave : waves) {
 			float elapsed = wave.elapsedAt(currentTick, partialTick);
 			double deltaX = wave.origin().x - worldX;
@@ -205,9 +222,11 @@ public final class EchoWaveRenderer {
 			double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
 			float fade = wave.fadeAt(elapsed);
 			float depth = wave.depthOf(distance, elapsed);
+
 			if (depth >= 0.0F) {
 				int colour = EchoWavePalette.colorAt(wave.paletteIndex(), depth, fade);
 				int alpha = (colour >>> 24) & 0xFF;
+
 				if (alpha > bestAlpha) {
 					bestAlpha = alpha;
 					best = colour;
@@ -217,11 +236,13 @@ public final class EchoWaveRenderer {
 				}
 			}
 			float proximity = wave.proximityAt(distance, elapsed);
+
 			if (proximity <= 0.0F) {
 				continue;
 			}
 			int localColour = EchoWavePalette.localColour(wave.paletteIndex(), proximity, fade);
 			int localAlpha = (localColour >>> 24) & 0xFF;
+
 			if (localAlpha > bestAlpha) {
 				bestAlpha = localAlpha;
 				best = localColour;
@@ -230,9 +251,11 @@ public final class EchoWaveRenderer {
 				bestPalette = wave.paletteIndex();
 			}
 		}
+
 		sampleOut[SAMPLE_DEPTH] = bestDepth;
 		sampleOut[SAMPLE_FADE] = bestFade;
 		sampleOut[SAMPLE_PALETTE] = bestPalette;
+
 		return bestAlpha == 0 ? 0 : best;
 	}
 
@@ -240,9 +263,11 @@ public final class EchoWaveRenderer {
 			double worldX, double worldY, double worldZ) {
 		float[] sample = new float[SAMPLE_SIZE];
 		int body = shadePoint(waves, currentTick, partialTick, worldX, worldY, worldZ, sample);
+
 		if ((body >>> 24) == 0) {
 			return 0;
 		}
+
 		return EchoWavePalette.glowColour((int) sample[SAMPLE_PALETTE], sample[SAMPLE_FADE], false);
 	}
 }

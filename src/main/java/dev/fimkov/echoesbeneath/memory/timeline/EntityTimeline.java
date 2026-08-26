@@ -37,9 +37,11 @@ public final class EntityTimeline {
 		this.entityTypeIndices.defaultReturnValue(-1);
 		this.itemIndices = new Object2IntOpenHashMap<>();
 		this.itemIndices.defaultReturnValue(-1);
+
 		for (int index = 0; index < entityTypePalette.size(); index++) {
 			this.entityTypeIndices.put(entityTypePalette.get(index), index);
 		}
+
 		for (int index = 0; index < itemPalette.size(); index++) {
 			this.itemIndices.put(itemPalette.get(index), index);
 		}
@@ -52,28 +54,35 @@ public final class EntityTimeline {
 	public EntityTrack createTrack(ResourceLocation entityTypeId) {
 		EntityTrack track = new EntityTrack(internEntityType(entityTypeId));
 		tracks.add(track);
+
 		return track;
 	}
 
 	public int internItem(ResourceLocation itemId) {
 		int existing = itemIndices.getInt(itemId);
+
 		if (existing >= 0) {
 			return existing;
 		}
+
 		int index = itemPalette.size();
 		itemPalette.add(itemId);
 		itemIndices.put(itemId, index);
+
 		return index;
 	}
 
 	private int internEntityType(ResourceLocation entityTypeId) {
 		int existing = entityTypeIndices.getInt(entityTypeId);
+
 		if (existing >= 0) {
 			return existing;
 		}
+
 		int index = entityTypePalette.size();
 		entityTypePalette.add(entityTypeId);
 		entityTypeIndices.put(entityTypeId, index);
+
 		return index;
 	}
 
@@ -87,17 +96,21 @@ public final class EntityTimeline {
 
 	public int totalKeyframes() {
 		int total = 0;
+
 		for (EntityTrack track : tracks) {
 			total += track.keyframeCount();
 		}
+
 		return total;
 	}
 
 	public ResourceLocation entityTypeOf(EntityTrack track) {
 		int index = track.typeIndex();
+
 		if (index < 0 || index >= entityTypePalette.size()) {
 			return ResourceLocation.withDefaultNamespace("marker");
 		}
+
 		return entityTypePalette.get(index);
 	}
 
@@ -105,6 +118,7 @@ public final class EntityTimeline {
 		if (index < 0 || index >= itemPalette.size()) {
 			return ResourceLocation.withDefaultNamespace("air");
 		}
+
 		return itemPalette.get(index);
 	}
 
@@ -114,6 +128,7 @@ public final class EntityTimeline {
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -130,30 +145,38 @@ public final class EntityTimeline {
 		tag.put("entity_types", writeIdentifiers(entityTypePalette));
 		tag.put("items", writeIdentifiers(itemPalette));
 		ListTag trackList = new ListTag();
+
 		for (EntityTrack track : tracks) {
 			trackList.add(track.toNbt());
 		}
+
 		tag.put("tracks", trackList);
+
 		return tag;
 	}
 
 	private static ListTag writeIdentifiers(List<ResourceLocation> identifiers) {
 		ListTag list = new ListTag();
+
 		for (ResourceLocation identifier : identifiers) {
 			list.add(StringTag.valueOf(identifier.toString()));
 		}
+
 		return list;
 	}
 
 	private static List<ResourceLocation> readIdentifiers(ListTag list) {
 		List<ResourceLocation> identifiers = new ArrayList<>(list.size());
+
 		for (Tag element : list) {
 			ResourceLocation parsed = ResourceLocation.tryParse(element.getAsString());
+
 			if (parsed == null) {
 				throw new IllegalArgumentException("Entity timeline holds an unreadable identifier");
 			}
 			identifiers.add(parsed);
 		}
+
 		return identifiers;
 	}
 
@@ -161,9 +184,11 @@ public final class EntityTimeline {
 		List<ResourceLocation> entityTypes = readIdentifiers(tag.getList("entity_types", NBT_STRING_TYPE));
 		List<ResourceLocation> items = readIdentifiers(tag.getList("items", NBT_STRING_TYPE));
 		List<EntityTrack> tracks = new ArrayList<>();
+
 		for (Tag element : tag.getList("tracks", NBT_COMPOUND_TYPE)) {
 			tracks.add(EntityTrack.fromNbt((CompoundTag) element));
 		}
+
 		return new EntityTimeline(entityTypes, items, tracks, Math.max(maxTracks, tracks.size()));
 	}
 

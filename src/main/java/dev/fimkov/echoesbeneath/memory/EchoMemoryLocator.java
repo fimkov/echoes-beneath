@@ -14,6 +14,7 @@ public final class EchoMemoryLocator {
 			ResourceKey<Level> dimension, BlockPos position) {
 		EchoMemoryReference best = null;
 		double bestDistance = Double.MAX_VALUE;
+
 		for (EchoMemoryReference candidate : references.entries()) {
 			if (!candidate.covers(dimension, position)) {
 				continue;
@@ -21,11 +22,13 @@ public final class EchoMemoryLocator {
 			double distance = candidate.distanceSquaredTo(position);
 			boolean closer = distance < bestDistance;
 			boolean tieBrokenBySlot = distance == bestDistance && best != null && candidate.slot() < best.slot();
+
 			if (best == null || closer || tieBrokenBySlot) {
 				best = candidate;
 				bestDistance = distance;
 			}
 		}
+
 		return Optional.ofNullable(best);
 	}
 }

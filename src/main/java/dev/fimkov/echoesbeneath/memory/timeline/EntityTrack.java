@@ -59,9 +59,11 @@ public final class EntityTrack {
 	private static int packFlags(boolean onGround, int poseOrdinal, boolean baby) {
 		int flags = onGround ? FLAG_ON_GROUND : 0;
 		flags |= (poseOrdinal & POSE_MASK) << POSE_SHIFT;
+
 		if (baby) {
 			flags |= FLAG_BABY;
 		}
+
 		return flags;
 	}
 
@@ -150,6 +152,7 @@ public final class EntityTrack {
 
 	public int lastKeyframeTick() {
 		int count = keyframeCount();
+
 		return count == 0 ? -1 : keyframeTick(count - 1);
 	}
 
@@ -159,6 +162,7 @@ public final class EntityTrack {
 		tag.putIntArray("keyframes", keyframes.toIntArray());
 		tag.putIntArray("actions", actions.toIntArray());
 		tag.putIntArray("equipment", equipment.toIntArray());
+
 		return tag;
 	}
 
@@ -166,11 +170,14 @@ public final class EntityTrack {
 		int[] keyframeData = tag.getIntArray("keyframes");
 		int[] actionData = tag.getIntArray("actions");
 		int[] equipmentData = tag.getIntArray("equipment");
+
 		if (keyframeData.length % KEYFRAME_STRIDE != 0
 				|| actionData.length % ACTION_STRIDE != 0
+
 				|| equipmentData.length % EQUIPMENT_STRIDE != 0) {
 			throw new IllegalArgumentException("Entity track arrays have inconsistent lengths");
 		}
+
 		return new EntityTrack(tag.getInt("type"), new IntArrayList(keyframeData),
 				new IntArrayList(actionData), new IntArrayList(equipmentData));
 	}

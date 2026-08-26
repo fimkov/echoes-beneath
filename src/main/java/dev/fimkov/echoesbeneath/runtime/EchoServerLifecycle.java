@@ -20,6 +20,7 @@ public final class EchoServerLifecycle {
 
 		EchoPlatforms.server().onServerStopping(server -> {
 			EchoServerState state = EchoServerState.current();
+
 			if (state != null) {
 				state.recordings().stopAll(EchoRecordingStopReason.SERVER_STOPPING);
 				state.playbacks().stopAll(EchoPlaybackStopReason.SERVER_STOPPING);
@@ -34,6 +35,7 @@ public final class EchoServerLifecycle {
 
 		EchoPlatforms.server().onLevelUnload((server, level) -> {
 			EchoServerState state = EchoServerState.current();
+
 			if (state != null) {
 				state.recordings().stopIn(level, EchoRecordingStopReason.DIMENSION_UNLOADED);
 				state.playbacks().stopIn(level, EchoPlaybackStopReason.DIMENSION_UNLOADED);
@@ -42,6 +44,7 @@ public final class EchoServerLifecycle {
 
 		EchoPlatforms.server().onServerTickEnd(server -> {
 			EchoServerState state = EchoServerState.current();
+
 			if (state != null) {
 				state.tick();
 			}
@@ -49,6 +52,7 @@ public final class EchoServerLifecycle {
 
 		EchoPlatforms.server().onEntityLoad((entity, level) -> {
 			EchoServerState state = EchoServerState.current();
+
 			if (state != null) {
 				state.suppression().restoreOnLoad(entity);
 			}
@@ -56,6 +60,7 @@ public final class EchoServerLifecycle {
 
 		EchoPlatforms.server().onEntityChangedLevel((entity, level) -> {
 			EchoServerState state = EchoServerState.current();
+
 			if (state != null) {
 				state.suppression().restoreOnLoad(entity);
 			}
@@ -63,6 +68,7 @@ public final class EchoServerLifecycle {
 
 		EchoPlatforms.server().onPlayerDisconnect(player -> {
 			EchoServerState state = EchoServerState.current();
+
 			if (state != null) {
 				state.recordings().handOverTo(player);
 				state.playbacks().onOwnerDisconnected(player);

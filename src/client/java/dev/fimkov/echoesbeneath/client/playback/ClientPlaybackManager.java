@@ -43,6 +43,7 @@ public final class ClientPlaybackManager {
 				return Optional.of(session);
 			}
 		}
+
 		return Optional.empty();
 	}
 
@@ -55,11 +56,14 @@ public final class ClientPlaybackManager {
 
 	public void onData(PlaybackDataPayload payload, ClientLevel level) {
 		PendingTransfer transfer = transfers.get(payload.playbackId());
+
 		if (transfer == null) {
 			return;
 		}
+
 		try {
 			transfer.assembler().accept(payload.part(), payload.chunkIndex(), payload.chunkCount(), payload.chunk());
+
 			if (transfer.assembler().isComplete()) {
 				finishTransfer(payload.playbackId(), transfer, level);
 			}
@@ -71,6 +75,7 @@ public final class ClientPlaybackManager {
 
 	private void finishTransfer(UUID playbackId, PendingTransfer transfer, ClientLevel level) {
 		transfers.remove(playbackId);
+
 		try {
 			var blockLookup = level.registryAccess().<Block>registryOrThrow(Registries.BLOCK).asLookup();
 			ClientPlaybackData data = ClientPlaybackData.assemble(
@@ -89,6 +94,7 @@ public final class ClientPlaybackManager {
 
 	public void onTick(PlaybackTickPayload payload) {
 		ClientPlaybackSession session = sessions.get(payload.playbackId());
+
 		if (session != null) {
 			session.syncTo(payload.currentTick());
 		}
@@ -97,6 +103,7 @@ public final class ClientPlaybackManager {
 	public void onStop(PlaybackStopPayload payload) {
 		transfers.remove(payload.playbackId());
 		ClientPlaybackSession session = sessions.remove(payload.playbackId());
+
 		if (session != null) {
 			session.discard();
 		}
@@ -112,6 +119,7 @@ public final class ClientPlaybackManager {
 		for (ClientPlaybackSession session : sessions.values()) {
 			session.discard();
 		}
+
 		sessions.clear();
 		transfers.clear();
 		EchoRegionAmbience.forget();

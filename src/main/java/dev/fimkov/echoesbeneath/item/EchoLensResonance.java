@@ -30,27 +30,36 @@ public final class EchoLensResonance {
 		if (!selected || level.isClientSide() || !(holder instanceof ServerPlayer player)) {
 			return;
 		}
+
 		EchoMemoryReferences references = EchoLensStacks.references(stack);
+
 		if (references.isEmpty()) {
 			return;
 		}
+
 		long gameTime = level.getGameTime();
 		boolean particleBeat = gameTime % PARTICLE_INTERVAL_TICKS == 0;
 		boolean signalBeat = gameTime % SIGNAL_INTERVAL_TICKS == 0;
+
 		if (!particleBeat && !signalBeat) {
 			return;
 		}
+
 		Optional<EchoMemoryReference> resonating = EchoMemoryLocator.resonating(
 				references, level.dimension(), player.blockPosition());
+
 		if (resonating.isEmpty()) {
 			return;
 		}
+
 		ServerLevel serverLevel = player.serverLevel();
+
 		if (particleBeat) {
 			serverLevel.sendParticles(player, ParticleTypes.SCULK_SOUL, false,
 					player.getX(), player.getEyeY(), player.getZ(),
 					PARTICLE_COUNT, PARTICLE_SPREAD, PARTICLE_SPREAD, PARTICLE_SPREAD, 0.0D);
 		}
+
 		if (signalBeat) {
 			announce(serverLevel, player, resonating.get());
 		}

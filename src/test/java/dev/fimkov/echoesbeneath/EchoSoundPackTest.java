@@ -23,6 +23,7 @@ class EchoSoundPackTest {
 	private static JsonObject asset(String path) {
 		try (InputStream stream = EchoSoundPackTest.class.getResourceAsStream(path)) {
 			assertNotNull(stream, path + " is missing");
+
 			return JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
 		} catch (Exception failure) {
 			throw new IllegalStateException(path, failure);
@@ -37,17 +38,20 @@ class EchoSoundPackTest {
 	@DisplayName("every declared sound has a real ogg file behind it")
 	void everySoundHasAFile() {
 		List<String> missing = new ArrayList<>();
+
 		for (Map.Entry<String, com.google.gson.JsonElement> entry : definitions().entrySet()) {
 			for (var element : entry.getValue().getAsJsonObject().getAsJsonArray("sounds")) {
 				String name = element.getAsJsonObject().get("name").getAsString()
 						.replace(NAMESPACE + ":", "");
 				String path = "/assets/" + NAMESPACE + "/sounds/" + name + ".ogg";
+
 				try (InputStream stream = EchoSoundPackTest.class.getResourceAsStream(path)) {
 					if (stream == null) {
 						missing.add(path);
 						continue;
 					}
 					byte[] header = stream.readNBytes(OGG_MAGIC.length);
+
 					for (int index = 0; index < OGG_MAGIC.length; index++) {
 						if (header.length <= index || header[index] != OGG_MAGIC[index]) {
 							missing.add(path + " is not an Ogg stream");
@@ -59,6 +63,7 @@ class EchoSoundPackTest {
 				}
 			}
 		}
+
 		assertTrue(missing.isEmpty(), String.join("; ", missing));
 	}
 
@@ -68,10 +73,12 @@ class EchoSoundPackTest {
 		JsonObject english = asset("/assets/" + NAMESPACE + "/lang/en_us.json");
 		JsonObject russian = asset("/assets/" + NAMESPACE + "/lang/ru_ru.json");
 		List<String> missing = new ArrayList<>();
+
 		for (Map.Entry<String, com.google.gson.JsonElement> entry : definitions().entrySet()) {
 			JsonObject definition = entry.getValue().getAsJsonObject();
 			assertTrue(definition.has("subtitle"), entry.getKey() + " has no subtitle");
 			String key = definition.get("subtitle").getAsString();
+
 			if (!english.has(key)) {
 				missing.add("en_us " + key);
 			}
@@ -79,6 +86,7 @@ class EchoSoundPackTest {
 				missing.add("ru_ru " + key);
 			}
 		}
+
 		assertTrue(missing.isEmpty(), String.join("; ", missing));
 	}
 
@@ -87,6 +95,7 @@ class EchoSoundPackTest {
 	void registeredEventsAreDeclared() throws IllegalAccessException {
 		JsonObject definitions = definitions();
 		List<String> missing = new ArrayList<>();
+
 		for (java.lang.reflect.Field field : EchoSounds.class.getFields()) {
 			if (!SoundEvent.class.isAssignableFrom(field.getType())) {
 				continue;
@@ -94,6 +103,7 @@ class EchoSoundPackTest {
 			SoundEvent event =
 					(SoundEvent) field.get(null);
 			String key = event.getLocation().getPath();
+
 			if (!event.getLocation().getNamespace().equals(NAMESPACE)) {
 				continue;
 			}
@@ -102,6 +112,7 @@ class EchoSoundPackTest {
 						+ " but the pack has no entry named " + key);
 			}
 		}
+
 		assertTrue(missing.isEmpty(), String.join("; ", missing));
 	}
 
@@ -110,6 +121,7 @@ class EchoSoundPackTest {
 	void definitionsAreComplete() {
 		JsonObject definitions = definitions();
 		assertFalse(definitions.isEmpty(), "no sounds are declared");
+
 		for (Map.Entry<String, com.google.gson.JsonElement> entry : definitions.entrySet()) {
 			assertTrue(entry.getValue().getAsJsonObject().has("category"),
 					entry.getKey() + " declares no category");

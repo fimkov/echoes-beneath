@@ -16,9 +16,11 @@ public final class EchoKeys {
 	public static void poll() {
 		Minecraft client = Minecraft.getInstance();
 		boolean pressed = false;
+
 		while (OPEN_CONFIG.consumeClick()) {
 			pressed = true;
 		}
+
 		if (pressed && client.screen == null) {
 			client.setScreen(new EchoConfigScreen(null));
 		}

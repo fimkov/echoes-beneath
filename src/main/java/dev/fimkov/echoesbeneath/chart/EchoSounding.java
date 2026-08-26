@@ -24,6 +24,7 @@ public final class EchoSounding {
 		Columns columns = new Columns(record.radius(), record.verticalRadius(), record.snapshot());
 		seed(record.soundTimeline(), columns, record.radius());
 		columns.flood();
+
 		return columns;
 	}
 
@@ -33,12 +34,15 @@ public final class EchoSounding {
 		int vertical = record.verticalRadius();
 		int lowest = Math.max(-vertical, minY - record.center().getY());
 		int highest = Math.min(vertical, maxY - record.center().getY());
+
 		if (lowest > highest || budget <= 0) {
 			return EchoChartShape.empty(record.id(), lowest, highest, record.recordedVision());
 		}
+
 		IntList positions = new IntArrayList();
 		IntList states = new IntArrayList();
 		gather(snapshot, columns, record.radius(), lowest, highest, budget, positions, states);
+
 		return new EchoChartShape(record.id(), snapshot.palette(), positions, states, lowest, highest,
 				record.recordedVision());
 	}
@@ -66,6 +70,7 @@ public final class EchoSounding {
 						return;
 					}
 					int index = snapshot.paletteIndexAt(x, y, z);
+
 					if (index == BlockPalette.AIR_INDEX || !onSurface(snapshot, x, y, z)) {
 						continue;
 					}
@@ -99,6 +104,7 @@ public final class EchoSounding {
 			this.carried = new int[width * width];
 			this.open = new boolean[width * width];
 			this.fronts = new IntList[radius + 2];
+
 			for (int x = -radius; x <= radius; x++) {
 				for (int z = -radius; z <= radius; z++) {
 					open[slot(x, z)] = hasAir(snapshot, x, z, vertical);
@@ -144,10 +150,12 @@ public final class EchoSounding {
 				return;
 			}
 			int at = slot(x, z);
+
 			if (carried[at] >= carry) {
 				return;
 			}
 			carried[at] = carry;
+
 			if (fronts[carry] == null) {
 				fronts[carry] = new IntArrayList();
 			}
@@ -158,16 +166,19 @@ public final class EchoSounding {
 		private void flood() {
 			for (int carry = peak; carry > 0; carry--) {
 				IntList front = fronts[carry];
+
 				if (front == null) {
 					continue;
 				}
 				for (int cursor = 0; cursor < front.size(); cursor++) {
 					int at = front.getInt(cursor);
+
 					if (carried[at] != carry) {
 						continue;
 					}
 					int x = at % width - radius;
 					int z = at / width - radius;
+
 					for (int[] step : STEPS) {
 						raise(x + step[0], z + step[1], carry - 1);
 					}

@@ -28,6 +28,7 @@ public class EchoSoundingTableGameTest implements FabricGameTest {
 		stack.set(EchoComponents.CHART_DATA, new EchoChartData(UUID.randomUUID(),
 				ResourceKey.create(Registries.DIMENSION, ResourceLocation.withDefaultNamespace("overworld")),
 				BlockPos.ZERO, RADIUS, LOWEST, HIGHEST, SOUNDED));
+
 		return stack;
 	}
 
@@ -38,9 +39,11 @@ public class EchoSoundingTableGameTest implements FabricGameTest {
 				ContainerLevelAccess.NULL);
 		menu.slots.get(SoundingTableMenu.RESULT_SLOT).set(chart());
 		menu.slots.get(SoundingTableMenu.LENS_SLOT).set(new ItemStack(EchoItems.ECHO_LENS));
+
 		if (menu.slots.get(SoundingTableMenu.RESULT_SLOT).getItem().isEmpty()) {
 			helper.fail("the table ate a chart the player had put down");
 		}
+
 		helper.succeed();
 	}
 
@@ -51,17 +54,21 @@ public class EchoSoundingTableGameTest implements FabricGameTest {
 		player.getInventory().add(new ItemStack(EchoItems.ECHO_LENS));
 		SoundingTableMenu menu = new SoundingTableMenu(1, player.getInventory(),
 				ContainerLevelAccess.NULL);
+
 		for (int slot = 2; slot < menu.slots.size(); slot++) {
 			if (!menu.slots.get(slot).getItem().isEmpty()) {
 				menu.quickMoveStack(player, slot);
 			}
 		}
+
 		if (menu.slots.get(SoundingTableMenu.LENS_SLOT).getItem().isEmpty()) {
 			helper.fail("a shift clicked lens should land in the lens slot");
 		}
+
 		if (menu.slots.get(SoundingTableMenu.RESULT_SLOT).getItem().isEmpty()) {
 			helper.fail("a shift clicked chart should land in the chart slot");
 		}
+
 		helper.succeed();
 	}
 
@@ -70,15 +77,19 @@ public class EchoSoundingTableGameTest implements FabricGameTest {
 		Player player = helper.makeMockPlayer(GameType.SURVIVAL);
 		SoundingTableMenu menu = new SoundingTableMenu(1, player.getInventory(),
 				ContainerLevelAccess.NULL);
+
 		if (!menu.slots.get(SoundingTableMenu.RESULT_SLOT).mayPlace(chart())) {
 			helper.fail("a chart should go back into the table");
 		}
+
 		if (menu.slots.get(SoundingTableMenu.RESULT_SLOT).mayPlace(new ItemStack(EchoItems.ECHO_CHART))) {
 			helper.fail("a blank chart holds nothing and should be refused");
 		}
+
 		if (menu.slots.get(SoundingTableMenu.RESULT_SLOT).mayPlace(new ItemStack(EchoItems.ECHO_LENS))) {
 			helper.fail("the result slot is not for lenses");
 		}
+
 		helper.succeed();
 	}
 }

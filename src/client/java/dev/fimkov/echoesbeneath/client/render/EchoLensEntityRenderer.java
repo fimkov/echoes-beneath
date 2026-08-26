@@ -39,9 +39,11 @@ public class EchoLensEntityRenderer extends EntityRenderer<EchoLensEntity> {
 	public void render(EchoLensEntity entity, float entityYaw, float partialTick, PoseStack poseStack,
 			MultiBufferSource buffers, int packedLight) {
 		ItemStack stack = entity.getLens();
+
 		if (stack.isEmpty()) {
 			return;
 		}
+
 		float age = entity.tickCount + partialTick;
 		float bob = (float) Math.sin(age * HOVER_BOB_SPEED) * HOVER_BOB_AMPLITUDE;
 		float lean = (float) Math.sin(age * NUTATION_SPEED) * NUTATION_DEGREES;
@@ -63,7 +65,9 @@ public class EchoLensEntityRenderer extends EntityRenderer<EchoLensEntity> {
 		if (entity.getMode() != EchoLensMode.RECORDING || entity.isArriving()) {
 			return 0.0F;
 		}
+
 		float sinceBeat = (age % HEARTBEAT_TICKS) / HEARTBEAT_TICKS;
+
 		return (float) Math.exp(-sinceBeat * HEARTBEAT_DECAY) * HEARTBEAT_AMOUNT;
 	}
 

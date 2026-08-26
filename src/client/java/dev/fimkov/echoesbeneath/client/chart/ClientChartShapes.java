@@ -33,26 +33,36 @@ public final class ClientChartShapes {
 	public static void accept(ChartShapePayload payload) {
 		byte[][] chunks = PENDING.computeIfAbsent(payload.target(),
 				ignored -> new byte[payload.chunkCount()][]);
+
 		if (chunks.length != payload.chunkCount()) {
 			PENDING.remove(payload.target());
+
 			return;
 		}
+
 		chunks[payload.chunkIndex()] = payload.chunk();
+
 		for (byte[] chunk : chunks) {
 			if (chunk == null) {
 				return;
 			}
 		}
+
 		PENDING.remove(payload.target());
 		List<byte[]> ordered = new ArrayList<>(chunks.length);
+
 		for (byte[] chunk : chunks) {
 			ordered.add(chunk);
 		}
+
 		byte[] joined = EchoChartCodec.join(ordered);
+
 		if (joined.length == 0) {
 			READY.remove(payload.target());
+
 			return;
 		}
+
 		EchoChartCloud cloud = EchoChartCodec.decode(joined);
 		READY.put(payload.target(), EchoChartModel.of(cloud));
 	}

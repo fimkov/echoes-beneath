@@ -37,12 +37,14 @@ public final class EchoWavePalette {
 
 	public static int outlineColour(int paletteIndex, float fade) {
 		int alpha = quantise(OUTLINE_ALPHA * Math.clamp(fade, 0.0F, 1.0F));
+
 		return (alpha << 24) | OUTLINE_COLOURS[clampPalette(paletteIndex)];
 	}
 
 	public static int glowColour(int paletteIndex, float fade, boolean ember) {
 		int alpha = quantise(GLOW_ALPHA * Math.clamp(fade, 0.0F, 1.0F));
 		int[] source = ember ? EMBER_COLOURS : GLOW_COLOURS;
+
 		return (alpha << 24) | source[clampPalette(paletteIndex)];
 	}
 
@@ -51,6 +53,7 @@ public final class EchoWavePalette {
 		float strength = Math.clamp(proximity, 0.0F, 1.0F);
 		int stop = Math.min(stops.length - 1, (int) ((1.0F - strength) * stops.length));
 		int alpha = quantise(LOCAL_ALPHA * strength * Math.clamp(fade, 0.0F, 1.0F));
+
 		return (alpha << 24) | stops[stop];
 	}
 
@@ -60,6 +63,7 @@ public final class EchoWavePalette {
 		int stop = Math.min(stops.length - 1, (int) (clamped * stops.length));
 		float tail = 1.0F - clamped;
 		int alpha = quantise(BODY_ALPHA * tail * Math.clamp(fade, 0.0F, 1.0F));
+
 		return (alpha << 24) | stops[stop];
 	}
 
@@ -69,6 +73,7 @@ public final class EchoWavePalette {
 
 	private static int quantise(float raw) {
 		int step = Math.round(Math.clamp(raw / 255.0F, 0.0F, 1.0F) * ALPHA_STEPS);
+
 		return Math.round(255.0F * step / ALPHA_STEPS);
 	}
 }

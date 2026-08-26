@@ -46,9 +46,11 @@ public final class ParticleTimeline {
 		this.typePalette = typePalette;
 		this.typeIndices = new Object2IntOpenHashMap<>();
 		this.typeIndices.defaultReturnValue(-1);
+
 		for (int index = 0; index < typePalette.size(); index++) {
 			this.typeIndices.put(typePalette.get(index), index);
 		}
+
 		this.data = data;
 		this.maxEvents = maxEvents;
 	}
@@ -58,13 +60,16 @@ public final class ParticleTimeline {
 		if (size() >= maxEvents) {
 			return false;
 		}
+
 		int quantizedX = EchoCoordinates.quantizePosition(relativeX);
 		int quantizedY = EchoCoordinates.quantizePosition(relativeY);
 		int quantizedZ = EchoCoordinates.quantizePosition(relativeZ);
 		int typeIndex = internType(typeId);
+
 		if (duplicatesLastEvent(tick, quantizedX, quantizedY, quantizedZ, typeIndex)) {
 			return true;
 		}
+
 		data.add(tick);
 		data.add(quantizedX);
 		data.add(quantizedY);
@@ -74,15 +79,19 @@ public final class ParticleTimeline {
 		data.add(Math.round((float) spreadX * MILLI));
 		data.add(Math.round((float) spreadY * MILLI));
 		data.add(Math.round((float) spreadZ * MILLI));
+
 		return true;
 	}
 
 	private boolean duplicatesLastEvent(int tick, int x, int y, int z, int typeIndex) {
 		int count = size();
+
 		if (count == 0) {
 			return false;
 		}
+
 		int last = count - 1;
+
 		return tickAt(last) == tick
 				&& data.getInt(last * STRIDE + OFFSET_X) == x
 				&& data.getInt(last * STRIDE + OFFSET_Y) == y
@@ -92,12 +101,15 @@ public final class ParticleTimeline {
 
 	private int internType(ResourceLocation typeId) {
 		int existing = typeIndices.getInt(typeId);
+
 		if (existing >= 0) {
 			return existing;
 		}
+
 		int index = typePalette.size();
 		typePalette.add(typeId);
 		typeIndices.put(typeId, index);
+
 		return index;
 	}
 
@@ -123,11 +135,13 @@ public final class ParticleTimeline {
 
 	public ResourceLocation typeAt(int index) {
 		int typeIndex = data.getInt(index * STRIDE + OFFSET_TYPE);
+
 		if (typeIndex < 0 || typeIndex >= typePalette.size()) {
 			return typePalette.isEmpty()
 					? ResourceLocation.withDefaultNamespace("intentionally_empty")
 					: typePalette.getFirst();
 		}
+
 		return typePalette.get(typeIndex);
 	}
 
@@ -158,23 +172,29 @@ public final class ParticleTimeline {
 	public CompoundTag toNbt() {
 		CompoundTag tag = new CompoundTag();
 		ListTag palette = new ListTag();
+
 		for (ResourceLocation typeId : typePalette) {
 			palette.add(StringTag.valueOf(typeId.toString()));
 		}
+
 		tag.put("palette", palette);
 		tag.putIntArray("events", data.toIntArray());
+
 		return tag;
 	}
 
 	public static ParticleTimeline fromNbt(CompoundTag tag, int maxEvents) {
 		List<ResourceLocation> palette = new ArrayList<>();
+
 		for (Tag element : tag.getList("palette", NBT_STRING_TYPE)) {
 			ResourceLocation parsed = ResourceLocation.tryParse(element.getAsString());
+
 			if (parsed == null) {
 				throw new IllegalArgumentException("Particle palette holds an unreadable identifier");
 			}
 			palette.add(parsed);
 		}
+
 		return fromParts(palette, tag.getIntArray("events"), maxEvents);
 	}
 
@@ -183,6 +203,7 @@ public final class ParticleTimeline {
 			throw new IllegalArgumentException(
 					"Particle timeline length " + raw.length + " is not a multiple of " + STRIDE);
 		}
+
 		return new ParticleTimeline(new ArrayList<>(palette), new IntArrayList(raw), maxEvents);
 	}
 }

@@ -50,9 +50,11 @@ public final class EchoesBeneathClient implements ClientModInitializer {
 
 	private static Optional<EchoLensTooltipContext.TooltipViewer> localViewer() {
 		LocalPlayer player = Minecraft.getInstance().player;
+
 		if (player == null) {
 			return Optional.empty();
 		}
+
 		return Optional.of(new EchoLensTooltipContext.TooltipViewer(player.level().dimension(), player.blockPosition()));
 	}
 }

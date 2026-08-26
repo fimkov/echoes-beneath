@@ -21,10 +21,13 @@ public abstract class ServerLevelParticleMixin {
 		if (!EchoRecordingHooks.isCapturing() || !(options instanceof SimpleParticleType)) {
 			return;
 		}
+
 		ResourceLocation typeId = BuiltInRegistries.PARTICLE_TYPE.getKey(options.getType());
+
 		if (typeId == null) {
 			return;
 		}
+
 		EchoRecordingHooks.onParticle((ServerLevel) (Object) this, x, y, z, typeId, count,
 				spreadX, spreadY, spreadZ);
 	}

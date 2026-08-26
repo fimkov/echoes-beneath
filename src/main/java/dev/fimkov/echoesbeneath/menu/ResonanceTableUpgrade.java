@@ -86,6 +86,7 @@ public enum ResonanceTableUpgrade {
 
 	public EchoLensUpgrades withSteps(EchoLensUpgrades upgrades, int steps) {
 		int clamped = Math.clamp(steps, 0, maxSteps);
+
 		return switch (this) {
 			case MEMORY_SLOT -> new EchoLensUpgrades(displayValue(clamped), upgrades.radius(),
 					upgrades.sensitivity(), upgrades.vision());
@@ -102,15 +103,18 @@ public enum ResonanceTableUpgrade {
 		EchoLensUpgrades lowest = new EchoLensUpgrades(EchoFormat.DEFAULT_MEMORY_SLOTS,
 				EchoLensUpgrades.MIN_RADIUS, 0, 0);
 		int needed = Math.clamp(sealedMemories, EchoFormat.DEFAULT_MEMORY_SLOTS, EchoFormat.MAX_MEMORY_SLOTS);
+
 		return new EchoLensUpgrades(needed, lowest.radius(), lowest.sensitivity(), lowest.vision());
 	}
 
 	public static EchoLensUpgrades clampToFloor(EchoLensUpgrades floor, EchoLensUpgrades target) {
 		EchoLensUpgrades result = target;
+
 		for (ResonanceTableUpgrade upgrade : VALUES) {
 			int lowest = upgrade.stepsOf(floor);
 			result = upgrade.withSteps(result, Math.max(lowest, upgrade.stepsOf(result)));
 		}
+
 		return result;
 	}
 

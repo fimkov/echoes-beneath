@@ -16,6 +16,7 @@ public enum EchoEntityAction {
 		if (index < 0 || index >= VALUES.length) {
 			return SWING;
 		}
+
 		return VALUES[index];
 	}
 }

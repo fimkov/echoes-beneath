@@ -37,18 +37,22 @@ class EchoAnimatedTextureTest {
 		List<Path> metas = animated();
 		assertTrue(!metas.isEmpty(), "no animated textures were found at all");
 		List<String> wrong = new ArrayList<>();
+
 		for (Path meta : metas) {
 			Path image = meta.resolveSibling(meta.getFileName().toString().replace(".mcmeta", ""));
 			assertTrue(Files.isRegularFile(image), image + " has a mcmeta but no texture");
 			BufferedImage picture;
+
 			try (InputStream stream = Files.newInputStream(image)) {
 				picture = ImageIO.read(stream);
 			}
 			assertNotNull(picture, image + " is not readable");
+
 			if (picture.getHeight() % picture.getWidth() != 0) {
 				wrong.add(image.getFileName() + " is " + picture.getWidth() + "x" + picture.getHeight());
 			}
 		}
+
 		assertTrue(wrong.isEmpty(), String.join("; ", wrong));
 	}
 
@@ -56,19 +60,23 @@ class EchoAnimatedTextureTest {
 	@DisplayName("every animation names frames the strip actually contains")
 	void framesExist() throws IOException {
 		List<String> wrong = new ArrayList<>();
+
 		for (Path meta : animated()) {
 			Path image = meta.resolveSibling(meta.getFileName().toString().replace(".mcmeta", ""));
 			BufferedImage picture;
+
 			try (InputStream stream = Files.newInputStream(image)) {
 				picture = ImageIO.read(stream);
 			}
 			int frames = picture.getHeight() / picture.getWidth();
 			JsonObject animation;
+
 			try (InputStream stream = Files.newInputStream(meta)) {
 				animation = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8))
 						.getAsJsonObject().getAsJsonObject("animation");
 			}
 			assertNotNull(animation, meta + " declares no animation");
+
 			if (!animation.has("frames")) {
 				continue;
 			}
@@ -76,11 +84,13 @@ class EchoAnimatedTextureTest {
 				int index = element.isJsonObject()
 						? element.getAsJsonObject().get("index").getAsInt()
 						: element.getAsInt();
+
 				if (index < 0 || index >= frames) {
 					wrong.add(image.getFileName() + " names frame " + index + " of " + frames);
 				}
 			}
 		}
+
 		assertTrue(wrong.isEmpty(), String.join("; ", wrong));
 	}
 }

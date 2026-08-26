@@ -66,6 +66,7 @@ class EchoMemorySlotTest {
 	void readingDoesNotConsume() {
 		EchoMemoryReferences full = filledLens();
 		UUID second = full.findBySlot(1).orElseThrow().memoryId();
+
 		for (int repeat = 0; repeat < 5; repeat++) {
 			assertEquals(second, full.findBySlot(1).orElseThrow().memoryId());
 			assertEquals(3, full.filledSlots());

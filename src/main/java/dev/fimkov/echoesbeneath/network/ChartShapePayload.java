@@ -27,11 +27,15 @@ public record ChartShapePayload(long target, int chunkIndex, int chunkCount, byt
 		long target = buffer.readLong();
 		int chunkIndex = buffer.readVarInt();
 		int chunkCount = buffer.readVarInt();
+
 		if (chunkCount <= 0 || chunkCount > EchoPayloadLimits.MAX_CHUNKS_PER_PART
+
 				|| chunkIndex < 0 || chunkIndex >= chunkCount) {
 			throw new IllegalArgumentException("Chart chunk " + chunkIndex + "/" + chunkCount + " is invalid");
 		}
+
 		byte[] chunk = buffer.readByteArray(EchoPayloadLimits.MAX_CHUNK_BYTES);
+
 		return new ChartShapePayload(target, chunkIndex, chunkCount, chunk);
 	}
 

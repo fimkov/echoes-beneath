@@ -141,6 +141,7 @@ class EchoPersistenceTest {
 			assertEquals(original.durationTicks(), reloaded.durationTicks());
 			assertEquals(1, reloaded.soundTimeline().size());
 		}
+
 		assertTrue(storage.exists(original.id()));
 	}
 
@@ -186,6 +187,7 @@ class EchoPersistenceTest {
 
 		assertEquals(3, decoded.filledSlots());
 		List<EchoMemoryReference> originalEntries = references.entries();
+
 		for (EchoMemoryReference reference : originalEntries) {
 			EchoMemoryReference match = decoded.findBySlot(reference.slot()).orElseThrow();
 			assertEquals(reference.memoryId(), match.memoryId());
@@ -193,6 +195,7 @@ class EchoPersistenceTest {
 			assertEquals(reference.center(), match.center());
 			assertEquals(reference.durationTicks(), match.durationTicks());
 		}
+
 		assertFalse(decoded.isEmpty());
 	}
 

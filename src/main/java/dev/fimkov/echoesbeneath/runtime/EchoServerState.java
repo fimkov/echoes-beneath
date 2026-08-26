@@ -33,6 +33,7 @@ public final class EchoServerState {
 	public static EchoServerState attach(MinecraftServer server) {
 		EchoServerState state = new EchoServerState(server);
 		current = state;
+
 		return state;
 	}
 

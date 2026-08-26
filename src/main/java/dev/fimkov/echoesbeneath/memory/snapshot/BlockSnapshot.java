@@ -77,9 +77,11 @@ public final class BlockSnapshot {
 				Math.floorDiv(relativeX, SnapshotSection.SECTION_SIZE),
 				Math.floorDiv(relativeY, SnapshotSection.SECTION_SIZE),
 				Math.floorDiv(relativeZ, SnapshotSection.SECTION_SIZE)));
+
 		if (section == null) {
 			return BlockPalette.AIR_INDEX;
 		}
+
 		return section.globalIndexAt(
 				Math.floorMod(relativeX, SnapshotSection.SECTION_SIZE),
 				Math.floorMod(relativeY, SnapshotSection.SECTION_SIZE),
@@ -97,12 +99,15 @@ public final class BlockSnapshot {
 		tag.putInt("max_y", maxRelativeY);
 		tag.put("palette", palette.toNbt());
 		ListTag sectionList = new ListTag();
+
 		for (Int2ObjectMap.Entry<SnapshotSection> entry : sections.int2ObjectEntrySet()) {
 			CompoundTag sectionTag = entry.getValue().toNbt();
 			sectionTag.putInt("key", entry.getIntKey());
 			sectionList.add(sectionTag);
 		}
+
 		tag.put("sections", sectionList);
+
 		return tag;
 	}
 
@@ -110,10 +115,12 @@ public final class BlockSnapshot {
 		BlockPalette palette = BlockPalette.fromNbt(tag.getList("palette", NBT_COMPOUND_TYPE), blockLookup);
 		Int2ObjectMap<SnapshotSection> sections = new Int2ObjectOpenHashMap<>();
 		ListTag sectionList = tag.getList("sections", NBT_COMPOUND_TYPE);
+
 		for (Tag element : sectionList) {
 			CompoundTag sectionTag = (CompoundTag) element;
 			sections.put(sectionTag.getInt("key"), SnapshotSection.fromNbt(sectionTag));
 		}
+
 		return new BlockSnapshot(palette, sections, tag.getInt("radius"), tag.getInt("min_y"), tag.getInt("max_y"));
 	}
 }

@@ -14,9 +14,11 @@ public final class EchoPlatforms {
 
 	public static EchoPlatform get() {
 		EchoPlatform platform = current;
+
 		if (platform == null) {
 			throw new IllegalStateException("No loader platform has been installed");
 		}
+
 		return platform;
 	}
 

@@ -13,6 +13,7 @@ public enum EchoPlaybackDataPart {
 		if (index < 0 || index >= VALUES.length) {
 			throw new IllegalArgumentException("Unknown playback data part " + index);
 		}
+
 		return VALUES[index];
 	}
 }

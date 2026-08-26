@@ -24,6 +24,7 @@ public final class EchoLensTooltipContext {
 		if (references.isEmpty()) {
 			return Optional.empty();
 		}
+
 		return viewerSupplier.get().flatMap(viewer ->
 				EchoMemoryLocator.resonating(references, viewer.dimension(), viewer.position()));
 	}

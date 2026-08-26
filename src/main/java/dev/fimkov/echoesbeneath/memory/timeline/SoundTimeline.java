@@ -45,9 +45,11 @@ public final class SoundTimeline {
 		this.soundPalette = soundPalette;
 		this.soundIndices = new Object2IntOpenHashMap<>();
 		this.soundIndices.defaultReturnValue(-1);
+
 		for (int index = 0; index < soundPalette.size(); index++) {
 			this.soundIndices.put(soundPalette.get(index), index);
 		}
+
 		this.data = data;
 		this.maxEvents = maxEvents;
 	}
@@ -57,6 +59,7 @@ public final class SoundTimeline {
 		if (size() >= maxEvents) {
 			return false;
 		}
+
 		int quantizedX = EchoCoordinates.quantizePosition(relativeX);
 		int quantizedY = EchoCoordinates.quantizePosition(relativeY);
 		int quantizedZ = EchoCoordinates.quantizePosition(relativeZ);
@@ -64,9 +67,11 @@ public final class SoundTimeline {
 		int volumeMilli = Math.round(volume * MILLI);
 		int pitchMilli = Math.round(pitch * MILLI);
 		int categoryIndex = EchoSoundCategory.indexOf(source);
+
 		if (duplicatesLastEvent(tick, quantizedX, quantizedY, quantizedZ, soundIndex, volumeMilli, pitchMilli)) {
 			return true;
 		}
+
 		data.add(tick);
 		data.add(quantizedX);
 		data.add(quantizedY);
@@ -75,15 +80,19 @@ public final class SoundTimeline {
 		data.add(volumeMilli);
 		data.add(pitchMilli);
 		data.add(categoryIndex);
+
 		return true;
 	}
 
 	private boolean duplicatesLastEvent(int tick, int x, int y, int z, int soundIndex, int volume, int pitch) {
 		int count = size();
+
 		if (count == 0) {
 			return false;
 		}
+
 		int last = count - 1;
+
 		return tickAt(last) == tick
 				&& data.getInt(last * STRIDE + OFFSET_X) == x
 				&& data.getInt(last * STRIDE + OFFSET_Y) == y
@@ -95,12 +104,15 @@ public final class SoundTimeline {
 
 	private int internSound(ResourceLocation soundId) {
 		int existing = soundIndices.getInt(soundId);
+
 		if (existing >= 0) {
 			return existing;
 		}
+
 		int index = soundPalette.size();
 		soundPalette.add(soundId);
 		soundIndices.put(soundId, index);
+
 		return index;
 	}
 
@@ -126,9 +138,11 @@ public final class SoundTimeline {
 
 	public ResourceLocation soundAt(int index) {
 		int soundIndex = data.getInt(index * STRIDE + OFFSET_SOUND);
+
 		if (soundIndex < 0 || soundIndex >= soundPalette.size()) {
 			return soundPalette.isEmpty() ? ResourceLocation.withDefaultNamespace("intentionally_empty") : soundPalette.getFirst();
 		}
+
 		return soundPalette.get(soundIndex);
 	}
 
@@ -159,27 +173,35 @@ public final class SoundTimeline {
 	public CompoundTag toNbt() {
 		CompoundTag tag = new CompoundTag();
 		ListTag palette = new ListTag();
+
 		for (ResourceLocation soundId : soundPalette) {
 			palette.add(StringTag.valueOf(soundId.toString()));
 		}
+
 		tag.put("palette", palette);
 		tag.putIntArray("events", data.toIntArray());
+
 		return tag;
 	}
 
 	public static SoundTimeline fromNbt(CompoundTag tag, int maxEvents) {
 		List<ResourceLocation> palette = new ArrayList<>();
+
 		for (Tag element : tag.getList("palette", NBT_STRING_TYPE)) {
 			ResourceLocation parsed = ResourceLocation.tryParse(element.getAsString());
+
 			if (parsed == null) {
 				throw new IllegalArgumentException("Sound palette holds an unreadable identifier");
 			}
 			palette.add(parsed);
 		}
+
 		int[] raw = tag.getIntArray("events");
+
 		if (raw.length % STRIDE != 0) {
 			throw new IllegalArgumentException("Sound timeline length " + raw.length + " is not a multiple of " + STRIDE);
 		}
+
 		return new SoundTimeline(palette, new IntArrayList(raw), maxEvents);
 	}
 
@@ -187,6 +209,7 @@ public final class SoundTimeline {
 		if (raw.length % STRIDE != 0) {
 			throw new IllegalArgumentException("Sound timeline length " + raw.length + " is not a multiple of " + STRIDE);
 		}
+
 		return new SoundTimeline(new ArrayList<>(palette), new IntArrayList(raw), maxEvents);
 	}
 }

@@ -91,13 +91,17 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	protected void containerTick() {
 		super.containerTick();
 		spin += SPIN_DEGREES_PER_TICK;
+
 		if (spin >= 360.0F) {
 			spin -= 360.0F;
 		}
+
 		animation += 1.0F;
+
 		if (animation >= ANIMATION_CYCLE_TICKS) {
 			animation = 0.0F;
 		}
+
 		if (pendingValue != Integer.MIN_VALUE && ++sinceSent >= TICKS_BETWEEN_DRAGS) {
 			sendWindow(pendingValue);
 			pendingValue = Integer.MIN_VALUE;
@@ -109,7 +113,9 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		if (!EchoClientConfig.values().tableAnimations()) {
 			return PULSE_BASE + PULSE_SWING * 0.5F;
 		}
+
 		double phase = (animation + partialTick) / PULSE_PERIOD_TICKS * Math.PI * 2.0;
+
 		return PULSE_BASE + PULSE_SWING * (float) ((Math.sin(phase) + 1.0) * 0.5);
 	}
 
@@ -120,6 +126,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	private boolean over(int mouseX, int mouseY, int x, int y, int width, int height) {
 		int localX = mouseX - leftPos;
 		int localY = mouseY - topPos;
+
 		return localX >= x && localX < x + width && localY >= y && localY < y + height;
 	}
 
@@ -147,12 +154,14 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		float span = SoundingTableLayout.RULER_HEIGHT - 1;
 		float fraction = 1.0F - Mth.clamp(
 				((float) mouseY - topPos - SoundingTableLayout.RULER_Y) / span, 0.0F, 1.0F);
+
 		return Math.round(menu.floor() + fraction * (menu.ceiling() - menu.floor()));
 	}
 
 	private int rulerY(int worldY) {
 		float span = Math.max(1, menu.ceiling() - menu.floor());
 		float fraction = Mth.clamp((worldY - menu.floor()) / span, 0.0F, 1.0F);
+
 		return SoundingTableLayout.RULER_Y
 				+ Math.round((1.0F - fraction) * (SoundingTableLayout.RULER_HEIGHT - 1));
 	}
@@ -161,9 +170,11 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (button == 0) {
 			List<EchoMemoryReference> memories = menu.memories();
+
 			for (int index = 0; index < memories.size(); index++) {
 				if (overRow((int) mouseX, (int) mouseY, index)) {
 					press(SoundingTablePlan.selectButton(index));
+
 					return true;
 				}
 			}
@@ -177,6 +188,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 			}
 			if (overStage((int) mouseX, (int) mouseY)) {
 				turningStage = true;
+
 				if (!turnedByHand) {
 					turnedByHand = true;
 					heldYaw = spin;
@@ -188,9 +200,11 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 				dragging = Math.abs(rulerY(menu.lowestY()) - (mouseY - topPos))
 						<= Math.abs(rulerY(menu.highestY()) - (mouseY - topPos)) ? 0 : 1;
 				dragTo(mouseY);
+
 				return true;
 			}
 		}
+
 		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
@@ -200,12 +214,16 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 			heldYaw += (float) dragX * TURN_PER_PIXEL;
 			heldPitch = Mth.clamp(heldPitch + (float) dragY * TURN_PER_PIXEL,
 					MIN_PITCH_DEGREES, MAX_PITCH_DEGREES);
+
 			return true;
 		}
+
 		if (dragging >= 0) {
 			dragTo(mouseY);
+
 			return true;
 		}
+
 		return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
 	}
 
@@ -215,8 +233,10 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 			sendWindow(pendingValue);
 			pendingValue = Integer.MIN_VALUE;
 		}
+
 		dragging = -1;
 		turningStage = false;
+
 		return super.mouseReleased(mouseX, mouseY, button);
 	}
 
@@ -224,9 +244,11 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		int value = dragging == 0
 				? Math.min(rulerValue(mouseY), shownHighest())
 				: Math.max(rulerValue(mouseY), shownLowest());
+
 		if (value == (dragging == 0 ? shownLowest() : shownHighest())) {
 			return;
 		}
+
 		pendingValue = value;
 	}
 
@@ -249,6 +271,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		if (minecraft == null || minecraft.gameMode == null) {
 			return;
 		}
+
 		minecraft.gameMode.handleInventoryButtonClick(menu.containerId, buttonId);
 		minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 	}
@@ -275,6 +298,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		if (menu.chart().isEmpty()) {
 			return;
 		}
+
 		int x = leftPos + SoundingTableLayout.RESULT_SLOT_X - 2;
 		int y = topPos + SoundingTableLayout.RESULT_SLOT_Y - 2;
 		int size = SoundingTableLayout.SLOT_SIZE + 4;
@@ -291,6 +315,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		int width = SoundingTableLayout.STAGE_WIDTH;
 		int height = SoundingTableLayout.STAGE_HEIGHT;
 		int lit = glow(pulse(partialTick));
+
 		for (int step = 0; step < BRACKET_LENGTH; step++) {
 			graphics.fill(x + step, y, x + step + 1, y + 1, lit);
 			graphics.fill(x + width - step - 1, y, x + width - step, y + 1, lit);
@@ -305,9 +330,11 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 
 	private void renderRows(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		List<EchoMemoryReference> memories = menu.memories();
+
 		for (int index = 0; index < memories.size(); index++) {
 			boolean chosen = index == menu.selectedSlot();
 			boolean hovered = overRow(mouseX, mouseY, index);
+
 			if (!chosen && !hovered) {
 				continue;
 			}
@@ -317,6 +344,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 			int height = SoundingTableLayout.ROW_HEIGHT;
 			graphics.fill(x + 1, y + 1, x + width - 1, y + height - 1,
 					chosen ? ROW_CHOSEN : ROW_HOVER);
+
 			if (chosen) {
 				int lit = glow(0.35F + pulse(partialTick) * 0.65F);
 				graphics.fill(x, y, x + width, y + 1, lit);
@@ -331,6 +359,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		if (chosen() == null) {
 			return;
 		}
+
 		int x = leftPos + SoundingTableLayout.RULER_X;
 		int width = SoundingTableLayout.RULER_WIDTH;
 		graphics.fill(x + 1, topPos + SoundingTableLayout.RULER_Y, x + width - 1,
@@ -369,9 +398,11 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 
 	private void renderStage(GuiGraphics graphics, float partialTick) {
 		EchoChartModel model = ClientChartShapes.of(EchoChartPreview.MENU_TARGET);
+
 		if (model == null || model.size() == 0) {
 			return;
 		}
+
 		int centreX = leftPos + SoundingTableLayout.STAGE_X + SoundingTableLayout.STAGE_WIDTH / 2;
 		int centreY = topPos + SoundingTableLayout.STAGE_Y + SoundingTableLayout.STAGE_HEIGHT / 2;
 		graphics.enableScissor(leftPos + SoundingTableLayout.STAGE_X + 1,
@@ -398,6 +429,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	private EchoMemoryReference chosen() {
 		List<EchoMemoryReference> memories = menu.memories();
 		int index = menu.selectedSlot();
+
 		return index < 0 || index >= memories.size() ? null : memories.get(index);
 	}
 
@@ -406,11 +438,13 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		graphics.drawString(font, title, titleLabelX, titleLabelY, TITLE, true);
 		graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, INK, true);
 		List<EchoMemoryReference> memories = menu.memories();
+
 		if (menu.lens().isEmpty()) {
 			centred(graphics, Component.translatable(EchoTranslations.SOUNDING_NO_LENS), DIM);
 		} else if (memories.isEmpty()) {
 			centred(graphics, Component.translatable(EchoTranslations.SOUNDING_NO_MEMORIES), DIM);
 		}
+
 		for (int index = 0; index < memories.size(); index++) {
 			EchoMemoryReference memory = memories.get(index);
 			int colour = index == menu.selectedSlot() ? SELECTED_INK : INK;
@@ -422,6 +456,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 					SoundingTableLayout.LIST_X + SoundingTableLayout.LIST_WIDTH - 5 - font.width(clock),
 					y, DIM, true);
 		}
+
 		if (chosen() != null) {
 			Component window = Component.translatable(EchoTranslations.SOUNDING_WINDOW,
 					shownLowest(), shownHighest());
@@ -432,6 +467,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 					SoundingTableLayout.STAGE_Y + SoundingTableLayout.STAGE_HEIGHT - 11, DIM, true);
 			graphics.pose().popPose();
 		}
+
 		boolean ready = menu.canExtract() || menu.canReturn();
 		Component extract = Component.translatable(menu.canReturn()
 						? EchoTranslations.SOUNDING_PUT_BACK : EchoTranslations.SOUNDING_EXTRACT)
@@ -454,6 +490,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		super.render(graphics, mouseX, mouseY, partialTick);
 		renderTooltip(graphics, mouseX, mouseY);
+
 		if (hoveredSlot == null && overExtract(mouseX, mouseY)) {
 			graphics.renderTooltip(font, Component.translatable(menu.canReturn()
 					? EchoTranslations.SOUNDING_PUT_BACK_HINT : EchoTranslations.SOUNDING_WARNING),

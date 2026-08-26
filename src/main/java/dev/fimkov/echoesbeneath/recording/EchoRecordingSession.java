@@ -144,6 +144,7 @@ public final class EchoRecordingSession {
 		int relativeX = position.getX() - center.getX();
 		int relativeY = position.getY() - center.getY();
 		int relativeZ = position.getZ() - center.getZ();
+
 		return withinRegion(relativeX, relativeY, relativeZ);
 	}
 
@@ -156,16 +157,21 @@ public final class EchoRecordingSession {
 		if (finished || previous == current) {
 			return;
 		}
+
 		int relativeX = position.getX() - center.getX();
 		int relativeY = position.getY() - center.getY();
 		int relativeZ = position.getZ() - center.getZ();
+
 		if (!withinRegion(relativeX, relativeY, relativeZ)) {
 			return;
 		}
+
 		if (!EchoCoordinates.fitsInPackedRange(relativeX) || !EchoCoordinates.fitsInPackedRange(relativeY)
+
 				|| !EchoCoordinates.fitsInPackedRange(relativeZ)) {
 			return;
 		}
+
 		snapshotCapture.notePreChange(relativeX, relativeY, relativeZ, previous);
 		blockTimeline.record(currentTick, EchoCoordinates.packRelative(relativeX, relativeY, relativeZ),
 				palette.indexOf(previous), palette.indexOf(current));
@@ -176,15 +182,19 @@ public final class EchoRecordingSession {
 		if (finished || !EchoSoundCategory.isRecordable(source)) {
 			return;
 		}
+
 		double relativeX = x - center.getX();
 		double relativeY = y - center.getY();
 		double relativeZ = z - center.getZ();
+
 		if (!withinRegion(relativeX, relativeY, relativeZ)) {
 			return;
 		}
+
 		if (volume < sensitivityFactor * QUIET_SOUND_THRESHOLD) {
 			return;
 		}
+
 		soundTimeline.record(currentTick, relativeX, relativeY, relativeZ, soundId, source, volume, pitch);
 	}
 
@@ -193,12 +203,15 @@ public final class EchoRecordingSession {
 		if (finished) {
 			return;
 		}
+
 		double relativeX = x - center.getX();
 		double relativeY = y - center.getY();
 		double relativeZ = z - center.getZ();
+
 		if (!withinRegion(relativeX, relativeY, relativeZ)) {
 			return;
 		}
+
 		particleTimeline.record(currentTick, relativeX, relativeY, relativeZ, typeId, count,
 				spreadX, spreadY, spreadZ);
 	}
@@ -207,27 +220,34 @@ public final class EchoRecordingSession {
 		if (finished || lensEntity.isArriving()) {
 			return;
 		}
+
 		if (!snapshotCapture.isComplete()) {
 			snapshotCapture.advance();
 		}
+
 		if (currentTick % entitySampleInterval == 0) {
 			sampleEntities();
 		}
+
 		lensEntity.setProgress((float) currentTick / Math.max(1, maxTicks));
+
 		if (currentTick == FIRST_BREATH_TICK) {
 			EchoRecordingHooks.runWithoutCapture(() -> level.playSound(null, center,
 					EchoSounds.LENS_RECORDING_START, SoundSource.AMBIENT,
 					BREATH_VOLUME, BREATH_PITCH));
 		}
+
 		if (currentTick > 0 && currentTick % LISTEN_PULSE_TICKS == 0) {
 			EchoRecordingHooks.runWithoutCapture(() -> level.playSound(null, center,
 					EchoSounds.LENS_RECORDING_PULSE, SoundSource.AMBIENT,
 					PULSE_VOLUME, PULSE_PITCH));
 		}
+
 		if (currentTick % RecordingPulseTrace.BEAT_INTERVAL_TICKS == 0) {
 			RecordingPulseTrace.sweep(level, level.getServer().getPlayerList().getPlayer(ownerId),
 					center, radius, verticalRadius, currentTick);
 		}
+
 		currentTick++;
 	}
 
@@ -236,6 +256,7 @@ public final class EchoRecordingSession {
 				center.getX() - radius, center.getY() - verticalRadius, center.getZ() - radius,
 				center.getX() + radius + 1, center.getY() + verticalRadius + 1, center.getZ() + radius + 1);
 		List<Entity> candidates = level.getEntities((Entity) null, bounds, EntityTrackRecorder::isRecordable);
+
 		for (Entity entity : candidates) {
 			if (!containsPosition(entity.blockPosition())) {
 				continue;
@@ -258,6 +279,7 @@ public final class EchoRecordingSession {
 	public EchoMemoryRecord seal() {
 		finished = true;
 		snapshotCapture.completeNow();
+
 		return new EchoMemoryRecord(
 				memoryId,
 				slot,

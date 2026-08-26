@@ -40,20 +40,24 @@ public class SoundingTableBlock extends Block {
 		if (level.isClientSide()) {
 			return InteractionResult.SUCCESS;
 		}
+
 		if (player instanceof ServerPlayer viewer) {
 			EchoPlatforms.registries().openBlockPosMenu(viewer, new TableMenuProvider(position), position);
 		}
+
 		return InteractionResult.CONSUME;
 	}
 
 	private record TableMenuProvider(BlockPos position) implements MenuProvider {
 		@Override
+
 		public Component getDisplayName() {
 			return Component.translatable(EchoTranslations.CONTAINER_SOUNDING_TABLE);
 		}
 
 		@Nullable
 		@Override
+
 		public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
 			return new SoundingTableMenu(containerId, inventory,
 					ContainerLevelAccess.create(player.level(), position));

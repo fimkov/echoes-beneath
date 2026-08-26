@@ -39,6 +39,7 @@ public class LensTunedTrigger extends SimpleCriterionTrigger<LensTunedTrigger.In
 				return true;
 			}
 			boolean maxed = true;
+
 			for (ResonanceTableUpgrade upgrade : ResonanceTableUpgrade.all()) {
 				maxed &= upgrade.stepsOf(upgrades) >= upgrade.maxSteps();
 			}

@@ -25,8 +25,10 @@ class EchoBlockShapeTest {
 
 	private static JsonObject model(String name) {
 		try (InputStream stream = EchoBlockShapeTest.class
+
 				.getResourceAsStream("/assets/echoes_beneath/models/block/" + name + ".json")) {
 			assertNotNull(stream, name + " has no model");
+
 			return JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8))
 					.getAsJsonObject();
 		} catch (Exception failure) {
@@ -36,17 +38,21 @@ class EchoBlockShapeTest {
 
 	private static List<String> boxesOf(double[][] boxes) {
 		TreeSet<String> sorted = new TreeSet<>();
+
 		for (double[] box : boxes) {
 			sorted.add(describe(box[0], box[1], box[2], box[3], box[4], box[5]));
 		}
+
 		return new ArrayList<>(sorted);
 	}
 
 	private static String describe(double... values) {
 		StringBuilder text = new StringBuilder();
+
 		for (double value : values) {
 			text.append(Math.round(value)).append(' ');
 		}
+
 		return text.toString();
 	}
 
@@ -56,6 +62,7 @@ class EchoBlockShapeTest {
 		for (Map.Entry<String, double[][]> entry : DECLARED.entrySet()) {
 			JsonArray elements = model(entry.getKey()).getAsJsonArray("elements");
 			TreeSet<String> drawn = new TreeSet<>();
+
 			for (int index = 0; index < elements.size(); index++) {
 				JsonObject element = elements.get(index).getAsJsonObject();
 				JsonArray from = element.getAsJsonArray("from");

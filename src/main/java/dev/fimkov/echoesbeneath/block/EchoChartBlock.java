@@ -99,9 +99,11 @@ public class EchoChartBlock extends BaseEntityBlock {
 	@Override
 	public BlockState playerWillDestroy(Level level, BlockPos position, BlockState state, Player player) {
 		if (!level.isClientSide() && !player.getAbilities().instabuild
+
 				&& level.getBlockEntity(position) instanceof EchoChartBlockEntity chart) {
 			popResource(level, position, chart.asItem());
 		}
+
 		return super.playerWillDestroy(level, position, state, player);
 	}
 
@@ -119,9 +121,11 @@ public class EchoChartBlock extends BaseEntityBlock {
 		if (level.isClientSide()) {
 			return InteractionResult.SUCCESS;
 		}
+
 		if (!(level.getBlockEntity(position) instanceof EchoChartBlockEntity chart)) {
 			return InteractionResult.PASS;
 		}
+
 		if (player.isSecondaryUseActive()) {
 			if (player instanceof ServerPlayer viewer) {
 				EchoPlatforms.registries().openBlockPosMenu(viewer, new LookMenuProvider(position),
@@ -129,18 +133,22 @@ public class EchoChartBlock extends BaseEntityBlock {
 			}
 			return InteractionResult.CONSUME;
 		}
+
 		chart.turnOnce();
+
 		return InteractionResult.CONSUME;
 	}
 
 	private record LookMenuProvider(BlockPos position) implements MenuProvider {
 		@Override
+
 		public Component getDisplayName() {
 			return Component.translatable(EchoTranslations.CONTAINER_CHART_LOOK);
 		}
 
 		@Nullable
 		@Override
+
 		public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
 			return new ChartLookMenu(containerId, inventory,
 					ContainerLevelAccess.create(player.level(), position), position);

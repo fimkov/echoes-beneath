@@ -44,6 +44,7 @@ public final class EchoEntityPuppet {
 		if (!(level instanceof ClientLevel clientLevel)) {
 			return null;
 		}
+
 		return new RemotePlayer(clientLevel, new GameProfile(UUID.randomUUID(), REMEMBERED_PLAYER_NAME));
 	}
 
@@ -51,20 +52,26 @@ public final class EchoEntityPuppet {
 		if (track.keyframeCount() == 0) {
 			return Optional.empty();
 		}
+
 		ResourceLocation typeId = timeline.entityTypeOf(track);
 		Optional<EntityType<?>> type = BuiltInRegistries.ENTITY_TYPE.getOptional(typeId);
+
 		if (type.isEmpty()) {
 			return Optional.empty();
 		}
+
 		Entity created = type.get() == EntityType.PLAYER
 				? playerStandIn(level)
 				: type.get().create(level);
+
 		if (created == null) {
 			return Optional.empty();
 		}
+
 		created.setNoGravity(true);
 		created.setSilent(true);
 		created.noPhysics = true;
+
 		return Optional.of(new EchoEntityPuppet(track, created));
 	}
 
@@ -109,6 +116,7 @@ public final class EchoEntityPuppet {
 		if (!(entity instanceof LivingEntity living)) {
 			return;
 		}
+
 		living.setYHeadRot(headYaw);
 		living.setYBodyRot(bodyYaw);
 		living.yHeadRotO = headYaw;
@@ -127,6 +135,7 @@ public final class EchoEntityPuppet {
 				break;
 			}
 			int slotIndex = track.equipmentSlot(index);
+
 			if (slotIndex < 0 || slotIndex >= TRACKED_SLOTS.length) {
 				continue;
 			}
@@ -138,15 +147,19 @@ public final class EchoEntityPuppet {
 
 	private int findKeyframeIndex(int tick) {
 		int count = track.keyframeCount();
+
 		if (keyframeCursor >= count) {
 			keyframeCursor = count - 1;
 		}
+
 		while (keyframeCursor > 0 && track.keyframeTick(keyframeCursor) > tick) {
 			keyframeCursor--;
 		}
+
 		while (keyframeCursor + 1 < count && track.keyframeTick(keyframeCursor + 1) <= tick) {
 			keyframeCursor++;
 		}
+
 		return keyframeCursor;
 	}
 
@@ -154,11 +167,15 @@ public final class EchoEntityPuppet {
 		if (index == next) {
 			return 0.0F;
 		}
+
 		int span = track.keyframeTick(next) - track.keyframeTick(index);
+
 		if (span <= 0) {
 			return 0.0F;
 		}
+
 		float elapsed = tick - track.keyframeTick(index) + partialTick;
+
 		return Math.clamp(elapsed / span, 0.0F, 1.0F);
 	}
 
@@ -166,6 +183,7 @@ public final class EchoEntityPuppet {
 		if (ordinal < 0 || ordinal >= POSES.length) {
 			return Pose.STANDING;
 		}
+
 		return POSES[ordinal];
 	}
 
@@ -175,12 +193,15 @@ public final class EchoEntityPuppet {
 
 	private static float lerpAngle(float from, float to, float blend) {
 		float delta = to - from;
+
 		while (delta < -180.0F) {
 			delta += 360.0F;
 		}
+
 		while (delta >= 180.0F) {
 			delta -= 360.0F;
 		}
+
 		return from + delta * blend;
 	}
 }

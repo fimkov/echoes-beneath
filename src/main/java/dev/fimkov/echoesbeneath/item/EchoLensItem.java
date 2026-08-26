@@ -48,22 +48,29 @@ public class EchoLensItem extends Item {
 			List<Component> tooltip) {
 		if (references.isEmpty()) {
 			tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_SILENT).withStyle(ChatFormatting.DARK_GRAY));
+
 			return;
 		}
+
 		Optional<Integer> nextSlot = references.nextFreeSlot(upgrades.memorySlots());
+
 		if (nextSlot.isPresent()) {
 			tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_WILL_RECORD,
 					EchoTextFormat.romanSlot(nextSlot.get())).withStyle(ChatFormatting.DARK_AQUA));
+
 			return;
 		}
+
 		tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_FULL).withStyle(ChatFormatting.DARK_GRAY));
 	}
 
 	private void appendResonanceLines(EchoMemoryReferences references, List<Component> tooltip) {
 		Optional<EchoMemoryReference> resonating = EchoLensTooltipContext.resonatingHere(references);
+
 		if (resonating.isEmpty()) {
 			return;
 		}
+
 		EchoMemoryReference reference = resonating.get();
 		tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_RESONATES,
 				EchoTextFormat.romanSlot(reference.slot())).withStyle(ChatFormatting.LIGHT_PURPLE));

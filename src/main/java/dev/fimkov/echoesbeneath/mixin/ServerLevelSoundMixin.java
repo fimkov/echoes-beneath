@@ -21,6 +21,7 @@ public abstract class ServerLevelSoundMixin {
 		if (!EchoRecordingHooks.isCapturing()) {
 			return;
 		}
+
 		EchoRecordingHooks.onSound((ServerLevel) (Object) this, x, y, z,
 				sound.value().getLocation(), source, volume, pitch);
 	}
@@ -32,6 +33,7 @@ public abstract class ServerLevelSoundMixin {
 		if (!EchoRecordingHooks.isCapturing()) {
 			return;
 		}
+
 		EchoRecordingHooks.onSound((ServerLevel) (Object) this, source.getX(), source.getY(), source.getZ(),
 				sound.value().getLocation(), category, volume, pitch);
 	}

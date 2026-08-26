@@ -21,6 +21,7 @@ public final class EchoPlaybackReceiver {
 
 		EchoClientPlatforms.get().receive(PlaybackDataPayload.TYPE, payload -> {
 			Minecraft client = Minecraft.getInstance();
+
 			if (client.level != null) {
 				ClientPlaybackManager.instance().onData(payload, client.level);
 			}
@@ -42,6 +43,7 @@ public final class EchoPlaybackReceiver {
 
 		EchoClientPlatforms.get().onClientTick(() -> {
 			Minecraft client = Minecraft.getInstance();
+
 			if (client.level != null && !client.isPaused()) {
 				ClientPlaybackManager.instance().clientTick(client.level);
 			}

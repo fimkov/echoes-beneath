@@ -60,6 +60,7 @@ class EchoTimelineTest {
 		SoundTimeline restored = SoundTimeline.fromNbt(saved, MAX_EVENTS);
 
 		assertEquals(timeline.size(), restored.size());
+
 		for (int index = 0; index < timeline.size(); index++) {
 			assertEquals(timeline.tickAt(index), restored.tickAt(index));
 			assertEquals(timeline.soundAt(index), restored.soundAt(index));
@@ -83,9 +84,11 @@ class EchoTimelineTest {
 	@DisplayName("the sound event limit is respected")
 	void soundEventLimitIsEnforced() {
 		SoundTimeline timeline = new SoundTimeline(4);
+
 		for (int tick = 0; tick < 40; tick++) {
 			timeline.record(tick, tick, 0.0D, 0.0D, DOOR_OPEN, SoundSource.BLOCKS, 1.0F, 1.0F);
 		}
+
 		assertEquals(4, timeline.size());
 	}
 
@@ -151,14 +154,17 @@ class EchoTimelineTest {
 		EntityTimeline timeline = new EntityTimeline(4);
 		EntityTrack track = timeline.createTrack(ResourceLocation.withDefaultNamespace("zombie"));
 		double previousX = 0.0D;
+
 		for (int tick = 0; tick <= 40; tick += 4) {
 			double x = tick * 0.2D;
 			track.addKeyframe(tick, x, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F, true, 0, false);
+
 			if (tick > 0) {
 				assertTrue(Math.abs(x - previousX) < 8.0D, "keyframe jump was too large");
 			}
 			previousX = x;
 		}
+
 		assertNotEquals(0, track.keyframeCount());
 	}
 }

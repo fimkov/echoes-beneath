@@ -30,17 +30,21 @@ public final class BlockPalette {
 		int index = states.size();
 		states.add(state);
 		indices.put(state, index);
+
 		return index;
 	}
 
 	public int indexOf(BlockState state) {
 		int existing = indices.getInt(state);
+
 		if (existing >= 0) {
 			return existing;
 		}
+
 		if (states.size() >= MAX_ENTRIES) {
 			return AIR_INDEX;
 		}
+
 		return add(state);
 	}
 
@@ -48,6 +52,7 @@ public final class BlockPalette {
 		if (index < 0 || index >= states.size()) {
 			return Blocks.AIR.defaultBlockState();
 		}
+
 		return states.get(index);
 	}
 
@@ -61,9 +66,11 @@ public final class BlockPalette {
 
 	public ListTag toNbt() {
 		ListTag list = new ListTag();
+
 		for (BlockState state : states) {
 			list.add(NbtUtils.writeBlockState(state));
 		}
+
 		return list;
 	}
 
@@ -71,13 +78,16 @@ public final class BlockPalette {
 		BlockPalette palette = new BlockPalette();
 		palette.states.clear();
 		palette.indices.clear();
+
 		for (Tag element : list) {
 			BlockState state = NbtUtils.readBlockState(blockLookup, (CompoundTag) element);
 			palette.add(state);
 		}
+
 		if (palette.states.isEmpty()) {
 			palette.add(Blocks.AIR.defaultBlockState());
 		}
+
 		return palette;
 	}
 }

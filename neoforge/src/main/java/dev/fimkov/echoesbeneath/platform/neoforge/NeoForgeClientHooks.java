@@ -45,6 +45,7 @@ public final class NeoForgeClientHooks implements EchoClientHooks {
 			BlockEntityType<T> type,
 			BlockEntityRendererProvider<T> provider) {
 		@SuppressWarnings("unchecked")
+
 		void bind(EntityRenderersEvent.RegisterRenderers event) {
 			event.registerBlockEntityRenderer(type, provider);
 		}
@@ -143,31 +144,37 @@ public final class NeoForgeClientHooks implements EchoClientHooks {
 	private record StageContext(PoseStack pose, DeltaTracker tracker, Camera view, Frustum bounds)
 			implements EchoRenderContext {
 		@Override
+
 		public PoseStack matrixStack() {
 			return pose;
 		}
 
 		@Override
+
 		public MultiBufferSource consumers() {
 			return Minecraft.getInstance().renderBuffers().bufferSource();
 		}
 
 		@Override
+
 		public DeltaTracker tickCounter() {
 			return tracker;
 		}
 
 		@Override
+
 		public Frustum frustum() {
 			return bounds;
 		}
 
 		@Override
+
 		public Camera camera() {
 			return view;
 		}
 
 		@Override
+
 		public ClientLevel world() {
 			return Minecraft.getInstance().level;
 		}

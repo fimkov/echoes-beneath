@@ -28,16 +28,21 @@ public abstract class ServerLevelEventMixin {
 		if (type != BLOCK_DESTROYED || !EchoRecordingHooks.isCapturing()) {
 			return;
 		}
+
 		BlockState broken = Block.stateById(data);
+
 		if (broken.isAir()) {
 			return;
 		}
+
 		SoundType sounds = broken.getSoundType();
 		SoundEvent event = sounds.getBreakSound();
 		var id = BuiltInRegistries.SOUND_EVENT.getKey(event);
+
 		if (id == null) {
 			return;
 		}
+
 		EchoRecordingHooks.onSound((ServerLevel) (Object) this,
 				position.getX() + 0.5D, position.getY() + 0.5D, position.getZ() + 0.5D,
 				id, SoundSource.BLOCKS, sounds.getVolume() * BREAK_VOLUME_SHARE,

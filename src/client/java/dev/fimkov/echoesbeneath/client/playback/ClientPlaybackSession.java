@@ -102,6 +102,7 @@ public final class ClientPlaybackSession {
 		if (Math.abs(serverTick - currentTick) <= TICK_DRIFT_TOLERANCE) {
 			return;
 		}
+
 		currentTick = serverTick;
 		soundPlayer.resyncTo(serverTick);
 		particlePlayer.resyncTo(serverTick);
@@ -120,7 +121,9 @@ public final class ClientPlaybackSession {
 		if (puppetsInitialised) {
 			return;
 		}
+
 		puppetsInitialised = true;
+
 		for (EntityTrack track : data.entityTimeline().tracks()) {
 			EchoEntityPuppet.create(data.entityTimeline(), track, level).ifPresent(puppets::add);
 		}
@@ -128,10 +131,12 @@ public final class ClientPlaybackSession {
 
 	public void buildPendingMeshes() {
 		int built = 0;
+
 		while (built < MESH_BUILDS_PER_FRAME && !pendingSectionKeys.isEmpty()) {
 			int sectionKey = pendingSectionKeys.removeInt(pendingSectionKeys.size() - 1);
 			EchoSectionMesh mesh = EchoSectionMesh.build(data.snapshot(), sectionKey,
 					blockDeltas.trackedPositions());
+
 			if (!mesh.isEmpty()) {
 				meshes.put(sectionKey, mesh);
 			}

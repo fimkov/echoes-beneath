@@ -110,16 +110,20 @@ public final class EchoPlaybackSession {
 		if (finished || lensEntity.isArriving()) {
 			return;
 		}
+
 		currentTick++;
 		lensEntity.setProgress((float) currentTick / Math.max(1, record.durationTicks()));
 		updateSubscribers();
 		noteWatchers();
+
 		if (currentTick % TICK_SYNC_INTERVAL == 0) {
 			broadcastTick();
 		}
+
 		if (currentTick % SUPPRESSION_SWEEP_INTERVAL == 0) {
 			sweepSuppression(suppressionManager);
 		}
+
 		if (currentTick % PlaybackBoundaryTrace.BEAT_INTERVAL_TICKS == 0) {
 			PlaybackBoundaryTrace.sweep(level, region, currentTick);
 		}
@@ -129,6 +133,7 @@ public final class EchoPlaybackSession {
 		List<Entity> candidates = level.getEntities((Entity) null, region.bounds(),
 				entity -> HostileMobSuppressionManager.isSuppressible(entity)
 						&& region.contains(level.dimension(), entity.position()));
+
 		for (Entity entity : candidates) {
 			suppressionManager.suppress(entity).ifPresent(state -> suppressed.put(state.entityId(), state));
 		}
@@ -145,6 +150,7 @@ public final class EchoPlaybackSession {
 			boolean firstSight = watchers.add(player.getUUID());
 			boolean newlyInside = standsInsideLostBlock(player)
 					&& stoodInsideLostBlock.add(player.getUUID());
+
 			if (firstSight || newlyInside) {
 				award(player, false);
 			}
@@ -157,6 +163,7 @@ public final class EchoPlaybackSession {
 		int relativeY = at.getY() - region.center().getY();
 		int relativeZ = at.getZ() - region.center().getZ();
 		BlockState remembered = record.snapshot().stateAt(relativeX, relativeY, relativeZ);
+
 		return !remembered.isAir() && level.getBlockState(at).isAir();
 	}
 
@@ -167,6 +174,7 @@ public final class EchoPlaybackSession {
 	public void awardWatchers() {
 		for (UUID id : watchers) {
 			ServerPlayer player = level.getServer().getPlayerList().getPlayer(id);
+
 			if (player != null) {
 				award(player, hasReachedEnd() && !leftEarly.contains(id));
 			}
@@ -185,12 +193,14 @@ public final class EchoPlaybackSession {
 		for (ServerPlayer player : level.players()) {
 			boolean inside = region.contains(level.dimension(), player.position());
 			boolean known = subscribers.contains(player.getUUID());
+
 			if (inside && !known) {
 				subscribe(player);
 			} else if (!inside && known) {
 				unsubscribe(player);
 			}
 		}
+
 		subscribers.removeIf(id -> level.getServer().getPlayerList().getPlayer(id) == null);
 	}
 
@@ -211,6 +221,7 @@ public final class EchoPlaybackSession {
 	private void broadcastTick() {
 		for (UUID subscriberId : Set.copyOf(subscribers)) {
 			ServerPlayer player = level.getServer().getPlayerList().getPlayer(subscriberId);
+
 			if (player != null) {
 				EchoPlatforms.network().sendToPlayer(player, new PlaybackTickPayload(playbackId, currentTick));
 			}
@@ -220,10 +231,12 @@ public final class EchoPlaybackSession {
 	public void broadcastStop() {
 		for (UUID subscriberId : Set.copyOf(subscribers)) {
 			ServerPlayer player = level.getServer().getPlayerList().getPlayer(subscriberId);
+
 			if (player != null) {
 				EchoPlatforms.network().sendToPlayer(player, new PlaybackStopPayload(playbackId));
 			}
 		}
+
 		subscribers.clear();
 	}
 

@@ -21,11 +21,14 @@ public class EchoChartItem extends BlockItem {
 	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip,
 			TooltipFlag flag) {
 		EchoChartData data = stack.get(EchoComponents.CHART_DATA);
+
 		if (data == null) {
 			tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_CHART_BLANK)
 					.withStyle(ChatFormatting.DARK_GRAY));
+
 			return;
 		}
+
 		tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_CHART_PLACE,
 				data.center().getX(), data.center().getY(), data.center().getZ())
 				.withStyle(ChatFormatting.GRAY));

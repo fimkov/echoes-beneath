@@ -19,6 +19,7 @@ public final class SoundWaveStrength {
 	public static float radiusFor(SoundSource source, float volume) {
 		float base = Math.max(0.1F, volume) * VOLUME_SCALE + VOLUME_BASE;
 		float scaled = base * categoryFactor(source);
+
 		return Math.clamp(scaled, MINIMUM_RADIUS, MAXIMUM_RADIUS);
 	}
 

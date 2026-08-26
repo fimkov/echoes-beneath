@@ -40,6 +40,7 @@ public class MemoryRecordedTrigger extends SimpleCriterionTrigger<MemoryRecorded
 		).apply(instance, Instance::new));
 
 		public boolean matches(int recordedSounds, int slots, int ticks,
+
 				Collection<ResourceLocation> heard) {
 			if (!sounds.matches(recordedSounds) || !filledSlots.matches(slots)
 					|| !durationTicks.matches(ticks)) {

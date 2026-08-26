@@ -33,9 +33,11 @@ class EchoParticleTimelineTest {
 	@DisplayName("the same burst repeated in one tick is only kept once")
 	void repeatsCollapse() {
 		ParticleTimeline timeline = new ParticleTimeline(MAX_EVENTS);
+
 		for (int repeat = 0; repeat < 20; repeat++) {
 			timeline.record(9, 1.0D, 1.0D, 1.0D, SMOKE, 1, 0.0D, 0.0D, 0.0D);
 		}
+
 		assertEquals(1, timeline.size());
 	}
 
@@ -52,9 +54,11 @@ class EchoParticleTimelineTest {
 	@DisplayName("the timeline stops at its ceiling instead of growing without bound")
 	void theCeilingHolds() {
 		ParticleTimeline timeline = new ParticleTimeline(4);
+
 		for (int tick = 0; tick < 40; tick++) {
 			timeline.record(tick, 0.0D, 0.0D, 0.0D, SOUL, 1, 0.0D, 0.0D, 0.0D);
 		}
+
 		assertEquals(4, timeline.size());
 	}
 

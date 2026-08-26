@@ -31,6 +31,7 @@ public final class EchoTexelGrid {
 		int cellY = (int) Math.floor(worldY * texelsPerBlock());
 		int cellZ = (int) Math.floor(worldZ * texelsPerBlock());
 		int mixed = cellX * HASH_X ^ cellY * HASH_Y ^ cellZ * HASH_Z ^ animationStep * ANIMATION_SALT;
+
 		return (mixed ^ (mixed >>> 13)) & HASH_RANGE;
 	}
 
@@ -40,6 +41,7 @@ public final class EchoTexelGrid {
 
 	public static boolean isEmber(int hash) {
 		float value = share(hash);
+
 		return value >= GLOW_SHARE && value < EMBER_SHARE;
 	}
 

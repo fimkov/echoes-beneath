@@ -59,6 +59,7 @@ public record EchoMemoryReference(
 		int verticalRadius = buffer.readVarInt();
 		int durationTicks = buffer.readVarInt();
 		long createdAt = buffer.readLong();
+
 		return new EchoMemoryReference(memoryId, slot, ResourceKey.create(Registries.DIMENSION, dimensionId),
 				center, radius, verticalRadius, durationTicks, createdAt);
 	}
@@ -71,6 +72,7 @@ public record EchoMemoryReference(
 		if (!dimension.equals(candidateDimension)) {
 			return false;
 		}
+
 		return horizontalDistanceSquared(position) <= (double) radius * radius
 				&& Math.abs(position.getY() - center.getY()) <= verticalRadius;
 	}
@@ -78,6 +80,7 @@ public record EchoMemoryReference(
 	public double horizontalDistanceSquared(BlockPos position) {
 		double dx = position.getX() - center.getX();
 		double dz = position.getZ() - center.getZ();
+
 		return dx * dx + dz * dz;
 	}
 
@@ -85,6 +88,7 @@ public record EchoMemoryReference(
 		double dx = position.getX() - center.getX();
 		double dy = position.getY() - center.getY();
 		double dz = position.getZ() - center.getZ();
+
 		return dx * dx + dy * dy + dz * dz;
 	}
 }

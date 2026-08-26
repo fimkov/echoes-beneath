@@ -47,11 +47,13 @@ public class ChartLookMenu extends AbstractContainerMenu {
 
 	private EchoChartLook readLook() {
 		EchoChartLook[] held = {EchoChartLook.DEFAULT};
+
 		access.execute((level, at) -> {
 			if (level.getBlockEntity(at) instanceof EchoChartBlockEntity chart) {
 				held[0] = chart.look();
 			}
 		});
+
 		return held[0];
 	}
 
@@ -75,6 +77,7 @@ public class ChartLookMenu extends AbstractContainerMenu {
 	@Override
 	public boolean clickMenuButton(Player player, int button) {
 		EchoChartLook current = look();
+
 		EchoChartLook next = switch (button) {
 			case DRIFT_ROW -> current.withDrifts(!current.drifts());
 			case SPIN_ROW -> current.withSpin((current.spin() + 1) % EchoChartLook.SPIN_CHOICES);
@@ -83,16 +86,21 @@ public class ChartLookMenu extends AbstractContainerMenu {
 			case SIZE_ROW -> current.withSize((current.size() + 1) % EchoChartLook.SIZE_CHOICES);
 			default -> null;
 		};
+
 		if (next == null) {
 			return false;
 		}
+
 		show(next);
+
 		access.execute((level, at) -> {
 			if (level.getBlockEntity(at) instanceof EchoChartBlockEntity chart) {
 				chart.setLook(next);
 			}
 		});
+
 		broadcastChanges();
+
 		return true;
 	}
 

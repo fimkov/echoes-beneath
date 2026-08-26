@@ -18,6 +18,7 @@ public class EchoCreativeTabGameTest implements FabricGameTest {
 	public void everyBlockIsReachable(GameTestHelper helper) {
 		List<ItemLike> shown = EchoItemGroups.contents();
 		List<String> missing = new ArrayList<>();
+
 		for (Field field : EchoBlocks.class.getDeclaredFields()) {
 			if (!Modifier.isPublic(field.getModifiers()) || !Modifier.isStatic(field.getModifiers())
 					|| !BlockItem.class.isAssignableFrom(field.getType())) {
@@ -31,9 +32,11 @@ public class EchoCreativeTabGameTest implements FabricGameTest {
 				helper.fail("could not read " + field.getName());
 			}
 		}
+
 		if (!missing.isEmpty()) {
 			helper.fail("not in the creative tab: " + missing);
 		}
+
 		helper.succeed();
 	}
 }

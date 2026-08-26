@@ -29,6 +29,7 @@ public final class EchoSuppressionStore extends SavedData {
 
 	private static EchoSuppressionStore load(CompoundTag tag, HolderLookup.Provider lookup) {
 		EchoSuppressionStore store = new EchoSuppressionStore();
+
 		for (Tag element : tag.getList("states", NBT_COMPOUND_TYPE)) {
 			try {
 				SuppressedMobState state = SuppressedMobState.fromNbt((CompoundTag) element);
@@ -37,16 +38,20 @@ public final class EchoSuppressionStore extends SavedData {
 				EchoesBeneath.LOGGER.warn("Dropping an unreadable suppressed mob entry", failure);
 			}
 		}
+
 		return store;
 	}
 
 	@Override
 	public CompoundTag save(CompoundTag tag, HolderLookup.Provider lookup) {
 		ListTag states = new ListTag();
+
 		for (SuppressedMobState state : pending.values()) {
 			states.add(state.toNbt());
 		}
+
 		tag.put("states", states);
+
 		return tag;
 	}
 
@@ -57,9 +62,11 @@ public final class EchoSuppressionStore extends SavedData {
 
 	public Optional<SuppressedMobState> forget(UUID entityId) {
 		SuppressedMobState removed = pending.remove(entityId);
+
 		if (removed != null) {
 			setDirty();
 		}
+
 		return Optional.ofNullable(removed);
 	}
 

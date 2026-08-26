@@ -36,6 +36,7 @@ class EchoCoordinatesTest {
 	@DisplayName("quantised positions stay within a quarter of a pixel")
 	void positionQuantisationIsPrecise() {
 		double[] samples = {0.0D, 0.5D, -12.25D, 49.99D, -32.125D};
+
 		for (double sample : samples) {
 			double restored = EchoCoordinates.dequantizePosition(EchoCoordinates.quantizePosition(sample));
 			assertTrue(Math.abs(restored - sample) < 0.005D, "drifted for " + sample);
@@ -46,6 +47,7 @@ class EchoCoordinatesTest {
 	@DisplayName("quantised rotations stay within two degrees")
 	void rotationQuantisationIsPrecise() {
 		float[] samples = {0.0F, 90.0F, -179.0F, 44.5F, 359.0F};
+
 		for (float sample : samples) {
 			float restored = EchoCoordinates.dequantizeRotation(EchoCoordinates.quantizeRotation(sample));
 			assertTrue(Math.abs(restored - sample) < 2.0F, "drifted for " + sample);

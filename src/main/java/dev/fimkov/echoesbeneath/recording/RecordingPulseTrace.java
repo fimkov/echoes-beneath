@@ -32,10 +32,13 @@ public final class RecordingPulseTrace {
 		if (viewer == null) {
 			return;
 		}
+
 		double cycle = radius / PULSE_SPEED_BLOCKS_PER_TICK;
+
 		for (int ring = 0; ring < CONCURRENT_RINGS; ring++) {
 			double phase = (tick + ring * cycle / CONCURRENT_RINGS) % cycle;
 			double ringRadius = phase * PULSE_SPEED_BLOCKS_PER_TICK;
+
 			if (ringRadius < MIN_VISIBLE_RADIUS || ringRadius > radius) {
 				continue;
 			}
@@ -48,16 +51,19 @@ public final class RecordingPulseTrace {
 		int points = (int) Math.clamp(Math.round(ringRadius * POINTS_PER_BLOCK_OF_RADIUS), MIN_POINTS, MAX_POINTS);
 		double angleStep = Math.PI * 2.0D / points;
 		double angleOffset = seed * 0.017D;
+
 		for (int point = 0; point < points; point++) {
 			double angle = angleOffset + point * angleStep;
 			double x = center.getX() + 0.5D + Math.cos(angle) * ringRadius;
 			double z = center.getZ() + 0.5D + Math.sin(angle) * ringRadius;
 			int columnX = (int) Math.floor(x);
 			int columnZ = (int) Math.floor(z);
+
 			if (!level.hasChunkAt(new BlockPos(columnX, center.getY(), columnZ))) {
 				continue;
 			}
 			int surface = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, columnX, columnZ);
+
 			if (Math.abs(surface - center.getY()) > verticalRadius) {
 				continue;
 			}

@@ -12,6 +12,7 @@ public enum EchoLensMode {
 		if (index < 0 || index >= VALUES.length) {
 			return ABANDONED;
 		}
+
 		return VALUES[index];
 	}
 }

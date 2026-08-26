@@ -56,6 +56,7 @@ public final class EchoChartAura {
 		mixed ^= mixed >>> 15;
 		mixed *= 0xC2B2AE35;
 		mixed ^= mixed >>> 13;
+
 		return (mixed >>> 8 & 0xFFFF) / 65535.0F;
 	}
 
@@ -68,9 +69,11 @@ public final class EchoChartAura {
 			float reach, float floor, float ceiling) {
 		VertexConsumer consumer = consumers.getBuffer(EchoRenderTypes.ECHO_TEXELS);
 		float band = Math.max(0.05F, ceiling - floor);
+
 		if (withRuns) {
 			runs(consumer, poseStack.last().pose(), age, brightness, reach, floor, band);
 		}
+
 		if (withMotes) {
 			motes(poseStack, consumer, age, camera, brightness, reach, floor, band);
 		}
@@ -83,8 +86,10 @@ public final class EchoChartAura {
 			float z = Mth.sin(ANGLE[index]) * REACH[index] * reach;
 			float drift = wrap(age * DRIFT_PER_TICK + PHASE[index]);
 			float cursor = 0.0F;
+
 			for (int gap = 0; gap < GAPS_PER_RUN; gap++) {
 				float mouth = wrap(drift + gap / (float) GAPS_PER_RUN);
+
 				if (mouth <= cursor || mouth >= 1.0F) {
 					continue;
 				}
@@ -100,10 +105,12 @@ public final class EchoChartAura {
 		if (to - from <= 0.02F) {
 			return;
 		}
+
 		float bottom = floor + from * height;
 		float top = floor + to * height;
 		int lowAlpha = Math.round(alphaAt(from) * brightness);
 		int highAlpha = Math.round(alphaAt(to) * brightness);
+
 		for (int side = 0; side < RUN_SIDES; side++) {
 			float first = side * Mth.TWO_PI / RUN_SIDES;
 			float second = (side + 1) * Mth.TWO_PI / RUN_SIDES;
@@ -126,6 +133,7 @@ public final class EchoChartAura {
 		for (int run = 0; run < RUN_COUNT; run++) {
 			float runX = Mth.cos(ANGLE[run]) * REACH[run] * reach;
 			float runZ = Mth.sin(ANGLE[run]) * REACH[run] * reach;
+
 			for (int step = 0; step < MOTES_PER_RUN; step++) {
 				int index = run * MOTES_PER_RUN + step;
 				float climb = wrap(step / (float) MOTES_PER_RUN + scatter(index, 71) * 0.14F
@@ -136,6 +144,7 @@ public final class EchoChartAura {
 				int colour = WARDEN[index % WARDEN.length];
 				int alpha = Math.round(MOTE_ALPHA * brightness
 						* (float) Math.pow(1.0F - climb, FADE_POWER));
+
 				if (alpha <= 2) {
 					continue;
 				}

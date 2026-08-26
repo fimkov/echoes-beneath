@@ -50,7 +50,9 @@ public final class EchoesBeneathNeoForge {
 					(owner, parent) ->
 							new EchoConfigScreen(parent));
 		}
+
 		EchoPlatforms.install(platform);
+
 		modBus.addListener(RegisterEvent.class, event -> {
 			if (contentRegistered) {
 				return;
@@ -58,10 +60,12 @@ public final class EchoesBeneathNeoForge {
 			contentRegistered = true;
 			EchoesBeneathBootstrap.registerContent();
 		});
+
 		EchoesBeneathBootstrap.registerBehaviour();
 		modBus.addListener(RegisterPayloadHandlersEvent.class, event ->
 				platform.neoNetwork().publish(event.registrar(PROTOCOL_VERSION)));
 		modBus.addListener(BuildCreativeModeTabContentsEvent.class, platform.neoRegistries()::fillCreativeTab);
+
 		if (FMLEnvironment.dist == Dist.CLIENT) {
 			startClient(modBus);
 		}
@@ -77,6 +81,7 @@ public final class EchoesBeneathNeoForge {
 		hooks.onFrameStart(EchoPlaybackRenderer::frameStart);
 		hooks.onAfterEntities(EchoPlaybackRenderer::afterEntities);
 		hooks.onFrameEnd(EchoPlaybackRenderer::frameEnd);
+
 		modBus.addListener(EntityRenderersEvent.RegisterRenderers.class, event -> {
 			event.registerEntityRenderer(EchoEntities.ECHO_LENS,
 					EchoLensEntityRenderer::new);
@@ -85,8 +90,10 @@ public final class EchoesBeneathNeoForge {
 					EchoChartBlockRenderer::new);
 			hooks.bindBlockEntityRenderers(event);
 		});
+
 		modBus.addListener(RegisterKeyMappingsEvent.class,
 				hooks::bindKeys);
+
 		modBus.addListener(RegisterMenuScreensEvent.class, event -> {
 			event.register(EchoMenus.RESONANCE_TABLE,
 					ResonanceTableScreen::new);
@@ -99,9 +106,11 @@ public final class EchoesBeneathNeoForge {
 
 	private static Optional<EchoLensTooltipContext.TooltipViewer> localViewer() {
 		LocalPlayer player = Minecraft.getInstance().player;
+
 		if (player == null) {
 			return Optional.empty();
 		}
+
 		return Optional.of(new EchoLensTooltipContext.TooltipViewer(
 				player.level().dimension(), player.blockPosition()));
 	}

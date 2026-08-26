@@ -48,6 +48,7 @@ public record PlaybackStartPayload(
 		int durationTicks = clamp(buffer.readVarInt(), EchoPayloadLimits.MAX_DURATION_TICKS);
 		int memorySlot = clamp(buffer.readVarInt(), Integer.MAX_VALUE);
 		int vision = clamp(buffer.readVarInt(), EchoLensUpgrades.MAX_VISION);
+
 		return new PlaybackStartPayload(playbackId, ResourceKey.create(Registries.DIMENSION, dimensionId),
 				center, radius, verticalRadius, durationTicks, memorySlot, vision);
 	}
@@ -56,6 +57,7 @@ public record PlaybackStartPayload(
 		if (value < 0 || value > maximum) {
 			throw new IllegalArgumentException("Playback field " + value + " is outside the accepted range");
 		}
+
 		return value;
 	}
 

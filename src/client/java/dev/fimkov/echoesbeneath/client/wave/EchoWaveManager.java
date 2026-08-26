@@ -14,6 +14,7 @@ public final class EchoWaveManager {
 		while (waves.size() >= EchoConfig.values().maxConcurrentSoundWaves()) {
 			waves.pollFirst();
 		}
+
 		waves.addLast(new EchoWave(origin, startTick, maxRadius, paletteIndex));
 	}
 

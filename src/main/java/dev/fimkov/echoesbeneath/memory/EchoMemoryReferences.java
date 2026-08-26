@@ -20,6 +20,7 @@ public record EchoMemoryReferences(List<EchoMemoryReference> entries) {
 	public static final StreamCodec<RegistryFriendlyByteBuf, EchoMemoryReferences> STREAM_CODEC = StreamCodec.of(
 			(buffer, value) -> {
 				buffer.writeVarInt(value.entries.size());
+
 				for (EchoMemoryReference reference : value.entries) {
 					EchoMemoryReference.STREAM_CODEC.encode(buffer, reference);
 				}
@@ -27,9 +28,11 @@ public record EchoMemoryReferences(List<EchoMemoryReference> entries) {
 			buffer -> {
 				int size = Math.min(buffer.readVarInt(), EchoFormat.MAX_MEMORY_SLOTS);
 				List<EchoMemoryReference> decoded = new ArrayList<>(size);
+
 				for (int index = 0; index < size; index++) {
 					decoded.add(EchoMemoryReference.STREAM_CODEC.decode(buffer));
 				}
+
 				return new EchoMemoryReferences(List.copyOf(decoded));
 			});
 
@@ -51,11 +54,13 @@ public record EchoMemoryReferences(List<EchoMemoryReference> entries) {
 
 	public Optional<Integer> nextFreeSlot(int capacity) {
 		int limit = Math.min(capacity, EchoFormat.MAX_MEMORY_SLOTS);
+
 		for (int slot = 0; slot < limit; slot++) {
 			if (findBySlot(slot).isEmpty()) {
 				return Optional.of(slot);
 			}
 		}
+
 		return Optional.empty();
 	}
 
@@ -65,6 +70,7 @@ public record EchoMemoryReferences(List<EchoMemoryReference> entries) {
 				return Optional.of(reference);
 			}
 		}
+
 		return Optional.empty();
 	}
 
@@ -74,6 +80,7 @@ public record EchoMemoryReferences(List<EchoMemoryReference> entries) {
 				return Optional.of(reference);
 			}
 		}
+
 		return Optional.empty();
 	}
 
@@ -81,19 +88,23 @@ public record EchoMemoryReferences(List<EchoMemoryReference> entries) {
 		if (findBySlot(reference.slot()).isPresent()) {
 			throw new IllegalStateException("Memory slot " + reference.slot() + " is already sealed");
 		}
+
 		List<EchoMemoryReference> merged = new ArrayList<>(entries);
 		merged.add(reference);
 		merged.sort(Comparator.comparingInt(EchoMemoryReference::slot));
+
 		return new EchoMemoryReferences(List.copyOf(merged));
 	}
 
 	public EchoMemoryReferences withRemoved(UUID memoryId) {
 		List<EchoMemoryReference> remaining = new ArrayList<>(entries.size());
+
 		for (EchoMemoryReference reference : entries) {
 			if (!reference.memoryId().equals(memoryId)) {
 				remaining.add(reference);
 			}
 		}
+
 		return new EchoMemoryReferences(List.copyOf(remaining));
 	}
 }

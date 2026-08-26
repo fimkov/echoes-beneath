@@ -28,10 +28,12 @@ public final class BlockTimeline {
 		if (size() >= maxEvents) {
 			return false;
 		}
+
 		data.add(tick);
 		data.add(packedPosition);
 		data.add(previousStateIndex);
 		data.add(newStateIndex);
+
 		return true;
 	}
 
@@ -62,14 +64,17 @@ public final class BlockTimeline {
 	public CompoundTag toNbt() {
 		CompoundTag tag = new CompoundTag();
 		tag.putIntArray("events", data.toIntArray());
+
 		return tag;
 	}
 
 	public static BlockTimeline fromNbt(CompoundTag tag, int maxEvents) {
 		int[] raw = tag.getIntArray("events");
+
 		if (raw.length % STRIDE != 0) {
 			throw new IllegalArgumentException("Block timeline length " + raw.length + " is not a multiple of " + STRIDE);
 		}
+
 		return new BlockTimeline(new IntArrayList(raw), maxEvents);
 	}
 
@@ -77,6 +82,7 @@ public final class BlockTimeline {
 		if (raw.length % STRIDE != 0) {
 			throw new IllegalArgumentException("Block timeline length " + raw.length + " is not a multiple of " + STRIDE);
 		}
+
 		return new BlockTimeline(new IntArrayList(raw), maxEvents);
 	}
 }

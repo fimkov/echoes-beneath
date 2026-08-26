@@ -41,22 +41,28 @@ public final class EchoBlockHologramRenderer {
 	public static void render(EchoRenderContext context, ClientPlaybackSession session, Vec3 cameraPosition) {
 		Minecraft client = Minecraft.getInstance();
 		Level level = client.level;
+
 		if (context.consumers() == null || level == null) {
 			return;
 		}
+
 		int budget = EchoClientConfig.values().hologramBlockBudget();
 		double reach = EchoClientConfig.values().hologramDistance();
+
 		if (budget <= 0 || !EchoClientConfig.values().showBlockHolograms()) {
 			return;
 		}
+
 		BlockSnapshot snapshot = session.data().snapshot();
 		EchoBlockDeltaState deltas = session.blockDeltas();
 		BlockPalette palette = snapshot.palette();
 		BlockRenderDispatcher blocks = client.getBlockRenderer();
 		float presence = EchoDarkness.transitionProgress();
+
 		if (presence <= 0.0F) {
 			return;
 		}
+
 		EchoSilhouetteBuffers buffers = EchoSilhouetteBuffers.forBlocks(context.consumers(),
 				EchoReveal.of(session), presence);
 		BlockPos center = session.region().center();
@@ -69,6 +75,7 @@ public final class EchoBlockHologramRenderer {
 				break;
 			}
 			int index = deltas.currentStates().getOrDefault(packed, BlockPalette.AIR_INDEX);
+
 			if (index == BlockPalette.AIR_INDEX) {
 				continue;
 			}
@@ -77,12 +84,14 @@ public final class EchoBlockHologramRenderer {
 		}
 
 		rescanIfStale(level, snapshot, deltas, center, cameraPosition, session, budget);
+
 		for (int packed : VANISHED) {
 			if (drawn >= budget) {
 				break;
 			}
 			int index = snapshot.paletteIndexAt(EchoCoordinates.unpackX(packed),
 					EchoCoordinates.unpackY(packed), EchoCoordinates.unpackZ(packed));
+
 			if (index == BlockPalette.AIR_INDEX) {
 				continue;
 			}
@@ -97,25 +106,32 @@ public final class EchoBlockHologramRenderer {
 		if (remembered.isAir()) {
 			return 0;
 		}
+
 		cursor.set(center.getX() + EchoCoordinates.unpackX(packed),
 				center.getY() + EchoCoordinates.unpackY(packed),
 				center.getZ() + EchoCoordinates.unpackZ(packed));
+
 		if (cameraPosition.distanceToSqr(cursor.getX() + 0.5D, cursor.getY() + 0.5D, cursor.getZ() + 0.5D)
+
 				> reach * reach) {
 			return 0;
 		}
+
 		if (level.getBlockState(cursor) == remembered) {
 			return 0;
 		}
+
 		if (context.frustum() != null && !context.frustum().isVisible(new AABB(cursor))) {
 			return 0;
 		}
+
 		poseStack.pushPose();
 		poseStack.translate(cursor.getX() - cameraPosition.x,
 				cursor.getY() - cameraPosition.y, cursor.getZ() - cameraPosition.z);
 		blocks.renderBatched(remembered, cursor, level, poseStack,
 				buffers.getBuffer(RenderType.translucent()), false, SHADE_RANDOM);
 		poseStack.popPose();
+
 		return 1;
 	}
 
@@ -125,9 +141,11 @@ public final class EchoBlockHologramRenderer {
 		boolean stale = session != scannedSession
 				|| now - lastScanTime >= RESCAN_TICKS
 				|| cameraPosition.distanceToSqr(lastScanOrigin) > RESCAN_MOVE * RESCAN_MOVE;
+
 		if (!stale) {
 			return;
 		}
+
 		scannedSession = session;
 		lastScanTime = now;
 		lastScanOrigin = cameraPosition;
@@ -138,35 +156,43 @@ public final class EchoBlockHologramRenderer {
 		int originZ = (int) Math.floor(cameraPosition.z) - center.getZ();
 		int radius = snapshot.radius();
 		BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
+
 		for (int dy = -SCAN_HALF; dy <= SCAN_HALF; dy++) {
 			int relativeY = originY + dy;
+
 			if (relativeY < snapshot.minRelativeY() || relativeY > snapshot.maxRelativeY()) {
 				continue;
 			}
 			for (int dx = -SCAN_HALF; dx <= SCAN_HALF; dx++) {
 				int relativeX = originX + dx;
+
 				if (Math.abs(relativeX) > radius) {
 					continue;
 				}
 				for (int dz = -SCAN_HALF; dz <= SCAN_HALF; dz++) {
 					int relativeZ = originZ + dz;
+
 					if (Math.abs(relativeZ) > radius
 							|| relativeX * relativeX + relativeZ * relativeZ > radius * radius) {
 						continue;
 					}
 					int packed = EchoCoordinates.packRelative(relativeX, relativeY, relativeZ);
+
 					if (deltas.trackedPositions().contains(packed)) {
 						continue;
 					}
 					int index = snapshot.paletteIndexAt(relativeX, relativeY, relativeZ);
+
 					if (index == BlockPalette.AIR_INDEX) {
 						continue;
 					}
 					cursor.set(center.getX() + relativeX, center.getY() + relativeY, center.getZ() + relativeZ);
+
 					if (level.getBlockState(cursor) == snapshot.palette().stateAt(index)) {
 						continue;
 					}
 					VANISHED.add(packed);
+
 					if (VANISHED.size() >= budget) {
 						return;
 					}

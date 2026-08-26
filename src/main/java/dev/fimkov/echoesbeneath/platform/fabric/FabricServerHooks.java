@@ -95,6 +95,7 @@ public final class FabricServerHooks implements EchoServerHooks {
 	public void guardUseItem(UseItemGuard guard) {
 		UseItemCallback.EVENT.register((player, level, hand) -> {
 			ItemStack stack = player.getItemInHand(hand);
+
 			return guard.allow(player, level, hand)
 					? InteractionResultHolder.pass(stack)
 					: InteractionResultHolder.fail(stack);

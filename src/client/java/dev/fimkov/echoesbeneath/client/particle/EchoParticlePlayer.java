@@ -24,6 +24,7 @@ public final class EchoParticlePlayer {
 
 	public void resyncTo(int tick) {
 		cursor = 0;
+
 		while (cursor < timeline.size() && timeline.tickAt(cursor) < tick) {
 			cursor++;
 		}
@@ -38,15 +39,18 @@ public final class EchoParticlePlayer {
 
 	private void emit(ClientLevel level, int index) {
 		ParticleOptions options = optionsFor(timeline.typeAt(index));
+
 		if (options == null) {
 			return;
 		}
+
 		Vec3 origin = center.add(timeline.relativeXAt(index), timeline.relativeYAt(index),
 				timeline.relativeZAt(index));
 		int count = Math.min(MAX_PER_EVENT, timeline.countAt(index));
 		double spreadX = timeline.spreadXAt(index);
 		double spreadY = timeline.spreadYAt(index);
 		double spreadZ = timeline.spreadZAt(index);
+
 		for (int emitted = 0; emitted < count; emitted++) {
 			level.addParticle(options,
 					origin.x + level.random.nextGaussian() * spreadX,
@@ -58,6 +62,7 @@ public final class EchoParticlePlayer {
 
 	private static ParticleOptions optionsFor(ResourceLocation typeId) {
 		ParticleType<?> type = BuiltInRegistries.PARTICLE_TYPE.get(typeId);
+
 		return type instanceof SimpleParticleType simple ? simple : null;
 	}
 }

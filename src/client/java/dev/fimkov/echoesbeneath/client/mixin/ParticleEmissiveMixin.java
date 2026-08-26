@@ -17,6 +17,7 @@ public abstract class ParticleEmissiveMixin {
 		if (EchoDarkness.isTransitionActive()) {
 			return LightTexture.FULL_BRIGHT;
 		}
+
 		return particle.getLightColor(partialTick);
 	}
 }

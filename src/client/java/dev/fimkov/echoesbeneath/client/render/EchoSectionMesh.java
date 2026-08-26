@@ -30,12 +30,14 @@ public final class EchoSectionMesh {
 		int originY = BlockSnapshot.sectionKeyY(sectionKey) * SECTION_SIZE;
 		int originZ = BlockSnapshot.sectionKeyZ(sectionKey) * SECTION_SIZE;
 		IntArrayList collected = new IntArrayList();
+
 		for (int localY = 0; localY < SECTION_SIZE; localY++) {
 			for (int localZ = 0; localZ < SECTION_SIZE; localZ++) {
 				for (int localX = 0; localX < SECTION_SIZE; localX++) {
 					int relativeX = originX + localX;
 					int relativeY = originY + localY;
 					int relativeZ = originZ + localZ;
+
 					if (snapshot.paletteIndexAt(relativeX, relativeY, relativeZ) == BlockPalette.AIR_INDEX) {
 						continue;
 					}
@@ -50,8 +52,10 @@ public final class EchoSectionMesh {
 							continue;
 						}
 						int edgeMask = 0;
+
 						for (int edge = 0; edge < EchoFaceGeometry.EDGES_PER_FACE; edge++) {
 							Direction step = EchoFaceGeometry.edgeNeighbour(direction, edge);
+
 							if (!hasFace(snapshot,
 									relativeX + step.getStepX(),
 									relativeY + step.getStepY(),
@@ -65,6 +69,7 @@ public final class EchoSectionMesh {
 				}
 			}
 		}
+
 		return new EchoSectionMesh(originX, originY, originZ, collected.toIntArray());
 	}
 
@@ -72,6 +77,7 @@ public final class EchoSectionMesh {
 		if (snapshot.paletteIndexAt(x, y, z) == BlockPalette.AIR_INDEX) {
 			return false;
 		}
+
 		return snapshot.stateAt(x, y, z).canOcclude();
 	}
 

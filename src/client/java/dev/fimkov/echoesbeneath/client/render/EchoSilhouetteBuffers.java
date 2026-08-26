@@ -25,6 +25,7 @@ public record EchoSilhouetteBuffers(MultiBufferSource delegate, RenderType layer
 			float reveal, float presence) {
 		int level = Math.round(Mth.clamp(reveal, 0.0F, 1.0F) * OPAQUE);
 		int visible = Math.round(Mth.clamp(presence, 0.0F, 1.0F) * OPAQUE);
+
 		return new EchoSilhouetteBuffers(delegate, layer, level, level, level, visible,
 				LightTexture.pack(Math.round(Mth.clamp(reveal, 0.0F, 1.0F) * REVEAL_BLOCK_LIGHT), 0),
 				visible < OPAQUE);
@@ -39,39 +40,47 @@ public record EchoSilhouetteBuffers(MultiBufferSource delegate, RenderType layer
 		if (!fading) {
 			return new SilhouetteConsumer(delegate.getBuffer(renderType), red, green, blue, OPAQUE, light);
 		}
+
 		if (renderType.format() != layer.format()) {
 			return DISCARD;
 		}
+
 		return new SilhouetteConsumer(delegate.getBuffer(layer), red, green, blue, alpha, light);
 	}
 
 	private static final VertexConsumer DISCARD = new VertexConsumer() {
 		@Override
+
 		public VertexConsumer addVertex(float x, float y, float z) {
 			return this;
 		}
 
 		@Override
+
 		public VertexConsumer setColor(int red, int green, int blue, int alpha) {
 			return this;
 		}
 
 		@Override
+
 		public VertexConsumer setUv(float u, float v) {
 			return this;
 		}
 
 		@Override
+
 		public VertexConsumer setUv1(int u, int v) {
 			return this;
 		}
 
 		@Override
+
 		public VertexConsumer setUv2(int u, int v) {
 			return this;
 		}
 
 		@Override
+
 		public VertexConsumer setNormal(float x, float y, float z) {
 			return this;
 		}
@@ -80,40 +89,52 @@ public record EchoSilhouetteBuffers(MultiBufferSource delegate, RenderType layer
 	private record SilhouetteConsumer(VertexConsumer delegate, int red, int green, int blue,
 			int alpha, int light) implements VertexConsumer {
 		@Override
+
 		public VertexConsumer addVertex(float x, float y, float z) {
 			delegate.addVertex(x, y, z);
+
 			return this;
 		}
 
 		@Override
+
 		public VertexConsumer setColor(int sourceRed, int sourceGreen, int sourceBlue, int sourceAlpha) {
 			int shade = Math.max(sourceRed, Math.max(sourceGreen, sourceBlue));
 			delegate.setColor(red * shade / OPAQUE, green * shade / OPAQUE, blue * shade / OPAQUE,
 					alpha * sourceAlpha / OPAQUE);
+
 			return this;
 		}
 
 		@Override
+
 		public VertexConsumer setUv(float u, float v) {
 			delegate.setUv(u, v);
+
 			return this;
 		}
 
 		@Override
+
 		public VertexConsumer setUv1(int u, int v) {
 			delegate.setUv1(u, v);
+
 			return this;
 		}
 
 		@Override
+
 		public VertexConsumer setUv2(int u, int v) {
 			delegate.setUv2(light & 0xFFFF, (light >> 16) & 0xFFFF);
+
 			return this;
 		}
 
 		@Override
+
 		public VertexConsumer setNormal(float x, float y, float z) {
 			delegate.setNormal(x, y, z);
+
 			return this;
 		}
 	}

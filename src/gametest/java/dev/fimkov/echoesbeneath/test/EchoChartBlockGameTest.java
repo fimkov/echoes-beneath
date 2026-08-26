@@ -26,6 +26,7 @@ public class EchoChartBlockGameTest implements FabricGameTest {
 				ResourceKey.create(Registries.DIMENSION, ResourceLocation.withDefaultNamespace("overworld")),
 				BlockPos.ZERO, 32, 40, 90, 128));
 		stack.set(EchoComponents.CHART_LOOK, EchoChartLook.DEFAULT.withSpin(EchoChartLook.SPIN_BRISK));
+
 		return stack;
 	}
 
@@ -33,25 +34,34 @@ public class EchoChartBlockGameTest implements FabricGameTest {
 	public void placingAChartHandsItsDataToTheBlock(GameTestHelper helper) {
 		BlockPos absolute = helper.absolutePos(WHERE);
 		helper.getLevel().setBlockAndUpdate(absolute, EchoBlocks.ECHO_CHART.defaultBlockState());
+
 		if (!(helper.getLevel().getBlockEntity(absolute) instanceof EchoChartBlockEntity block)) {
 			helper.fail("the chart block should carry a block entity");
+
 			return;
 		}
+
 		EchoBlocks.ECHO_CHART.setPlacedBy(helper.getLevel(), absolute,
 				EchoBlocks.ECHO_CHART.defaultBlockState(), null, chart());
+
 		if (block.chart() == null) {
 			helper.fail("the block took none of the chart's data");
 		}
+
 		if (block.look().spin() != EchoChartLook.SPIN_BRISK) {
 			helper.fail("the block took none of the chart's display settings");
 		}
+
 		ItemStack back = block.asItem();
+
 		if (back.get(EchoComponents.CHART_DATA) == null) {
 			helper.fail("breaking the block would hand back a blank chart");
 		}
+
 		if (back.get(EchoComponents.CHART_LOOK).spin() != EchoChartLook.SPIN_BRISK) {
 			helper.fail("breaking the block would lose its display settings");
 		}
+
 		helper.getLevel().removeBlock(absolute, false);
 		helper.succeed();
 	}
@@ -59,9 +69,11 @@ public class EchoChartBlockGameTest implements FabricGameTest {
 	@GameTest(template = EMPTY_STRUCTURE)
 	public void aChartBlockGivesOffLight(GameTestHelper helper) {
 		int emission = EchoBlocks.ECHO_CHART.defaultBlockState().getLightEmission();
+
 		if (emission <= 0) {
 			helper.fail("a chart should light its own corner, emission is " + emission);
 		}
+
 		helper.succeed();
 	}
 }

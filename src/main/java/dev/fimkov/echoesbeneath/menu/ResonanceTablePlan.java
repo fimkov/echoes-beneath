@@ -12,13 +12,16 @@ public record ResonanceTablePlan(EchoLensUpgrades target, int experienceLevels, 
 		EchoLensUpgrades clamped = ResonanceTableUpgrade.clampToFloor(floor, desired);
 		int levels = 0;
 		int shards = 0;
+
 		for (ResonanceTableUpgrade upgrade : ResonanceTableUpgrade.all()) {
 			int unpaid = upgrade.stepsOf(clamped) - upgrade.stepsOf(peak);
+
 			if (unpaid > 0) {
 				levels += unpaid * upgrade.experiencePerStep();
 				shards += unpaid * upgrade.shardsPerStep();
 			}
 		}
+
 		return new ResonanceTablePlan(clamped, levels, shards, !clamped.equals(current));
 	}
 

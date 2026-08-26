@@ -40,8 +40,10 @@ public final class EchoChartModel {
 		if (cloud.size() == 0) {
 			return new EchoChartModel(1, 1, 1);
 		}
+
 		int lowX = Integer.MAX_VALUE, lowY = Integer.MAX_VALUE, lowZ = Integer.MAX_VALUE;
 		int highX = Integer.MIN_VALUE, highY = Integer.MIN_VALUE, highZ = Integer.MIN_VALUE;
+
 		for (int index = 0; index < cloud.size(); index++) {
 			int packed = cloud.positions().getInt(index);
 			lowX = Math.min(lowX, EchoCoordinates.unpackX(packed));
@@ -51,6 +53,7 @@ public final class EchoChartModel {
 			lowZ = Math.min(lowZ, EchoCoordinates.unpackZ(packed));
 			highZ = Math.max(highZ, EchoCoordinates.unpackZ(packed));
 		}
+
 		int width = highX - lowX + 1;
 		int height = highY - lowY + 1;
 		int depth = highZ - lowZ + 1;
@@ -63,6 +66,7 @@ public final class EchoChartModel {
 		model.recordedVision = cloud.recordedVision();
 
 		Int2ObjectMap<Int2IntMap> votes = new Int2ObjectOpenHashMap<>();
+
 		for (int index = 0; index < cloud.size(); index++) {
 			int packed = cloud.positions().getInt(index);
 			int key = pack(
@@ -73,23 +77,27 @@ public final class EchoChartModel {
 			int state = cloud.states().getInt(index);
 			tally.put(state, tally.get(state) + 1);
 		}
+
 		for (Int2ObjectMap.Entry<Int2IntMap> entry : votes.int2ObjectEntrySet()) {
 			model.cells.add(entry.getIntKey());
 			model.states.add(cloud.paletteAt(winner(entry.getValue())));
 			model.occupied.add(entry.getIntKey());
 		}
+
 		return model;
 	}
 
 	private static int winner(Int2IntMap tally) {
 		int best = 0;
 		int bestCount = -1;
+
 		for (Int2IntMap.Entry vote : tally.int2IntEntrySet()) {
 			if (vote.getIntValue() > bestCount) {
 				bestCount = vote.getIntValue();
 				best = vote.getIntKey();
 			}
 		}
+
 		return best;
 	}
 
@@ -129,12 +137,14 @@ public final class EchoChartModel {
 		int x = cellX(packed);
 		int y = cellY(packed);
 		int z = cellZ(packed);
+
 		return holds(x + 1, y, z) && holds(x - 1, y, z) && holds(x, y + 1, z)
 				&& holds(x, y - 1, z) && holds(x, y, z + 1) && holds(x, y, z - 1);
 	}
 
 	public float brightness() {
 		int vision = recordedVision < 0 ? EchoLensUpgrades.MAX_VISION : recordedVision;
+
 		return DIMMEST + (1.0F - DIMMEST) * vision / EchoLensUpgrades.MAX_VISION;
 	}
 

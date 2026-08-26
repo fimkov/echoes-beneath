@@ -26,6 +26,7 @@ public final class EchoRecordingHooks {
 	public static void runWithoutCapture(Runnable action) {
 		boolean previous = captureSuspended;
 		captureSuspended = true;
+
 		try {
 			action.run();
 		} finally {
@@ -37,10 +38,13 @@ public final class EchoRecordingHooks {
 		if (!isCapturing() || !(level instanceof ServerLevel serverLevel)) {
 			return;
 		}
+
 		EchoServerState state = EchoServerState.current();
+
 		if (state == null) {
 			return;
 		}
+
 		for (EchoRecordingSession session : state.recordings().sessionsIn(serverLevel)) {
 			session.onBlockChanged(position, previous, current);
 		}
@@ -51,10 +55,13 @@ public final class EchoRecordingHooks {
 		if (!isCapturing()) {
 			return;
 		}
+
 		EchoServerState state = EchoServerState.current();
+
 		if (state == null) {
 			return;
 		}
+
 		for (EchoRecordingSession session : state.recordings().sessionsIn(level)) {
 			session.onSound(x, y, z, soundId, source, volume, pitch);
 		}
@@ -65,10 +72,13 @@ public final class EchoRecordingHooks {
 		if (!isCapturing()) {
 			return;
 		}
+
 		EchoServerState state = EchoServerState.current();
+
 		if (state == null) {
 			return;
 		}
+
 		for (EchoRecordingSession session : state.recordings().sessionsIn(level)) {
 			session.onParticle(x, y, z, typeId, count, spreadX, spreadY, spreadZ);
 		}

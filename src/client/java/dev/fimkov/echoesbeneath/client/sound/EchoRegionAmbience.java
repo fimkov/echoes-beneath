@@ -31,9 +31,11 @@ public final class EchoRegionAmbience extends AbstractTickableSoundInstance {
 		if (!EchoDarkness.isTransitionActive()) {
 			return;
 		}
+
 		if (current != null && !current.isStopped()) {
 			return;
 		}
+
 		current = new EchoRegionAmbience();
 		Minecraft.getInstance().getSoundManager().play(current);
 	}
@@ -49,6 +51,7 @@ public final class EchoRegionAmbience extends AbstractTickableSoundInstance {
 	public void tick() {
 		float target = EchoDarkness.transitionProgress() * EchoClientConfig.values().regionAmbienceGain();
 		volume += (target - volume) * FOLLOW_RATE;
+
 		if (target <= 0.0F && volume < SILENT) {
 			stop();
 		}

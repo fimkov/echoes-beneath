@@ -31,8 +31,10 @@ class SoundingTableTextTest {
 
 	private static JsonObject language(String code) {
 		try (InputStream stream = SoundingTableTextTest.class
+
 				.getResourceAsStream("/assets/echoes_beneath/lang/" + code + ".json")) {
 			assertNotNull(stream, code + " is missing");
+
 			return JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8))
 					.getAsJsonObject();
 		} catch (Exception failure) {
@@ -55,11 +57,14 @@ class SoundingTableTextTest {
 	void labelsFit() {
 		Map<Integer, Integer> advances = advances();
 		List<String> tooWide = new ArrayList<>();
+
 		for (String code : LANGUAGES) {
 			JsonObject language = language(code);
+
 			for (String key : new String[] {"sounding.echoes_beneath.extract",
 					"sounding.echoes_beneath.put_back"}) {
 				int button = measure(advances, language.get(key).getAsString()) + BUTTON_PADDING * 2;
+
 				if (button > SoundingTableLayout.EXTRACT_WIDTH) {
 					tooWide.add(code + " " + key + " is " + button + "px against "
 							+ SoundingTableLayout.EXTRACT_WIDTH);
@@ -69,6 +74,7 @@ class SoundingTableTextTest {
 					.replace("%s", "")
 					+ WIDEST_WINDOW_LOW + WIDEST_WINDOW_HIGH;
 			int readout = measure(advances, window) + STAGE_PADDING;
+
 			if (readout > SoundingTableLayout.STAGE_WIDTH) {
 				tooWide.add(code + " window is " + readout + "px against "
 						+ SoundingTableLayout.STAGE_WIDTH);
@@ -76,12 +82,14 @@ class SoundingTableTextTest {
 			for (String key : new String[] {"sounding.echoes_beneath.no_lens",
 					"sounding.echoes_beneath.no_memories"}) {
 				int width = measure(advances, language.get(key).getAsString()) + STAGE_PADDING;
+
 				if (width > SoundingTableLayout.STAGE_WIDTH) {
 					tooWide.add(code + " " + key + " is " + width + "px against "
 							+ SoundingTableLayout.STAGE_WIDTH);
 				}
 			}
 		}
+
 		assertTrue(tooWide.isEmpty(), String.join("; ", tooWide));
 	}
 
@@ -104,31 +112,39 @@ class SoundingTableTextTest {
 				new int[] {SoundingTableLayout.INVENTORY_X, SoundingTableLayout.INVENTORY_Y, 162, 54},
 				new int[] {SoundingTableLayout.INVENTORY_X, SoundingTableLayout.HOTBAR_Y, 162, 18});
 		List<String> clashes = new ArrayList<>();
+
 		for (int first = 0; first < boxes.size(); first++) {
 			int[] a = boxes.get(first);
+
 			if (a[0] < 0 || a[1] < 0 || a[0] + a[2] > SoundingTableLayout.PANEL_WIDTH
 					|| a[1] + a[3] > SoundingTableLayout.PANEL_HEIGHT) {
 				clashes.add("box " + first + " leaves the panel");
 			}
 			for (int second = first + 1; second < boxes.size(); second++) {
 				int[] b = boxes.get(second);
+
 				if (a[0] < b[0] + b[2] && b[0] < a[0] + a[2]
 						&& a[1] < b[1] + b[3] && b[1] < a[1] + a[3]) {
 					clashes.add("box " + first + " overlaps box " + second);
 				}
 			}
 		}
+
 		assertTrue(clashes.isEmpty(), String.join("; ", clashes));
 	}
 
 	private static Map<Integer, Integer> advances() {
 		Map<Integer, Integer> table = new HashMap<>();
+
 		try (InputStream stream = SoundingTableTextTest.class
+
 				.getResourceAsStream("/echo_font_advances.txt")) {
 			assertNotNull(stream, "the font advance table is missing");
 			Scanner scanner = new Scanner(stream, StandardCharsets.UTF_8);
+
 			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine().trim();
+
 				if (line.isEmpty()) {
 					continue;
 				}
@@ -138,14 +154,17 @@ class SoundingTableTextTest {
 		} catch (Exception failure) {
 			throw new IllegalStateException(failure);
 		}
+
 		return table;
 	}
 
 	private static int measure(Map<Integer, Integer> advances, String text) {
 		int total = 0;
+
 		for (int index = 0; index < text.length(); index++) {
 			total += advances.getOrDefault((int) text.charAt(index), 6);
 		}
+
 		return total;
 	}
 }

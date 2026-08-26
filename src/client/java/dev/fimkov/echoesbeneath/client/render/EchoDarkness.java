@@ -31,14 +31,18 @@ public final class EchoDarkness {
 	public static void refreshFrameState() {
 		Minecraft client = Minecraft.getInstance();
 		ClientPlaybackSession found = null;
+
 		if (client.level != null && client.player != null) {
 			found = ClientPlaybackManager.instance()
 					.sessionContaining(client.level, client.player.getEyePosition()).orElse(null);
 		}
+
 		if (found != enclosing) {
 			EchoesBeneath.LOGGER.info("Echo region {}", found == null ? "left" : "entered");
 		}
+
 		enclosing = found;
+
 		if (found != null) {
 			lastFogStart = found.region().radius() * FOG_START_FRACTION;
 			lastFogEnd = Math.max(FOG_END_MARGIN, found.region().radius() - FOG_END_MARGIN);
@@ -48,6 +52,7 @@ public final class EchoDarkness {
 	public static void advanceTransition(float realtimeDeltaTicks) {
 		float target = enclosing == null ? 0.0F : darknessTargetFor(enclosing);
 		float step = Math.max(0.0F, realtimeDeltaTicks) * EchoClientConfig.values().transitionPerTick();
+
 		if (darkness < target) {
 			darkness = Math.min(target, darkness + step);
 		} else {
@@ -60,6 +65,7 @@ public final class EchoDarkness {
 				/ EchoLensUpgrades.MAX_VISION * VISION_RELIEF;
 		lastTarget = (FULLY_DARK - relief)
 				* EchoClientConfig.values().darknessFactor();
+
 		return lastTarget;
 	}
 
@@ -67,6 +73,7 @@ public final class EchoDarkness {
 		if (lastTarget <= ACTIVE_THRESHOLD) {
 			return 0.0F;
 		}
+
 		return Math.clamp(darkness / lastTarget, 0.0F, 1.0F);
 	}
 
@@ -82,6 +89,7 @@ public final class EchoDarkness {
 		if (!EchoClientConfig.values().hideSkyDuringPlayback()) {
 			return false;
 		}
+
 		return darkness >= SKY_HIDDEN_THRESHOLD;
 	}
 
@@ -110,15 +118,19 @@ public final class EchoDarkness {
 		if (restoring) {
 			return;
 		}
+
 		lightTextureAccess().ifPresent(access -> access.echoesBeneath$applyDarkness(darkness, partialTick));
 	}
 
 	public static void restoreNaturalLight(float partialTick) {
 		Optional<EchoLightTextureAccess> access = lightTextureAccess();
+
 		if (access.isEmpty()) {
 			return;
 		}
+
 		restoring = true;
+
 		try {
 			access.get().echoesBeneath$restoreNaturalLight(partialTick);
 		} finally {
@@ -128,10 +140,13 @@ public final class EchoDarkness {
 
 	private static Optional<EchoLightTextureAccess> lightTextureAccess() {
 		Minecraft client = Minecraft.getInstance();
+
 		if (client.gameRenderer == null
+
 				|| !(client.gameRenderer.lightTexture() instanceof EchoLightTextureAccess access)) {
 			return Optional.empty();
 		}
+
 		return Optional.of(access);
 	}
 }

@@ -33,6 +33,7 @@ public abstract class LightTextureDarknessMixin implements EchoLightTextureAcces
 	public void echoesBeneath$applyDarkness(float darkness, float partialTick) {
 		echoesBeneath$restoreNaturalLight(partialTick);
 		float retained = 1.0F - Math.clamp(darkness, 0.0F, 1.0F);
+
 		for (int skyLevel = 0; skyLevel < LIGHT_LEVELS; skyLevel++) {
 			for (int blockLevel = 0; blockLevel < LIGHT_LEVELS; blockLevel++) {
 				if (blockLevel == EchoDarkness.EMISSIVE_TEXEL && skyLevel == EchoDarkness.EMISSIVE_TEXEL) {
@@ -42,6 +43,7 @@ public abstract class LightTextureDarknessMixin implements EchoLightTextureAcces
 						dimmed(lightPixels.getPixelRGBA(blockLevel, skyLevel), retained));
 			}
 		}
+
 		lightTexture.upload();
 	}
 
@@ -49,6 +51,7 @@ public abstract class LightTextureDarknessMixin implements EchoLightTextureAcces
 		int first = Math.round((packed & CHANNEL_MASK) * retained);
 		int second = Math.round(((packed >> 8) & CHANNEL_MASK) * retained);
 		int third = Math.round(((packed >> 16) & CHANNEL_MASK) * retained);
+
 		return (packed & ALPHA_MASK) | (third << 16) | (second << 8) | first;
 	}
 

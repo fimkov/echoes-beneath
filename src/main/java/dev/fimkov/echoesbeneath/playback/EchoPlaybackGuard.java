@@ -26,12 +26,14 @@ public final class EchoPlaybackGuard {
 
 		EchoPlatforms.server().guardUseItem((player, level, hand) -> {
 			ItemStack stack = player.getItemInHand(hand);
+
 			return !(stack.getItem() instanceof BucketItem
 					&& isBlocked(level, player, player.blockPosition()));
 		});
 
 		EchoPlatforms.server().guardAttack((player, target) -> {
 			EchoServerState state = EchoServerState.current();
+
 			return state == null || !state.playbacks().protectsEntity(target);
 		});
 	}
@@ -40,17 +42,22 @@ public final class EchoPlaybackGuard {
 		if (level.isClientSide() || !EchoConfig.values().disableBlockInteractionDuringPlayback()) {
 			return false;
 		}
+
 		if (!(level instanceof ServerLevel serverLevel)) {
 			return false;
 		}
+
 		EchoServerState state = EchoServerState.current();
+
 		if (state == null || !state.playbacks().isInsideAnyRegion(serverLevel, position)) {
 			return false;
 		}
+
 		if (player instanceof ServerPlayer serverPlayer) {
 			serverPlayer.displayClientMessage(
 					Component.translatable(EchoTranslations.MESSAGE_PLAYBACK_BLOCKED_INTERACTION), true);
 		}
+
 		return true;
 	}
 }

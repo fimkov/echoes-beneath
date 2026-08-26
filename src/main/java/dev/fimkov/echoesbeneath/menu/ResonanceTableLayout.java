@@ -76,6 +76,7 @@ public final class ResonanceTableLayout {
 
 	public static List<int[]> trace(int[][] corners) {
 		List<int[]> path = new ArrayList<>();
+
 		for (int index = 0; index < corners.length - 1; index++) {
 			int x = corners[index][0];
 			int y = corners[index][1];
@@ -83,14 +84,17 @@ public final class ResonanceTableLayout {
 			int endY = corners[index + 1][1];
 			int stepX = Integer.signum(endX - x);
 			int stepY = Integer.signum(endY - y);
+
 			while (x != endX || y != endY) {
 				addOnce(path, x, y);
 				x += stepX;
 				y += stepY;
 			}
 		}
+
 		int[] last = corners[corners.length - 1];
 		addOnce(path, last[0], last[1]);
+
 		return path;
 	}
 
@@ -100,6 +104,7 @@ public final class ResonanceTableLayout {
 				return;
 			}
 		}
+
 		path.add(new int[] {x, y});
 	}
 
