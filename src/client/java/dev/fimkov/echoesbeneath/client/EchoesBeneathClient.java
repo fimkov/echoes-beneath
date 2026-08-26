@@ -2,7 +2,8 @@ package dev.fimkov.echoesbeneath.client;
 
 import dev.fimkov.echoesbeneath.client.playback.EchoPlaybackReceiver;
 import dev.fimkov.echoesbeneath.client.render.EchoLensEntityRenderer;
-import dev.fimkov.echoesbeneath.client.platform.fabric.FabricRenderContext;
+import dev.fimkov.echoesbeneath.client.platform.EchoClientPlatforms;
+import dev.fimkov.echoesbeneath.client.platform.fabric.FabricClientHooks;
 import dev.fimkov.echoesbeneath.client.render.EchoPlaybackRenderer;
 import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
@@ -13,8 +14,6 @@ import dev.fimkov.echoesbeneath.item.EchoLensUpgrades;
 import dev.fimkov.echoesbeneath.registry.EchoEntities;
 import dev.fimkov.echoesbeneath.registry.EchoItems;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -24,18 +23,17 @@ import java.util.Optional;
 public final class EchoesBeneathClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
+		EchoClientPlatforms.install(new FabricClientHooks());
 		EchoClientConfig.load();
 		EchoLensTooltipContext.bindViewer(EchoesBeneathClient::localViewer);
-		EntityRendererRegistry.register(EchoEntities.ECHO_LENS, EchoLensEntityRenderer::new);
+		EchoClientPlatforms.get().registerEntityRenderer(EchoEntities.ECHO_LENS,
+				EchoLensEntityRenderer::new);
 		EchoPlaybackReceiver.register();
-		WorldRenderEvents.START.register(context ->
-				EchoPlaybackRenderer.frameStart(new FabricRenderContext(context)));
-		WorldRenderEvents.AFTER_ENTITIES.register(context ->
-				EchoPlaybackRenderer.afterEntities(new FabricRenderContext(context)));
-		WorldRenderEvents.END.register(context ->
-				EchoPlaybackRenderer.frameEnd(new FabricRenderContext(context)));
+		EchoClientPlatforms.get().onFrameStart(EchoPlaybackRenderer::frameStart);
+		EchoClientPlatforms.get().onAfterEntities(EchoPlaybackRenderer::afterEntities);
+		EchoClientPlatforms.get().onFrameEnd(EchoPlaybackRenderer::frameEnd);
 		registerLensAppearance();
-		net.minecraft.client.gui.screens.MenuScreens.register(
+		EchoClientPlatforms.get().registerScreen(
 				dev.fimkov.echoesbeneath.registry.EchoMenus.RESONANCE_TABLE,
 				dev.fimkov.echoesbeneath.client.screen.ResonanceTableScreen::new);
 	}

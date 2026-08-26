@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.fimkov.echoesbeneath.worldgen.EchoStructures;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import dev.fimkov.echoesbeneath.platform.EchoPlatforms;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -19,8 +19,7 @@ public final class EchoCommands {
 	}
 
 	public static void register() {
-		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
-				dispatcher.register(buildRoot()));
+		EchoPlatforms.server().onCommandRegistration(dispatcher -> dispatcher.register(buildRoot()));
 	}
 
 	private static LiteralArgumentBuilder<CommandSourceStack> buildRoot() {

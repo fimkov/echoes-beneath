@@ -1,15 +1,10 @@
 package dev.fimkov.echoesbeneath.runtime;
 
+import dev.fimkov.echoesbeneath.platform.EchoPlatforms;
 import dev.fimkov.echoesbeneath.playback.EchoPlaybackGuard;
 import dev.fimkov.echoesbeneath.playback.EchoPlaybackStopReason;
 import dev.fimkov.echoesbeneath.recording.EchoRecordingHooks;
 import dev.fimkov.echoesbeneath.recording.EchoRecordingStopReason;
-import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 
 public final class EchoServerLifecycle {
 	private EchoServerLifecycle() {
@@ -18,12 +13,12 @@ public final class EchoServerLifecycle {
 	public static void register() {
 		EchoPlaybackGuard.register();
 
-		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+		EchoPlatforms.server().onServerStarted(server -> {
 			EchoServerState state = EchoServerState.attach(server);
 			state.suppression().recoverEverything();
 		});
 
-		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+		EchoPlatforms.server().onServerStopping(server -> {
 			EchoServerState state = EchoServerState.current();
 			if (state != null) {
 				state.recordings().stopAll(EchoRecordingStopReason.SERVER_STOPPING);
@@ -32,12 +27,12 @@ public final class EchoServerLifecycle {
 			}
 		});
 
-		ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+		EchoPlatforms.server().onServerStopped(server -> {
 			EchoRecordingHooks.setAnyRecordingActive(false);
 			EchoServerState.detach();
 		});
 
-		ServerWorldEvents.UNLOAD.register((server, level) -> {
+		EchoPlatforms.server().onLevelUnload((server, level) -> {
 			EchoServerState state = EchoServerState.current();
 			if (state != null) {
 				state.recordings().stopIn(level, EchoRecordingStopReason.DIMENSION_UNLOADED);
@@ -45,31 +40,31 @@ public final class EchoServerLifecycle {
 			}
 		});
 
-		ServerTickEvents.END_SERVER_TICK.register(server -> {
+		EchoPlatforms.server().onServerTickEnd(server -> {
 			EchoServerState state = EchoServerState.current();
 			if (state != null) {
 				state.tick();
 			}
 		});
 
-		ServerEntityEvents.ENTITY_LOAD.register((entity, level) -> {
+		EchoPlatforms.server().onEntityLoad((entity, level) -> {
 			EchoServerState state = EchoServerState.current();
 			if (state != null) {
 				state.suppression().restoreOnLoad(entity);
 			}
 		});
 
-		ServerEntityWorldChangeEvents.AFTER_ENTITY_CHANGE_WORLD.register((original, copy, origin, destination) -> {
+		EchoPlatforms.server().onEntityChangedLevel((entity, level) -> {
 			EchoServerState state = EchoServerState.current();
 			if (state != null) {
-				state.suppression().restoreOnLoad(copy);
+				state.suppression().restoreOnLoad(entity);
 			}
 		});
 
-		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+		EchoPlatforms.server().onPlayerDisconnect(player -> {
 			EchoServerState state = EchoServerState.current();
 			if (state != null) {
-				state.playbacks().onOwnerDisconnected(handler.getPlayer().getUUID());
+				state.playbacks().onOwnerDisconnected(player.getUUID());
 			}
 		});
 	}

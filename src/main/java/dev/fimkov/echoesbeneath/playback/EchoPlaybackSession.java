@@ -10,7 +10,7 @@ import dev.fimkov.echoesbeneath.network.PlaybackStopPayload;
 import dev.fimkov.echoesbeneath.network.PlaybackTickPayload;
 import dev.fimkov.echoesbeneath.playback.suppression.HostileMobSuppressionManager;
 import dev.fimkov.echoesbeneath.playback.suppression.SuppressedMobState;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import dev.fimkov.echoesbeneath.platform.EchoPlatforms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -196,23 +196,23 @@ public final class EchoPlaybackSession {
 
 	public void subscribe(ServerPlayer player) {
 		subscribers.add(player.getUUID());
-		ServerPlayNetworking.send(player, new PlaybackStartPayload(playbackId, region.dimension(),
+		EchoPlatforms.network().sendToPlayer(player, new PlaybackStartPayload(playbackId, region.dimension(),
 				region.center(), region.radius(), region.verticalRadius(), record.durationTicks(),
 				record.slot(), vision));
 		EchoPlaybackTransfer.sendTo(player, playbackId, encodedParts);
-		ServerPlayNetworking.send(player, new PlaybackTickPayload(playbackId, currentTick));
+		EchoPlatforms.network().sendToPlayer(player, new PlaybackTickPayload(playbackId, currentTick));
 	}
 
 	private void unsubscribe(ServerPlayer player) {
 		subscribers.remove(player.getUUID());
-		ServerPlayNetworking.send(player, new PlaybackStopPayload(playbackId));
+		EchoPlatforms.network().sendToPlayer(player, new PlaybackStopPayload(playbackId));
 	}
 
 	private void broadcastTick() {
 		for (UUID subscriberId : Set.copyOf(subscribers)) {
 			ServerPlayer player = level.getServer().getPlayerList().getPlayer(subscriberId);
 			if (player != null) {
-				ServerPlayNetworking.send(player, new PlaybackTickPayload(playbackId, currentTick));
+				EchoPlatforms.network().sendToPlayer(player, new PlaybackTickPayload(playbackId, currentTick));
 			}
 		}
 	}
@@ -221,7 +221,7 @@ public final class EchoPlaybackSession {
 		for (UUID subscriberId : Set.copyOf(subscribers)) {
 			ServerPlayer player = level.getServer().getPlayerList().getPlayer(subscriberId);
 			if (player != null) {
-				ServerPlayNetworking.send(player, new PlaybackStopPayload(playbackId));
+				EchoPlatforms.network().sendToPlayer(player, new PlaybackStopPayload(playbackId));
 			}
 		}
 		subscribers.clear();

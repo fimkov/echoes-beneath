@@ -6,4 +6,10 @@ public interface EchoPlatform {
 	Path configDirectory();
 
 	String name();
+
+	EchoNetwork network();
+
+	EchoServerHooks server();
+
+	EchoRegistries registries();
 }

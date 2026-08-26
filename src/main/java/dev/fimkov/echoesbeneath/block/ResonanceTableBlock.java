@@ -2,7 +2,7 @@ package dev.fimkov.echoesbeneath.block;
 
 import dev.fimkov.echoesbeneath.EchoTranslations;
 import dev.fimkov.echoesbeneath.menu.ResonanceTableMenu;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import dev.fimkov.echoesbeneath.platform.EchoPlatforms;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -39,12 +39,13 @@ public class ResonanceTableBlock extends Block {
 		if (level.isClientSide()) {
 			return InteractionResult.SUCCESS;
 		}
-		player.openMenu(new TableMenuProvider(position));
+		if (player instanceof ServerPlayer viewer) {
+			EchoPlatforms.registries().openBlockPosMenu(viewer, new TableMenuProvider(position), position);
+		}
 		return InteractionResult.CONSUME;
 	}
 
-	private record TableMenuProvider(BlockPos position)
-			implements MenuProvider, ExtendedScreenHandlerFactory<BlockPos> {
+	private record TableMenuProvider(BlockPos position) implements MenuProvider {
 		@Override
 		public Component getDisplayName() {
 			return Component.translatable(EchoTranslations.CONTAINER_RESONANCE_TABLE);
@@ -55,11 +56,6 @@ public class ResonanceTableBlock extends Block {
 		public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
 			return new ResonanceTableMenu(containerId, inventory,
 					ContainerLevelAccess.create(player.level(), position));
-		}
-
-		@Override
-		public BlockPos getScreenOpeningData(ServerPlayer player) {
-			return position;
 		}
 	}
 }

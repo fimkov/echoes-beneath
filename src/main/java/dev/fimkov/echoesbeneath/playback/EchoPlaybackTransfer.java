@@ -5,7 +5,7 @@ import dev.fimkov.echoesbeneath.memory.EchoMemoryRecord;
 import dev.fimkov.echoesbeneath.network.EchoPayloadLimits;
 import dev.fimkov.echoesbeneath.network.EchoPlaybackDataPart;
 import dev.fimkov.echoesbeneath.network.PlaybackDataPayload;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import dev.fimkov.echoesbeneath.platform.EchoPlatforms;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.level.ServerPlayer;
@@ -66,7 +66,7 @@ public final class EchoPlaybackTransfer {
 		for (Map.Entry<EchoPlaybackDataPart, List<byte[]>> entry : parts.entrySet()) {
 			List<byte[]> chunks = entry.getValue();
 			for (int index = 0; index < chunks.size(); index++) {
-				ServerPlayNetworking.send(player,
+				EchoPlatforms.network().sendToPlayer(player,
 						new PlaybackDataPayload(playbackId, entry.getKey(), index, chunks.size(), chunks.get(index)));
 			}
 		}

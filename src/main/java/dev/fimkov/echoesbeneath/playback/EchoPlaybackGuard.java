@@ -2,17 +2,12 @@ package dev.fimkov.echoesbeneath.playback;
 
 import dev.fimkov.echoesbeneath.EchoTranslations;
 import dev.fimkov.echoesbeneath.config.EchoConfig;
+import dev.fimkov.echoesbeneath.platform.EchoPlatforms;
 import dev.fimkov.echoesbeneath.runtime.EchoServerState;
-import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
-import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
@@ -23,37 +18,29 @@ public final class EchoPlaybackGuard {
 	}
 
 	public static void register() {
-		PlayerBlockBreakEvents.BEFORE.register((level, player, position, blockState, blockEntity) ->
+		EchoPlatforms.server().guardBlockBreak((level, player, position) ->
 				!isBlocked(level, player, position));
 
-		UseBlockCallback.EVENT.register((player, level, hand, hitResult) -> {
+		EchoPlatforms.server().guardUseBlock((player, level, hand, hitResult) -> {
 			if (level instanceof ServerLevel serverLevel && player instanceof ServerPlayer serverPlayer
 					&& player.isShiftKeyDown()) {
 				BlockPos target = hitResult.getBlockPos().relative(hitResult.getDirection());
 				if (EchoMending.tryMend(serverLevel, serverPlayer, target, hand)) {
-					return InteractionResult.SUCCESS;
+					return false;
 				}
 			}
-			if (isBlocked(level, player, hitResult.getBlockPos())) {
-				return InteractionResult.FAIL;
-			}
-			return InteractionResult.PASS;
+			return !isBlocked(level, player, hitResult.getBlockPos());
 		});
 
-		UseItemCallback.EVENT.register((player, level, hand) -> {
+		EchoPlatforms.server().guardUseItem((player, level, hand) -> {
 			ItemStack stack = player.getItemInHand(hand);
-			if (stack.getItem() instanceof BucketItem && isBlocked(level, player, player.blockPosition())) {
-				return InteractionResultHolder.fail(stack);
-			}
-			return InteractionResultHolder.pass(stack);
+			return !(stack.getItem() instanceof BucketItem
+					&& isBlocked(level, player, player.blockPosition()));
 		});
 
-		AttackEntityCallback.EVENT.register((player, level, hand, target, hitResult) -> {
+		EchoPlatforms.server().guardAttack((player, target) -> {
 			EchoServerState state = EchoServerState.current();
-			if (state != null && state.playbacks().protectsEntity(target)) {
-				return InteractionResult.FAIL;
-			}
-			return InteractionResult.PASS;
+			return state == null || !state.playbacks().protectsEntity(target);
 		});
 	}
 

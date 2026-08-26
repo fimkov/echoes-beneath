@@ -23,4 +23,16 @@ public final class EchoPlatforms {
 	public static Path configDirectory() {
 		return get().configDirectory();
 	}
+
+	public static EchoNetwork network() {
+		return get().network();
+	}
+
+	public static EchoServerHooks server() {
+		return get().server();
+	}
+
+	public static EchoRegistries registries() {
+		return get().registries();
+	}
 }
