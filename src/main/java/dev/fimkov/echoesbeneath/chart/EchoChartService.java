@@ -16,14 +16,14 @@ import java.util.UUID;
 
 public final class EchoChartService {
 	private final EchoMemoryStorage storage;
-	private final Map<UUID, List<byte[]>> encoded = new HashMap<>();
+	private final Map<String, List<byte[]>> encoded = new HashMap<>();
 
 	public EchoChartService(EchoMemoryStorage storage) {
 		this.storage = storage;
 	}
 
 	public void forget(UUID memoryId) {
-		encoded.remove(memoryId);
+		encoded.keySet().removeIf(key -> key.startsWith(memoryId.toString()));
 	}
 
 	public void sendTo(Entity tracked, ServerPlayer viewer) {
@@ -45,7 +45,8 @@ public final class EchoChartService {
 	}
 
 	private List<byte[]> chunksFor(EchoChartData data) {
-		List<byte[]> cached = encoded.get(data.memoryId());
+		String key = cacheKey(data);
+		List<byte[]> cached = encoded.get(key);
 		if (cached != null) {
 			return cached;
 		}
@@ -56,7 +57,11 @@ public final class EchoChartService {
 		EchoChartShape shape = EchoSounding.of(record.get(), data.lowestY(), data.highestY(),
 				EchoChartLimits.MAX_CHARTED_BLOCKS);
 		List<byte[]> chunks = EchoChartCodec.split(EchoChartCodec.encode(shape));
-		encoded.put(data.memoryId(), chunks);
+		encoded.put(key, chunks);
 		return chunks;
+	}
+
+	private static String cacheKey(EchoChartData data) {
+		return data.memoryId() + ":" + data.lowestY() + ":" + data.highestY();
 	}
 }

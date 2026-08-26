@@ -44,6 +44,7 @@ public final class EchoPlaybackReceiver {
 			if (client.level != null && !client.isPaused()) {
 				ClientPlaybackManager.instance().clientTick(client.level);
 			}
+			ClientChartShapes.pruneGone(client.level);
 			EchoDarkness.refreshFrameState();
 			dev.fimkov.echoesbeneath.client.input.EchoKeys.poll();
 		});

@@ -3,6 +3,7 @@ package dev.fimkov.echoesbeneath.client.chart;
 import dev.fimkov.echoesbeneath.chart.EchoChartCloud;
 import dev.fimkov.echoesbeneath.chart.EchoChartCodec;
 import dev.fimkov.echoesbeneath.network.ChartShapePayload;
+import net.minecraft.client.multiplayer.ClientLevel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +29,14 @@ public final class ClientChartShapes {
 
 	public static EchoChartModel of(int entityId) {
 		return READY.get(entityId);
+	}
+
+	public static void pruneGone(ClientLevel level) {
+		if (level == null) {
+			return;
+		}
+		READY.keySet().removeIf(id -> id >= 0 && level.getEntity(id) == null);
+		PENDING.keySet().removeIf(id -> id >= 0 && level.getEntity(id) == null);
 	}
 
 	public static void accept(ChartShapePayload payload) {
