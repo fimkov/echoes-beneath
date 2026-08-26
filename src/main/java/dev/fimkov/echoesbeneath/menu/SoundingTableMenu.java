@@ -2,7 +2,12 @@ package dev.fimkov.echoesbeneath.menu;
 
 import dev.fimkov.echoesbeneath.chart.EchoChartData;
 import dev.fimkov.echoesbeneath.chart.EchoChartPreview;
+import dev.fimkov.echoesbeneath.EchoTranslations;
+import dev.fimkov.echoesbeneath.item.EchoChartItem;
 import dev.fimkov.echoesbeneath.item.EchoLensStacks;
+import dev.fimkov.echoesbeneath.memory.EchoMemoryRecord;
+import dev.fimkov.echoesbeneath.runtime.EchoServerState;
+import net.minecraft.network.chat.Component;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReference;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReferences;
 import dev.fimkov.echoesbeneath.registry.EchoBlocks;
@@ -24,6 +29,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
+import java.util.Optional;
 
 public class SoundingTableMenu extends AbstractContainerMenu {
 	public static final int LENS_SLOT = 0;
@@ -75,7 +81,13 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 		addSlot(new Slot(output, 0, SoundingTableLayout.RESULT_SLOT_X, SoundingTableLayout.RESULT_SLOT_Y) {
 			@Override
 			public boolean mayPlace(ItemStack stack) {
-				return false;
+				return stack.getItem() instanceof EchoChartItem
+						&& stack.get(EchoComponents.CHART_DATA) != null;
+			}
+
+			@Override
+			public int getMaxStackSize() {
+				return 1;
 			}
 
 			@Override
@@ -207,7 +219,7 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 			return true;
 		}
 		if (button == SoundingTablePlan.EXTRACT) {
-			return extract(player);
+			return canReturn() ? putBack(player) : extract(player);
 		}
 		return false;
 	}
@@ -218,8 +230,19 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 		}
 	}
 
+	public ItemStack chart() {
+		return output.getItem(0);
+	}
+
 	public boolean canExtract() {
 		return chosen() != null && output.getItem(0).isEmpty();
+	}
+
+	public boolean canReturn() {
+		EchoChartData data = chart().get(EchoComponents.CHART_DATA);
+		return data != null && !lens().isEmpty()
+				&& EchoLensStacks.references(lens())
+						.nextFreeSlot(EchoLensStacks.upgrades(lens()).memorySlots()).isPresent();
 	}
 
 	private boolean extract(Player player) {
@@ -242,6 +265,41 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 		selected.set(remaining.entries().isEmpty() ? -1 : 0);
 		resetWindow();
 		pushPreview();
+		broadcastChanges();
+		return true;
+	}
+
+	private boolean putBack(Player player) {
+		EchoChartData data = chart().get(EchoComponents.CHART_DATA);
+		if (data == null || !(player instanceof ServerPlayer viewer)) {
+			return false;
+		}
+		ItemStack lens = lens();
+		EchoMemoryReferences held = EchoLensStacks.references(lens);
+		Optional<Integer> free = held.nextFreeSlot(EchoLensStacks.upgrades(lens).memorySlots());
+		if (free.isEmpty()) {
+			return false;
+		}
+		Optional<EchoMemoryRecord> record = EchoServerState.current() == null
+				? Optional.empty()
+				: EchoServerState.current().storage().load(data.memoryId());
+		if (record.isEmpty()) {
+			viewer.displayClientMessage(
+					Component.translatable(EchoTranslations.MESSAGE_MEMORY_CORRUPT), true);
+			return false;
+		}
+		EchoMemoryRecord held_record = record.get();
+		lens.set(EchoComponents.MEMORY_REFERENCES, held.withAdded(new EchoMemoryReference(
+				held_record.id(), free.get(), held_record.dimension(), held_record.center(),
+				held_record.radius(), held_record.verticalRadius(), held_record.durationTicks(),
+				held_record.createdAtEpochMillis())));
+		seededFrom = lens.copy();
+		output.setItem(0, ItemStack.EMPTY);
+		selected.set(free.get());
+		resetWindow();
+		pushPreview();
+		access.execute((level, position) -> level.playSound(null, position,
+				EchoSounds.TABLE_TUNE, SoundSource.BLOCKS, TAKE_VOLUME, TAKE_PITCH));
 		broadcastChanges();
 		return true;
 	}
@@ -272,7 +330,10 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 	@Override
 	public void removed(Player player) {
 		super.removed(player);
-		access.execute((level, position) -> clearContainer(player, input));
+		access.execute((level, position) -> {
+			clearContainer(player, input);
+			clearContainer(player, output);
+		});
 	}
 
 	@Override

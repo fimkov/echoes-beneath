@@ -137,7 +137,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 				}
 			}
 			if (overExtract((int) mouseX, (int) mouseY)) {
-				if (menu.canExtract()) {
+				if (menu.canExtract() || menu.canReturn()) {
 					press(SoundingTablePlan.EXTRACT);
 				} else {
 					deny();
@@ -264,7 +264,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	}
 
 	private void renderExtract(GuiGraphics graphics, int mouseX, int mouseY) {
-		boolean ready = menu.canExtract();
+		boolean ready = menu.canExtract() || menu.canReturn();
 		boolean hovered = ready && overExtract(mouseX, mouseY);
 		int x = leftPos + SoundingTableLayout.EXTRACT_X;
 		int y = topPos + SoundingTableLayout.EXTRACT_Y;
@@ -344,8 +344,10 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 					SoundingTableLayout.STAGE_Y + SoundingTableLayout.STAGE_HEIGHT - 11, DIM, true);
 			graphics.pose().popPose();
 		}
-		Component extract = Component.translatable(EchoTranslations.SOUNDING_EXTRACT)
-				.withStyle(menu.canExtract() ? ChatFormatting.WHITE : ChatFormatting.DARK_GRAY);
+		boolean ready = menu.canExtract() || menu.canReturn();
+		Component extract = Component.translatable(menu.canReturn()
+						? EchoTranslations.SOUNDING_PUT_BACK : EchoTranslations.SOUNDING_EXTRACT)
+				.withStyle(ready ? ChatFormatting.WHITE : ChatFormatting.DARK_GRAY);
 		graphics.drawString(font, extract,
 				SoundingTableLayout.EXTRACT_X + (SoundingTableLayout.EXTRACT_WIDTH - font.width(extract)) / 2,
 				SoundingTableLayout.EXTRACT_Y + 4, 0xFFFFFF, true);
@@ -365,7 +367,8 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		super.render(graphics, mouseX, mouseY, partialTick);
 		renderTooltip(graphics, mouseX, mouseY);
 		if (hoveredSlot == null && overExtract(mouseX, mouseY)) {
-			graphics.renderTooltip(font, Component.translatable(EchoTranslations.SOUNDING_WARNING),
+			graphics.renderTooltip(font, Component.translatable(menu.canReturn()
+					? EchoTranslations.SOUNDING_PUT_BACK_HINT : EchoTranslations.SOUNDING_WARNING),
 					mouseX, mouseY);
 		}
 	}

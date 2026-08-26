@@ -57,11 +57,13 @@ class SoundingTableTextTest {
 		List<String> tooWide = new ArrayList<>();
 		for (String code : LANGUAGES) {
 			JsonObject language = language(code);
-			String extract = language.get("sounding.echoes_beneath.extract").getAsString();
-			int button = measure(advances, extract) + BUTTON_PADDING * 2;
-			if (button > SoundingTableLayout.EXTRACT_WIDTH) {
-				tooWide.add(code + " extract is " + button + "px against "
-						+ SoundingTableLayout.EXTRACT_WIDTH);
+			for (String key : new String[] {"sounding.echoes_beneath.extract",
+					"sounding.echoes_beneath.put_back"}) {
+				int button = measure(advances, language.get(key).getAsString()) + BUTTON_PADDING * 2;
+				if (button > SoundingTableLayout.EXTRACT_WIDTH) {
+					tooWide.add(code + " " + key + " is " + button + "px against "
+							+ SoundingTableLayout.EXTRACT_WIDTH);
+				}
 			}
 			String window = language.get("sounding.echoes_beneath.window").getAsString()
 					.replace("%s", "")
