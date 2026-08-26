@@ -288,11 +288,11 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 					Component.translatable(EchoTranslations.MESSAGE_MEMORY_CORRUPT), true);
 			return false;
 		}
-		EchoMemoryRecord held_record = record.get();
+		EchoMemoryRecord kept = record.get();
 		lens.set(EchoComponents.MEMORY_REFERENCES, held.withAdded(new EchoMemoryReference(
-				held_record.id(), free.get(), held_record.dimension(), held_record.center(),
-				held_record.radius(), held_record.verticalRadius(), held_record.durationTicks(),
-				held_record.createdAtEpochMillis())));
+				kept.id(), free.get(), kept.dimension(), kept.center(),
+				kept.radius(), kept.verticalRadius(), kept.durationTicks(),
+				kept.createdAtEpochMillis())));
 		seededFrom = lens.copy();
 		output.setItem(0, ItemStack.EMPTY);
 		selected.set(free.get());
