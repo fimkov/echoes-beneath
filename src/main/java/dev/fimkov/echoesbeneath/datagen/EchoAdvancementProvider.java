@@ -156,6 +156,25 @@ public class EchoAdvancementProvider extends FabricAdvancementProvider {
 						MinMaxBounds.Ints.atLeast(EchoLensUpgrades.MAX_VISION)))
 				.save(consumer, EchoesBeneath.id("echolocation").toString());
 
+		AdvancementHolder sounding = step(EchoBlocks.SOUNDING_TABLE_ITEM, "sounding_table",
+						AdvancementType.TASK)
+				.parent(firstPlayback)
+				.addCriterion("has_sounding_table",
+						InventoryChangeTrigger.TriggerInstance.hasItems(EchoBlocks.SOUNDING_TABLE_ITEM))
+				.save(consumer, EchoesBeneath.id("sounding_table").toString());
+
+		AdvancementHolder chart = step(EchoItems.ECHO_CHART, "echo_chart", AdvancementType.GOAL)
+				.parent(sounding)
+				.addCriterion("has_chart",
+						InventoryChangeTrigger.TriggerInstance.hasItems(EchoItems.ECHO_CHART))
+				.save(consumer, EchoesBeneath.id("echo_chart").toString());
+
+		step(EchoItems.ECHO_CHART, "set_it_down", AdvancementType.GOAL)
+				.parent(chart)
+				.addCriterion("placed_chart", net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger
+						.TriggerInstance.placedBlock(EchoBlocks.ECHO_CHART))
+				.save(consumer, EchoesBeneath.id("set_it_down").toString());
+
 		step(Items.AMETHYST_CLUSTER, "tuner", AdvancementType.CHALLENGE)
 				.parent(firstUpgrade)
 				.addCriterion("maxed_everything", tuned(MinMaxBounds.Ints.ANY, Optional.of(true)))

@@ -1,0 +1,34 @@
+{
+  "parent": "echoes_beneath:sounding_table",
+  "criteria": {
+    "has_chart": {
+      "conditions": {
+        "items": [
+          {
+            "items": "echoes_beneath:echo_chart"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.echoes_beneath.echo_chart.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "echoes_beneath:echo_chart"
+    },
+    "title": {
+      "translate": "advancements.echoes_beneath.echo_chart.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_chart"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

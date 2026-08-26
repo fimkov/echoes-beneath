@@ -1,0 +1,35 @@
+{
+  "parent": "echoes_beneath:echo_chart",
+  "criteria": {
+    "placed_chart": {
+      "conditions": {
+        "location": [
+          {
+            "block": "echoes_beneath:echo_chart",
+            "condition": "minecraft:block_state_property"
+          }
+        ]
+      },
+      "trigger": "minecraft:placed_block"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.echoes_beneath.set_it_down.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "echoes_beneath:echo_chart"
+    },
+    "title": {
+      "translate": "advancements.echoes_beneath.set_it_down.title"
+    }
+  },
+  "requirements": [
+    [
+      "placed_chart"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

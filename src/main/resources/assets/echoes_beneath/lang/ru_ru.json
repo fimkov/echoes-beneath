@@ -144,5 +144,11 @@
   "config.echoes_beneath.chart_budget": "Детализация карт",
   "config.echoes_beneath.chart_distance": "Дальность карт",
   "config.echoes_beneath.chart_aura": "Свет вокруг карт",
-  "config.echoes_beneath.table_animations": "Анимация столов"
+  "config.echoes_beneath.table_animations": "Анимация столов",
+  "advancements.echoes_beneath.sounding_table.title": "Где её прочесть",
+  "advancements.echoes_beneath.sounding_table.description": "Добудьте стол промера и положите на него линзу, чтобы увидеть, что услышала запись",
+  "advancements.echoes_beneath.echo_chart.title": "Вынуто наружу",
+  "advancements.echoes_beneath.echo_chart.description": "Достаньте воспоминание из линзы эхо-картой, слот при этом освободится",
+  "advancements.echoes_beneath.set_it_down.title": "Поставить рядом",
+  "advancements.echoes_beneath.set_it_down.description": "Поставьте карту и обойдите место, которое она помнит"
 }

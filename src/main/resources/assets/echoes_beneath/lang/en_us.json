@@ -144,5 +144,11 @@
   "config.echoes_beneath.chart_budget": "Chart detail",
   "config.echoes_beneath.chart_distance": "Chart range",
   "config.echoes_beneath.chart_aura": "Chart light",
-  "config.echoes_beneath.table_animations": "Table motion"
+  "config.echoes_beneath.table_animations": "Table motion",
+  "advancements.echoes_beneath.sounding_table.title": "Somewhere To Read It",
+  "advancements.echoes_beneath.sounding_table.description": "Get a Sounding Table and put a lens on it to see what a recording heard",
+  "advancements.echoes_beneath.echo_chart.title": "Drawn Out",
+  "advancements.echoes_beneath.echo_chart.description": "Draw a memory out of a lens as an Echo Chart, which frees the slot it came from",
+  "advancements.echoes_beneath.set_it_down.title": "Set It Down",
+  "advancements.echoes_beneath.set_it_down.description": "Place a chart and walk around the place it remembers"
 }
