@@ -9,13 +9,12 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
-import org.joml.Matrix4f;
 
 public class EchoChartRenderer extends EntityRenderer<EchoChartEntity> {
 	private static final ResourceLocation TEXTURE =
 			ResourceLocation.withDefaultNamespace("textures/misc/white.png");
-	private static final float MODEL_SIZE = 0.85F;
-	private static final float TILT_DEGREES = 12.0F;
+	private static final float MODEL_SIZE = 0.82F;
+	private static final double HOVER = 0.5D;
 
 	public EchoChartRenderer(EntityRendererProvider.Context context) {
 		super(context);
@@ -34,14 +33,13 @@ public class EchoChartRenderer extends EntityRenderer<EchoChartEntity> {
 			return;
 		}
 		poseStack.pushPose();
-		poseStack.translate(0.0D, entity.bob(partialTick), 0.0D);
+		poseStack.translate(0.0D, HOVER + entity.bob(partialTick), 0.0D);
 		poseStack.mulPose(Axis.YP.rotationDegrees(entity.spin(partialTick)));
-		poseStack.mulPose(Axis.XP.rotationDegrees(TILT_DEGREES));
 		float scale = MODEL_SIZE / model.widest();
 		poseStack.scale(scale, scale, scale);
-		poseStack.translate(-model.spanX() * 0.5F, 0.0F, -model.spanZ() * 0.5F);
+		poseStack.translate(-model.spanX() * 0.5F, -model.spanY() * 0.5F, -model.spanZ() * 0.5F);
 
-		EchoChartGeometry.emit(model, consumers, poseStack.last().pose());
+		EchoChartGeometry.emit(model, consumers, poseStack);
 		poseStack.popPose();
 		super.render(entity, yaw, partialTick, poseStack, consumers, light);
 	}

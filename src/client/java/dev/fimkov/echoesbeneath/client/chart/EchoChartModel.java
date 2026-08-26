@@ -5,27 +5,25 @@ import dev.fimkov.echoesbeneath.item.EchoLensUpgrades;
 import dev.fimkov.echoesbeneath.memory.EchoCoordinates;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2LongMap;
-import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class EchoChartModel {
-	public static final int GRID = 48;
+	public static final int GRID = 32;
 	private static final int GRID_BITS = 6;
 	private static final int GRID_MASK = (1 << GRID_BITS) - 1;
-	private static final int CHANNEL_BITS = 20;
-	private static final long CHANNEL_MASK = (1L << CHANNEL_BITS) - 1L;
-	private static final int BYTE_MASK = 0xFF;
 	private static final float DIMMEST = 0.42F;
 
 	private final IntList cells = new IntArrayList();
-	private final IntList colours = new IntArrayList();
+	private final List<BlockState> states = new ArrayList<>();
 	private final IntSet occupied = new IntOpenHashSet();
 	private final int spanX;
 	private final int spanY;
@@ -62,45 +60,37 @@ public final class EchoChartModel {
 				Math.max(1, width * resolution / longest),
 				Math.max(1, height * resolution / longest),
 				Math.max(1, depth * resolution / longest));
+		model.recordedVision = cloud.recordedVision();
 
-		Int2LongMap sums = new Int2LongOpenHashMap();
-		Int2IntMap counts = new Int2IntOpenHashMap();
-		BlockPos anchor = Minecraft.getInstance().player != null
-				? Minecraft.getInstance().player.blockPosition() : BlockPos.ZERO;
+		Int2ObjectMap<Int2IntMap> votes = new Int2ObjectOpenHashMap<>();
 		for (int index = 0; index < cloud.size(); index++) {
 			int packed = cloud.positions().getInt(index);
 			int key = pack(
 					(EchoCoordinates.unpackX(packed) - lowX) * model.spanX / width,
 					(EchoCoordinates.unpackY(packed) - lowY) * model.spanY / height,
 					(EchoCoordinates.unpackZ(packed) - lowZ) * model.spanZ / depth);
-			BlockState state = cloud.stateAt(index);
-			int colour = state.getMapColor(Minecraft.getInstance().level, anchor).col;
-			sums.put(key, sums.get(key) + channels(colour));
-			counts.put(key, counts.get(key) + 1);
+			Int2IntMap tally = votes.computeIfAbsent(key, ignored -> new Int2IntOpenHashMap());
+			int state = cloud.states().getInt(index);
+			tally.put(state, tally.get(state) + 1);
 		}
-		model.recordedVision = cloud.recordedVision();
-		for (Int2IntMap.Entry entry : counts.int2IntEntrySet()) {
-			int key = entry.getIntKey();
-			model.cells.add(key);
-			model.colours.add(average(sums.get(key), entry.getIntValue()));
-			model.occupied.add(key);
+		for (Int2ObjectMap.Entry<Int2IntMap> entry : votes.int2ObjectEntrySet()) {
+			model.cells.add(entry.getIntKey());
+			model.states.add(cloud.paletteAt(winner(entry.getValue())));
+			model.occupied.add(entry.getIntKey());
 		}
 		return model;
 	}
 
-	private static long channels(int colour) {
-		return (long) ((colour >> 16) & BYTE_MASK)
-				| ((long) ((colour >> 8) & BYTE_MASK) << CHANNEL_BITS)
-				| ((long) (colour & BYTE_MASK) << (CHANNEL_BITS * 2));
-	}
-
-	private static int average(long packed, int count) {
-		int divisor = Math.max(1, count);
-		int red = (int) ((packed & CHANNEL_MASK) / divisor);
-		int green = (int) (((packed >> CHANNEL_BITS) & CHANNEL_MASK) / divisor);
-		int blue = (int) (((packed >> (CHANNEL_BITS * 2)) & CHANNEL_MASK) / divisor);
-		return (Math.min(BYTE_MASK, red) << 16) | (Math.min(BYTE_MASK, green) << 8)
-				| Math.min(BYTE_MASK, blue);
+	private static int winner(Int2IntMap tally) {
+		int best = 0;
+		int bestCount = -1;
+		for (Int2IntMap.Entry vote : tally.int2IntEntrySet()) {
+			if (vote.getIntValue() > bestCount) {
+				bestCount = vote.getIntValue();
+				best = vote.getIntKey();
+			}
+		}
+		return best;
 	}
 
 	public static int pack(int x, int y, int z) {
@@ -127,12 +117,25 @@ public final class EchoChartModel {
 		return cells.getInt(index);
 	}
 
-	public int colourAt(int index) {
-		return colours.getInt(index);
+	public BlockState stateAt(int index) {
+		return states.get(index);
 	}
 
 	public boolean holds(int x, int y, int z) {
 		return occupied.contains(pack(x, y, z));
+	}
+
+	public boolean isBuried(int packed) {
+		int x = cellX(packed);
+		int y = cellY(packed);
+		int z = cellZ(packed);
+		return holds(x + 1, y, z) && holds(x - 1, y, z) && holds(x, y + 1, z)
+				&& holds(x, y - 1, z) && holds(x, y, z + 1) && holds(x, y, z - 1);
+	}
+
+	public float brightness() {
+		int vision = recordedVision < 0 ? EchoLensUpgrades.MAX_VISION : recordedVision;
+		return DIMMEST + (1.0F - DIMMEST) * vision / EchoLensUpgrades.MAX_VISION;
 	}
 
 	public int spanX() {
@@ -145,11 +148,6 @@ public final class EchoChartModel {
 
 	public int spanZ() {
 		return spanZ;
-	}
-
-	public float brightness() {
-		int vision = recordedVision < 0 ? EchoLensUpgrades.MAX_VISION : recordedVision;
-		return DIMMEST + (1.0F - DIMMEST) * vision / EchoLensUpgrades.MAX_VISION;
 	}
 
 	public int widest() {

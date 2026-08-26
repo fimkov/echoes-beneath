@@ -61,7 +61,7 @@ class EchoSoundingTest {
 								int x = sectionX * 16 + localX;
 								int y = sectionY * 16 + localY;
 								int z = sectionZ * 16 + localZ;
-								if (inOpenRoom(x, y, z) || inSealedRoom(x, y, z)) {
+								if (inOpenRoom(x, y, z) || inSealedRoom(x, y, z) || inUpperVoid(x, y, z)) {
 									cells[SnapshotSection.cellIndex(localX, localY, localZ)] =
 											BlockPalette.AIR_INDEX;
 								}
@@ -78,6 +78,10 @@ class EchoSoundingTest {
 
 	private static boolean inOpenRoom(int x, int y, int z) {
 		return Math.abs(x) <= 2 && Math.abs(y) <= 2 && Math.abs(z) <= 2;
+	}
+
+	private static boolean inUpperVoid(int x, int y, int z) {
+		return Math.abs(x) <= 2 && y >= 7 && y <= 9 && Math.abs(z) <= 2;
 	}
 
 	private static boolean inSealedRoom(int x, int y, int z) {
@@ -108,12 +112,30 @@ class EchoSoundingTest {
 	}
 
 	@Test
-	@DisplayName("a sound never reaches through solid stone into a sealed room")
+	@DisplayName("a sound never reaches across a column of solid stone")
 	void soundStopsAtStone() {
 		EchoChartShape shape = EchoSounding.of(recordWith(oneSoundInTheOpenRoom()),
 				Integer.MIN_VALUE / 2, Integer.MAX_VALUE / 2, BUDGET);
-		assertFalse(holds(shape, 6, 0, 0), "the sealed room's wall must stay dark");
+		assertFalse(holds(shape, 8, 0, 0), "the sealed room must stay dark");
 		assertFalse(holds(shape, 10, 0, 0), "nothing past the sealed room may be charted");
+	}
+
+	@Test
+	@DisplayName("a column the sound reached is charted top to bottom, not only beside the sound")
+	void reachedColumnsGoAllTheWayDown() {
+		EchoChartShape shape = EchoSounding.of(recordWith(oneSoundInTheOpenRoom()),
+				Integer.MIN_VALUE / 2, Integer.MAX_VALUE / 2, BUDGET);
+		int lowestCharted = Integer.MAX_VALUE;
+		int highestCharted = Integer.MIN_VALUE;
+		for (int index = 0; index < shape.size(); index++) {
+			int y = EchoCoordinates.unpackY(shape.positions().getInt(index));
+			lowestCharted = Math.min(lowestCharted, y);
+			highestCharted = Math.max(highestCharted, y);
+		}
+		assertTrue(holds(shape, 0, 6, 0),
+				"the floor of the void above should be charted, though no sound could reach it");
+		assertTrue(highestCharted - lowestCharted > 6,
+				"the chart spans only " + (highestCharted - lowestCharted) + " blocks of height");
 	}
 
 	@Test

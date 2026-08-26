@@ -290,6 +290,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 				topPos + SoundingTableLayout.STAGE_Y + 1,
 				leftPos + SoundingTableLayout.STAGE_X + SoundingTableLayout.STAGE_WIDTH - 1,
 				topPos + SoundingTableLayout.STAGE_Y + SoundingTableLayout.STAGE_HEIGHT - 1);
+		com.mojang.blaze3d.platform.Lighting.setupFor3DItems();
 		PoseStack poseStack = graphics.pose();
 		poseStack.pushPose();
 		poseStack.translate(centreX, centreY, 220.0F);
@@ -299,9 +300,10 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		poseStack.mulPose(Axis.YP.rotationDegrees(
 				turnedByHand ? heldYaw : spin + SPIN_DEGREES_PER_TICK * partialTick));
 		poseStack.translate(-model.spanX() * 0.5F, -model.spanY() * 0.5F, -model.spanZ() * 0.5F);
-		EchoChartGeometry.emit(model, graphics.bufferSource(), poseStack.last().pose());
+		EchoChartGeometry.emit(model, graphics.bufferSource(), poseStack);
 		graphics.flush();
 		poseStack.popPose();
+		com.mojang.blaze3d.platform.Lighting.setupForFlatItems();
 		graphics.disableScissor();
 	}
 

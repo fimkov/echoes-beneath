@@ -7,14 +7,11 @@ import dev.fimkov.echoesbeneath.memory.snapshot.BlockSnapshot;
 import dev.fimkov.echoesbeneath.memory.timeline.SoundTimeline;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
 public final class EchoSounding {
 	public static final int BLOCKS_PER_VOLUME = 16;
 	private static final int MIN_CARRY = 2;
-	private static final int[][] STEPS = {
-			{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}};
+	private static final int[][] STEPS = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
 	private EchoSounding() {
 	}
@@ -29,114 +26,117 @@ public final class EchoSounding {
 			return EchoChartShape.empty(record.id(), lowest, highest, record.recordedVision());
 		}
 
-		Reach reach = new Reach(radius, vertical);
-		seed(record.soundTimeline(), snapshot, reach, radius);
-		IntSet surfaces = flood(snapshot, reach, lowest, highest);
+		Columns columns = new Columns(radius, vertical, snapshot);
+		seed(record.soundTimeline(), columns, radius);
+		columns.flood();
 
 		IntList positions = new IntArrayList();
 		IntList states = new IntArrayList();
-		for (int packed : surfaces) {
-			if (positions.size() >= budget) {
-				break;
-			}
-			int index = snapshot.paletteIndexAt(EchoCoordinates.unpackX(packed),
-					EchoCoordinates.unpackY(packed), EchoCoordinates.unpackZ(packed));
-			if (index == BlockPalette.AIR_INDEX) {
-				continue;
-			}
-			positions.add(packed);
-			states.add(index);
-		}
+		gather(snapshot, columns, radius, lowest, highest, budget, positions, states);
 		return new EchoChartShape(record.id(), snapshot.palette(), positions, states, lowest, highest,
 				record.recordedVision());
 	}
 
-	private static void seed(SoundTimeline sounds, BlockSnapshot snapshot, Reach reach, int radius) {
+	private static void seed(SoundTimeline sounds, Columns columns, int radius) {
 		for (int index = 0; index < sounds.size(); index++) {
 			int x = (int) Math.floor(sounds.relativeXAt(index));
-			int y = (int) Math.floor(sounds.relativeYAt(index));
 			int z = (int) Math.floor(sounds.relativeZAt(index));
 			int carry = Math.clamp(Math.round(sounds.volumeAt(index) * BLOCKS_PER_VOLUME),
 					MIN_CARRY, radius);
-			if (snapshot.paletteIndexAt(x, y, z) != BlockPalette.AIR_INDEX) {
-				continue;
-			}
-			reach.raise(x, y, z, carry);
+			columns.raise(x, z, carry);
 		}
 	}
 
-	private static IntSet flood(BlockSnapshot snapshot, Reach reach, int lowest, int highest) {
-		IntSet surfaces = new IntOpenHashSet();
-		for (int carry = reach.peak(); carry > 0; carry--) {
-			IntList front = reach.at(carry);
-			if (front == null) {
-				continue;
-			}
-			for (int cursor = 0; cursor < front.size(); cursor++) {
-				int packed = front.getInt(cursor);
-				if (reach.of(packed) != carry) {
+	private static void gather(BlockSnapshot snapshot, Columns columns, int radius,
+			int lowest, int highest, int budget, IntList positions, IntList states) {
+		for (int x = -radius; x <= radius; x++) {
+			for (int z = -radius; z <= radius; z++) {
+				if (!columns.charted(x, z)) {
 					continue;
 				}
-				int x = EchoCoordinates.unpackX(packed);
-				int y = EchoCoordinates.unpackY(packed);
-				int z = EchoCoordinates.unpackZ(packed);
-				for (int[] step : STEPS) {
-					int nextX = x + step[0];
-					int nextY = y + step[1];
-					int nextZ = z + step[2];
-					if (!reach.holds(nextX, nextY, nextZ)) {
+				for (int y = lowest; y <= highest; y++) {
+					if (positions.size() >= budget) {
+						return;
+					}
+					int index = snapshot.paletteIndexAt(x, y, z);
+					if (index == BlockPalette.AIR_INDEX || !onSurface(snapshot, x, y, z)) {
 						continue;
 					}
-					if (snapshot.paletteIndexAt(nextX, nextY, nextZ) != BlockPalette.AIR_INDEX) {
-						if (nextY >= lowest && nextY <= highest) {
-							surfaces.add(EchoCoordinates.packRelative(nextX, nextY, nextZ));
-						}
-						continue;
-					}
-					reach.raise(nextX, nextY, nextZ, carry - 1);
+					positions.add(EchoCoordinates.packRelative(x, y, z));
+					states.add(index);
 				}
 			}
 		}
-		return surfaces;
 	}
 
-	private static final class Reach {
+	private static boolean onSurface(BlockSnapshot snapshot, int x, int y, int z) {
+		return snapshot.paletteIndexAt(x + 1, y, z) == BlockPalette.AIR_INDEX
+				|| snapshot.paletteIndexAt(x - 1, y, z) == BlockPalette.AIR_INDEX
+				|| snapshot.paletteIndexAt(x, y + 1, z) == BlockPalette.AIR_INDEX
+				|| snapshot.paletteIndexAt(x, y - 1, z) == BlockPalette.AIR_INDEX
+				|| snapshot.paletteIndexAt(x, y, z + 1) == BlockPalette.AIR_INDEX
+				|| snapshot.paletteIndexAt(x, y, z - 1) == BlockPalette.AIR_INDEX;
+	}
+
+	private static final class Columns {
 		private final int radius;
-		private final int vertical;
 		private final int width;
-		private final int height;
 		private final int[] carried;
+		private final boolean[] open;
 		private final IntList[] fronts;
 		private int peak;
 
-		private Reach(int radius, int vertical) {
+		private Columns(int radius, int vertical, BlockSnapshot snapshot) {
 			this.radius = radius;
-			this.vertical = vertical;
 			this.width = radius * 2 + 1;
-			this.height = vertical * 2 + 1;
-			this.carried = new int[width * height * width];
+			this.carried = new int[width * width];
+			this.open = new boolean[width * width];
 			this.fronts = new IntList[radius + 2];
+			for (int x = -radius; x <= radius; x++) {
+				for (int z = -radius; z <= radius; z++) {
+					open[slot(x, z)] = hasAir(snapshot, x, z, vertical);
+				}
+			}
 		}
 
-		private boolean holds(int x, int y, int z) {
-			return x >= -radius && x <= radius && z >= -radius && z <= radius
-					&& y >= -vertical && y <= vertical;
+		private static boolean hasAir(BlockSnapshot snapshot, int x, int z, int vertical) {
+			for (int y = -vertical; y <= vertical; y++) {
+				if (snapshot.paletteIndexAt(x, y, z) == BlockPalette.AIR_INDEX) {
+					return true;
+				}
+			}
+			return false;
 		}
 
-		private int slot(int x, int y, int z) {
-			return ((y + vertical) * width + (z + radius)) * width + (x + radius);
+		private boolean holds(int x, int z) {
+			return x >= -radius && x <= radius && z >= -radius && z <= radius;
 		}
 
-		private int of(int packed) {
-			return carried[slot(EchoCoordinates.unpackX(packed), EchoCoordinates.unpackY(packed),
-					EchoCoordinates.unpackZ(packed))];
+		private int slot(int x, int z) {
+			return (z + radius) * width + (x + radius);
 		}
 
-		private void raise(int x, int y, int z, int carry) {
-			if (carry <= 0 || !holds(x, y, z)) {
+		private boolean reached(int x, int z) {
+			return holds(x, z) && carried[slot(x, z)] > 0;
+		}
+
+		private boolean charted(int x, int z) {
+			if (reached(x, z)) {
+				return true;
+			}
+			for (int[] step : STEPS) {
+				if (reached(x + step[0], z + step[1])) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private void raise(int x, int z, int carry) {
+			if (carry <= 0 || !holds(x, z) || !open[slot(x, z)]) {
 				return;
 			}
-			int at = slot(x, y, z);
+			int at = slot(x, z);
 			if (carried[at] >= carry) {
 				return;
 			}
@@ -144,16 +144,28 @@ public final class EchoSounding {
 			if (fronts[carry] == null) {
 				fronts[carry] = new IntArrayList();
 			}
-			fronts[carry].add(EchoCoordinates.packRelative(x, y, z));
+			fronts[carry].add(at);
 			peak = Math.max(peak, carry);
 		}
 
-		private int peak() {
-			return peak;
-		}
-
-		private IntList at(int carry) {
-			return fronts[carry];
+		private void flood() {
+			for (int carry = peak; carry > 0; carry--) {
+				IntList front = fronts[carry];
+				if (front == null) {
+					continue;
+				}
+				for (int cursor = 0; cursor < front.size(); cursor++) {
+					int at = front.getInt(cursor);
+					if (carried[at] != carry) {
+						continue;
+					}
+					int x = at % width - radius;
+					int z = at / width - radius;
+					for (int[] step : STEPS) {
+						raise(x + step[0], z + step[1], carry - 1);
+					}
+				}
+			}
 		}
 	}
 }

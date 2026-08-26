@@ -13,7 +13,10 @@ public record EchoChartCloud(List<BlockState> palette, IntList positions, IntLis
 	}
 
 	public BlockState stateAt(int index) {
-		int paletteIndex = states.getInt(index);
+		return paletteAt(states.getInt(index));
+	}
+
+	public BlockState paletteAt(int paletteIndex) {
 		return paletteIndex >= 0 && paletteIndex < palette.size()
 				? palette.get(paletteIndex)
 				: palette.getFirst();

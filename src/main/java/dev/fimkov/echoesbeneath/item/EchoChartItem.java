@@ -17,7 +17,7 @@ import net.minecraft.world.level.Level;
 import java.util.List;
 
 public class EchoChartItem extends Item {
-	public static final double HOVER_HEIGHT = 1.05D;
+	public static final double HOVER_HEIGHT = 0.0D;
 
 	public EchoChartItem(Properties properties) {
 		super(properties);
