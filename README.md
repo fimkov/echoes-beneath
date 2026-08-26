@@ -2,7 +2,7 @@
 
 > The lens remembers shape and sound, but not light.
 
-Echoes Beneath is a Minecraft Java Edition mod for Fabric. It adds a single item — the **Echo Lens** —
+Echoes Beneath is a Minecraft Java Edition mod for Fabric and NeoForge. It adds a single item — the **Echo Lens** —
 that records up to two minutes of a place and lets you stand inside that memory later.
 
 Inside a memory the present world goes almost completely dark. What makes it legible again are the
@@ -213,6 +213,18 @@ There is no GUI, and by design there is nothing to configure per-lens.
 While a lens is deployed it gives off sculk particles, and both the particle count and its spin speed rise
 as the recording or the playback fills. There is no dial and no counter — the same way vanilla never puts
 a timer on a world object.
+
+## Sound
+
+The mod's twelve sounds are built out of Minecraft's own recordings rather than synthesised: the
+amethyst shimmer, a sculk sensor waking and stopping, a shrieker, a catalyst settling, deepslate being
+placed, an enchanting table taking. Each one is pitched, reversed, layered and enveloped into
+something new, which is the method the game's own foley was made with — its spider is a fire hose
+pitched around, its grass is a VHS tape.
+
+Keeping the source material vanilla keeps the result vanilla. Measured against the game's amethyst and
+sculk sounds, which carry under one per cent of their energy below a hundred and ten hertz, every
+sound here measures the same. Nothing reaches for a subwoofer the game never uses.
 
 ## Configuration
 
