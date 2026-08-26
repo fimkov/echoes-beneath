@@ -50,6 +50,8 @@ class EchoPersistenceTest {
 	private static final int MAX_EVENTS = 4096;
 	private static final int SLOT = 1;
 
+	private static final int RECORDED_VISION = 2;
+
 	@BeforeAll
 	static void bootstrapMinecraft() {
 		SharedConstants.tryDetectVersion();
@@ -238,6 +240,16 @@ class EchoPersistenceTest {
 		return new EchoMemoryRecord(id, SLOT, EchoFormat.CURRENT_VERSION, EchoTestSupport.OVERWORLD,
 				new BlockPos(120, 40, -60), 50, 32, 1_700_000_000_000L, 2400,
 				snapshot, blockTimeline, entityTimeline, soundTimeline, particleTimeline,
-				List.of(RECORDED_PLAYER));
+				List.of(RECORDED_PLAYER), RECORDED_VISION);
+	}
+
+	@Test
+	@DisplayName("a memory keeps the vision the lens had when it was sealed")
+	void visionSurvivesTheRoundTrip(@TempDir Path directory) {
+		EchoMemoryStorage storage = new EchoMemoryStorage(directory, BuiltInRegistries.BLOCK.asLookup());
+		EchoMemoryRecord record = sampleRecord(UUID.randomUUID());
+		storage.save(record);
+		EchoMemoryRecord reloaded = storage.load(record.id()).orElseThrow();
+		assertEquals(RECORDED_VISION, reloaded.recordedVision());
 	}
 }

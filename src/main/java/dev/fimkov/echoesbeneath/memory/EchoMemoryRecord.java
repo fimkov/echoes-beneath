@@ -37,7 +37,10 @@ public record EchoMemoryRecord(
 		EntityTimeline entityTimeline,
 		SoundTimeline soundTimeline,
 		ParticleTimeline particleTimeline,
-		List<UUID> recordedPlayers) {
+		List<UUID> recordedPlayers,
+		int recordedVision) {
+
+	public static final int VISION_UNKNOWN = -1;
 
 	public EchoMemoryReference toReference() {
 		return new EchoMemoryReference(id, slot, dimension, center, radius, verticalRadius,
@@ -57,6 +60,7 @@ public record EchoMemoryRecord(
 		tag.putInt("vertical_radius", verticalRadius);
 		tag.putLong("created_at", createdAtEpochMillis);
 		tag.putInt("duration_ticks", durationTicks);
+		tag.putInt("recorded_vision", recordedVision);
 		tag.put("snapshot", snapshot.toNbt());
 		tag.put("block_timeline", blockTimeline.toNbt());
 		tag.put("entity_timeline", entityTimeline.toNbt());
@@ -106,7 +110,8 @@ public record EchoMemoryRecord(
 				tag.contains("particle_timeline")
 						? ParticleTimeline.fromNbt(tag.getCompound("particle_timeline"), maxParticleEvents)
 						: new ParticleTimeline(maxParticleEvents),
-				readPlayers(tag));
+				readPlayers(tag),
+				tag.contains("recorded_vision") ? tag.getInt("recorded_vision") : VISION_UNKNOWN);
 	}
 
 	private static List<UUID> readPlayers(CompoundTag tag) {

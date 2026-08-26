@@ -59,6 +59,7 @@ public final class EchoRecordingSession {
 	private final EchoLensEntity lensEntity;
 
 	private final float sensitivityFactor;
+	private final int vision;
 	private int currentTick;
 	private boolean finished;
 
@@ -83,6 +84,7 @@ public final class EchoRecordingSession {
 		this.soundTimeline = new SoundTimeline(config.maxSoundEvents());
 		this.particleTimeline = new ParticleTimeline(config.maxParticleEvents());
 		this.sensitivityFactor = upgrades.sensitivityFactor();
+		this.vision = upgrades.vision();
 		this.entityRecorder = new EntityTrackRecorder(entityTimeline, center);
 	}
 
@@ -271,7 +273,8 @@ public final class EchoRecordingSession {
 				entityTimeline,
 				soundTimeline,
 				particleTimeline,
-				List.copyOf(recordedPlayers));
+				List.copyOf(recordedPlayers),
+				vision);
 	}
 
 	public void markFinished() {

@@ -121,7 +121,7 @@ public final class EchoPlaybackManager {
 		player.setItemInHand(hand, ItemStack.EMPTY);
 
 		EchoPlaybackSession session = new EchoPlaybackSession(playbackId, player.getUUID(), level,
-				region, record, lensEntity, encoded, EchoLensStacks.upgrades(deployed).vision());
+				region, record, lensEntity, encoded, visionOf(record, deployed));
 		if (EchoConfig.values().suppressHostileMobs()) {
 			session.rememberSuppressed(state.suppression().suppressRegion(level, region));
 		}
@@ -131,6 +131,13 @@ public final class EchoPlaybackManager {
 		return true;
 	}
 
+
+	private static int visionOf(EchoMemoryRecord record, ItemStack deployed) {
+		int recorded = record.recordedVision();
+		return recorded == EchoMemoryRecord.VISION_UNKNOWN
+				? EchoLensStacks.upgrades(deployed).vision()
+				: recorded;
+	}
 	private boolean overlapsExisting(EchoRegion region) {
 		for (EchoPlaybackSession session : sessions.values()) {
 			if (session.region().overlaps(region)) {
