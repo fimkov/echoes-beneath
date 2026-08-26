@@ -276,6 +276,7 @@ public final class EchoCommandActions {
 			return FAILURE;
 		}
 		state.storage().delete(memoryId.get());
+		state.charts().forget(memoryId.get());
 		EchoLensStacks.setReferences(held, EchoLensStacks.references(held).withRemoved(memoryId.get()));
 		context.getSource().sendSuccess(() ->
 				Component.translatable(EchoTranslations.COMMAND_MEMORY_CLEARED, rawMemory), true);
