@@ -53,21 +53,18 @@ class EchoLensAppearanceTest {
 	}
 
 	private static int indexOf(State state) {
-		int radius = EchoLensUpgrades.MIN_RADIUS
-				+ RADIUS_STEP_FOR_TIER[state.radiusTier()] * EchoLensUpgrades.RADIUS_STEP;
 		return EchoLensAppearance.stateIndex(state.vision(), state.capacity(), state.filled(),
-				radius, HEARING_FOR_TIER[state.hearingTier()]);
+				radiusForTier(state.radiusTier()), state.hearingTier());
 	}
 
 	private static float valueOf(State state) {
-		int radius = EchoLensUpgrades.MIN_RADIUS
-				+ RADIUS_STEP_FOR_TIER[state.radiusTier()] * EchoLensUpgrades.RADIUS_STEP;
 		return EchoLensAppearance.tuningValue(state.vision(), state.capacity(), state.filled(),
-				radius, HEARING_FOR_TIER[state.hearingTier()]);
+				radiusForTier(state.radiusTier()), state.hearingTier());
 	}
 
-	private static final int[] RADIUS_STEP_FOR_TIER = {0, 2, 5};
-	private static final int[] HEARING_FOR_TIER = {0, 1, 4};
+	private static int radiusForTier(int tier) {
+		return EchoLensUpgrades.MIN_RADIUS + tier * EchoLensUpgrades.RADIUS_STEP;
+	}
 
 	@Test
 	@DisplayName("every lens state has its own index, in order and without gaps")
@@ -92,13 +89,6 @@ class EchoLensAppearanceTest {
 		for (int index = 0; index < overrides.size(); index++) {
 			State state = states.get(index);
 			JsonObject override = overrides.get(index).getAsJsonObject();
-			float declared = override.getAsJsonObject("predicate")
-					.get("echoes_beneath:tuning").getAsFloat();
-			float expected = valueOf(state);
-			if (Math.abs(declared - expected) > 1.0E-4F) {
-				wrong.add(state + " predicate " + declared + " but the item reports " + expected);
-				continue;
-			}
 			String path = override.get("model").getAsString().replace("echoes_beneath:item/", "");
 			JsonObject child = asset("/assets/echoes_beneath/models/item/" + path + ".json");
 			JsonObject textures = child.getAsJsonObject("textures");
@@ -155,9 +145,26 @@ class EchoLensAppearanceTest {
 	}
 
 	@Test
-	@DisplayName("neighbouring states stay far enough apart to select cleanly")
-	void statesAreDistinguishable() {
-		float step = 1.0F / (EchoLensAppearance.STATE_COUNT - 1);
-		assertTrue(step > 1.0E-3F, "states are only " + step + " apart");
+	@DisplayName("every state picks its own model and no other")
+	void everyStateSelectsItsOwnModel() {
+		JsonArray overrides = asset("/assets/echoes_beneath/models/item/echo_lens.json")
+				.getAsJsonArray("overrides");
+		List<State> states = everyState();
+		List<String> wrong = new ArrayList<>();
+		for (int index = 0; index < states.size(); index++) {
+			float value = valueOf(states.get(index));
+			int chosen = 0;
+			for (int candidate = 0; candidate < overrides.size(); candidate++) {
+				float threshold = overrides.get(candidate).getAsJsonObject()
+						.getAsJsonObject("predicate").get("echoes_beneath:tuning").getAsFloat();
+				if (value >= threshold) {
+					chosen = candidate;
+				}
+			}
+			if (chosen != index && wrong.size() < 8) {
+				wrong.add(index + " picked " + chosen);
+			}
+		}
+		assertTrue(wrong.isEmpty(), String.join("; ", wrong));
 	}
 }

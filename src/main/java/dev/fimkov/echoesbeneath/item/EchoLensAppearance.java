@@ -3,8 +3,8 @@ package dev.fimkov.echoesbeneath.item;
 import dev.fimkov.echoesbeneath.memory.EchoFormat;
 
 public final class EchoLensAppearance {
-	public static final int RADIUS_TIERS = 3;
-	public static final int HEARING_TIERS = 3;
+	public static final int RADIUS_TIERS = 7;
+	public static final int HEARING_TIERS = 5;
 	public static final int MEMORY_STATES = countMemoryStates();
 	public static final int STATE_COUNT =
 			(EchoLensUpgrades.MAX_VISION + 1) * MEMORY_STATES * RADIUS_TIERS * HEARING_TIERS;
@@ -22,17 +22,11 @@ public final class EchoLensAppearance {
 
 	public static int radiusTier(int radius) {
 		int steps = (radius - EchoLensUpgrades.MIN_RADIUS) / EchoLensUpgrades.RADIUS_STEP;
-		if (steps <= 0) {
-			return 0;
-		}
-		return steps <= 3 ? 1 : 2;
+		return Math.clamp(steps, 0, RADIUS_TIERS - 1);
 	}
 
 	public static int hearingTier(int sensitivity) {
-		if (sensitivity <= 0) {
-			return 0;
-		}
-		return sensitivity <= 2 ? 1 : 2;
+		return Math.clamp(sensitivity, 0, HEARING_TIERS - 1);
 	}
 
 	public static int memoryIndex(int capacity, int filled) {
