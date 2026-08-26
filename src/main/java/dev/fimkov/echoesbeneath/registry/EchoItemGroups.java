@@ -7,17 +7,24 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
+
+import java.util.List;
 
 public final class EchoItemGroups {
 	public static final CreativeModeTab ECHOES_BENEATH = CreativeModeTab
 			.builder(CreativeModeTab.Row.TOP, 0)
 			.title(Component.translatable(EchoTranslations.ITEM_GROUP))
 			.icon(() -> new ItemStack(EchoItems.ECHO_LENS))
-			.displayItems((parameters, output) -> {
-				output.accept(EchoItems.ECHO_LENS);
-				output.accept(EchoBlocks.RESONANCE_TABLE_ITEM);
-			})
+			.displayItems((parameters, output) -> contents().forEach(output::accept))
 			.build();
+
+	public static List<ItemLike> contents() {
+		return List.of(
+				EchoItems.ECHO_LENS,
+				EchoBlocks.RESONANCE_TABLE_ITEM,
+				EchoBlocks.SOUNDING_TABLE_ITEM);
+	}
 
 	private EchoItemGroups() {
 	}
