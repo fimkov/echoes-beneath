@@ -65,11 +65,16 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	private static final int RING_FULL_ALPHA = 255;
 	private static final int RING_IDLE_ALPHA = 90;
 	private static final float FEEDER_PORTION = 0.62F;
+	private static final float WIRES_COMPLETE = 0.999F;
+	private static final float DIAL_FILL_RATE = 0.085F;
+	private static final float DIAL_DRAIN_RATE = 0.22F;
+	private static final float DIAL_IDLE_ALPHA = 0.20F;
 
 	private final ItemStack amethystGhost = new ItemStack(Items.AMETHYST_SHARD);
 	private final float[] shown = new float[ResonanceTableLayout.ROW_COUNT];
 	private float animation;
 	private float charge;
+	private float dialFill;
 	private float spin;
 
 	public ResonanceTableScreen(ResonanceTableMenu menu, Inventory inventory, Component title) {
@@ -107,9 +112,16 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		if (Math.abs(target - charge) < FILL_SNAP) {
 			charge = target;
 		}
-		spin += RING_DEGREES_PER_TICK;
-		if (spin >= 360.0F) {
-			spin -= 360.0F;
+		if (charge >= WIRES_COMPLETE) {
+			dialFill = Math.min(1.0F, dialFill + DIAL_FILL_RATE);
+		} else {
+			dialFill = Math.max(0.0F, dialFill - DIAL_DRAIN_RATE);
+		}
+		if (dialFill > 0.0F) {
+			spin += RING_DEGREES_PER_TICK;
+			if (spin >= 360.0F) {
+				spin -= 360.0F;
+			}
 		}
 	}
 
@@ -191,7 +203,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		renderGhostSlot(graphics);
 		renderRing(graphics, partialTick);
 		renderWires(graphics);
-		renderDialGlow(graphics);
+		renderDialGlow(graphics, partialTick);
 		for (int index = 0; index < ResonanceTableLayout.ROW_COUNT; index++) {
 			int y = topPos + ResonanceTableLayout.rowY(index);
 			if (overRow(mouseX, mouseY, index)) {
@@ -218,22 +230,41 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 				ResonanceTableLayout.SLOT_SIZE, ResonanceTableLayout.SLOT_SIZE);
 	}
 
-	private void renderDialGlow(GuiGraphics graphics) {
+	private void renderDialGlow(GuiGraphics graphics, float partialTick) {
+		int size = ResonanceTableLayout.DIAL_GLOW_SIZE;
+		int x = leftPos + ResonanceTableLayout.DIAL_CENTRE_X - size / 2;
+		int y = topPos + ResonanceTableLayout.DIAL_CENTRE_Y - size / 2;
+		blitDial(graphics, x, y, DIAL_IDLE_ALPHA);
+		float fill = filledDial(partialTick);
+		if (fill <= 0.0F) {
+			return;
+		}
 		float alpha = pulse();
 		if (minecraft != null && minecraft.player != null && menu.canApply(minecraft.player)) {
 			alpha += PULSE_READY_BOOST;
 		}
-		graphics.setColor(1.0F, 1.0F, 1.0F, Math.min(1.0F, alpha));
-		graphics.blit(TEXTURE,
-				leftPos + ResonanceTableLayout.DIAL_CENTRE_X - ResonanceTableLayout.DIAL_GLOW_SIZE / 2,
-				topPos + ResonanceTableLayout.DIAL_CENTRE_Y - ResonanceTableLayout.DIAL_GLOW_SIZE / 2,
-				GLOW_U, GLOW_V, ResonanceTableLayout.DIAL_GLOW_SIZE, ResonanceTableLayout.DIAL_GLOW_SIZE);
+		int wetLine = y + Math.round(size * fill);
+		graphics.enableScissor(x, y, x + size, wetLine);
+		blitDial(graphics, x, y, Math.min(1.0F, alpha));
+		graphics.disableScissor();
+	}
+
+	private void blitDial(GuiGraphics graphics, int x, int y, float alpha) {
+		graphics.setColor(1.0F, 1.0F, 1.0F, alpha);
+		graphics.blit(TEXTURE, x, y, GLOW_U, GLOW_V,
+				ResonanceTableLayout.DIAL_GLOW_SIZE, ResonanceTableLayout.DIAL_GLOW_SIZE);
 		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
+	private float filledDial(float partialTick) {
+		float rate = charge >= WIRES_COMPLETE ? DIAL_FILL_RATE : -DIAL_DRAIN_RATE;
+		return Mth.clamp(dialFill + rate * partialTick, 0.0F, 1.0F);
+	}
+
 	private void renderRing(GuiGraphics graphics, float partialTick) {
-		float angle = spin + RING_DEGREES_PER_TICK * partialTick;
-		float alpha = (RING_IDLE_ALPHA + (RING_FULL_ALPHA - RING_IDLE_ALPHA) * charge) / 255.0F;
+		float fill = filledDial(partialTick);
+		float angle = spin + (dialFill > 0.0F ? RING_DEGREES_PER_TICK * partialTick : 0.0F);
+		float alpha = (RING_IDLE_ALPHA + (RING_FULL_ALPHA - RING_IDLE_ALPHA) * fill) / 255.0F;
 		int half = ResonanceTableLayout.RING_SPRITE_SIZE / 2;
 		float centreX = leftPos + ResonanceTableLayout.DIAL_CENTRE_X;
 		float centreY = topPos + ResonanceTableLayout.DIAL_CENTRE_Y;
