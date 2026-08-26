@@ -5,6 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import dev.fimkov.echoesbeneath.EchoTranslations;
+import dev.fimkov.echoesbeneath.config.EchoConfig;
 import dev.fimkov.echoesbeneath.item.EchoLensStacks;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryLocator;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReference;
@@ -17,6 +18,8 @@ import dev.fimkov.echoesbeneath.recording.EchoRecordingStopReason;
 import dev.fimkov.echoesbeneath.registry.EchoItems;
 import dev.fimkov.echoesbeneath.runtime.EchoServerState;
 import dev.fimkov.echoesbeneath.worldgen.EchoStructures;
+import java.util.Optional;
+import java.util.UUID;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -25,11 +28,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.structure.Structure;
-
-import java.util.Optional;
-import java.util.UUID;
 
 public final class EchoCommandActions {
 	private static final int SUCCESS = 1;
@@ -85,7 +86,7 @@ public final class EchoCommandActions {
 			return FAILURE;
 		}
 		BlockPos support = player.blockPosition().below();
-		return state.recordings().start(player, net.minecraft.world.InteractionHand.MAIN_HAND, support)
+		return state.recordings().start(player, InteractionHand.MAIN_HAND, support)
 				.isPresent() ? SUCCESS : FAILURE;
 	}
 
@@ -121,7 +122,7 @@ public final class EchoCommandActions {
 			context.getSource().sendFailure(Component.translatable(EchoTranslations.MESSAGE_NO_RESONANCE));
 			return FAILURE;
 		}
-		return state.playbacks().start(player, net.minecraft.world.InteractionHand.MAIN_HAND, reference.get())
+		return state.playbacks().start(player, InteractionHand.MAIN_HAND, reference.get())
 				? SUCCESS : FAILURE;
 	}
 
@@ -165,8 +166,8 @@ public final class EchoCommandActions {
 		EchoRecordingSession session = recording.get();
 		context.getSource().sendSuccess(() -> Component.translatable(EchoTranslations.COMMAND_DEBUG_BOUNDS,
 				session.center().getX(), session.center().getY(), session.center().getZ(),
-				dev.fimkov.echoesbeneath.config.EchoConfig.values().recordingRadius(),
-				dev.fimkov.echoesbeneath.config.EchoConfig.values().recordingVerticalRadius(),
+				EchoConfig.values().recordingRadius(),
+				EchoConfig.values().recordingVerticalRadius(),
 				session.currentTick(), session.maxTicks()), false);
 		return SUCCESS;
 	}

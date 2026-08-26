@@ -1,14 +1,11 @@
 package dev.fimkov.echoesbeneath.item;
 
-import dev.fimkov.echoesbeneath.EchoTranslations;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryLocator;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReference;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReferences;
-import dev.fimkov.echoesbeneath.memory.EchoTextFormat;
 import dev.fimkov.echoesbeneath.recording.EchoRecordingHooks;
 import dev.fimkov.echoesbeneath.registry.EchoSounds;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;

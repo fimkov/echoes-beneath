@@ -2,19 +2,19 @@ package dev.fimkov.echoesbeneath;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
+import dev.fimkov.echoesbeneath.registry.EchoSounds;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import net.minecraft.sounds.SoundEvent;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class EchoSoundPackTest {
 	private static final String NAMESPACE = "echoes_beneath";
@@ -87,12 +87,12 @@ class EchoSoundPackTest {
 	void registeredEventsAreDeclared() throws IllegalAccessException {
 		JsonObject definitions = definitions();
 		List<String> missing = new ArrayList<>();
-		for (java.lang.reflect.Field field : dev.fimkov.echoesbeneath.registry.EchoSounds.class.getFields()) {
-			if (!net.minecraft.sounds.SoundEvent.class.isAssignableFrom(field.getType())) {
+		for (java.lang.reflect.Field field : EchoSounds.class.getFields()) {
+			if (!SoundEvent.class.isAssignableFrom(field.getType())) {
 				continue;
 			}
-			net.minecraft.sounds.SoundEvent event =
-					(net.minecraft.sounds.SoundEvent) field.get(null);
+			SoundEvent event =
+					(SoundEvent) field.get(null);
 			String key = event.getLocation().getPath();
 			if (!event.getLocation().getNamespace().equals(NAMESPACE)) {
 				continue;

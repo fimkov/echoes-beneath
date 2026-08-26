@@ -1,28 +1,28 @@
 package dev.fimkov.echoesbeneath.client.screen;
 
+import com.mojang.math.Axis;
 import dev.fimkov.echoesbeneath.EchoTranslations;
 import dev.fimkov.echoesbeneath.EchoesBeneath;
+import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
 import dev.fimkov.echoesbeneath.menu.ResonanceTableLayout;
 import dev.fimkov.echoesbeneath.menu.ResonanceTableMenu;
 import dev.fimkov.echoesbeneath.menu.ResonanceTablePlan;
 import dev.fimkov.echoesbeneath.menu.ResonanceTableUpgrade;
+import dev.fimkov.echoesbeneath.registry.EchoSounds;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
-import com.mojang.math.Axis;
-import net.minecraft.util.Mth;
 import net.minecraft.resources.ResourceLocation;
-import dev.fimkov.echoesbeneath.registry.EchoSounds;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTableMenu> {
 	private static final ResourceLocation TEXTURE = EchoesBeneath.id("textures/gui/resonance_table.png");
@@ -193,7 +193,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	}
 
 	private float pulse() {
-		if (!dev.fimkov.echoesbeneath.client.config.EchoClientConfig.values().tableAnimations()) {
+		if (!EchoClientConfig.values().tableAnimations()) {
 			return PULSE_BASE + PULSE_SWING * 0.5F;
 		}
 		double phase = animation / PULSE_PERIOD_TICKS * Math.PI * 2.0;

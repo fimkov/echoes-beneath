@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.PushReaction;
 
 public final class EchoBlocks {
 	private static final float HARDNESS = 3.5F;
@@ -48,7 +49,7 @@ public final class EchoBlocks {
 					.lightLevel(state -> CHART_GLOW)
 					.noOcclusion()
 					.noCollission()
-					.pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY));
+					.pushReaction(PushReaction.DESTROY));
 
 	private EchoBlocks() {
 	}

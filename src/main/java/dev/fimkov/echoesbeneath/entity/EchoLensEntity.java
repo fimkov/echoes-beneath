@@ -2,9 +2,14 @@ package dev.fimkov.echoesbeneath.entity;
 
 import dev.fimkov.echoesbeneath.registry.EchoEntities;
 import dev.fimkov.echoesbeneath.runtime.EchoLensReturn;
+import java.util.Optional;
+import java.util.UUID;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -18,9 +23,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.Optional;
-import java.util.UUID;
 
 public class EchoLensEntity extends Entity {
 	public static final double HOVER_HEIGHT = 1.375D;
@@ -283,7 +285,7 @@ public class EchoLensEntity extends Entity {
 		if (!tag.contains(key)) {
 			return Vec3.ZERO;
 		}
-		net.minecraft.nbt.ListTag values = tag.getList(key, net.minecraft.nbt.Tag.TAG_DOUBLE);
+		ListTag values = tag.getList(key, Tag.TAG_DOUBLE);
 		if (values.size() != 3) {
 			return Vec3.ZERO;
 		}
@@ -291,10 +293,10 @@ public class EchoLensEntity extends Entity {
 	}
 
 	private static void writeVector(CompoundTag tag, String key, Vec3 value) {
-		net.minecraft.nbt.ListTag values = new net.minecraft.nbt.ListTag();
-		values.add(net.minecraft.nbt.DoubleTag.valueOf(value.x));
-		values.add(net.minecraft.nbt.DoubleTag.valueOf(value.y));
-		values.add(net.minecraft.nbt.DoubleTag.valueOf(value.z));
+		ListTag values = new ListTag();
+		values.add(DoubleTag.valueOf(value.x));
+		values.add(DoubleTag.valueOf(value.y));
+		values.add(DoubleTag.valueOf(value.z));
 		tag.put(key, values);
 	}
 

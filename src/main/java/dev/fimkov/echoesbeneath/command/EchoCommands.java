@@ -2,9 +2,10 @@ package dev.fimkov.echoesbeneath.command;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.fimkov.echoesbeneath.worldgen.EchoStructures;
 import dev.fimkov.echoesbeneath.platform.EchoPlatforms;
+import dev.fimkov.echoesbeneath.worldgen.EchoStructures;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -46,7 +47,7 @@ public final class EchoCommands {
 								.executes(EchoCommandActions::adminClearMemory)));
 	}
 
-	private static int locateStructure(com.mojang.brigadier.context.CommandContext<CommandSourceStack> context)
+	private static int locateStructure(CommandContext<CommandSourceStack> context)
 			throws CommandSyntaxException {
 		return EchoCommandActions.locateStructure(context, StringArgumentType.getString(context, STRUCTURE_ARGUMENT));
 	}

@@ -4,6 +4,7 @@ import dev.fimkov.echoesbeneath.chart.EchoChartData;
 import dev.fimkov.echoesbeneath.menu.SoundingTableMenu;
 import dev.fimkov.echoesbeneath.registry.EchoComponents;
 import dev.fimkov.echoesbeneath.registry.EchoItems;
+import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -14,8 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.UUID;
+import net.minecraft.world.level.GameType;
 
 public class EchoSoundingTableGameTest implements FabricGameTest {
 	private static final int RADIUS = 32;
@@ -33,7 +33,7 @@ public class EchoSoundingTableGameTest implements FabricGameTest {
 
 	@GameTest(template = EMPTY_STRUCTURE)
 	public void aChartSurvivesTheLensArrivingAfterIt(GameTestHelper helper) {
-		Player player = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+		Player player = helper.makeMockPlayer(GameType.SURVIVAL);
 		SoundingTableMenu menu = new SoundingTableMenu(1, player.getInventory(),
 				ContainerLevelAccess.NULL);
 		menu.slots.get(SoundingTableMenu.RESULT_SLOT).set(chart());
@@ -46,7 +46,7 @@ public class EchoSoundingTableGameTest implements FabricGameTest {
 
 	@GameTest(template = EMPTY_STRUCTURE)
 	public void shiftClickSendsEachItemToItsOwnSlot(GameTestHelper helper) {
-		Player player = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+		Player player = helper.makeMockPlayer(GameType.SURVIVAL);
 		player.getInventory().add(chart());
 		player.getInventory().add(new ItemStack(EchoItems.ECHO_LENS));
 		SoundingTableMenu menu = new SoundingTableMenu(1, player.getInventory(),
@@ -67,7 +67,7 @@ public class EchoSoundingTableGameTest implements FabricGameTest {
 
 	@GameTest(template = EMPTY_STRUCTURE)
 	public void theResultSlotTakesChartsAndNothingElse(GameTestHelper helper) {
-		Player player = helper.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+		Player player = helper.makeMockPlayer(GameType.SURVIVAL);
 		SoundingTableMenu menu = new SoundingTableMenu(1, player.getInventory(),
 				ContainerLevelAccess.NULL);
 		if (!menu.slots.get(SoundingTableMenu.RESULT_SLOT).mayPlace(chart())) {

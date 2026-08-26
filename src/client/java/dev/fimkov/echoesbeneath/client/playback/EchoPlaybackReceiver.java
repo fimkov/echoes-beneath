@@ -1,10 +1,11 @@
 package dev.fimkov.echoesbeneath.client.playback;
 
+import dev.fimkov.echoesbeneath.client.chart.ClientChartShapes;
+import dev.fimkov.echoesbeneath.client.input.EchoKeys;
 import dev.fimkov.echoesbeneath.client.platform.EchoClientPlatforms;
 import dev.fimkov.echoesbeneath.client.render.EchoDarkness;
-import dev.fimkov.echoesbeneath.network.PlaybackDataPayload;
-import dev.fimkov.echoesbeneath.client.chart.ClientChartShapes;
 import dev.fimkov.echoesbeneath.network.ChartShapePayload;
+import dev.fimkov.echoesbeneath.network.PlaybackDataPayload;
 import dev.fimkov.echoesbeneath.network.PlaybackStartPayload;
 import dev.fimkov.echoesbeneath.network.PlaybackStopPayload;
 import dev.fimkov.echoesbeneath.network.PlaybackTickPayload;
@@ -45,7 +46,7 @@ public final class EchoPlaybackReceiver {
 				ClientPlaybackManager.instance().clientTick(client.level);
 			}
 			EchoDarkness.refreshFrameState();
-			dev.fimkov.echoesbeneath.client.input.EchoKeys.poll();
+			EchoKeys.poll();
 		});
 	}
 }

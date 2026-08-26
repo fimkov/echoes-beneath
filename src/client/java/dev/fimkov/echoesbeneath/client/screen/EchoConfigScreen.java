@@ -3,6 +3,10 @@ package dev.fimkov.echoesbeneath.client.screen;
 import dev.fimkov.echoesbeneath.EchoTranslations;
 import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
 import dev.fimkov.echoesbeneath.client.config.EchoClientConfigValues;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
@@ -11,10 +15,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.IntConsumer;
-
 public final class EchoConfigScreen extends Screen {
 	private static final int WIDGET_WIDTH = 150;
 	private static final int WIDGET_HEIGHT = 20;
@@ -22,7 +22,6 @@ public final class EchoConfigScreen extends Screen {
 	private static final int ROW_GAP = 4;
 	private static final int TOP = 42;
 	private static final int TITLE_Y = 18;
-	private static final int COLUMNS = 2;
 	private static final int DONE_WIDTH = 200;
 	private static final int BOTTOM_MARGIN = 30;
 
@@ -106,7 +105,7 @@ public final class EchoConfigScreen extends Screen {
 	}
 
 	private void addToggle(int x, int row, String key, boolean initial,
-			java.util.function.Consumer<Boolean> sink) {
+			Consumer<Boolean> sink) {
 		addRenderableWidget(CycleButton.onOffBuilder(initial)
 				.create(x, rowY(row), WIDGET_WIDTH, WIDGET_HEIGHT,
 						Component.translatable(optionKey(key)), (button, value) -> sink.accept(value)));

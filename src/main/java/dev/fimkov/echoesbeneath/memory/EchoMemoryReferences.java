@@ -2,13 +2,13 @@ package dev.fimkov.echoesbeneath.memory;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
 public record EchoMemoryReferences(List<EchoMemoryReference> entries) {
 	public static final EchoMemoryReferences EMPTY = new EchoMemoryReferences(List.of());
@@ -83,7 +83,7 @@ public record EchoMemoryReferences(List<EchoMemoryReference> entries) {
 		}
 		List<EchoMemoryReference> merged = new ArrayList<>(entries);
 		merged.add(reference);
-		merged.sort(java.util.Comparator.comparingInt(EchoMemoryReference::slot));
+		merged.sort(Comparator.comparingInt(EchoMemoryReference::slot));
 		return new EchoMemoryReferences(List.copyOf(merged));
 	}
 

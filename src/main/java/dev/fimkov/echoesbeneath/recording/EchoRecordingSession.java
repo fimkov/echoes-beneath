@@ -2,6 +2,7 @@ package dev.fimkov.echoesbeneath.recording;
 
 import dev.fimkov.echoesbeneath.config.EchoConfigValues;
 import dev.fimkov.echoesbeneath.entity.EchoLensEntity;
+import dev.fimkov.echoesbeneath.item.EchoLensUpgrades;
 import dev.fimkov.echoesbeneath.memory.EchoCoordinates;
 import dev.fimkov.echoesbeneath.memory.EchoFormat;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryRecord;
@@ -9,9 +10,13 @@ import dev.fimkov.echoesbeneath.memory.snapshot.BlockPalette;
 import dev.fimkov.echoesbeneath.memory.timeline.BlockTimeline;
 import dev.fimkov.echoesbeneath.memory.timeline.EchoSoundCategory;
 import dev.fimkov.echoesbeneath.memory.timeline.EntityTimeline;
-import dev.fimkov.echoesbeneath.registry.EchoSounds;
 import dev.fimkov.echoesbeneath.memory.timeline.ParticleTimeline;
 import dev.fimkov.echoesbeneath.memory.timeline.SoundTimeline;
+import dev.fimkov.echoesbeneath.registry.EchoSounds;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -20,11 +25,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.List;
-import java.util.UUID;
 
 public final class EchoRecordingSession {
 	private static final int MAX_BLOCK_EVENTS = 65536;
@@ -64,7 +64,7 @@ public final class EchoRecordingSession {
 	private boolean finished;
 
 	public EchoRecordingSession(UUID sessionId, UUID memoryId, UUID ownerId, int slot, ServerLevel level,
-			BlockPos center, EchoConfigValues config, dev.fimkov.echoesbeneath.item.EchoLensUpgrades upgrades,
+			BlockPos center, EchoConfigValues config, EchoLensUpgrades upgrades,
 			EchoLensEntity lensEntity, long createdAtEpochMillis) {
 		this.sessionId = sessionId;
 		this.memoryId = memoryId;

@@ -5,6 +5,10 @@ import dev.fimkov.echoesbeneath.memory.timeline.EchoEntityAction;
 import dev.fimkov.echoesbeneath.memory.timeline.EntityTimeline;
 import dev.fimkov.echoesbeneath.memory.timeline.EntityTrack;
 import dev.fimkov.echoesbeneath.registry.EchoTags;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -12,10 +16,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 public final class EntityTrackRecorder {
 	private static final double POSITION_EPSILON = 0.02D;
@@ -181,7 +181,7 @@ public final class EntityTrackRecorder {
 
 		private TrackedEntity(EntityTrack track) {
 			this.track = track;
-			java.util.Arrays.fill(lastEquipment, EntityTimeline.NO_ITEM_INDEX);
+			Arrays.fill(lastEquipment, EntityTimeline.NO_ITEM_INDEX);
 		}
 	}
 }

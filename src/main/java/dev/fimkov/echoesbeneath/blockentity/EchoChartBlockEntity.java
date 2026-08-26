@@ -5,6 +5,10 @@ import dev.fimkov.echoesbeneath.chart.EchoChartLook;
 import dev.fimkov.echoesbeneath.registry.EchoBlockEntities;
 import dev.fimkov.echoesbeneath.registry.EchoComponents;
 import dev.fimkov.echoesbeneath.registry.EchoItems;
+import dev.fimkov.echoesbeneath.runtime.EchoServerState;
+import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -12,7 +16,10 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
@@ -29,8 +36,8 @@ public class EchoChartBlockEntity extends BlockEntity {
 	private EchoChartLook look = EchoChartLook.DEFAULT;
 	private int turn;
 	private int age;
-	private final java.util.Set<net.minecraft.server.level.ServerPlayer> told =
-			java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
+	private final Set<ServerPlayer> told =
+			Collections.newSetFromMap(new WeakHashMap<>());
 
 	public EchoChartBlockEntity(BlockPos position, BlockState state) {
 		super(EchoBlockEntities.ECHO_CHART, position, state);
@@ -57,7 +64,7 @@ public class EchoChartBlockEntity extends BlockEntity {
 		age++;
 	}
 
-	public static void serverTick(net.minecraft.world.level.Level level, BlockPos position,
+	public static void serverTick(Level level, BlockPos position,
 			BlockState state, EchoChartBlockEntity chart) {
 		chart.age++;
 		if (chart.age % TELL_INTERVAL_TICKS != 0) {
@@ -66,14 +73,14 @@ public class EchoChartBlockEntity extends BlockEntity {
 		if (chart.chart == null) {
 			return;
 		}
-		dev.fimkov.echoesbeneath.runtime.EchoServerState server =
-				dev.fimkov.echoesbeneath.runtime.EchoServerState.current();
+		EchoServerState server =
+				EchoServerState.current();
 		if (server == null) {
 			return;
 		}
-		chart.told.removeIf(net.minecraft.server.level.ServerPlayer::hasDisconnected);
-		for (net.minecraft.world.entity.player.Player nearby : level.players()) {
-			if (!(nearby instanceof net.minecraft.server.level.ServerPlayer viewer)
+		chart.told.removeIf(ServerPlayer::hasDisconnected);
+		for (Player nearby : level.players()) {
+			if (!(nearby instanceof ServerPlayer viewer)
 					|| chart.told.contains(viewer)
 					|| viewer.distanceToSqr(position.getX() + 0.5D, position.getY() + 0.5D,
 							position.getZ() + 0.5D) > TELL_REACH * TELL_REACH) {
@@ -85,7 +92,7 @@ public class EchoChartBlockEntity extends BlockEntity {
 		}
 	}
 
-	public static void clientTick(net.minecraft.world.level.Level level, BlockPos position,
+	public static void clientTick(Level level, BlockPos position,
 			BlockState state, EchoChartBlockEntity chart) {
 		chart.age++;
 	}

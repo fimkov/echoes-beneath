@@ -1,5 +1,6 @@
 package dev.fimkov.echoesbeneath.chart;
 
+import dev.fimkov.echoesbeneath.config.EchoConfig;
 import dev.fimkov.echoesbeneath.memory.EchoCoordinates;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryRecord;
 import dev.fimkov.echoesbeneath.memory.snapshot.BlockPalette;
@@ -9,7 +10,6 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public final class EchoSounding {
-	public static final int BLOCKS_PER_VOLUME = 16;
 	private static final int MIN_CARRY = 2;
 	private static final int[][] STEPS = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
@@ -48,7 +48,7 @@ public final class EchoSounding {
 			int x = (int) Math.floor(sounds.relativeXAt(index));
 			int z = (int) Math.floor(sounds.relativeZAt(index));
 			int carry = Math.clamp(Math.round(sounds.volumeAt(index)
-							* dev.fimkov.echoesbeneath.config.EchoConfig.values().soundCarryBlocks()),
+							* EchoConfig.values().soundCarryBlocks()),
 					MIN_CARRY, radius);
 			columns.raise(x, z, carry);
 		}

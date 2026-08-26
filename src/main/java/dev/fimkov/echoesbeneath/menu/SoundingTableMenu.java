@@ -1,13 +1,12 @@
 package dev.fimkov.echoesbeneath.menu;
 
+import dev.fimkov.echoesbeneath.EchoTranslations;
 import dev.fimkov.echoesbeneath.chart.EchoChartData;
 import dev.fimkov.echoesbeneath.chart.EchoChartPreview;
-import dev.fimkov.echoesbeneath.EchoTranslations;
+import dev.fimkov.echoesbeneath.config.EchoConfig;
 import dev.fimkov.echoesbeneath.item.EchoChartItem;
 import dev.fimkov.echoesbeneath.item.EchoLensStacks;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryRecord;
-import dev.fimkov.echoesbeneath.runtime.EchoServerState;
-import net.minecraft.network.chat.Component;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReference;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReferences;
 import dev.fimkov.echoesbeneath.registry.EchoBlocks;
@@ -15,7 +14,11 @@ import dev.fimkov.echoesbeneath.registry.EchoComponents;
 import dev.fimkov.echoesbeneath.registry.EchoItems;
 import dev.fimkov.echoesbeneath.registry.EchoMenus;
 import dev.fimkov.echoesbeneath.registry.EchoSounds;
+import dev.fimkov.echoesbeneath.runtime.EchoServerState;
+import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
@@ -27,9 +30,6 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.List;
-import java.util.Optional;
 
 public class SoundingTableMenu extends AbstractContainerMenu {
 	public static final int LENS_SLOT = 0;
@@ -231,7 +231,7 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 	}
 
 	public boolean canExtract() {
-		return dev.fimkov.echoesbeneath.config.EchoConfig.values().allowCharts()
+		return EchoConfig.values().allowCharts()
 				&& chosen() != null && output.getItem(0).isEmpty();
 	}
 

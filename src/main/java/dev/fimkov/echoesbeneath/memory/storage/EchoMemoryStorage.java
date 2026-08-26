@@ -2,7 +2,6 @@ package dev.fimkov.echoesbeneath.memory.storage;
 
 import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.config.EchoConfig;
-import dev.fimkov.echoesbeneath.memory.EchoMemoryFormatException;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryRecord;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;

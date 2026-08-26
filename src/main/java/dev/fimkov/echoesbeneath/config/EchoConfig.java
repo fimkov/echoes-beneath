@@ -2,12 +2,12 @@ package dev.fimkov.echoesbeneath.config;
 
 import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.platform.EchoPlatforms;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Properties;
 
 public final class EchoConfig {
@@ -155,7 +155,7 @@ public final class EchoConfig {
 		if (raw == null) {
 			return fallback;
 		}
-		String normalized = raw.trim().toLowerCase(java.util.Locale.ROOT);
+		String normalized = raw.trim().toLowerCase(Locale.ROOT);
 		if (normalized.equals("true") || normalized.equals("false")) {
 			return Boolean.parseBoolean(normalized);
 		}

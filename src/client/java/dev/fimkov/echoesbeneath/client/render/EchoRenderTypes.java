@@ -2,7 +2,6 @@ package dev.fimkov.echoesbeneath.client.render;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
 
 public final class EchoRenderTypes extends RenderType {

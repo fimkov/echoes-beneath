@@ -1,6 +1,7 @@
 package dev.fimkov.echoesbeneath.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.entity.EchoLensEntity;
 import dev.fimkov.echoesbeneath.entity.EchoLensMode;
@@ -8,10 +9,10 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import com.mojang.math.Axis;
 
 public class EchoLensEntityRenderer extends EntityRenderer<EchoLensEntity> {
 	private static final float HOVER_BOB_AMPLITUDE = 0.08F;
@@ -52,7 +53,7 @@ public class EchoLensEntityRenderer extends EntityRenderer<EchoLensEntity> {
 		poseStack.mulPose(Axis.XP.rotationDegrees(lean));
 		poseStack.scale(scale, scale, scale);
 		itemRenderer.renderStatic(stack, ItemDisplayContext.GROUND, FULL_BRIGHT,
-				net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY,
+				OverlayTexture.NO_OVERLAY,
 				poseStack, buffers, entity.level(), entity.getId());
 		poseStack.popPose();
 		super.render(entity, entityYaw, partialTick, poseStack, buffers, packedLight);

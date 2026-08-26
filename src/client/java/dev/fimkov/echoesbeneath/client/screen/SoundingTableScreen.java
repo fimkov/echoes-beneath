@@ -1,5 +1,6 @@
 package dev.fimkov.echoesbeneath.client.screen;
 
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import dev.fimkov.echoesbeneath.EchoTranslations;
@@ -7,6 +8,7 @@ import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.chart.EchoChartPreview;
 import dev.fimkov.echoesbeneath.client.chart.ClientChartShapes;
 import dev.fimkov.echoesbeneath.client.chart.EchoChartModel;
+import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
 import dev.fimkov.echoesbeneath.client.render.EchoChartGeometry;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReference;
 import dev.fimkov.echoesbeneath.memory.EchoTextFormat;
@@ -14,6 +16,7 @@ import dev.fimkov.echoesbeneath.menu.SoundingTableLayout;
 import dev.fimkov.echoesbeneath.menu.SoundingTableMenu;
 import dev.fimkov.echoesbeneath.menu.SoundingTablePlan;
 import dev.fimkov.echoesbeneath.registry.EchoSounds;
+import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -24,8 +27,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 
-import java.util.List;
-
 public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMenu> {
 	private static final ResourceLocation TEXTURE = EchoesBeneath.id("textures/gui/sounding_table.png");
 
@@ -34,7 +35,6 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	private static final int TITLE = 0xC8DCDA;
 	private static final int SELECTED_INK = 0xE8FFFF;
 	private static final int BAND = 0x5529DFEB;
-	private static final int WINDOW = 0xAA29DFEB;
 	private static final int ROW_CHOSEN = 0xFF1B3238;
 	private static final int ROW_HOVER = 0xFF232B2C;
 	private static final int EDGE = 0xFF29DFEB;
@@ -106,7 +106,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	}
 
 	private float pulse(float partialTick) {
-		if (!dev.fimkov.echoesbeneath.client.config.EchoClientConfig.values().tableAnimations()) {
+		if (!EchoClientConfig.values().tableAnimations()) {
 			return PULSE_BASE + PULSE_SWING * 0.5F;
 		}
 		double phase = (animation + partialTick) / PULSE_PERIOD_TICKS * Math.PI * 2.0;
@@ -378,7 +378,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 				topPos + SoundingTableLayout.STAGE_Y + 1,
 				leftPos + SoundingTableLayout.STAGE_X + SoundingTableLayout.STAGE_WIDTH - 1,
 				topPos + SoundingTableLayout.STAGE_Y + SoundingTableLayout.STAGE_HEIGHT - 1);
-		com.mojang.blaze3d.platform.Lighting.setupFor3DItems();
+		Lighting.setupFor3DItems();
 		PoseStack poseStack = graphics.pose();
 		poseStack.pushPose();
 		poseStack.translate(centreX, centreY, 220.0F);
@@ -391,7 +391,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		EchoChartGeometry.emit(model, graphics.bufferSource(), poseStack);
 		graphics.flush();
 		poseStack.popPose();
-		com.mojang.blaze3d.platform.Lighting.setupForFlatItems();
+		Lighting.setupForFlatItems();
 		graphics.disableScissor();
 	}
 

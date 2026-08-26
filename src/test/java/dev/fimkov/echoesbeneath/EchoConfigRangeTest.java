@@ -1,17 +1,17 @@
 package dev.fimkov.echoesbeneath;
 
+import dev.fimkov.echoesbeneath.config.EchoConfig;
 import dev.fimkov.echoesbeneath.config.EchoConfigValues;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class EchoConfigRangeTest {
 	@Test
 	@DisplayName("the shipped defaults are all usable values")
 	void defaultsAreSane() {
-		EchoConfigValues values = dev.fimkov.echoesbeneath.config.EchoConfig.defaults();
+		EchoConfigValues values = EchoConfig.defaults();
 		assertTrue(values.recordingRadius() > 0, "recording radius");
 		assertTrue(values.recordingVerticalRadius() > 0, "vertical radius");
 		assertTrue(values.maxRecordingSeconds() > 0, "recording seconds");
@@ -25,14 +25,14 @@ class EchoConfigRangeTest {
 	@Test
 	@DisplayName("recording seconds convert to whole ticks")
 	void secondsBecomeTicks() {
-		EchoConfigValues values = dev.fimkov.echoesbeneath.config.EchoConfig.defaults();
+		EchoConfigValues values = EchoConfig.defaults();
 		assertEquals(values.maxRecordingSeconds() * 20, values.maxRecordingTicks());
 	}
 
 	@Test
 	@DisplayName("particles get a larger budget than sounds, because they arrive faster")
 	void particlesGetRoomToBreathe() {
-		EchoConfigValues values = dev.fimkov.echoesbeneath.config.EchoConfig.defaults();
+		EchoConfigValues values = EchoConfig.defaults();
 		assertTrue(values.maxParticleEvents() >= values.maxSoundEvents(),
 				"particles are budgeted below sounds");
 	}

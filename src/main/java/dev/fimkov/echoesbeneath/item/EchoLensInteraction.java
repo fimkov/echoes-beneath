@@ -5,15 +5,15 @@ import dev.fimkov.echoesbeneath.memory.EchoMemoryLocator;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReference;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReferences;
 import dev.fimkov.echoesbeneath.runtime.EchoServerState;
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-
-import java.util.Optional;
 
 public final class EchoLensInteraction {
 	private EchoLensInteraction() {
@@ -56,14 +56,14 @@ public final class EchoLensInteraction {
 	}
 
 	private static InteractionResult startPlayback(EchoServerState state, ServerPlayer player,
-			net.minecraft.world.InteractionHand hand, EchoMemoryReference reference) {
+			InteractionHand hand, EchoMemoryReference reference) {
 		return state.playbacks().start(player, hand, reference)
 				? InteractionResult.CONSUME
 				: InteractionResult.FAIL;
 	}
 
 	private static InteractionResult startRecording(EchoServerState state, ServerPlayer player,
-			net.minecraft.world.InteractionHand hand, BlockPos clickedPos, EchoMemoryReferences references,
+			InteractionHand hand, BlockPos clickedPos, EchoMemoryReferences references,
 			int capacity) {
 		if (references.isFull(capacity)) {
 			player.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_NO_MORE), true);

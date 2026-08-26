@@ -1,17 +1,20 @@
 package dev.fimkov.echoesbeneath.client.sound;
 
+import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
 import dev.fimkov.echoesbeneath.client.wave.EchoWaveManager;
-import dev.fimkov.echoesbeneath.registry.EchoSounds;
+import dev.fimkov.echoesbeneath.client.wave.EchoWavePalette;
 import dev.fimkov.echoesbeneath.memory.timeline.SoundTimeline;
+import dev.fimkov.echoesbeneath.registry.EchoSounds;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SculkChargeParticleOptions;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public final class EchoSoundPlayer {
 	private static final int[] ECHO_DELAY_TICKS = {7, 15};
@@ -62,14 +65,14 @@ public final class EchoSoundPlayer {
 		Vec3 position = center.add(
 				timeline.relativeXAt(index), timeline.relativeYAt(index), timeline.relativeZAt(index));
 		float volume = timeline.volumeAt(index)
-				* dev.fimkov.echoesbeneath.client.config.EchoClientConfig.values().waveGain();
+				* EchoClientConfig.values().waveGain();
 		float pitch = timeline.pitchAt(index);
 		SoundSource source = timeline.categoryAt(index);
 		level.playLocalSound(position.x, position.y, position.z, event, source,
 				remembered ? volume : volume * LOST_SOUND_VOLUME, pitch, false);
 		float radius = timeline.waveRadiusAt(index);
 		waves.spawn(position, tick, radius,
-				dev.fimkov.echoesbeneath.client.wave.EchoWavePalette.paletteFor(source));
+				EchoWavePalette.paletteFor(source));
 		burst(level, position, radius);
 		if (remembered) {
 			scheduleEchoes(tick, event, source, position, volume, pitch);
@@ -81,15 +84,15 @@ public final class EchoSoundPlayer {
 			double angle = level.random.nextDouble() * Math.PI * 2.0D;
 			double lift = (level.random.nextDouble() - 0.5D) * BURST_SPEED;
 			level.addParticle(
-					new net.minecraft.core.particles.SculkChargeParticleOptions(
+					new SculkChargeParticleOptions(
 							level.random.nextFloat() * BURST_ROLL),
 					position.x, position.y, position.z,
 					Math.cos(angle) * BURST_SPEED, lift, Math.sin(angle) * BURST_SPEED);
 		}
-		level.addParticle(net.minecraft.core.particles.ParticleTypes.SCULK_SOUL,
+		level.addParticle(ParticleTypes.SCULK_SOUL,
 				position.x, position.y, position.z, 0.0D, 0.0D, 0.0D);
 		if (radius >= SONIC_BOOM_RADIUS) {
-			level.addParticle(net.minecraft.core.particles.ParticleTypes.SONIC_BOOM,
+			level.addParticle(ParticleTypes.SONIC_BOOM,
 					position.x, position.y, position.z, 0.0D, 0.0D, 0.0D);
 		}
 	}

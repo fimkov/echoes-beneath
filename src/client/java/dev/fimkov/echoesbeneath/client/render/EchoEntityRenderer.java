@@ -4,20 +4,16 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.fimkov.echoesbeneath.client.playback.ClientPlaybackSession;
 import dev.fimkov.echoesbeneath.client.platform.EchoRenderContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 
 public final class EchoEntityRenderer {
 	private static final int SILHOUETTE_LIGHT = 0;
-	private static final float OUTLINE_ALPHA_SCALE = 1.0F / 255.0F;
 
 	private EchoEntityRenderer() {
 	}

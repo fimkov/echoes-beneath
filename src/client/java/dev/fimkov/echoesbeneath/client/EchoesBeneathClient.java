@@ -1,24 +1,30 @@
 package dev.fimkov.echoesbeneath.client;
 
-import dev.fimkov.echoesbeneath.client.playback.EchoPlaybackReceiver;
-import dev.fimkov.echoesbeneath.client.render.EchoLensEntityRenderer;
-import dev.fimkov.echoesbeneath.client.platform.EchoClientPlatforms;
-import dev.fimkov.echoesbeneath.client.platform.fabric.FabricClientHooks;
-import dev.fimkov.echoesbeneath.client.render.EchoPlaybackRenderer;
 import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
+import dev.fimkov.echoesbeneath.client.input.EchoKeys;
+import dev.fimkov.echoesbeneath.client.platform.EchoClientPlatforms;
+import dev.fimkov.echoesbeneath.client.platform.fabric.FabricClientHooks;
+import dev.fimkov.echoesbeneath.client.playback.EchoPlaybackReceiver;
+import dev.fimkov.echoesbeneath.client.render.EchoChartBlockRenderer;
+import dev.fimkov.echoesbeneath.client.render.EchoLensEntityRenderer;
+import dev.fimkov.echoesbeneath.client.render.EchoPlaybackRenderer;
+import dev.fimkov.echoesbeneath.client.screen.ChartLookScreen;
+import dev.fimkov.echoesbeneath.client.screen.ResonanceTableScreen;
+import dev.fimkov.echoesbeneath.client.screen.SoundingTableScreen;
 import dev.fimkov.echoesbeneath.item.EchoLensAppearance;
 import dev.fimkov.echoesbeneath.item.EchoLensStacks;
 import dev.fimkov.echoesbeneath.item.EchoLensTooltipContext;
 import dev.fimkov.echoesbeneath.item.EchoLensUpgrades;
+import dev.fimkov.echoesbeneath.registry.EchoBlockEntities;
 import dev.fimkov.echoesbeneath.registry.EchoEntities;
 import dev.fimkov.echoesbeneath.registry.EchoItems;
+import dev.fimkov.echoesbeneath.registry.EchoMenus;
+import java.util.Optional;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.item.ItemProperties;
-
-import java.util.Optional;
 
 public final class EchoesBeneathClient implements ClientModInitializer {
 	@Override
@@ -29,24 +35,24 @@ public final class EchoesBeneathClient implements ClientModInitializer {
 		EchoClientPlatforms.get().registerEntityRenderer(EchoEntities.ECHO_LENS,
 				EchoLensEntityRenderer::new);
 		EchoClientPlatforms.get().registerBlockEntityRenderer(
-				dev.fimkov.echoesbeneath.registry.EchoBlockEntities.ECHO_CHART,
-				dev.fimkov.echoesbeneath.client.render.EchoChartBlockRenderer::new);
+				EchoBlockEntities.ECHO_CHART,
+				EchoChartBlockRenderer::new);
 		EchoClientPlatforms.get().registerKey(
-				dev.fimkov.echoesbeneath.client.input.EchoKeys.OPEN_CONFIG);
+				EchoKeys.OPEN_CONFIG);
 		EchoPlaybackReceiver.register();
 		EchoClientPlatforms.get().onFrameStart(EchoPlaybackRenderer::frameStart);
 		EchoClientPlatforms.get().onAfterEntities(EchoPlaybackRenderer::afterEntities);
 		EchoClientPlatforms.get().onFrameEnd(EchoPlaybackRenderer::frameEnd);
 		registerLensAppearance();
 		EchoClientPlatforms.get().registerScreen(
-				dev.fimkov.echoesbeneath.registry.EchoMenus.RESONANCE_TABLE,
-				dev.fimkov.echoesbeneath.client.screen.ResonanceTableScreen::new);
+				EchoMenus.RESONANCE_TABLE,
+				ResonanceTableScreen::new);
 		EchoClientPlatforms.get().registerScreen(
-				dev.fimkov.echoesbeneath.registry.EchoMenus.SOUNDING_TABLE,
-				dev.fimkov.echoesbeneath.client.screen.SoundingTableScreen::new);
+				EchoMenus.SOUNDING_TABLE,
+				SoundingTableScreen::new);
 		EchoClientPlatforms.get().registerScreen(
-				dev.fimkov.echoesbeneath.registry.EchoMenus.CHART_LOOK,
-				dev.fimkov.echoesbeneath.client.screen.ChartLookScreen::new);
+				EchoMenus.CHART_LOOK,
+				ChartLookScreen::new);
 	}
 
 	private static void registerLensAppearance() {

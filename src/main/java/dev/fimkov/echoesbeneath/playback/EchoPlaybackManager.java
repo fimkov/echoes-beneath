@@ -8,28 +8,27 @@ import dev.fimkov.echoesbeneath.entity.EchoLensMode;
 import dev.fimkov.echoesbeneath.item.EchoLensStacks;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryRecord;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReference;
-import dev.fimkov.echoesbeneath.memory.EchoTextFormat;
 import dev.fimkov.echoesbeneath.network.EchoPlaybackDataPart;
 import dev.fimkov.echoesbeneath.recording.EchoRecordingHooks;
 import dev.fimkov.echoesbeneath.registry.EchoSounds;
+import dev.fimkov.echoesbeneath.runtime.EchoLensReturn;
 import dev.fimkov.echoesbeneath.runtime.EchoServerState;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
 public final class EchoPlaybackManager {
 	private static final int HOVER_SEARCH_RADIUS = 3;
@@ -245,7 +244,7 @@ public final class EchoPlaybackManager {
 			}
 			stop(session, EchoPlaybackStopReason.OWNER_LEFT);
 			if (!session.lensEntity().isRemoved()) {
-				dev.fimkov.echoesbeneath.runtime.EchoLensReturn.deliverTo(session.lensEntity(), owner);
+				EchoLensReturn.deliverTo(session.lensEntity(), owner);
 			}
 		}
 	}

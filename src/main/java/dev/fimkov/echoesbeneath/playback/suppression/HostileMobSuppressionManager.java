@@ -3,16 +3,16 @@ package dev.fimkov.echoesbeneath.playback.suppression;
 import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.playback.EchoRegion;
 import dev.fimkov.echoesbeneath.registry.EchoTags;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Mob;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.phys.Vec3;
 
 public final class HostileMobSuppressionManager {
 	private final MinecraftServer server;
@@ -54,7 +54,7 @@ public final class HostileMobSuppressionManager {
 		entity.setInvisible(true);
 		entity.setSilent(true);
 		entity.setInvulnerable(true);
-		entity.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+		entity.setDeltaMovement(Vec3.ZERO);
 		if (entity instanceof Mob mob) {
 			mob.setNoAi(true);
 			mob.setTarget(null);

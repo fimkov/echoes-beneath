@@ -2,6 +2,7 @@ package dev.fimkov.echoesbeneath.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.fimkov.echoesbeneath.client.chart.EchoChartModel;
+import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -17,7 +18,7 @@ public final class EchoChartGeometry {
 	public static void emit(EchoChartModel model, MultiBufferSource consumers, PoseStack poseStack) {
 		BlockRenderDispatcher blocks = Minecraft.getInstance().getBlockRenderer();
 		int light = LightTexture.pack(Math.round(FULL_BLOCK_LIGHT * model.brightness()), 0);
-		int budget = dev.fimkov.echoesbeneath.client.config.EchoClientConfig.values().chartBlockBudget();
+		int budget = EchoClientConfig.values().chartBlockBudget();
 		int drawn = 0;
 		for (int index = 0; index < model.size() && drawn < budget; index++) {
 			int cell = model.cellAt(index);

@@ -1,7 +1,6 @@
 package dev.fimkov.echoesbeneath;
 
 import dev.fimkov.echoesbeneath.memory.EchoFormat;
-import dev.fimkov.echoesbeneath.memory.EchoMemoryReference;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReferences;
 import net.minecraft.core.BlockPos;
 import org.junit.jupiter.api.DisplayName;

@@ -2,22 +2,27 @@ package dev.fimkov.echoesbeneath.client.platform.fabric;
 
 import dev.fimkov.echoesbeneath.client.platform.EchoClientHooks;
 import dev.fimkov.echoesbeneath.client.platform.EchoRenderContext;
+import java.util.function.Consumer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-
-import java.util.function.Consumer;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public final class FabricClientHooks implements EchoClientHooks {
 	@Override
@@ -28,10 +33,10 @@ public final class FabricClientHooks implements EchoClientHooks {
 	}
 
 	@Override
-	public <T extends net.minecraft.world.level.block.entity.BlockEntity> void registerBlockEntityRenderer(
-			net.minecraft.world.level.block.entity.BlockEntityType<T> type,
-			net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider<T> provider) {
-		net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry.register(type, provider);
+	public <T extends BlockEntity> void registerBlockEntityRenderer(
+			BlockEntityType<T> type,
+			BlockEntityRendererProvider<T> provider) {
+		BlockEntityRendererRegistry.register(type, provider);
 	}
 
 	@Override
@@ -57,8 +62,8 @@ public final class FabricClientHooks implements EchoClientHooks {
 	}
 
 	@Override
-	public void registerKey(net.minecraft.client.KeyMapping mapping) {
-		net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKeyBinding(mapping);
+	public void registerKey(KeyMapping mapping) {
+		KeyBindingHelper.registerKeyBinding(mapping);
 	}
 
 	@Override

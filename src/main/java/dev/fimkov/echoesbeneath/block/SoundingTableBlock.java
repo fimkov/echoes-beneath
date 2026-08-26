@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -28,7 +29,7 @@ public class SoundingTableBlock extends Block {
 	}
 
 	@Override
-	protected VoxelShape getShape(BlockState state, net.minecraft.world.level.BlockGetter level,
+	protected VoxelShape getShape(BlockState state, BlockGetter level,
 			BlockPos position, CollisionContext context) {
 		return SHAPE;
 	}

@@ -2,11 +2,14 @@ package dev.fimkov.echoesbeneath.platform.neoforge;
 
 import com.mojang.brigadier.CommandDispatcher;
 import dev.fimkov.echoesbeneath.platform.EchoServerHooks;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -20,9 +23,6 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
-
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public final class NeoForgeServerHooks implements EchoServerHooks {
 	private final IEventBus bus = NeoForge.EVENT_BUS;
@@ -96,7 +96,7 @@ public final class NeoForgeServerHooks implements EchoServerHooks {
 	@Override
 	public void guardBlockBreak(BlockBreakGuard guard) {
 		bus.addListener(BlockEvent.BreakEvent.class, event -> {
-			if (event.getLevel() instanceof net.minecraft.world.level.Level level
+			if (event.getLevel() instanceof Level level
 					&& !guard.allow(level, event.getPlayer(), event.getPos())) {
 				event.setCanceled(true);
 			}

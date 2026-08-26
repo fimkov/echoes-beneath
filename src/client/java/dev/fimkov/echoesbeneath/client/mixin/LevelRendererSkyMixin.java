@@ -1,5 +1,6 @@
 package dev.fimkov.echoesbeneath.client.mixin;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.fimkov.echoesbeneath.client.render.EchoDarkness;
 import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -20,7 +21,7 @@ public abstract class LevelRendererSkyMixin {
 	}
 
 	@Inject(method = "renderClouds", at = @At("HEAD"), cancellable = true)
-	private void echoesBeneath$hideCloudsInsideRegion(com.mojang.blaze3d.vertex.PoseStack poseStack,
+	private void echoesBeneath$hideCloudsInsideRegion(PoseStack poseStack,
 			Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick,
 			double cameraX, double cameraY, double cameraZ, CallbackInfo callback) {
 		if (EchoDarkness.shouldHideSky()) {

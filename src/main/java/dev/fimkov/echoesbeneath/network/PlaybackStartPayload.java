@@ -1,6 +1,8 @@
 package dev.fimkov.echoesbeneath.network;
 
 import dev.fimkov.echoesbeneath.EchoesBeneath;
+import dev.fimkov.echoesbeneath.item.EchoLensUpgrades;
+import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -9,8 +11,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-
-import java.util.UUID;
 
 public record PlaybackStartPayload(
 		UUID playbackId,
@@ -47,7 +47,7 @@ public record PlaybackStartPayload(
 		int verticalRadius = clamp(buffer.readVarInt(), EchoPayloadLimits.MAX_RADIUS);
 		int durationTicks = clamp(buffer.readVarInt(), EchoPayloadLimits.MAX_DURATION_TICKS);
 		int memorySlot = clamp(buffer.readVarInt(), Integer.MAX_VALUE);
-		int vision = clamp(buffer.readVarInt(), dev.fimkov.echoesbeneath.item.EchoLensUpgrades.MAX_VISION);
+		int vision = clamp(buffer.readVarInt(), EchoLensUpgrades.MAX_VISION);
 		return new PlaybackStartPayload(playbackId, ResourceKey.create(Registries.DIMENSION, dimensionId),
 				center, radius, verticalRadius, durationTicks, memorySlot, vision);
 	}

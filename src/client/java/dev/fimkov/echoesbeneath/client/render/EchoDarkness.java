@@ -4,9 +4,9 @@ import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
 import dev.fimkov.echoesbeneath.client.playback.ClientPlaybackManager;
 import dev.fimkov.echoesbeneath.client.playback.ClientPlaybackSession;
-import net.minecraft.client.Minecraft;
-
+import dev.fimkov.echoesbeneath.item.EchoLensUpgrades;
 import java.util.Optional;
+import net.minecraft.client.Minecraft;
 
 public final class EchoDarkness {
 	public static final int EMISSIVE_TEXEL = 15;
@@ -57,9 +57,9 @@ public final class EchoDarkness {
 
 	private static float darknessTargetFor(ClientPlaybackSession session) {
 		float relief = (float) session.vision()
-				/ dev.fimkov.echoesbeneath.item.EchoLensUpgrades.MAX_VISION * VISION_RELIEF;
+				/ EchoLensUpgrades.MAX_VISION * VISION_RELIEF;
 		lastTarget = (FULLY_DARK - relief)
-				* dev.fimkov.echoesbeneath.client.config.EchoClientConfig.values().darknessFactor();
+				* EchoClientConfig.values().darknessFactor();
 		return lastTarget;
 	}
 

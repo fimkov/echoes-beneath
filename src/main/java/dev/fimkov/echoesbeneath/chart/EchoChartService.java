@@ -1,19 +1,18 @@
 package dev.fimkov.echoesbeneath.chart;
 
-import dev.fimkov.echoesbeneath.blockentity.EchoChartBlockEntity;
+import dev.fimkov.echoesbeneath.config.EchoConfig;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryRecord;
 import dev.fimkov.echoesbeneath.memory.storage.EchoMemoryStorage;
 import dev.fimkov.echoesbeneath.network.ChartShapePayload;
 import dev.fimkov.echoesbeneath.platform.EchoPlatforms;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.core.BlockPos;
-
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 
 public final class EchoChartService {
 	private final EchoMemoryStorage storage;
@@ -43,7 +42,7 @@ public final class EchoChartService {
 			floods.put(record.id(), reach);
 		}
 		return EchoSounding.of(record, reach, lowestY, highestY,
-				dev.fimkov.echoesbeneath.config.EchoConfig.values().chartBlockLimit());
+				EchoConfig.values().chartBlockLimit());
 	}
 
 	public boolean send(ServerPlayer viewer, BlockPos position, EchoChartData data) {

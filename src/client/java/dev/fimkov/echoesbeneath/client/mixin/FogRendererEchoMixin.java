@@ -1,5 +1,6 @@
 package dev.fimkov.echoesbeneath.client.mixin;
 
+import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.fimkov.echoesbeneath.client.render.EchoDarkness;
 import net.minecraft.client.Camera;
@@ -33,7 +34,7 @@ public abstract class FogRendererEchoMixin {
 				EchoDarkness.regionFogStart(), darkness));
 		RenderSystem.setShaderFogEnd(blend(RenderSystem.getShaderFogEnd(),
 				EchoDarkness.regionFogEnd(), darkness));
-		RenderSystem.setShaderFogShape(com.mojang.blaze3d.shaders.FogShape.SPHERE);
+		RenderSystem.setShaderFogShape(FogShape.SPHERE);
 	}
 
 	@Inject(method = "setupColor", at = @At("TAIL"))

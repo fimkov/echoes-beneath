@@ -3,8 +3,10 @@ package dev.fimkov.echoesbeneath.block;
 import com.mojang.serialization.MapCodec;
 import dev.fimkov.echoesbeneath.EchoTranslations;
 import dev.fimkov.echoesbeneath.blockentity.EchoChartBlockEntity;
+import dev.fimkov.echoesbeneath.chart.EchoChartLook;
 import dev.fimkov.echoesbeneath.menu.ChartLookMenu;
 import dev.fimkov.echoesbeneath.platform.EchoPlatforms;
+import dev.fimkov.echoesbeneath.registry.EchoBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,13 +20,17 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,10 +58,10 @@ public class EchoChartBlock extends BaseEntityBlock {
 
 	@Nullable
 	@Override
-	public <T extends BlockEntity> net.minecraft.world.level.block.entity.BlockEntityTicker<T> getTicker(
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
 			Level level, BlockState state,
-			net.minecraft.world.level.block.entity.BlockEntityType<T> type) {
-		return createTickerHelper(type, dev.fimkov.echoesbeneath.registry.EchoBlockEntities.ECHO_CHART,
+			BlockEntityType<T> type) {
+		return createTickerHelper(type, EchoBlockEntities.ECHO_CHART,
 				level.isClientSide() ? EchoChartBlockEntity::clientTick : EchoChartBlockEntity::serverTick);
 	}
 
@@ -73,13 +79,13 @@ public class EchoChartBlock extends BaseEntityBlock {
 	private static int sizeAt(BlockGetter level, BlockPos position) {
 		return level.getBlockEntity(position) instanceof EchoChartBlockEntity chart
 				? Math.clamp(chart.look().size(), 0, SHAPES.length - 1)
-				: dev.fimkov.echoesbeneath.chart.EchoChartLook.SIZE_MEDIUM;
+				: EchoChartLook.SIZE_MEDIUM;
 	}
 
 	@Override
 	protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos position,
 			CollisionContext context) {
-		return net.minecraft.world.phys.shapes.Shapes.empty();
+		return Shapes.empty();
 	}
 
 	@Override
@@ -100,7 +106,7 @@ public class EchoChartBlock extends BaseEntityBlock {
 	}
 
 	@Override
-	public ItemStack getCloneItemStack(net.minecraft.world.level.LevelReader level, BlockPos position,
+	public ItemStack getCloneItemStack(LevelReader level, BlockPos position,
 			BlockState state) {
 		return level.getBlockEntity(position) instanceof EchoChartBlockEntity chart
 				? chart.asItem()

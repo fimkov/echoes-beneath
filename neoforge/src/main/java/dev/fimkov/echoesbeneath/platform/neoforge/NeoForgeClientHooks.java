@@ -3,14 +3,19 @@ package dev.fimkov.echoesbeneath.platform.neoforge;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.fimkov.echoesbeneath.client.platform.EchoClientHooks;
 import dev.fimkov.echoesbeneath.client.platform.EchoRenderContext;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -18,34 +23,35 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.NeoForge;
-
-import java.util.function.Consumer;
 
 public final class NeoForgeClientHooks implements EchoClientHooks {
 	private final NeoForgeNetwork network;
 	private final IEventBus bus = NeoForge.EVENT_BUS;
-	private final java.util.List<net.minecraft.client.KeyMapping> pendingKeys =
-			new java.util.ArrayList<>();
-	private final java.util.List<BlockEntityBinding<?>> blockEntityRenderers =
-			new java.util.ArrayList<>();
+	private final List<KeyMapping> pendingKeys =
+			new ArrayList<>();
+	private final List<BlockEntityBinding<?>> blockEntityRenderers =
+			new ArrayList<>();
 
-	private record BlockEntityBinding<T extends net.minecraft.world.level.block.entity.BlockEntity>(
-			net.minecraft.world.level.block.entity.BlockEntityType<T> type,
-			net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider<T> provider) {
+	private record BlockEntityBinding<T extends BlockEntity>(
+			BlockEntityType<T> type,
+			BlockEntityRendererProvider<T> provider) {
 		@SuppressWarnings("unchecked")
-		void bind(net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
+		void bind(EntityRenderersEvent.RegisterRenderers event) {
 			event.registerBlockEntityRenderer(type, provider);
 		}
 	}
 
 	public void bindBlockEntityRenderers(
-			net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
+			EntityRenderersEvent.RegisterRenderers event) {
 		for (BlockEntityBinding<?> binding : blockEntityRenderers) {
 			binding.bind(event);
 		}
@@ -62,15 +68,15 @@ public final class NeoForgeClientHooks implements EchoClientHooks {
 	}
 
 	@Override
-	public <T extends net.minecraft.world.level.block.entity.BlockEntity> void registerBlockEntityRenderer(
-			net.minecraft.world.level.block.entity.BlockEntityType<T> type,
-			net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider<T> provider) {
+	public <T extends BlockEntity> void registerBlockEntityRenderer(
+			BlockEntityType<T> type,
+			BlockEntityRendererProvider<T> provider) {
 		blockEntityRenderers.add(new BlockEntityBinding<>(type, provider));
 	}
 
 	@Override
 	public void onClientTick(Runnable handler) {
-		bus.addListener(net.neoforged.neoforge.client.event.ClientTickEvent.Post.class,
+		bus.addListener(ClientTickEvent.Post.class,
 				event -> handler.run());
 	}
 
@@ -92,12 +98,12 @@ public final class NeoForgeClientHooks implements EchoClientHooks {
 	}
 
 	@Override
-	public void registerKey(net.minecraft.client.KeyMapping mapping) {
+	public void registerKey(KeyMapping mapping) {
 		pendingKeys.add(mapping);
 	}
 
-	public void bindKeys(net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent event) {
-		for (net.minecraft.client.KeyMapping mapping : pendingKeys) {
+	public void bindKeys(RegisterKeyMappingsEvent event) {
+		for (KeyMapping mapping : pendingKeys) {
 			event.register(mapping);
 		}
 	}
