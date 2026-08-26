@@ -216,15 +216,20 @@ a timer on a world object.
 
 ## Sound
 
-The mod's twelve sounds are built out of Minecraft's own recordings rather than synthesised: the
-amethyst shimmer, a sculk sensor waking and stopping, a shrieker, a catalyst settling, deepslate being
-placed, an enchanting table taking. Each one is pitched, reversed, layered and enveloped into
-something new, which is the method the game's own foley was made with — its spider is a fire hose
-pitched around, its grass is a VHS tape.
+The mod's twelve sounds are built from Minecraft's own recordings rather than synthesised, and then
+worked on hard enough that you should not be able to name the source. Deepslate being placed, dragged
+down an octave and stretched to four times its length, becomes the bed the lens lifts off. A shrieker
+nineteen semitones down and saturated is the floor going out at the start of playback. Amethyst
+breaking, chopped into thirty five millisecond grains and scattered across six semitones, is the grit
+inside it.
 
-Keeping the source material vanilla keeps the result vanilla. Measured against the game's amethyst and
-sculk sounds, which carry under one per cent of their energy below a hundred and ten hertz, every
-sound here measures the same. Nothing reaches for a subwoofer the game never uses.
+That is the method the game's own foley was made with: its grass is a VHS tape being handled, its
+spider is a fire hose pitched around until it spoke. Recorded material put to unrelated use, changed
+until it is something else.
+
+Keeping the source material vanilla keeps the result sitting in the same band as the game. Measured
+across whole files, Minecraft's amethyst and sculk sounds carry between half a per cent and four per
+cent of their energy below a hundred and ten hertz; every sound here measures inside that range.
 
 ## Configuration
 
