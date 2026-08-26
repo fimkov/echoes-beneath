@@ -17,6 +17,11 @@ public class EchoChartBlockRenderer implements BlockEntityRenderer<EchoChartBloc
 	private static final float BOB_PERIOD_TICKS = 120.0F;
 	private static final double BOB_HEIGHT = 0.045D;
 	private static final float DEGREES_PER_STEP = 360.0F / EchoChartBlockEntity.TURN_STEPS;
+	private static final float AURA_MARGIN = 0.06F;
+	private static final float AURA_NEAREST = 0.16F;
+	private static final float AURA_FARTHEST = 0.47F;
+	private static final float AURA_LOWEST = 0.02F;
+	private static final float AURA_HIGHEST = 0.99F;
 
 	public EchoChartBlockRenderer(BlockEntityRendererProvider.Context context) {
 	}
@@ -31,22 +36,29 @@ public class EchoChartBlockRenderer implements BlockEntityRenderer<EchoChartBloc
 		EchoChartLook look = chart.look();
 		float age = chart.age(partialTick);
 		float brightness = model == null ? 1.0F : model.brightness();
+		float scale = model == null ? look.modelScale() : look.modelScale() / model.widest();
+		float halfWide = model == null ? look.modelScale() * 0.5F
+				: Math.max(model.spanX(), model.spanZ()) * 0.5F * scale;
+		float halfTall = model == null ? look.modelScale() * 0.5F
+				: model.spanY() * 0.5F * scale;
+		double lift = MODEL_REST + (look.drifts() ? bob(age) : 0.0D);
 		poseStack.pushPose();
 		poseStack.translate(0.5D, 0.0D, 0.5D);
 		if (look.runs() || look.motes()) {
 			EchoChartAura.render(poseStack, consumers, age, look.motes(), look.runs(),
 					Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation(),
-					brightness);
+					brightness,
+					Mth.clamp(halfWide + AURA_MARGIN, AURA_NEAREST, AURA_FARTHEST),
+					Math.max(AURA_LOWEST, (float) lift - halfTall - AURA_MARGIN),
+					Math.min(AURA_HIGHEST, (float) lift + halfTall + AURA_MARGIN));
 		}
 		if (model == null || model.size() == 0) {
 			poseStack.popPose();
 			return;
 		}
-		double lift = MODEL_REST + (look.drifts() ? bob(age) : 0.0D);
 		poseStack.translate(0.0D, lift, 0.0D);
 		poseStack.mulPose(Axis.YP.rotationDegrees(
 				chart.turn() * DEGREES_PER_STEP + age * look.spinDegreesPerTick()));
-		float scale = look.modelScale() / model.widest();
 		poseStack.scale(scale, scale, scale);
 		poseStack.translate(-model.spanX() * 0.5F, -model.spanY() * 0.5F, -model.spanZ() * 0.5F);
 		EchoChartGeometry.emit(model, consumers, poseStack);
