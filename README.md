@@ -267,7 +267,7 @@ supported range are clamped and unreadable values fall back to the default.
 | Key | Default | Range |
 |---|---|---|
 | `recordingRadius` | 50 | 8–64 |
-| `recordingVerticalRadius` | 32 | 4–64 |
+| `recordingVerticalRadius` | 32 | 4–192 |
 | `maxRecordingSeconds` | 120 | 5–120 |
 | `entitySampleRate` | 5 | 1–20 |
 | `maxRecordedEntities` | 128 | 1–512 |
@@ -280,6 +280,11 @@ supported range are clamped and unreadable values fall back to the default.
 | `allowCharts` | true | boolean |
 | `chartBlockLimit` | 60000 | 1000–200000 |
 | `soundCarryBlocks` | 16 | 4–64 |
+
+`recordingVerticalRadius` is what decides how tall a chart can ever be. A memory only keeps that many
+blocks above and below the lens, so a sounding table can offer no more than that no matter where its
+handles are dragged. At 192 a recording covers bedrock to the build ceiling from anywhere in the world;
+the default of 32 is what keeps a memory file small and a recording cheap to take.
 
 `soundCarryBlocks` is the one worth knowing: it is how many blocks one unit of a sound's volume
 carries when a chart is worked out, so it decides how much of a place a recording maps.

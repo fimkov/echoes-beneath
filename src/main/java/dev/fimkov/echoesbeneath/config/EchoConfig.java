@@ -35,7 +35,7 @@ public final class EchoConfig {
 	private static final int MIN_RADIUS = 8;
 	private static final int MAX_RADIUS = 64;
 	private static final int MIN_VERTICAL_RADIUS = 4;
-	private static final int MAX_VERTICAL_RADIUS = 64;
+	private static final int MAX_VERTICAL_RADIUS = 192;
 	private static final int MIN_RECORDING_SECONDS = 5;
 	private static final int MAX_RECORDING_SECONDS = 120;
 	private static final int MIN_SAMPLE_RATE = 1;
