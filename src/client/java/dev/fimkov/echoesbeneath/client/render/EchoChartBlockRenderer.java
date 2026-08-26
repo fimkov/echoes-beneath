@@ -13,15 +13,10 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 
 public class EchoChartBlockRenderer implements BlockEntityRenderer<EchoChartBlockEntity> {
-	private static final double MODEL_REST = 0.55D;
 	private static final float BOB_PERIOD_TICKS = 120.0F;
 	private static final double BOB_HEIGHT = 0.045D;
 	private static final float DEGREES_PER_STEP = 360.0F / EchoChartBlockEntity.TURN_STEPS;
 	private static final float AURA_MARGIN = 0.06F;
-	private static final float AURA_NEAREST = 0.16F;
-	private static final float AURA_FARTHEST = 0.47F;
-	private static final float AURA_LOWEST = 0.02F;
-	private static final float AURA_HIGHEST = 0.99F;
 
 	public EchoChartBlockRenderer(BlockEntityRendererProvider.Context context) {
 	}
@@ -39,18 +34,16 @@ public class EchoChartBlockRenderer implements BlockEntityRenderer<EchoChartBloc
 		float scale = model == null ? look.modelScale() : look.modelScale() / model.widest();
 		float halfWide = model == null ? look.modelScale() * 0.5F
 				: Math.max(model.spanX(), model.spanZ()) * 0.5F * scale;
-		float halfTall = model == null ? look.modelScale() * 0.5F
-				: model.spanY() * 0.5F * scale;
-		double lift = MODEL_REST + (look.drifts() ? bob(age) : 0.0D);
+		double lift = look.restHeight() + (look.drifts() ? bob(age) * look.modelScale() : 0.0D);
 		poseStack.pushPose();
 		poseStack.translate(0.5D, 0.0D, 0.5D);
 		if (look.runs() || look.motes()) {
 			EchoChartAura.render(poseStack, consumers, age, look.motes(), look.runs(),
 					Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation(),
 					brightness,
-					Mth.clamp(halfWide + AURA_MARGIN, AURA_NEAREST, AURA_FARTHEST),
-					AURA_LOWEST,
-					Math.min(AURA_HIGHEST, (float) MODEL_REST + halfTall + AURA_MARGIN));
+					Math.min(look.boxReach(), halfWide + AURA_MARGIN),
+					look.boxFloor(),
+					look.boxCeiling());
 		}
 		if (model == null || model.size() == 0) {
 			poseStack.popPose();

@@ -72,9 +72,40 @@ public record EchoChartLook(boolean drifts, int spin, boolean motes, boolean run
 
 	public float modelScale() {
 		return switch (size) {
-			case SIZE_SMALL -> 0.42F;
-			case SIZE_LARGE -> 0.86F;
-			default -> 0.62F;
+			case SIZE_SMALL -> 0.30F;
+			case SIZE_LARGE -> 0.80F;
+			default -> 0.50F;
+		};
+	}
+
+	public float restHeight() {
+		return switch (size) {
+			case SIZE_SMALL -> 0.3125F;
+			case SIZE_LARGE -> 0.5F;
+			default -> 0.40625F;
+		};
+	}
+
+	public float boxFloor() {
+		return switch (size) {
+			case SIZE_SMALL -> 0.0625F;
+			default -> 0.0F;
+		};
+	}
+
+	public float boxCeiling() {
+		return switch (size) {
+			case SIZE_SMALL -> 0.5625F;
+			case SIZE_LARGE -> 1.0F;
+			default -> 0.8125F;
+		};
+	}
+
+	public float boxReach() {
+		return switch (size) {
+			case SIZE_SMALL -> 0.1875F;
+			case SIZE_LARGE -> 0.5F;
+			default -> 0.3125F;
 		};
 	}
 }

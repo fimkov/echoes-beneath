@@ -30,7 +30,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class EchoChartBlock extends BaseEntityBlock {
 	public static final MapCodec<EchoChartBlock> CODEC = simpleCodec(EchoChartBlock::new);
-	private static final VoxelShape SHAPE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 15.0D, 14.0D);
+	private static final VoxelShape[] SHAPES = {
+			Block.box(5.0D, 1.0D, 5.0D, 11.0D, 9.0D, 11.0D),
+			Block.box(3.0D, 0.0D, 3.0D, 13.0D, 13.0D, 13.0D),
+			Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D)};
 
 	public EchoChartBlock(Properties properties) {
 		super(properties);
@@ -64,7 +67,13 @@ public class EchoChartBlock extends BaseEntityBlock {
 	@Override
 	protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos position,
 			CollisionContext context) {
-		return SHAPE;
+		return SHAPES[sizeAt(level, position)];
+	}
+
+	private static int sizeAt(BlockGetter level, BlockPos position) {
+		return level.getBlockEntity(position) instanceof EchoChartBlockEntity chart
+				? Math.clamp(chart.look().size(), 0, SHAPES.length - 1)
+				: dev.fimkov.echoesbeneath.chart.EchoChartLook.SIZE_MEDIUM;
 	}
 
 	@Override
