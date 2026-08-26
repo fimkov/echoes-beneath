@@ -27,7 +27,7 @@ config = "echoes_beneath.client.mixins.json"
 [[dependencies.echoes_beneath]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.1.0,)"
+versionRange = "[21.1.219,)"
 ordering = "NONE"
 side = "BOTH"
 

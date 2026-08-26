@@ -17,12 +17,13 @@ out of the sound that reached it and hands it back as an Echo Chart you can set 
 | | Fabric | NeoForge |
 |---|---|---|
 | Minecraft | 1.21.1 | 1.21.1 |
-| Loader | Fabric Loader 0.19.3 or newer | NeoForge 21.1.0 or newer |
+| Loader | Fabric Loader 0.19.3 or newer | NeoForge 21.1.219 or newer |
 | Also needed | Fabric API 0.116.15+1.21.1 | none |
 | Java | 21 | 21 |
 
 Runs on the client and on a dedicated server, and is required on both: the server owns recording and
-playback, the client owns everything drawn and heard. Tested alongside Sodium 0.6.0.
+playback, the client owns everything drawn and heard. Tested alongside Sodium: 0.6.0 on Fabric, 0.8.13-beta.2 on NeoForge. The NeoForge build of
+Sodium carries the Forgified Fabric API inside it, which is what sets the NeoForge floor at 21.1.219.
 
 ## Installation
 
