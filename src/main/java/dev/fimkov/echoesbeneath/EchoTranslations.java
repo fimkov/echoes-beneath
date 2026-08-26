@@ -10,6 +10,10 @@ public final class EchoTranslations {
 	public static final String TOOLTIP_FULL = "tooltip.echoes_beneath.full";
 	public static final String TOOLTIP_RESONATES = "tooltip.echoes_beneath.resonates";
 	public static final String TOOLTIP_DURATION = "tooltip.echoes_beneath.duration";
+	public static final String TOOLTIP_CHART_BLANK = "tooltip.echoes_beneath.chart_blank";
+	public static final String TOOLTIP_CHART_PLACE = "tooltip.echoes_beneath.chart_place";
+	public static final String TOOLTIP_CHART_SLICE = "tooltip.echoes_beneath.chart_slice";
+	public static final String TOOLTIP_CHART_SOUNDED = "tooltip.echoes_beneath.chart_sounded";
 	public static final String TOOLTIP_TUNING = "tooltip.echoes_beneath.tuning";
 
 	public static final String MESSAGE_NO_MORE = "message.echoes_beneath.no_more";

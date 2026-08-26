@@ -11,5 +11,6 @@ public final class EchoNetworkPayloads {
 		EchoPlatforms.network().serverToClient(PlaybackDataPayload.TYPE, PlaybackDataPayload.STREAM_CODEC);
 		EchoPlatforms.network().serverToClient(PlaybackTickPayload.TYPE, PlaybackTickPayload.STREAM_CODEC);
 		EchoPlatforms.network().serverToClient(PlaybackStopPayload.TYPE, PlaybackStopPayload.STREAM_CODEC);
+		EchoPlatforms.network().serverToClient(ChartShapePayload.TYPE, ChartShapePayload.STREAM_CODEC);
 	}
 }

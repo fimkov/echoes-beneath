@@ -5,6 +5,7 @@ import dev.fimkov.echoesbeneath.platform.EchoServerHooks;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
+import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
@@ -59,6 +60,11 @@ public final class FabricServerHooks implements EchoServerHooks {
 	@Override
 	public void onEntityLoad(BiConsumer<Entity, ServerLevel> handler) {
 		ServerEntityEvents.ENTITY_LOAD.register(handler::accept);
+	}
+
+	@Override
+	public void onStartTracking(BiConsumer<Entity, ServerPlayer> handler) {
+		EntityTrackingEvents.START_TRACKING.register(handler::accept);
 	}
 
 	@Override

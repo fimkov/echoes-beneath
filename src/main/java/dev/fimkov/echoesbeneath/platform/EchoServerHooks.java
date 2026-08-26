@@ -52,6 +52,8 @@ public interface EchoServerHooks {
 
 	void onEntityChangedLevel(BiConsumer<Entity, ServerLevel> handler);
 
+	void onStartTracking(BiConsumer<Entity, ServerPlayer> handler);
+
 	void onPlayerDisconnect(Consumer<ServerPlayer> handler);
 
 	void onCommandRegistration(Consumer<CommandDispatcher<CommandSourceStack>> handler);

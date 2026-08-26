@@ -3,6 +3,8 @@ package dev.fimkov.echoesbeneath.client.playback;
 import dev.fimkov.echoesbeneath.client.platform.EchoClientPlatforms;
 import dev.fimkov.echoesbeneath.client.render.EchoDarkness;
 import dev.fimkov.echoesbeneath.network.PlaybackDataPayload;
+import dev.fimkov.echoesbeneath.client.chart.ClientChartShapes;
+import dev.fimkov.echoesbeneath.network.ChartShapePayload;
 import dev.fimkov.echoesbeneath.network.PlaybackStartPayload;
 import dev.fimkov.echoesbeneath.network.PlaybackStopPayload;
 import dev.fimkov.echoesbeneath.network.PlaybackTickPayload;
@@ -29,7 +31,10 @@ public final class EchoPlaybackReceiver {
 		EchoClientPlatforms.get().receive(PlaybackStopPayload.TYPE,
 				payload -> ClientPlaybackManager.instance().onStop(payload));
 
+		EchoClientPlatforms.get().receive(ChartShapePayload.TYPE, ClientChartShapes::accept);
+
 		EchoClientPlatforms.get().onDisconnect(() -> {
+			ClientChartShapes.forget();
 			ClientPlaybackManager.instance().clearAll();
 			EchoDarkness.clearFrameState();
 		});

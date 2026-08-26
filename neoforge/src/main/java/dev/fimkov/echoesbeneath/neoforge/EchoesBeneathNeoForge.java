@@ -66,9 +66,12 @@ public final class EchoesBeneathNeoForge {
 		hooks.onFrameStart(EchoPlaybackRenderer::frameStart);
 		hooks.onAfterEntities(EchoPlaybackRenderer::afterEntities);
 		hooks.onFrameEnd(EchoPlaybackRenderer::frameEnd);
-		modBus.addListener(EntityRenderersEvent.RegisterRenderers.class, event ->
-				event.registerEntityRenderer(EchoEntities.ECHO_LENS,
-						dev.fimkov.echoesbeneath.client.render.EchoLensEntityRenderer::new));
+		modBus.addListener(EntityRenderersEvent.RegisterRenderers.class, event -> {
+			event.registerEntityRenderer(EchoEntities.ECHO_LENS,
+					dev.fimkov.echoesbeneath.client.render.EchoLensEntityRenderer::new);
+			event.registerEntityRenderer(EchoEntities.ECHO_CHART,
+					dev.fimkov.echoesbeneath.client.render.EchoChartRenderer::new);
+		});
 		modBus.addListener(net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent.class,
 				hooks::bindKeys);
 		modBus.addListener(RegisterMenuScreensEvent.class, event ->

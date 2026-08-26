@@ -1,5 +1,6 @@
 package dev.fimkov.echoesbeneath.runtime;
 
+import dev.fimkov.echoesbeneath.chart.EchoChartService;
 import dev.fimkov.echoesbeneath.memory.storage.EchoMemoryStorage;
 import dev.fimkov.echoesbeneath.playback.EchoPlaybackManager;
 import dev.fimkov.echoesbeneath.playback.suppression.HostileMobSuppressionManager;
@@ -11,6 +12,7 @@ public final class EchoServerState {
 
 	private final MinecraftServer server;
 	private final EchoMemoryStorage storage;
+	private final EchoChartService charts;
 	private final HostileMobSuppressionManager suppression;
 	private final EchoRecordingManager recordings;
 	private final EchoPlaybackManager playbacks;
@@ -18,6 +20,7 @@ public final class EchoServerState {
 	private EchoServerState(MinecraftServer server) {
 		this.server = server;
 		this.storage = EchoMemoryStorage.forServer(server);
+		this.charts = new EchoChartService(storage);
 		this.suppression = new HostileMobSuppressionManager(server);
 		this.recordings = new EchoRecordingManager(this);
 		this.playbacks = new EchoPlaybackManager(this);
@@ -39,6 +42,10 @@ public final class EchoServerState {
 
 	public MinecraftServer server() {
 		return server;
+	}
+
+	public EchoChartService charts() {
+		return charts;
 	}
 
 	public EchoMemoryStorage storage() {
