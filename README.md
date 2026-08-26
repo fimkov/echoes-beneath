@@ -183,6 +183,36 @@ passing wave happens to trace. Each level of vision lifts that darkness, so a fu
 recording into a survey of everything within its radius — caves, voids, buried rooms. Place a lens, make
 some noise, walk away, and read the ground on the replay.
 
+## The Sounding Table
+
+The Resonance Table tunes a lens. The Sounding Table reads one.
+
+Put a lens on it and its memories appear down the left, each with its length. Pick one and the stage
+turns a model of the place it kept — but only the part of it a sound ever reached. The flood starts at
+every sound the recording holds, spends one block of carry per step, and travels through air alone. A
+wall behind stone never lights up. A sealed room stays dark. A place where nothing made a noise gives
+back nothing at all, which is the whole point: the lens draws what it heard, not what was there.
+
+Louder sounds carry further, sixteen blocks per unit of volume, so a fight maps a cavern and a footstep
+maps a corridor.
+
+Two handles on the right set the height window, anywhere between the world floor and the build ceiling.
+The lit band behind them shows how much of that range the recording actually covers. Drag inside the
+stage to turn the model and tilt it.
+
+**Drawing a memory out empties its slot.** That is the only way a lens ever gets a slot back, and it is
+the reason the table is worth building: a lens holds at most three memories and a sealed memory can
+never be cleared any other way. What you get is an Echo Chart.
+
+Place a chart anywhere and it hovers and turns, drawn as the same model. Use it to step it a sixteenth
+of a turn and hold it there; after a full circle it drifts again. Sneak and use it, or hit it, to take
+it back.
+
+A chart is only as bright as the lens that recorded it could see. A memory taken at no vision reads as
+a faint sketch; one taken at full vision reads as a survey.
+
+Craft: a Resonance Table above three deepslate tiles, a map above it, an amethyst shard on each side.
+
 ## Controls
 
 | Action | Input |
@@ -191,8 +221,10 @@ some noise, walk away, and read the ground on the replay.
 | End recording early | Right-click the hovering lens (owner only) |
 | Start playback | Right-click while standing inside a matching region |
 | End playback early | Right-click the hovering lens (owner only) |
+| Turn a placed chart | Right-click it |
+| Take a placed chart back | Sneak and right-click it, or hit it |
 
-There is no GUI, and by design there is nothing to configure per-lens.
+The lens itself has no GUI. Everything you set about it, you set at one of the two tables.
 
 While a lens is deployed it gives off sculk particles, and both the particle count and its spin speed rise
 as the recording or the playback fills. There is no dial and no counter — the same way vanilla never puts
