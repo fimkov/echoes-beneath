@@ -25,16 +25,14 @@ public final class EchoChartAura {
 	private static final int RUN_GREEN = 0xC5;
 	private static final int RUN_BLUE = 0xCE;
 
-	private static final int MOTE_COUNT = 15;
-	private static final float MOTE_NEAR = 0.33F;
-	private static final float MOTE_FAR = 0.54F;
-	private static final float MOTE_SMALL = 0.026F;
-	private static final float MOTE_LARGE = 0.062F;
-	private static final float MOTE_TURN_PER_TICK = 0.9F;
-	private static final float MOTE_LIFT = 0.94F;
-	private static final float MOTE_SWAY = 0.055F;
-	private static final float SWAY_PER_TICK = 0.031F;
-	private static final int MOTE_ALPHA = 225;
+	private static final int MOTES_PER_RUN = 7;
+	private static final float COIL_NEAR = 0.042F;
+	private static final float COIL_FAR = 0.085F;
+	private static final float MOTE_SMALL = 0.009F;
+	private static final float MOTE_LARGE = 0.019F;
+	private static final float COILS_PER_RUN = 3.4F;
+	private static final float CLIMB_PER_TICK = 0.0042F;
+	private static final int MOTE_ALPHA = 235;
 	private static final int[] WARDEN = {0x3AF0FA, 0x1BC5CE, 0x0F8A94, 0x6C4CA0};
 
 	private static final float[] ANGLE = new float[RUN_COUNT];
@@ -119,29 +117,42 @@ public final class EchoChartAura {
 
 	private static void motes(PoseStack poseStack, VertexConsumer consumer, float age,
 			Quaternionf camera, float brightness) {
-		for (int index = 0; index < MOTE_COUNT; index++) {
-			float reach = MOTE_NEAR + (MOTE_FAR - MOTE_NEAR) * scatter(index, 71);
-			float speed = 0.55F + scatter(index, 83) * 0.9F;
-			float turn = (index * GOLDEN_TURN
-					+ age * MOTE_TURN_PER_TICK * speed * Mth.DEG_TO_RAD) % Mth.TWO_PI;
-			float lift = MOTE_LIFT * scatter(index, 97)
-					+ Mth.sin((age * SWAY_PER_TICK + scatter(index, 101) * Mth.TWO_PI)) * MOTE_SWAY;
-			float size = MOTE_SMALL + (MOTE_LARGE - MOTE_SMALL) * scatter(index, 113);
-			int colour = WARDEN[index % WARDEN.length];
-			int alpha = Math.round(MOTE_ALPHA * brightness
-					* (0.45F + 0.55F * (Mth.sin(age * 0.045F + index) * 0.5F + 0.5F)));
-			poseStack.pushPose();
-			poseStack.translate(Mth.cos(turn) * reach, lift, Mth.sin(turn) * reach);
-			poseStack.mulPose(camera);
-			Matrix4f pose = poseStack.last().pose();
-			quad(consumer, pose,
-					-size, -size, 0.0F, size, -size, 0.0F, size, size, 0.0F, -size, size, 0.0F,
-					(colour >> 16) & 0xFF, (colour >> 8) & 0xFF, colour & 0xFF, alpha, alpha);
-			quad(consumer, pose,
-					-size, size, 0.0F, size, size, 0.0F, size, -size, 0.0F, -size, -size, 0.0F,
-					(colour >> 16) & 0xFF, (colour >> 8) & 0xFF, colour & 0xFF, alpha, alpha);
-			poseStack.popPose();
+		for (int run = 0; run < RUN_COUNT; run++) {
+			float runX = Mth.cos(ANGLE[run]) * REACH[run];
+			float runZ = Mth.sin(ANGLE[run]) * REACH[run];
+			for (int step = 0; step < MOTES_PER_RUN; step++) {
+				int index = run * MOTES_PER_RUN + step;
+				float climb = wrap(step / (float) MOTES_PER_RUN + scatter(index, 71) * 0.14F
+						+ age * CLIMB_PER_TICK * (0.7F + scatter(index, 83) * 0.7F));
+				float coil = COIL_NEAR + (COIL_FAR - COIL_NEAR) * scatter(index, 89);
+				float turn = climb * COILS_PER_RUN * Mth.TWO_PI + scatter(index, 97) * Mth.TWO_PI;
+				float size = MOTE_SMALL + (MOTE_LARGE - MOTE_SMALL) * scatter(index, 113);
+				int colour = WARDEN[index % WARDEN.length];
+				int alpha = Math.round(MOTE_ALPHA * brightness
+						* (float) Math.pow(1.0F - climb, FADE_POWER));
+				if (alpha <= 2) {
+					continue;
+				}
+				poseStack.pushPose();
+				poseStack.translate(runX + Mth.cos(turn) * coil, climb * TOP[run],
+						runZ + Mth.sin(turn) * coil);
+				poseStack.mulPose(camera);
+				Matrix4f pose = poseStack.last().pose();
+				facing(consumer, pose, size, colour, alpha);
+				poseStack.popPose();
+			}
 		}
+	}
+
+	private static void facing(VertexConsumer consumer, Matrix4f pose, float size, int colour,
+			int alpha) {
+		int red = (colour >> 16) & 0xFF;
+		int green = (colour >> 8) & 0xFF;
+		int blue = colour & 0xFF;
+		quad(consumer, pose, -size, -size, 0.0F, size, -size, 0.0F, size, size, 0.0F,
+				-size, size, 0.0F, red, green, blue, alpha, alpha);
+		quad(consumer, pose, -size, size, 0.0F, size, size, 0.0F, size, -size, 0.0F,
+				-size, -size, 0.0F, red, green, blue, alpha, alpha);
 	}
 
 	private static void quad(VertexConsumer consumer, Matrix4f pose,
