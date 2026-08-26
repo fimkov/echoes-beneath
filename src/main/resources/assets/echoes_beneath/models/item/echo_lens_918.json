@@ -1,9 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "echoes_beneath:item/echo_lens_shell_1",
-    "layer1": "echoes_beneath:item/echo_lens_core_3_3",
-    "layer2": "echoes_beneath:item/echo_lens_eyes_2",
-    "layer3": "echoes_beneath:item/echo_lens_ears_3"
-  }
-}

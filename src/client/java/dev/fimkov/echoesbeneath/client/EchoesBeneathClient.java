@@ -1,6 +1,5 @@
 package dev.fimkov.echoesbeneath.client;
 
-import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
 import dev.fimkov.echoesbeneath.client.input.EchoKeys;
 import dev.fimkov.echoesbeneath.client.platform.EchoClientPlatforms;
@@ -12,19 +11,14 @@ import dev.fimkov.echoesbeneath.client.render.EchoPlaybackRenderer;
 import dev.fimkov.echoesbeneath.client.screen.ChartLookScreen;
 import dev.fimkov.echoesbeneath.client.screen.ResonanceTableScreen;
 import dev.fimkov.echoesbeneath.client.screen.SoundingTableScreen;
-import dev.fimkov.echoesbeneath.item.EchoLensAppearance;
-import dev.fimkov.echoesbeneath.item.EchoLensStacks;
 import dev.fimkov.echoesbeneath.item.EchoLensTooltipContext;
-import dev.fimkov.echoesbeneath.item.EchoLensUpgrades;
 import dev.fimkov.echoesbeneath.registry.EchoBlockEntities;
 import dev.fimkov.echoesbeneath.registry.EchoEntities;
-import dev.fimkov.echoesbeneath.registry.EchoItems;
 import dev.fimkov.echoesbeneath.registry.EchoMenus;
 import java.util.Optional;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.item.ItemProperties;
 
 public final class EchoesBeneathClient implements ClientModInitializer {
 	@Override
@@ -43,7 +37,6 @@ public final class EchoesBeneathClient implements ClientModInitializer {
 		EchoClientPlatforms.get().onFrameStart(EchoPlaybackRenderer::frameStart);
 		EchoClientPlatforms.get().onAfterEntities(EchoPlaybackRenderer::afterEntities);
 		EchoClientPlatforms.get().onFrameEnd(EchoPlaybackRenderer::frameEnd);
-		registerLensAppearance();
 		EchoClientPlatforms.get().registerScreen(
 				EchoMenus.RESONANCE_TABLE,
 				ResonanceTableScreen::new);
@@ -53,15 +46,6 @@ public final class EchoesBeneathClient implements ClientModInitializer {
 		EchoClientPlatforms.get().registerScreen(
 				EchoMenus.CHART_LOOK,
 				ChartLookScreen::new);
-	}
-
-	private static void registerLensAppearance() {
-		ItemProperties.register(EchoItems.ECHO_LENS, EchoesBeneath.id("tuning"), (stack, level, holder, seed) -> {
-			EchoLensUpgrades upgrades = EchoLensStacks.upgrades(stack);
-			return EchoLensAppearance.tuningValue(upgrades.vision(), upgrades.memorySlots(),
-					EchoLensStacks.references(stack).filledSlots(), upgrades.radius(),
-					upgrades.sensitivity());
-		});
 	}
 
 	private static Optional<EchoLensTooltipContext.TooltipViewer> localViewer() {
