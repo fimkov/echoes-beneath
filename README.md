@@ -60,7 +60,7 @@ Checks:
 ./gradlew runGameTest
 ```
 
-Running the game, with Sodium already on the classpath for the Fabric client:
+Running the game:
 
 ```bash
 ./gradlew runClient
@@ -68,10 +68,4 @@ Running the game, with Sodium already on the classpath for the Fabric client:
 
 ```bash
 ./gradlew :neoforge:runClient
-```
-
-Regenerating the recipes, advancements and loot tables under `src/main/generated`:
-
-```bash
-./gradlew runDatagen
 ```
