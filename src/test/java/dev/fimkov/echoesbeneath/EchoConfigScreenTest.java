@@ -2,7 +2,7 @@ package dev.fimkov.echoesbeneath;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.fimkov.echoesbeneath.config.EchoConfigValues;
+import dev.fimkov.echoesbeneath.client.config.EchoClientConfigValues;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -123,7 +123,8 @@ class EchoConfigScreenTest {
 	@Test
 	@DisplayName("the screen covers every client setting the file holds")
 	void screenCoversTheWholeFile() {
-		assertTrue(OPTIONS.length == EchoConfigValues.class.getRecordComponents().length - 5,
-				"the screen shows " + OPTIONS.length + " settings");
+		assertTrue(OPTIONS.length == EchoClientConfigValues.class.getRecordComponents().length,
+				"the screen shows " + OPTIONS.length + " of "
+						+ EchoClientConfigValues.class.getRecordComponents().length + " client settings");
 	}
 }

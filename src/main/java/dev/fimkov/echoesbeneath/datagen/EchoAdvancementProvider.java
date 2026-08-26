@@ -156,12 +156,6 @@ public class EchoAdvancementProvider extends FabricAdvancementProvider {
 						MinMaxBounds.Ints.atLeast(EchoLensUpgrades.MAX_VISION)))
 				.save(consumer, EchoesBeneath.id("echolocation").toString());
 
-		step(Items.BRICKS, "put_it_back", AdvancementType.GOAL)
-				.parent(firstPlayback)
-				.addCriterion("mended", EchoCriteria.MEMORY_MENDED.createCriterion(
-						new dev.fimkov.echoesbeneath.advancement.MemoryMendedTrigger.Instance(Optional.empty())))
-				.save(consumer, EchoesBeneath.id("put_it_back").toString());
-
 		step(Items.AMETHYST_CLUSTER, "tuner", AdvancementType.CHALLENGE)
 				.parent(firstUpgrade)
 				.addCriterion("maxed_everything", tuned(MinMaxBounds.Ints.ANY, Optional.of(true)))

@@ -24,8 +24,6 @@ public final class EchoConfig {
 	private static final boolean DEFAULT_ALLOW_OVERLAPPING_PLAYBACK = false;
 	private static final boolean DEFAULT_SUPPRESS_HOSTILE_MOBS = true;
 	private static final boolean DEFAULT_DISABLE_BLOCK_INTERACTION_DURING_PLAYBACK = true;
-	private static final boolean DEFAULT_ALLOW_MEMORY_MENDING = true;
-	private static final int DEFAULT_MENDING_EXPERIENCE_COST = 2;
 
 	private static final int MIN_RADIUS = 8;
 	private static final int MAX_RADIUS = 64;
@@ -43,8 +41,6 @@ public final class EchoConfig {
 	private static final int MAX_PARTICLE_EVENTS = 65536;
 	private static final int MIN_CONCURRENT_WAVES = 4;
 	private static final int MAX_CONCURRENT_WAVES = 256;
-	private static final int MIN_MENDING_COST = 0;
-	private static final int MAX_MENDING_COST = 64;
 
 	private static volatile EchoConfigValues values = defaults();
 
@@ -67,9 +63,7 @@ public final class EchoConfig {
 				DEFAULT_MAX_CONCURRENT_SOUND_WAVES,
 				DEFAULT_ALLOW_OVERLAPPING_PLAYBACK,
 				DEFAULT_SUPPRESS_HOSTILE_MOBS,
-				DEFAULT_DISABLE_BLOCK_INTERACTION_DURING_PLAYBACK,
-				DEFAULT_ALLOW_MEMORY_MENDING,
-				DEFAULT_MENDING_EXPERIENCE_COST);
+				DEFAULT_DISABLE_BLOCK_INTERACTION_DURING_PLAYBACK);
 	}
 
 	public static void load() {
@@ -98,9 +92,7 @@ public final class EchoConfig {
 				clampInt(properties, "maxConcurrentSoundWaves", DEFAULT_MAX_CONCURRENT_SOUND_WAVES, MIN_CONCURRENT_WAVES, MAX_CONCURRENT_WAVES),
 				readBoolean(properties, "allowOverlappingPlayback", DEFAULT_ALLOW_OVERLAPPING_PLAYBACK),
 				readBoolean(properties, "suppressHostileMobs", DEFAULT_SUPPRESS_HOSTILE_MOBS),
-				readBoolean(properties, "disableBlockInteractionDuringPlayback", DEFAULT_DISABLE_BLOCK_INTERACTION_DURING_PLAYBACK),
-				readBoolean(properties, "allowMemoryMending", DEFAULT_ALLOW_MEMORY_MENDING),
-				clampInt(properties, "mendingExperienceCost", DEFAULT_MENDING_EXPERIENCE_COST, MIN_MENDING_COST, MAX_MENDING_COST));
+				readBoolean(properties, "disableBlockInteractionDuringPlayback", DEFAULT_DISABLE_BLOCK_INTERACTION_DURING_PLAYBACK));
 	}
 
 	private static void write(Path path) {
@@ -117,8 +109,6 @@ public final class EchoConfig {
 		out.setProperty("allowOverlappingPlayback", Boolean.toString(current.allowOverlappingPlayback()));
 		out.setProperty("suppressHostileMobs", Boolean.toString(current.suppressHostileMobs()));
 		out.setProperty("disableBlockInteractionDuringPlayback", Boolean.toString(current.disableBlockInteractionDuringPlayback()));
-		out.setProperty("allowMemoryMending", Boolean.toString(current.allowMemoryMending()));
-		out.setProperty("mendingExperienceCost", Integer.toString(current.mendingExperienceCost()));
 		try {
 			Files.createDirectories(path.getParent());
 			try (OutputStream stream = Files.newOutputStream(path)) {

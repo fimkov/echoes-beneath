@@ -19,8 +19,6 @@ public final class EchoTranslations {
 	public static final String MESSAGE_PLAYBACK_BLOCKED_INTERACTION = "message.echoes_beneath.playback_blocked_interaction";
 	public static final String MESSAGE_MEMORY_CORRUPT = "message.echoes_beneath.memory_corrupt";
 	public static final String MESSAGE_LENS_RETURNED_TO_GROUND = "message.echoes_beneath.lens_returned_to_ground";
-	public static final String MESSAGE_MENDING_MISSING = "message.echoes_beneath.mending_missing";
-	public static final String MESSAGE_MENDING_NO_EXPERIENCE = "message.echoes_beneath.mending_no_experience";
 
 	public static final String COMMAND_STATUS_HEADER = "command.echoes_beneath.status_header";
 	public static final String COMMAND_STATUS_ENTRY = "command.echoes_beneath.status_entry";

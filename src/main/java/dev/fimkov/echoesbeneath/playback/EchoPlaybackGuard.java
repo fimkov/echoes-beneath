@@ -21,16 +21,8 @@ public final class EchoPlaybackGuard {
 		EchoPlatforms.server().guardBlockBreak((level, player, position) ->
 				!isBlocked(level, player, position));
 
-		EchoPlatforms.server().guardUseBlock((player, level, hand, hitResult) -> {
-			if (level instanceof ServerLevel serverLevel && player instanceof ServerPlayer serverPlayer
-					&& player.isShiftKeyDown()) {
-				BlockPos target = hitResult.getBlockPos().relative(hitResult.getDirection());
-				if (EchoMending.tryMend(serverLevel, serverPlayer, target, hand)) {
-					return false;
-				}
-			}
-			return !isBlocked(level, player, hitResult.getBlockPos());
-		});
+		EchoPlatforms.server().guardUseBlock((player, level, hand, hitResult) ->
+				!isBlocked(level, player, hitResult.getBlockPos()));
 
 		EchoPlatforms.server().guardUseItem((player, level, hand) -> {
 			ItemStack stack = player.getItemInHand(hand);

@@ -3,7 +3,6 @@ package dev.fimkov.echoesbeneath.item;
 import dev.fimkov.echoesbeneath.EchoTranslations;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReference;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReferences;
-import dev.fimkov.echoesbeneath.memory.EchoFormat;
 import dev.fimkov.echoesbeneath.memory.EchoTextFormat;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;

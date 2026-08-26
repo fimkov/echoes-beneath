@@ -11,9 +11,7 @@ public record EchoConfigValues(
 		int maxConcurrentSoundWaves,
 		boolean allowOverlappingPlayback,
 		boolean suppressHostileMobs,
-		boolean disableBlockInteractionDuringPlayback,
-		boolean allowMemoryMending,
-		int mendingExperienceCost) {
+		boolean disableBlockInteractionDuringPlayback) {
 
 	private static final int TICKS_PER_SECOND = 20;
 

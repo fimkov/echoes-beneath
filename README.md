@@ -183,22 +183,6 @@ passing wave happens to trace. Each level of vision lifts that darkness, so a fu
 recording into a survey of everything within its radius — caves, voids, buried rooms. Place a lens, make
 some noise, walk away, and read the ground on the replay.
 
-## Mending a place back
-
-A memory is not only something to watch. Standing inside one, sneak and click the face of a block
-where the memory still holds something the world has lost, and it comes back — the exact state, so
-stairs return facing the way they did.
-
-It is a repair tool, not a duplicator. The block is taken from your own inventory and a little
-experience with it, so nothing appears that you did not already have. Containers are refused outright
-rather than returning empty, fluids are left alone, and nothing is placed where a creature is standing
-or where the block could not survive.
-
-Record your base. If a creeper or somebody else takes a bite out of it, replay the memory and put the
-shape back exactly as it was.
-
-Turn it off with `allowMemoryMending` if you would rather memories stayed untouchable.
-
 ## Controls
 
 | Action | Input |
@@ -249,8 +233,6 @@ supported range are clamped and unreadable values fall back to the default.
 | `allowOverlappingPlayback` | false | boolean |
 | `suppressHostileMobs` | true | boolean |
 | `disableBlockInteractionDuringPlayback` | true | boolean |
-| `allowMemoryMending` | true | boolean |
-| `mendingExperienceCost` | 2 | 0–64 |
 
 Client-side, written to `config/echoes_beneath_client.properties`. This is where to go if playback
 costs you frames — everything expensive about it is here. All of it is also on a settings screen:
