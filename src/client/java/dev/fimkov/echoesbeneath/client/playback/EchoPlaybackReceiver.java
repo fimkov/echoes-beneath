@@ -40,6 +40,7 @@ public final class EchoPlaybackReceiver {
 				ClientPlaybackManager.instance().clientTick(client.level);
 			}
 			EchoDarkness.refreshFrameState();
+			dev.fimkov.echoesbeneath.client.input.EchoKeys.poll();
 		});
 	}
 }

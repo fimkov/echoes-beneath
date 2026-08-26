@@ -28,6 +28,8 @@ public final class EchoesBeneathClient implements ClientModInitializer {
 		EchoLensTooltipContext.bindViewer(EchoesBeneathClient::localViewer);
 		EchoClientPlatforms.get().registerEntityRenderer(EchoEntities.ECHO_LENS,
 				EchoLensEntityRenderer::new);
+		EchoClientPlatforms.get().registerKey(
+				dev.fimkov.echoesbeneath.client.input.EchoKeys.OPEN_CONFIG);
 		EchoPlaybackReceiver.register();
 		EchoClientPlatforms.get().onFrameStart(EchoPlaybackRenderer::frameStart);
 		EchoClientPlatforms.get().onAfterEntities(EchoPlaybackRenderer::afterEntities);

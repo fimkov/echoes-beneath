@@ -57,8 +57,13 @@ public final class EchoClientConfig {
 				DEFAULT_WAVE_DETAIL);
 	}
 
+	public static void apply(EchoClientConfigValues updated) {
+		values = updated;
+		write(path());
+	}
+
 	public static void load() {
-		Path path = EchoPlatforms.configDirectory().resolve(FILE_NAME);
+		Path path = path();
 		Properties properties = new Properties();
 		if (Files.isRegularFile(path)) {
 			try (InputStream stream = Files.newInputStream(path)) {
@@ -69,6 +74,10 @@ public final class EchoClientConfig {
 		}
 		values = parse(properties);
 		write(path);
+	}
+
+	private static Path path() {
+		return EchoPlatforms.configDirectory().resolve(FILE_NAME);
 	}
 
 	private static EchoClientConfigValues parse(Properties properties) {

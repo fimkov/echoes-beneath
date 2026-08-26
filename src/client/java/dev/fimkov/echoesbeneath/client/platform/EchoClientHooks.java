@@ -24,6 +24,8 @@ public interface EchoClientHooks {
 			& net.minecraft.client.gui.screens.inventory.MenuAccess<M>> void registerScreen(
 			MenuType<M> type, MenuScreens.ScreenConstructor<M, S> constructor);
 
+	void registerKey(net.minecraft.client.KeyMapping mapping);
+
 	void onFrameStart(Consumer<EchoRenderContext> handler);
 
 	void onAfterEntities(Consumer<EchoRenderContext> handler);

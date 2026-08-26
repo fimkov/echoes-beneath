@@ -50,6 +50,11 @@ public final class FabricClientHooks implements EchoClientHooks {
 	}
 
 	@Override
+	public void registerKey(net.minecraft.client.KeyMapping mapping) {
+		net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper.registerKeyBinding(mapping);
+	}
+
+	@Override
 	public void onFrameStart(Consumer<EchoRenderContext> handler) {
 		WorldRenderEvents.START.register(context -> handler.accept(new FabricRenderContext(context)));
 	}

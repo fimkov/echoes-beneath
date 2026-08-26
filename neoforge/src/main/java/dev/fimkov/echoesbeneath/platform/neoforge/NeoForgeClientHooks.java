@@ -30,6 +30,8 @@ import java.util.function.Consumer;
 public final class NeoForgeClientHooks implements EchoClientHooks {
 	private final NeoForgeNetwork network;
 	private final IEventBus bus = NeoForge.EVENT_BUS;
+	private final java.util.List<net.minecraft.client.KeyMapping> pendingKeys =
+			new java.util.ArrayList<>();
 
 	public NeoForgeClientHooks(NeoForgeNetwork network) {
 		this.network = network;
@@ -62,6 +64,17 @@ public final class NeoForgeClientHooks implements EchoClientHooks {
 	public <M extends AbstractContainerMenu, S extends Screen & MenuAccess<M>> void registerScreen(
 			MenuType<M> type, MenuScreens.ScreenConstructor<M, S> constructor) {
 		throw new UnsupportedOperationException("NeoForge binds screens from its own event");
+	}
+
+	@Override
+	public void registerKey(net.minecraft.client.KeyMapping mapping) {
+		pendingKeys.add(mapping);
+	}
+
+	public void bindKeys(net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent event) {
+		for (net.minecraft.client.KeyMapping mapping : pendingKeys) {
+			event.register(mapping);
+		}
 	}
 
 	@Override

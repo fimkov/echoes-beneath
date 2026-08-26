@@ -97,5 +97,16 @@
   "message.echoes_beneath.mending_missing": "Воспоминанию нужен предмет: %s, а у вас его нет",
   "message.echoes_beneath.mending_no_experience": "Не хватает опыта, чтобы удержать форму",
   "advancements.echoes_beneath.put_it_back.title": "Вернуть на место",
-  "advancements.echoes_beneath.put_it_back.description": "Присядьте и щёлкните туда, где стоял блок, отдав воспоминанию материал, чтобы оно его удержало"
+  "advancements.echoes_beneath.put_it_back.description": "Присядьте и щёлкните туда, где стоял блок, отдав воспоминанию материал, чтобы оно его удержало",
+  "config.echoes_beneath.title": "Echoes Beneath",
+  "config.echoes_beneath.wave_budget": "Бюджет волн",
+  "config.echoes_beneath.wave_detail": "Детализация волн",
+  "config.echoes_beneath.hologram_budget": "Запомненных блоков",
+  "config.echoes_beneath.hologram_distance": "Дальность блоков",
+  "config.echoes_beneath.transition": "Длина перехода",
+  "config.echoes_beneath.ambience": "Громкость области",
+  "config.echoes_beneath.show_holograms": "Запомненные блоки",
+  "config.echoes_beneath.hide_sky": "Затемнять небо",
+  "key.echoes_beneath.open_config": "Открыть настройки",
+  "key.categories.echoes_beneath": "Echoes Beneath"
 }

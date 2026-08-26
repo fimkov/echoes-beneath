@@ -56,6 +56,9 @@ public final class EchoTranslations {
 	public static final String UPGRADE_NEED_LEVELS = "upgrade.echoes_beneath.need_levels";
 	public static final String UPGRADE_NEED_SHARDS = "upgrade.echoes_beneath.need_shards";
 	public static final String UPGRADE_REMEMBERED = "upgrade.echoes_beneath.remembered";
+	public static final String CONFIG_TITLE = "config.echoes_beneath.title";
+	public static final String CONFIG_OPEN_KEY = "key.echoes_beneath.open_config";
+	public static final String CONFIG_CATEGORY = "key.categories.echoes_beneath";
 
 	private EchoTranslations() {
 	}

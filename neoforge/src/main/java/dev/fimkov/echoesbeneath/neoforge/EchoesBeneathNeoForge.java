@@ -33,6 +33,12 @@ public final class EchoesBeneathNeoForge {
 	private boolean contentRegistered;
 
 	public EchoesBeneathNeoForge(IEventBus modBus, net.neoforged.fml.ModContainer container) {
+		if (net.neoforged.fml.loading.FMLEnvironment.dist == Dist.CLIENT) {
+			container.registerExtensionPoint(
+					net.neoforged.neoforge.client.gui.IConfigScreenFactory.class,
+					(owner, parent) ->
+							new dev.fimkov.echoesbeneath.client.screen.EchoConfigScreen(parent));
+		}
 		EchoPlatforms.install(platform);
 		modBus.addListener(RegisterEvent.class, event -> {
 			if (contentRegistered) {
@@ -55,6 +61,7 @@ public final class EchoesBeneathNeoForge {
 		EchoClientPlatforms.install(hooks);
 		EchoClientConfig.load();
 		EchoLensTooltipContext.bindViewer(EchoesBeneathNeoForge::localViewer);
+		hooks.registerKey(dev.fimkov.echoesbeneath.client.input.EchoKeys.OPEN_CONFIG);
 		EchoPlaybackReceiver.register();
 		hooks.onFrameStart(EchoPlaybackRenderer::frameStart);
 		hooks.onAfterEntities(EchoPlaybackRenderer::afterEntities);
@@ -62,6 +69,8 @@ public final class EchoesBeneathNeoForge {
 		modBus.addListener(EntityRenderersEvent.RegisterRenderers.class, event ->
 				event.registerEntityRenderer(EchoEntities.ECHO_LENS,
 						dev.fimkov.echoesbeneath.client.render.EchoLensEntityRenderer::new));
+		modBus.addListener(net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent.class,
+				hooks::bindKeys);
 		modBus.addListener(RegisterMenuScreensEvent.class, event ->
 				event.register(EchoMenus.RESONANCE_TABLE,
 						dev.fimkov.echoesbeneath.client.screen.ResonanceTableScreen::new));

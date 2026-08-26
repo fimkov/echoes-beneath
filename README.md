@@ -253,7 +253,8 @@ supported range are clamped and unreadable values fall back to the default.
 | `mendingExperienceCost` | 2 | 0–64 |
 
 Client-side, written to `config/echoes_beneath_client.properties`. This is where to go if playback
-costs you frames — everything expensive about it is here.
+costs you frames — everything expensive about it is here. All of it is also on a settings screen:
+press **K** in game, or open it from the mods list on NeoForge.
 
 | Key | Default | Range | What it does |
 |---|---|---|---|
