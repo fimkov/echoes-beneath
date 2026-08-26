@@ -11,6 +11,7 @@ base {
 }
 
 repositories {
+	maven { url = "https://api.modrinth.com/maven" }
 }
 
 loom {
@@ -50,6 +51,7 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
+	modLocalRuntime "maven.modrinth:sodium:mc1.21.1-0.6.0-fabric"
 	testImplementation platform("org.junit:junit-bom:5.11.4")
 	testImplementation "org.junit.jupiter:junit-jupiter"
 	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
