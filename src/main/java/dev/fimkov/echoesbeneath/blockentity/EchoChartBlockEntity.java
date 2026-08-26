@@ -60,7 +60,10 @@ public class EchoChartBlockEntity extends BlockEntity {
 	public static void serverTick(net.minecraft.world.level.Level level, BlockPos position,
 			BlockState state, EchoChartBlockEntity chart) {
 		chart.age++;
-		if (chart.chart == null || chart.age % TELL_INTERVAL_TICKS != 0) {
+		if (chart.age % TELL_INTERVAL_TICKS != 0) {
+			return;
+		}
+		if (chart.chart == null) {
 			return;
 		}
 		dev.fimkov.echoesbeneath.runtime.EchoServerState server =

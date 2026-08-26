@@ -69,6 +69,9 @@ public final class EchoesBeneathNeoForge {
 		modBus.addListener(EntityRenderersEvent.RegisterRenderers.class, event -> {
 			event.registerEntityRenderer(EchoEntities.ECHO_LENS,
 					dev.fimkov.echoesbeneath.client.render.EchoLensEntityRenderer::new);
+			hooks.registerBlockEntityRenderer(
+					dev.fimkov.echoesbeneath.registry.EchoBlockEntities.ECHO_CHART,
+					dev.fimkov.echoesbeneath.client.render.EchoChartBlockRenderer::new);
 			hooks.bindBlockEntityRenderers(event);
 		});
 		modBus.addListener(net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent.class,

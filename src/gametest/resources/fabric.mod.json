@@ -10,7 +10,8 @@
       "dev.fimkov.echoesbeneath.test.EchoLensGameTest",
       "dev.fimkov.echoesbeneath.test.EchoCreativeTabGameTest",
       "dev.fimkov.echoesbeneath.test.EchoSoundingTableGameTest",
-      "dev.fimkov.echoesbeneath.test.EchoChartBlockGameTest"
+      "dev.fimkov.echoesbeneath.test.EchoChartBlockGameTest",
+      "dev.fimkov.echoesbeneath.test.EchoChartShapeGameTest"
     ]
   },
   "depends": {
