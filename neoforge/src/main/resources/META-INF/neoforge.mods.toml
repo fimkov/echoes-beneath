@@ -8,10 +8,15 @@ modId = "echoes_beneath"
 version = "1.0.0"
 displayName = "Echoes Beneath"
 description = '''
-An Echo Lens records a place for up to two minutes and lets you stand inside that memory later.
-The lens remembers shape and sound, but not light.
+Record a place with an Echo Lens: its blocks, the creatures moving through it, and the real
+sounds that played there. Come back later and stand inside that memory. The world goes near
+black, remembered shapes are silhouettes, and every old sound returns at its own moment as a
+wave that briefly lights the surfaces it touches. Tune the lens at a Resonance Table, read what
+a recording heard at a Sounding Table, and draw a memory out as an Echo Chart you can set down
+and walk around. The lens remembers shape and sound, but not light.
 '''
 authors = "fimkov"
+logoFile = "icon.png"
 
 [[mixins]]
 config = "echoes_beneath.mixins.json"

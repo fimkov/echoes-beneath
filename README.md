@@ -277,21 +277,36 @@ supported range are clamped and unreadable values fall back to the default.
 | `allowOverlappingPlayback` | false | boolean |
 | `suppressHostileMobs` | true | boolean |
 | `disableBlockInteractionDuringPlayback` | true | boolean |
+| `allowCharts` | true | boolean |
+| `chartBlockLimit` | 60000 | 1000–200000 |
+| `soundCarryBlocks` | 16 | 4–64 |
+
+`soundCarryBlocks` is the one worth knowing: it is how many blocks one unit of a sound's volume
+carries when a chart is worked out, so it decides how much of a place a recording maps.
 
 Client-side, written to `config/echoes_beneath_client.properties`. This is where to go if playback
 costs you frames — everything expensive about it is here. All of it is also on a settings screen:
 press **K** in game, or open it from the mods list on NeoForge.
 
-| Key | Default | Range | What it does |
-|---|---|---|---|
-| `waveTexelBudget` | 42000 | 2000–160000 | lit texels a frame may draw; the first thing to lower |
-| `waveDetail` | 8 | 2–16 | texels per block edge; halving it quarters the work |
-| `hologramBlockBudget` | 384 | 0–4096 | remembered blocks drawn at once; 0 turns them off |
-| `hologramDistance` | 32 | 8–96 | how far remembered blocks are drawn |
-| `showBlockHolograms` | true | boolean | remembered blocks on or off outright |
-| `hideSkyDuringPlayback` | true | boolean | whether the sky is blacked out inside a memory |
-| `transitionTicks` | 22 | 1–200 | how long the fade in and out takes |
-| `regionAmbienceVolume` | 55 | 0–100 | loudness of the drone inside a memory, per cent |
+| Key | Default | Range |
+|---|---|---|
+| `waveTexelBudget` | 42000 | 2000–160000 |
+| `waveDetail` | 8 | 2–16 |
+| `hologramBlockBudget` | 384 | 0–4096 |
+| `hologramDistance` | 32 | 8–96 |
+| `showBlockHolograms` | true | boolean |
+| `hideSkyDuringPlayback` | true | boolean |
+| `transitionTicks` | 22 | 1–200 |
+| `regionAmbienceVolume` | 55 | 0–100 |
+| `darknessStrength` | 100 | 0–100 |
+| `waveVolume` | 80 | 0–100 |
+| `chartBlockBudget` | 6000 | 256–20000 |
+| `chartDistance` | 48 | 16–128 |
+| `showChartAura` | true | boolean |
+| `tableAnimations` | true | boolean |
+
+Turn `darknessStrength` down if a fully black playback is more than you want to look at; turn
+`tableAnimations` off if you would rather the tables held still.
 
 ## Development commands
 
