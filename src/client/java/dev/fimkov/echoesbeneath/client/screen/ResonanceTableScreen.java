@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.resources.ResourceLocation;
 import dev.fimkov.echoesbeneath.registry.EchoSounds;
 import net.minecraft.sounds.SoundEvents;
@@ -54,9 +55,17 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	private static final float DENIED_PITCH = 0.65F;
 	private static final float DENIED_VOLUME = 0.7F;
 	private static final int TOOLTIP_WIDTH = 170;
+	private static final float FILL_RATE = 0.28F;
+	private static final float FILL_SNAP = 0.02F;
+	private static final float ARRIVAL_TICKS = 9.0F;
+	private static final float ARRIVAL_RING_ALPHA = 0.85F;
+	private static final int ARRIVAL_SPREAD = 10;
 
 	private final ItemStack amethystGhost = new ItemStack(Items.AMETHYST_SHARD);
+	private final float[] shown = new float[ResonanceTableLayout.ROW_COUNT];
 	private float animation;
+	private float resultAge;
+	private boolean hadResult;
 
 	public ResonanceTableScreen(ResonanceTableMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
@@ -80,6 +89,21 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		if (animation >= PULSE_PERIOD_TICKS) {
 			animation -= PULSE_PERIOD_TICKS;
 		}
+		for (int index = 0; index < shown.length; index++) {
+			float target = menu.lens().isEmpty() ? 0.0F
+					: ResonanceTableUpgrade.fromIndex(index).stepsOf(menu.targetUpgrades());
+			shown[index] += (target - shown[index]) * FILL_RATE;
+			if (Math.abs(target - shown[index]) < FILL_SNAP) {
+				shown[index] = target;
+			}
+		}
+		boolean hasResult = !menu.slots.get(ResonanceTableMenu.RESULT_SLOT).getItem().isEmpty();
+		if (hasResult && !hadResult) {
+			resultAge = 0.0F;
+		} else if (resultAge < ARRIVAL_TICKS) {
+			resultAge += 1.0F;
+		}
+		hadResult = hasResult;
 	}
 
 	private boolean over(int mouseX, int mouseY, int x, int y, int width, int height) {
@@ -159,6 +183,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		graphics.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
 		renderGhostSlot(graphics);
 		renderDialGlow(graphics);
+		renderArrival(graphics);
 		for (int index = 0; index < ResonanceTableLayout.ROW_COUNT; index++) {
 			int y = topPos + ResonanceTableLayout.rowY(index);
 			if (overRow(mouseX, mouseY, index)) {
@@ -198,12 +223,32 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
+	private void renderArrival(GuiGraphics graphics) {
+		if (resultAge >= ARRIVAL_TICKS
+				|| menu.slots.get(ResonanceTableMenu.RESULT_SLOT).getItem().isEmpty()) {
+			return;
+		}
+		float progress = resultAge / ARRIVAL_TICKS;
+		float alpha = (1.0F - progress) * ARRIVAL_RING_ALPHA;
+		int spread = Math.round(progress * ARRIVAL_SPREAD);
+		graphics.setColor(1.0F, 1.0F, 1.0F, alpha);
+		int size = ResonanceTableLayout.DIAL_GLOW_SIZE + spread * 2;
+		graphics.blit(TEXTURE,
+				leftPos + ResonanceTableLayout.DIAL_CENTRE_X - size / 2,
+				topPos + ResonanceTableLayout.DIAL_CENTRE_Y - size / 2,
+				ResonanceTableLayout.DIAL_GLOW_SIZE, ResonanceTableLayout.DIAL_GLOW_SIZE,
+				GLOW_U, GLOW_V, ResonanceTableLayout.DIAL_GLOW_SIZE,
+				ResonanceTableLayout.DIAL_GLOW_SIZE, 256, 256);
+		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+	}
+
 	private void renderPips(GuiGraphics graphics, int index, int rowScreenY) {
 		ResonanceTableUpgrade upgrade = ResonanceTableUpgrade.fromIndex(index);
 		int count = upgrade.maxSteps();
 		boolean empty = menu.lens().isEmpty();
 		int peak = empty ? 0 : upgrade.stepsOf(menu.peakUpgrades());
 		int staged = empty ? 0 : upgrade.stepsOf(menu.targetUpgrades());
+		float filled = empty ? 0.0F : shown[index];
 		int left = leftPos + ResonanceTableLayout.pipsLeft(count);
 		for (int pip = 0; pip < count; pip++) {
 			int u = PIP_EMPTY_U;
@@ -216,10 +261,20 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 			} else if (pip < peak) {
 				u = PIP_REMEMBERED_U;
 			}
-			graphics.blit(TEXTURE,
-					left + pip * (ResonanceTableLayout.PIP_WIDTH + ResonanceTableLayout.PIP_GAP),
-					rowScreenY + ResonanceTableLayout.PIP_Y_OFFSET, u, v,
+			int x = left + pip * (ResonanceTableLayout.PIP_WIDTH + ResonanceTableLayout.PIP_GAP);
+			int y = rowScreenY + ResonanceTableLayout.PIP_Y_OFFSET;
+			float reached = Mth.clamp(filled - pip, 0.0F, 1.0F);
+			if (u != PIP_EMPTY_U && reached < 1.0F) {
+				graphics.blit(TEXTURE, x, y, PIP_EMPTY_U, 0,
+						ResonanceTableLayout.PIP_WIDTH, ResonanceTableLayout.PIP_HEIGHT);
+				if (reached <= 0.0F) {
+					continue;
+				}
+				graphics.setColor(1.0F, 1.0F, 1.0F, reached);
+			}
+			graphics.blit(TEXTURE, x, y, u, v,
 					ResonanceTableLayout.PIP_WIDTH, ResonanceTableLayout.PIP_HEIGHT);
+			graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 	}
 
