@@ -18,6 +18,7 @@ public final class EchoChartGeometry {
 
 	public static void emit(EchoChartModel model, MultiBufferSource consumers, Matrix4f pose) {
 		VertexConsumer consumer = consumers.getBuffer(EchoRenderTypes.ECHO_TEXELS);
+		float brightness = model.brightness();
 		for (int index = 0; index < model.size(); index++) {
 			int cell = model.cellAt(index);
 			int x = EchoChartModel.cellX(cell);
@@ -28,13 +29,13 @@ public final class EchoChartGeometry {
 				if (model.holds(x + face.getStepX(), y + face.getStepY(), z + face.getStepZ())) {
 					continue;
 				}
-				quad(consumer, pose, x, y, z, face, shade(colour, face));
+				quad(consumer, pose, x, y, z, face, shade(colour, face, brightness));
 			}
 		}
 	}
 
-	private static int shade(int colour, Direction face) {
-		float factor = switch (face) {
+	private static int shade(int colour, Direction face, float brightness) {
+		float factor = brightness * switch (face) {
 			case UP -> 1.0F;
 			case DOWN -> FLOOR_SHADE;
 			default -> WALL_SHADE;

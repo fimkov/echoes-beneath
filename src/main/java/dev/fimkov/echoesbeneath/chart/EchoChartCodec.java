@@ -31,6 +31,7 @@ public final class EchoChartCodec {
 			}
 			out.writeInt(shape.lowestRelativeY());
 			out.writeInt(shape.highestRelativeY());
+			out.writeInt(shape.recordedVision());
 			out.writeInt(shape.size());
 			for (int index = 0; index < shape.size(); index++) {
 				out.writeInt(shape.positions().getInt(index));
@@ -57,6 +58,7 @@ public final class EchoChartCodec {
 			}
 			int lowest = in.readInt();
 			int highest = in.readInt();
+			int vision = in.readInt();
 			int count = in.readInt();
 			if (count < 0 || count > EchoChartLimits.MAX_CHARTED_BLOCKS) {
 				throw new IllegalArgumentException("Chart of " + count + " blocks is out of range");
@@ -67,7 +69,7 @@ public final class EchoChartCodec {
 				positions.add(in.readInt());
 				states.add(in.readUnsignedShort());
 			}
-			return new EchoChartCloud(List.copyOf(palette), positions, states, lowest, highest);
+			return new EchoChartCloud(List.copyOf(palette), positions, states, lowest, highest, vision);
 		} catch (IOException failure) {
 			throw new UncheckedIOException(failure);
 		}

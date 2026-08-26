@@ -120,5 +120,6 @@
   "sounding.echoes_beneath.silent": "Nothing here made a sound",
   "sounding.echoes_beneath.window": "y %s to y %s",
   "sounding.echoes_beneath.sounded": "%s blocks",
-  "sounding.echoes_beneath.warning": "Drawing a memory out empties its slot"
+  "sounding.echoes_beneath.warning": "Drawing a memory out empties its slot",
+  "sounding.echoes_beneath.turn": "Drag to turn it"
 }

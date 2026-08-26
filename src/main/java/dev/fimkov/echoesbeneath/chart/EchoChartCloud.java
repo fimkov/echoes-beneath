@@ -6,7 +6,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.List;
 
 public record EchoChartCloud(List<BlockState> palette, IntList positions, IntList states,
-		int lowestRelativeY, int highestRelativeY) {
+		int lowestRelativeY, int highestRelativeY, int recordedVision) {
 
 	public int size() {
 		return positions.size();

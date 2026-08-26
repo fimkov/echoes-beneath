@@ -1,6 +1,7 @@
 package dev.fimkov.echoesbeneath.client.chart;
 
 import dev.fimkov.echoesbeneath.chart.EchoChartCloud;
+import dev.fimkov.echoesbeneath.item.EchoLensUpgrades;
 import dev.fimkov.echoesbeneath.memory.EchoCoordinates;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -21,6 +22,7 @@ public final class EchoChartModel {
 	private static final int CHANNEL_BITS = 20;
 	private static final long CHANNEL_MASK = (1L << CHANNEL_BITS) - 1L;
 	private static final int BYTE_MASK = 0xFF;
+	private static final float DIMMEST = 0.42F;
 
 	private final IntList cells = new IntArrayList();
 	private final IntList colours = new IntArrayList();
@@ -28,6 +30,7 @@ public final class EchoChartModel {
 	private final int spanX;
 	private final int spanY;
 	private final int spanZ;
+	private int recordedVision;
 
 	private EchoChartModel(int spanX, int spanY, int spanZ) {
 		this.spanX = spanX;
@@ -75,6 +78,7 @@ public final class EchoChartModel {
 			sums.put(key, sums.get(key) + channels(colour));
 			counts.put(key, counts.get(key) + 1);
 		}
+		model.recordedVision = cloud.recordedVision();
 		for (Int2IntMap.Entry entry : counts.int2IntEntrySet()) {
 			int key = entry.getIntKey();
 			model.cells.add(key);
@@ -141,6 +145,11 @@ public final class EchoChartModel {
 
 	public int spanZ() {
 		return spanZ;
+	}
+
+	public float brightness() {
+		int vision = recordedVision < 0 ? EchoLensUpgrades.MAX_VISION : recordedVision;
+		return DIMMEST + (1.0F - DIMMEST) * vision / EchoLensUpgrades.MAX_VISION;
 	}
 
 	public int widest() {

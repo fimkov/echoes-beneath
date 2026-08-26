@@ -36,6 +36,7 @@ class EchoSoundingTest {
 	private static final int VERTICAL = 12;
 	private static final BlockPos CENTRE = new BlockPos(0, 64, 0);
 	private static final int BUDGET = 4096;
+	private static final int RECORDED_VISION = 2;
 
 	@BeforeAll
 	static void bootstrap() {
@@ -87,7 +88,7 @@ class EchoSoundingTest {
 		return new EchoMemoryRecord(UUID.randomUUID(), 0, EchoFormat.CURRENT_VERSION,
 				EchoTestSupport.OVERWORLD, CENTRE, RADIUS, VERTICAL, 1_700_000_000_000L, 200,
 				stoneWithRooms(), new BlockTimeline(256), new EntityTimeline(16), sounds,
-				new ParticleTimeline(16), List.of(), 0);
+				new ParticleTimeline(16), List.of(), RECORDED_VISION);
 	}
 
 	private static SoundTimeline oneSoundInTheOpenRoom() {
@@ -113,6 +114,14 @@ class EchoSoundingTest {
 				Integer.MIN_VALUE / 2, Integer.MAX_VALUE / 2, BUDGET);
 		assertFalse(holds(shape, 6, 0, 0), "the sealed room's wall must stay dark");
 		assertFalse(holds(shape, 10, 0, 0), "nothing past the sealed room may be charted");
+	}
+
+	@Test
+	@DisplayName("a chart remembers how much the recording lens could see")
+	void chartKeepsTheRecordedVision() {
+		EchoChartShape shape = EchoSounding.of(recordWith(oneSoundInTheOpenRoom()),
+				Integer.MIN_VALUE / 2, Integer.MAX_VALUE / 2, BUDGET);
+		assertEquals(RECORDED_VISION, shape.recordedVision());
 	}
 
 	@Test

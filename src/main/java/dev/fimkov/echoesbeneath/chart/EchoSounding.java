@@ -26,7 +26,7 @@ public final class EchoSounding {
 		int lowest = Math.max(-vertical, minY - record.center().getY());
 		int highest = Math.min(vertical, maxY - record.center().getY());
 		if (lowest > highest || budget <= 0) {
-			return EchoChartShape.empty(record.id(), lowest, highest);
+			return EchoChartShape.empty(record.id(), lowest, highest, record.recordedVision());
 		}
 
 		Reach reach = new Reach(radius, vertical);
@@ -47,7 +47,8 @@ public final class EchoSounding {
 			positions.add(packed);
 			states.add(index);
 		}
-		return new EchoChartShape(record.id(), snapshot.palette(), positions, states, lowest, highest);
+		return new EchoChartShape(record.id(), snapshot.palette(), positions, states, lowest, highest,
+				record.recordedVision());
 	}
 
 	private static void seed(SoundTimeline sounds, BlockSnapshot snapshot, Reach reach, int radius) {

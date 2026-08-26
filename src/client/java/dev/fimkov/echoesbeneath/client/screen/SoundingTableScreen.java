@@ -40,11 +40,18 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	private static final float TILT_DEGREES = 22.0F;
 	private static final float STAGE_FILL = 0.72F;
 	private static final int STAGE_LABEL_INSET = 4;
+	private static final float TURN_PER_PIXEL = 1.6F;
+	private static final float MIN_PITCH_DEGREES = -80.0F;
+	private static final float MAX_PITCH_DEGREES = 80.0F;
 	private static final float DENIED_PITCH = 0.65F;
 	private static final float DENIED_VOLUME = 0.7F;
 
 	private float spin;
+	private float heldYaw;
+	private float heldPitch = TILT_DEGREES;
+	private boolean turnedByHand;
 	private int dragging = -1;
+	private boolean turningStage;
 
 	public SoundingTableScreen(SoundingTableMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
@@ -86,6 +93,11 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 				SoundingTableLayout.EXTRACT_WIDTH, SoundingTableLayout.EXTRACT_HEIGHT);
 	}
 
+	private boolean overStage(int mouseX, int mouseY) {
+		return over(mouseX, mouseY, SoundingTableLayout.STAGE_X, SoundingTableLayout.STAGE_Y,
+				SoundingTableLayout.STAGE_WIDTH, SoundingTableLayout.STAGE_HEIGHT);
+	}
+
 	private boolean overRuler(int mouseX, int mouseY) {
 		return over(mouseX, mouseY, SoundingTableLayout.RULER_X - 3, SoundingTableLayout.RULER_Y,
 				SoundingTableLayout.RULER_WIDTH + 6, SoundingTableLayout.RULER_HEIGHT);
@@ -123,6 +135,14 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 				}
 				return true;
 			}
+			if (overStage((int) mouseX, (int) mouseY)) {
+				turningStage = true;
+				if (!turnedByHand) {
+					turnedByHand = true;
+					heldYaw = spin;
+				}
+				return true;
+			}
 			if (overRuler((int) mouseX, (int) mouseY)) {
 				dragging = Math.abs(rulerY(menu.lowestY()) - (mouseY - topPos))
 						<= Math.abs(rulerY(menu.highestY()) - (mouseY - topPos)) ? 0 : 1;
@@ -135,6 +155,12 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 
 	@Override
 	public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+		if (turningStage) {
+			heldYaw += (float) dragX * TURN_PER_PIXEL;
+			heldPitch = Mth.clamp(heldPitch + (float) dragY * TURN_PER_PIXEL,
+					MIN_PITCH_DEGREES, MAX_PITCH_DEGREES);
+			return true;
+		}
 		if (dragging >= 0) {
 			dragTo(mouseY);
 			return true;
@@ -145,6 +171,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	@Override
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
 		dragging = -1;
+		turningStage = false;
 		return super.mouseReleased(mouseX, mouseY, button);
 	}
 
@@ -242,8 +269,9 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		poseStack.translate(centreX, centreY, 220.0F);
 		float scale = SoundingTableLayout.STAGE_HEIGHT * STAGE_FILL / model.widest();
 		poseStack.scale(scale, -scale, scale);
-		poseStack.mulPose(Axis.XP.rotationDegrees(TILT_DEGREES));
-		poseStack.mulPose(Axis.YP.rotationDegrees(spin + SPIN_DEGREES_PER_TICK * partialTick));
+		poseStack.mulPose(Axis.XP.rotationDegrees(turnedByHand ? heldPitch : TILT_DEGREES));
+		poseStack.mulPose(Axis.YP.rotationDegrees(
+				turnedByHand ? heldYaw : spin + SPIN_DEGREES_PER_TICK * partialTick));
 		poseStack.translate(-model.spanX() * 0.5F, -model.spanY() * 0.5F, -model.spanZ() * 0.5F);
 		EchoChartGeometry.emit(model, graphics.bufferSource(), poseStack.last().pose());
 		graphics.flush();

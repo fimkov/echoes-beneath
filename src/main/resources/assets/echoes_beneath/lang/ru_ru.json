@@ -120,5 +120,6 @@
   "sounding.echoes_beneath.silent": "Здесь ничто не издало звука",
   "sounding.echoes_beneath.window": "от y %s до y %s",
   "sounding.echoes_beneath.sounded": "блоков: %s",
-  "sounding.echoes_beneath.warning": "Вынутое воспоминание освобождает слот"
+  "sounding.echoes_beneath.warning": "Вынутое воспоминание освобождает слот",
+  "sounding.echoes_beneath.turn": "Тяните мышью, чтобы повернуть"
 }
