@@ -86,8 +86,10 @@ public record EchoSilhouetteBuffers(MultiBufferSource delegate, RenderType layer
 		}
 
 		@Override
-		public VertexConsumer setColor(int ignoredRed, int ignoredGreen, int ignoredBlue, int sourceAlpha) {
-			delegate.setColor(red, green, blue, alpha * sourceAlpha / OPAQUE);
+		public VertexConsumer setColor(int sourceRed, int sourceGreen, int sourceBlue, int sourceAlpha) {
+			int shade = Math.max(sourceRed, Math.max(sourceGreen, sourceBlue));
+			delegate.setColor(red * shade / OPAQUE, green * shade / OPAQUE, blue * shade / OPAQUE,
+					alpha * sourceAlpha / OPAQUE);
 			return this;
 		}
 

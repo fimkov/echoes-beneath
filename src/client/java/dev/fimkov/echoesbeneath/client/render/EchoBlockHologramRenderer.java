@@ -9,15 +9,17 @@ import dev.fimkov.echoesbeneath.memory.snapshot.BlockSnapshot;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import dev.fimkov.echoesbeneath.client.platform.EchoRenderContext;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public final class EchoBlockHologramRenderer {
+	private static final RandomSource SHADE_RANDOM = RandomSource.create();
 	private static final int SCAN_HALF = 14;
 	private static final int RESCAN_TICKS = 40;
 	private static final double RESCAN_MOVE = 8.0D;
@@ -111,7 +113,8 @@ public final class EchoBlockHologramRenderer {
 		poseStack.pushPose();
 		poseStack.translate(cursor.getX() - cameraPosition.x,
 				cursor.getY() - cameraPosition.y, cursor.getZ() - cameraPosition.z);
-		blocks.renderSingleBlock(remembered, poseStack, buffers, 0, OverlayTexture.NO_OVERLAY);
+		blocks.renderBatched(remembered, cursor, level, poseStack,
+				buffers.getBuffer(RenderType.translucent()), false, SHADE_RANDOM);
 		poseStack.popPose();
 		return 1;
 	}
