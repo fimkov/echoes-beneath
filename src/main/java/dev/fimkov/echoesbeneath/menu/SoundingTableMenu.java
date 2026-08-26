@@ -168,7 +168,6 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 			return;
 		}
 		seededFrom = lens.copy();
-		output.setItem(0, ItemStack.EMPTY);
 		List<EchoMemoryReference> memories = memories();
 		selected.set(memories.isEmpty() ? -1 : 0);
 		resetWindow();
@@ -199,7 +198,6 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 		List<EchoMemoryReference> memories = memories();
 		if (SoundingTablePlan.isSelect(button, memories.size())) {
 			selected.set(SoundingTablePlan.offsetOf(button, SoundingTablePlan.SELECT_BASE));
-			output.setItem(0, ItemStack.EMPTY);
 			resetWindow();
 			pushPreview();
 			return true;
@@ -207,14 +205,12 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 		if (SoundingTablePlan.isLowest(button)) {
 			int value = floor.get() + SoundingTablePlan.offsetOf(button, SoundingTablePlan.LOWEST_BASE);
 			lowest.set(Math.clamp(value, floor.get(), highest.get()));
-			output.setItem(0, ItemStack.EMPTY);
 			pushPreview();
 			return true;
 		}
 		if (SoundingTablePlan.isHighest(button)) {
 			int value = floor.get() + SoundingTablePlan.offsetOf(button, SoundingTablePlan.HIGHEST_BASE);
 			highest.set(Math.clamp(value, lowest.get(), ceiling.get()));
-			output.setItem(0, ItemStack.EMPTY);
 			pushPreview();
 			return true;
 		}

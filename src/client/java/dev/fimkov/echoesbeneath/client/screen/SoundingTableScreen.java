@@ -53,12 +53,12 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	private static final float MAX_PITCH_DEGREES = 80.0F;
 	private static final float OVER_STAGE_Z = 320.0F;
 	private static final int TICKS_BETWEEN_DRAGS = 3;
-	private static final float PULSE_PERIOD_TICKS = 52.0F;
-	private static final float PULSE_BASE = 0.42F;
-	private static final float PULSE_SWING = 0.36F;
+	private static final float PULSE_PERIOD_TICKS = 48.0F;
+	private static final float PULSE_BASE = 0.18F;
+	private static final float PULSE_SWING = 0.82F;
 	private static final float SWEEP_PERIOD_TICKS = 96.0F;
-	private static final int SWEEP_ALPHA = 34;
-	private static final int BRACKET_LENGTH = 6;
+	private static final int SWEEP_ALPHA = 52;
+	private static final int BRACKET_LENGTH = 7;
 	private static final int EDGE_RGB = 0x29DFEB;
 	private static final float DENIED_PITCH = 0.65F;
 	private static final float DENIED_VOLUME = 0.7F;
@@ -276,7 +276,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		int x = leftPos + SoundingTableLayout.RESULT_SLOT_X - 2;
 		int y = topPos + SoundingTableLayout.RESULT_SLOT_Y - 2;
 		int size = SoundingTableLayout.SLOT_SIZE + 4;
-		int lit = glow(0.45F + pulse(partialTick) * 0.55F);
+		int lit = glow(0.25F + pulse(partialTick) * 0.75F);
 		graphics.fill(x, y, x + size, y + 1, lit);
 		graphics.fill(x, y + size - 1, x + size, y + size, lit);
 		graphics.fill(x, y, x + 1, y + size, lit);
@@ -322,7 +322,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 			graphics.fill(x + 1, y + 1, x + width - 1, y + height - 1,
 					chosen ? ROW_CHOSEN : ROW_HOVER);
 			if (chosen) {
-				int lit = glow(0.55F + pulse(partialTick) * 0.45F);
+				int lit = glow(0.35F + pulse(partialTick) * 0.65F);
 				graphics.fill(x, y, x + width, y + 1, lit);
 				graphics.fill(x, y + height - 1, x + width, y + height, lit);
 				graphics.fill(x, y, x + 1, y + height, lit);
@@ -342,7 +342,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		int windowTop = topPos + rulerY(shownHighest());
 		int windowBottom = topPos + rulerY(shownLowest());
 		graphics.fill(x + 2, windowTop, x + width - 2, windowBottom + 1,
-				glow(0.50F + pulse(partialTick) * 0.30F));
+				glow(0.40F + pulse(partialTick) * 0.60F));
 		handle(graphics, windowTop);
 		handle(graphics, windowBottom);
 	}
@@ -364,7 +364,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		int height = SoundingTableLayout.EXTRACT_HEIGHT;
 		graphics.fill(x + 1, y + 1, x + width - 1, y + height - 1,
 				ready ? (hovered ? BUTTON_HOVER : BUTTON_READY) : BUTTON_SPENT);
-		int edge = ready ? glow(0.55F + pulse(partialTick) * 0.45F) : EDGE_SPENT;
+		int edge = ready ? glow(0.30F + pulse(partialTick) * 0.70F) : EDGE_SPENT;
 		graphics.fill(x, y, x + width, y + 1, edge);
 		graphics.fill(x, y + height - 1, x + width, y + height, edge);
 		graphics.fill(x, y, x + 1, y + height, edge);

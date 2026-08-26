@@ -21,7 +21,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class SoundingTableBlock extends Block {
-	private static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 14.0D, 16.0D);
+	private static final VoxelShape SHAPE = net.minecraft.world.phys.shapes.Shapes.or(
+			Block.box(0.0D, 0.0D, 0.0D, 16.0D, 12.0D, 16.0D),
+			Block.box(2.0D, 12.0D, 2.0D, 14.0D, 13.0D, 14.0D));
 
 	public SoundingTableBlock(Properties properties) {
 		super(properties);
