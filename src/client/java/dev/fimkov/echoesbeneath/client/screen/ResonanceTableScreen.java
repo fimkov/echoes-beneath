@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
+import com.mojang.math.Axis;
 import net.minecraft.util.Mth;
 import net.minecraft.resources.ResourceLocation;
 import dev.fimkov.echoesbeneath.registry.EchoSounds;
@@ -57,15 +58,19 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	private static final int TOOLTIP_WIDTH = 170;
 	private static final float FILL_RATE = 0.28F;
 	private static final float FILL_SNAP = 0.02F;
-	private static final float ARRIVAL_TICKS = 9.0F;
-	private static final float ARRIVAL_RING_ALPHA = 0.85F;
-	private static final int ARRIVAL_SPREAD = 10;
+	private static final float CHARGE_RATE = 0.10F;
+	private static final float RING_DEGREES_PER_TICK = 0.55F;
+	private static final int WIRE_LIT = 0xFF29DFEB;
+	private static final int WIRE_HEAD = 0xFFE8FFFF;
+	private static final int RING_FULL_ALPHA = 255;
+	private static final int RING_IDLE_ALPHA = 90;
+	private static final float FEEDER_PORTION = 0.62F;
 
 	private final ItemStack amethystGhost = new ItemStack(Items.AMETHYST_SHARD);
 	private final float[] shown = new float[ResonanceTableLayout.ROW_COUNT];
 	private float animation;
-	private float resultAge;
-	private boolean hadResult;
+	private float charge;
+	private float spin;
 
 	public ResonanceTableScreen(ResonanceTableMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
@@ -97,13 +102,15 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 				shown[index] = target;
 			}
 		}
-		boolean hasResult = !menu.slots.get(ResonanceTableMenu.RESULT_SLOT).getItem().isEmpty();
-		if (hasResult && !hadResult) {
-			resultAge = 0.0F;
-		} else if (resultAge < ARRIVAL_TICKS) {
-			resultAge += 1.0F;
+		float target = menu.slots.get(ResonanceTableMenu.RESULT_SLOT).getItem().isEmpty() ? 0.0F : 1.0F;
+		charge += (target - charge) * CHARGE_RATE;
+		if (Math.abs(target - charge) < FILL_SNAP) {
+			charge = target;
 		}
-		hadResult = hasResult;
+		spin += RING_DEGREES_PER_TICK;
+		if (spin >= 360.0F) {
+			spin -= 360.0F;
+		}
 	}
 
 	private boolean over(int mouseX, int mouseY, int x, int y, int width, int height) {
@@ -182,8 +189,9 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
 		graphics.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
 		renderGhostSlot(graphics);
+		renderRing(graphics, partialTick);
+		renderWires(graphics);
 		renderDialGlow(graphics);
-		renderArrival(graphics);
 		for (int index = 0; index < ResonanceTableLayout.ROW_COUNT; index++) {
 			int y = topPos + ResonanceTableLayout.rowY(index);
 			if (overRow(mouseX, mouseY, index)) {
@@ -223,23 +231,46 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
-	private void renderArrival(GuiGraphics graphics) {
-		if (resultAge >= ARRIVAL_TICKS
-				|| menu.slots.get(ResonanceTableMenu.RESULT_SLOT).getItem().isEmpty()) {
+	private void renderRing(GuiGraphics graphics, float partialTick) {
+		float angle = spin + RING_DEGREES_PER_TICK * partialTick;
+		float alpha = (RING_IDLE_ALPHA + (RING_FULL_ALPHA - RING_IDLE_ALPHA) * charge) / 255.0F;
+		int half = ResonanceTableLayout.RING_SPRITE_SIZE / 2;
+		float centreX = leftPos + ResonanceTableLayout.DIAL_CENTRE_X;
+		float centreY = topPos + ResonanceTableLayout.DIAL_CENTRE_Y;
+		graphics.pose().pushPose();
+		graphics.pose().translate(centreX, centreY, 0.0F);
+		graphics.pose().mulPose(Axis.ZP.rotationDegrees(angle));
+		graphics.pose().translate(-centreX, -centreY, 0.0F);
+		graphics.setColor(1.0F, 1.0F, 1.0F, alpha);
+		graphics.blit(TEXTURE, (int) centreX - half, (int) centreY - half,
+				ResonanceTableLayout.RING_SPRITE_U, ResonanceTableLayout.RING_SPRITE_V,
+				ResonanceTableLayout.RING_SPRITE_SIZE, ResonanceTableLayout.RING_SPRITE_SIZE);
+		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+		graphics.pose().popPose();
+	}
+
+	private void renderWires(GuiGraphics graphics) {
+		if (charge <= 0.0F) {
 			return;
 		}
-		float progress = resultAge / ARRIVAL_TICKS;
-		float alpha = (1.0F - progress) * ARRIVAL_RING_ALPHA;
-		int spread = Math.round(progress * ARRIVAL_SPREAD);
-		graphics.setColor(1.0F, 1.0F, 1.0F, alpha);
-		int size = ResonanceTableLayout.DIAL_GLOW_SIZE + spread * 2;
-		graphics.blit(TEXTURE,
-				leftPos + ResonanceTableLayout.DIAL_CENTRE_X - size / 2,
-				topPos + ResonanceTableLayout.DIAL_CENTRE_Y - size / 2,
-				ResonanceTableLayout.DIAL_GLOW_SIZE, ResonanceTableLayout.DIAL_GLOW_SIZE,
-				GLOW_U, GLOW_V, ResonanceTableLayout.DIAL_GLOW_SIZE,
-				ResonanceTableLayout.DIAL_GLOW_SIZE, 256, 256);
-		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+		List<int[]> lens = ResonanceTableLayout.trace(ResonanceTableLayout.FEEDER_FROM_LENS);
+		List<int[]> amethyst = ResonanceTableLayout.trace(ResonanceTableLayout.FEEDER_FROM_AMETHYST);
+		List<int[]> trunk = ResonanceTableLayout.trace(ResonanceTableLayout.TRUNK_TO_DIAL);
+		float feederShare = Math.min(1.0F, charge / FEEDER_PORTION);
+		float trunkShare = Math.max(0.0F, (charge - FEEDER_PORTION) / (1.0F - FEEDER_PORTION));
+		drawWire(graphics, lens, feederShare);
+		drawWire(graphics, amethyst, feederShare);
+		drawWire(graphics, trunk, trunkShare);
+	}
+
+	private void drawWire(GuiGraphics graphics, List<int[]> path, float share) {
+		int lit = Math.round(Mth.clamp(share, 0.0F, 1.0F) * path.size());
+		for (int index = 0; index < lit; index++) {
+			int[] point = path.get(index);
+			int x = leftPos + point[0];
+			int y = topPos + point[1];
+			graphics.fill(x, y, x + 1, y + 1, index >= lit - 2 ? WIRE_HEAD : WIRE_LIT);
+		}
 	}
 
 	private void renderPips(GuiGraphics graphics, int index, int rowScreenY) {

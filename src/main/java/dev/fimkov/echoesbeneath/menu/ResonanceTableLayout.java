@@ -1,5 +1,8 @@
 package dev.fimkov.echoesbeneath.menu;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class ResonanceTableLayout {
 	public static final int PANEL_WIDTH = 176;
 	public static final int PANEL_HEIGHT = 225;
@@ -60,7 +63,44 @@ public final class ResonanceTableLayout {
 	public static final int INVENTORY_ROWS = 3;
 	public static final int INVENTORY_COLUMNS = 9;
 
+	public static final int[][] FEEDER_FROM_LENS = {{37, 32}, {62, 32}, {62, 42}};
+	public static final int[][] FEEDER_FROM_AMETHYST = {{37, 52}, {62, 52}, {62, 42}};
+	public static final int[][] TRUNK_TO_DIAL = {{62, 42}, {74, 42}};
+
+	public static final int RING_SPRITE_U = 176;
+	public static final int RING_SPRITE_V = 70;
+	public static final int RING_SPRITE_SIZE = 44;
+
 	private ResonanceTableLayout() {
+	}
+
+	public static List<int[]> trace(int[][] corners) {
+		List<int[]> path = new ArrayList<>();
+		for (int index = 0; index < corners.length - 1; index++) {
+			int x = corners[index][0];
+			int y = corners[index][1];
+			int endX = corners[index + 1][0];
+			int endY = corners[index + 1][1];
+			int stepX = Integer.signum(endX - x);
+			int stepY = Integer.signum(endY - y);
+			while (x != endX || y != endY) {
+				addOnce(path, x, y);
+				x += stepX;
+				y += stepY;
+			}
+		}
+		int[] last = corners[corners.length - 1];
+		addOnce(path, last[0], last[1]);
+		return path;
+	}
+
+	private static void addOnce(List<int[]> path, int x, int y) {
+		for (int[] point : path) {
+			if (point[0] == x && point[1] == y) {
+				return;
+			}
+		}
+		path.add(new int[] {x, y});
 	}
 
 	public static int rowY(int index) {
