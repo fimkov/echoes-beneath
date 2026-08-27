@@ -25,6 +25,7 @@ public final class EchoChartModel {
 	private final IntList cells = new IntArrayList();
 	private final List<BlockState> states = new ArrayList<>();
 	private final IntSet occupied = new IntOpenHashSet();
+	private final IntSet opaque = new IntOpenHashSet();
 	private final int spanX;
 	private final int spanY;
 	private final int spanZ;
@@ -79,9 +80,14 @@ public final class EchoChartModel {
 		}
 
 		for (Int2ObjectMap.Entry<Int2IntMap> entry : votes.int2ObjectEntrySet()) {
+			BlockState state = cloud.paletteAt(winner(entry.getValue()));
 			model.cells.add(entry.getIntKey());
-			model.states.add(cloud.paletteAt(winner(entry.getValue())));
+			model.states.add(state);
 			model.occupied.add(entry.getIntKey());
+
+			if (state.isSolidRender()) {
+				model.opaque.add(entry.getIntKey());
+			}
 		}
 
 		return model;
@@ -133,13 +139,19 @@ public final class EchoChartModel {
 		return occupied.contains(pack(x, y, z));
 	}
 
+	// Glass, water, leaves and grass are neighbours you can see straight through,
+	// so they do not count as walls when deciding what to leave out.
+	public boolean blocks(int x, int y, int z) {
+		return opaque.contains(pack(x, y, z));
+	}
+
 	public boolean isBuried(int packed) {
 		int x = cellX(packed);
 		int y = cellY(packed);
 		int z = cellZ(packed);
 
-		return holds(x + 1, y, z) && holds(x - 1, y, z) && holds(x, y + 1, z)
-				&& holds(x, y - 1, z) && holds(x, y, z + 1) && holds(x, y, z - 1);
+		return blocks(x + 1, y, z) && blocks(x - 1, y, z) && blocks(x, y + 1, z)
+				&& blocks(x, y - 1, z) && blocks(x, y, z + 1) && blocks(x, y, z - 1);
 	}
 
 	public float brightness() {
