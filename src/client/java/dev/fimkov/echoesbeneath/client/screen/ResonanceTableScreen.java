@@ -12,7 +12,7 @@ import dev.fimkov.echoesbeneath.registry.EchoSounds;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
@@ -218,7 +218,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	}
 
 	@Override
-	protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+	protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		graphics.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
 		renderGhostSlot(graphics);
 		renderRing(graphics, partialTick);
@@ -243,7 +243,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 
 	private static final int ICON_U = 212;
 
-	private void renderGhostSlot(GuiGraphics graphics) {
+	private void renderGhostSlot(GuiGraphicsExtractor graphics) {
 		if (!menu.amethyst().isEmpty()) {
 			return;
 		}
@@ -253,7 +253,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 				ResonanceTableLayout.SLOT_SIZE, ResonanceTableLayout.SLOT_SIZE);
 	}
 
-	private void renderDialGlow(GuiGraphics graphics, float partialTick) {
+	private void renderDialGlow(GuiGraphicsExtractor graphics, float partialTick) {
 		int size = ResonanceTableLayout.DIAL_GLOW_SIZE;
 		int x = leftPos + ResonanceTableLayout.DIAL_CENTRE_X - size / 2;
 		int y = topPos + ResonanceTableLayout.DIAL_CENTRE_Y - size / 2;
@@ -276,7 +276,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		graphics.disableScissor();
 	}
 
-	private void blitDial(GuiGraphics graphics, int x, int y, float alpha) {
+	private void blitDial(GuiGraphicsExtractor graphics, int x, int y, float alpha) {
 		graphics.setColor(1.0F, 1.0F, 1.0F, alpha);
 		graphics.blit(TEXTURE, x, y, GLOW_U, GLOW_V,
 				ResonanceTableLayout.DIAL_GLOW_SIZE, ResonanceTableLayout.DIAL_GLOW_SIZE);
@@ -289,26 +289,26 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		return Mth.clamp(dialFill + rate * partialTick, 0.0F, 1.0F);
 	}
 
-	private void renderRing(GuiGraphics graphics, float partialTick) {
+	private void renderRing(GuiGraphicsExtractor graphics, float partialTick) {
 		float fill = filledDial(partialTick);
 		float angle = spin + (dialFill > 0.0F ? RING_DEGREES_PER_TICK * partialTick : 0.0F);
 		float alpha = (RING_IDLE_ALPHA + (RING_FULL_ALPHA - RING_IDLE_ALPHA) * fill) / 255.0F;
 		int half = ResonanceTableLayout.RING_SPRITE_SIZE / 2;
 		float centreX = leftPos + ResonanceTableLayout.DIAL_CENTRE_X;
 		float centreY = topPos + ResonanceTableLayout.DIAL_CENTRE_Y;
-		graphics.pose().pushPose();
-		graphics.pose().translate(centreX, centreY, 0.0F);
+		graphics.pose().pushMatrix();
+		graphics.pose().translate(centreX, centreY);
 		graphics.pose().mulPose(Axis.ZP.rotationDegrees(angle));
-		graphics.pose().translate(-centreX, -centreY, 0.0F);
+		graphics.pose().translate(-centreX, -centreY);
 		graphics.setColor(1.0F, 1.0F, 1.0F, alpha);
 		graphics.blit(TEXTURE, (int) centreX - half, (int) centreY - half,
 				ResonanceTableLayout.RING_SPRITE_U, ResonanceTableLayout.RING_SPRITE_V,
 				ResonanceTableLayout.RING_SPRITE_SIZE, ResonanceTableLayout.RING_SPRITE_SIZE);
 		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-		graphics.pose().popPose();
+		graphics.pose().popMatrix();
 	}
 
-	private void renderWires(GuiGraphics graphics) {
+	private void renderWires(GuiGraphicsExtractor graphics) {
 		if (charge <= 0.0F) {
 			return;
 		}
@@ -323,7 +323,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		drawWire(graphics, trunk, trunkShare);
 	}
 
-	private void drawWire(GuiGraphics graphics, List<int[]> path, float share) {
+	private void drawWire(GuiGraphicsExtractor graphics, List<int[]> path, float share) {
 		int lit = Math.round(Mth.clamp(share, 0.0F, 1.0F) * path.size());
 
 		for (int index = 0; index < lit; index++) {
@@ -334,7 +334,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		}
 	}
 
-	private void renderPips(GuiGraphics graphics, int index, int rowScreenY) {
+	private void renderPips(GuiGraphicsExtractor graphics, int index, int rowScreenY) {
 		ResonanceTableUpgrade upgrade = ResonanceTableUpgrade.fromIndex(index);
 		int count = upgrade.maxSteps();
 		boolean empty = menu.lens().isEmpty();
@@ -375,7 +375,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		}
 	}
 
-	private void renderButton(GuiGraphics graphics, int mouseX, int mouseY, int index, boolean increase) {
+	private void renderButton(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int index, boolean increase) {
 		ResonanceTableUpgrade upgrade = ResonanceTableUpgrade.fromIndex(index);
 		int state = STATE_DISABLED;
 
@@ -391,20 +391,20 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	}
 
 	@Override
-	protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-		graphics.drawString(font, title, titleLabelX, titleLabelY, TITLE, true);
-		graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, INK, true);
+	protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+		graphics.text(font, title, titleLabelX, titleLabelY, TITLE, true);
+		graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, INK, true);
 
 		for (int index = 0; index < ResonanceTableLayout.ROW_COUNT; index++) {
 			ResonanceTableUpgrade upgrade = ResonanceTableUpgrade.fromIndex(index);
-			graphics.drawString(font, Component.translatable(upgrade.nameKey()), ResonanceTableLayout.LABEL_X,
+			graphics.text(font, Component.translatable(upgrade.nameKey()), ResonanceTableLayout.LABEL_X,
 					ResonanceTableLayout.rowY(index) + ResonanceTableLayout.LABEL_Y_OFFSET, INK, true);
 		}
 
 		renderCost(graphics);
 	}
 
-	private void renderCost(GuiGraphics graphics) {
+	private void renderCost(GuiGraphicsExtractor graphics) {
 		if (menu.lens().isEmpty()) {
 			return;
 		}
@@ -431,18 +431,18 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 				|| menu.amethyst().getCount() >= plan.amethystShards());
 		Component count = Component.literal(Integer.toString(plan.amethystShards()));
 		int iconX = ResonanceTableLayout.COST_RIGHT - ResonanceTableLayout.SHARD_ICON_SIZE;
-		graphics.renderItem(amethystGhost, iconX, ResonanceTableLayout.COST_SHARD_Y);
-		graphics.drawString(font, count, iconX - 2 - font.width(count),
+		graphics.item(amethystGhost, iconX, ResonanceTableLayout.COST_SHARD_Y);
+		graphics.text(font, count, iconX - 2 - font.width(count),
 				ResonanceTableLayout.COST_SHARD_Y + 4, enough ? DIM : COST_BAD, true);
 	}
 
-	private void drawRight(GuiGraphics graphics, Component text, int y, int colour) {
-		graphics.drawString(font, text, ResonanceTableLayout.COST_RIGHT - font.width(text), y, colour, true);
+	private void drawRight(GuiGraphicsExtractor graphics, Component text, int y, int colour) {
+		graphics.text(font, text, ResonanceTableLayout.COST_RIGHT - font.width(text), y, colour, true);
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-		super.render(graphics, mouseX, mouseY, partialTick);
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+		super.extractRenderState(graphics, mouseX, mouseY, partialTick);
 		renderTooltip(graphics, mouseX, mouseY);
 
 		if (hoveredSlot != null && hoveredSlot.hasItem()) {
@@ -451,7 +451,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 
 		for (int index = 0; index < ResonanceTableLayout.ROW_COUNT; index++) {
 			if (overRow(mouseX, mouseY, index)) {
-				graphics.renderTooltip(font, rowTooltip(index), mouseX, mouseY);
+				graphics.setTooltipForNextFrame(font, rowTooltip(index), mouseX, mouseY);
 
 				return;
 			}

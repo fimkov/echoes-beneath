@@ -4,7 +4,7 @@ import dev.fimkov.echoesbeneath.EchoTranslations;
 import dev.fimkov.echoesbeneath.chart.EchoChartLook;
 import dev.fimkov.echoesbeneath.menu.ChartLookLayout;
 import dev.fimkov.echoesbeneath.menu.ChartLookMenu;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
@@ -83,7 +83,7 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 	}
 
 	@Override
-	protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+	protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		graphics.fill(leftPos, topPos, leftPos + imageWidth, topPos + imageHeight, PANEL);
 		graphics.fill(leftPos, topPos, leftPos + imageWidth, topPos + 1, PANEL_EDGE);
 		graphics.fill(leftPos, topPos + imageHeight - 1, leftPos + imageWidth,
@@ -115,8 +115,8 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 	}
 
 	@Override
-	protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-		graphics.drawString(font, title, titleLabelX, titleLabelY, TITLE, true);
+	protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+		graphics.text(font, title, titleLabelX, titleLabelY, TITLE, true);
 		EchoChartLook look = menu.look();
 
 		String[] names = {EchoTranslations.LOOK_DRIFT, EchoTranslations.LOOK_SPIN,
@@ -128,10 +128,10 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 
 		for (int index = 0; index < ChartLookLayout.ROW_COUNT; index++) {
 			int y = ChartLookLayout.rowY(index) + 5;
-			graphics.drawString(font, Component.translatable(names[index]),
+			graphics.text(font, Component.translatable(names[index]),
 					ChartLookLayout.ROW_X + ChartLookLayout.LABEL_INSET, y, INK, true);
 			int centre = ChartLookLayout.valueX() + ChartLookLayout.VALUE_WIDTH / 2;
-			graphics.drawString(font, values[index], centre - font.width(values[index]) / 2, y,
+			graphics.text(font, values[index], centre - font.width(values[index]) / 2, y,
 					0xE8FFFF, true);
 		}
 	}
@@ -157,8 +157,8 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-		super.render(graphics, mouseX, mouseY, partialTick);
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+		super.extractRenderState(graphics, mouseX, mouseY, partialTick);
 		renderTooltip(graphics, mouseX, mouseY);
 	}
 }

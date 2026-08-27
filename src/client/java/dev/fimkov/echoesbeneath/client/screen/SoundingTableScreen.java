@@ -18,7 +18,7 @@ import dev.fimkov.echoesbeneath.menu.SoundingTablePlan;
 import dev.fimkov.echoesbeneath.registry.EchoSounds;
 import java.util.List;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
@@ -284,7 +284,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	}
 
 	@Override
-	protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+	protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		graphics.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
 		renderRows(graphics, mouseX, mouseY, partialTick);
 		renderRuler(graphics, partialTick);
@@ -294,7 +294,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		renderResultGlow(graphics, partialTick);
 	}
 
-	private void renderResultGlow(GuiGraphics graphics, float partialTick) {
+	private void renderResultGlow(GuiGraphicsExtractor graphics, float partialTick) {
 		if (menu.chart().isEmpty()) {
 			return;
 		}
@@ -309,7 +309,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		graphics.fill(x + size - 1, y, x + size, y + size, lit);
 	}
 
-	private void renderStageEdge(GuiGraphics graphics, float partialTick) {
+	private void renderStageEdge(GuiGraphicsExtractor graphics, float partialTick) {
 		int x = leftPos + SoundingTableLayout.STAGE_X;
 		int y = topPos + SoundingTableLayout.STAGE_Y;
 		int width = SoundingTableLayout.STAGE_WIDTH;
@@ -328,7 +328,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		}
 	}
 
-	private void renderRows(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+	private void renderRows(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		List<EchoMemoryReference> memories = menu.memories();
 
 		for (int index = 0; index < memories.size(); index++) {
@@ -355,7 +355,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		}
 	}
 
-	private void renderRuler(GuiGraphics graphics, float partialTick) {
+	private void renderRuler(GuiGraphicsExtractor graphics, float partialTick) {
 		if (chosen() == null) {
 			return;
 		}
@@ -372,7 +372,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		handle(graphics, windowBottom);
 	}
 
-	private void handle(GuiGraphics graphics, int y) {
+	private void handle(GuiGraphicsExtractor graphics, int y) {
 		int x = leftPos + SoundingTableLayout.RULER_X
 				- (SoundingTableLayout.HANDLE_WIDTH - SoundingTableLayout.RULER_WIDTH) / 2;
 		graphics.fill(x, y - 1, x + SoundingTableLayout.HANDLE_WIDTH,
@@ -380,7 +380,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		graphics.fill(x + 1, y, x + SoundingTableLayout.HANDLE_WIDTH - 1, y + 1, HANDLE_FACE);
 	}
 
-	private void renderExtract(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+	private void renderExtract(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		boolean ready = menu.canExtract() || menu.canReturn();
 		boolean hovered = ready && overExtract(mouseX, mouseY);
 		int x = leftPos + SoundingTableLayout.EXTRACT_X;
@@ -396,7 +396,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		graphics.fill(x + width - 1, y, x + width, y + height, edge);
 	}
 
-	private void renderStage(GuiGraphics graphics, float partialTick) {
+	private void renderStage(GuiGraphicsExtractor graphics, float partialTick) {
 		EchoChartModel model = ClientChartShapes.of(EchoChartPreview.MENU_TARGET);
 
 		if (model == null || model.size() == 0) {
@@ -434,9 +434,9 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	}
 
 	@Override
-	protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-		graphics.drawString(font, title, titleLabelX, titleLabelY, TITLE, true);
-		graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, INK, true);
+	protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+		graphics.text(font, title, titleLabelX, titleLabelY, TITLE, true);
+		graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, INK, true);
 		List<EchoMemoryReference> memories = menu.memories();
 
 		if (menu.lens().isEmpty()) {
@@ -449,10 +449,10 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 			EchoMemoryReference memory = memories.get(index);
 			int colour = index == menu.selectedSlot() ? SELECTED_INK : INK;
 			int y = SoundingTableLayout.rowY(index) + 4;
-			graphics.drawString(font, EchoTextFormat.romanSlot(memory.slot()),
+			graphics.text(font, EchoTextFormat.romanSlot(memory.slot()),
 					SoundingTableLayout.LIST_X + 5, y, colour, true);
 			Component clock = Component.literal(EchoTextFormat.clock(memory.durationTicks()));
-			graphics.drawString(font, clock,
+			graphics.text(font, clock,
 					SoundingTableLayout.LIST_X + SoundingTableLayout.LIST_WIDTH - 5 - font.width(clock),
 					y, DIM, true);
 		}
@@ -460,39 +460,39 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		if (chosen() != null) {
 			Component window = Component.translatable(EchoTranslations.SOUNDING_WINDOW,
 					shownLowest(), shownHighest());
-			graphics.pose().pushPose();
-			graphics.pose().translate(0.0F, 0.0F, OVER_STAGE_Z);
-			graphics.drawString(font, window,
+			graphics.pose().pushMatrix();
+			graphics.pose().translate(0.0F, 0.0F);
+			graphics.text(font, window,
 					SoundingTableLayout.STAGE_X + STAGE_LABEL_INSET,
 					SoundingTableLayout.STAGE_Y + SoundingTableLayout.STAGE_HEIGHT - 11, DIM, true);
-			graphics.pose().popPose();
+			graphics.pose().popMatrix();
 		}
 
 		boolean ready = menu.canExtract() || menu.canReturn();
 		Component extract = Component.translatable(menu.canReturn()
 						? EchoTranslations.SOUNDING_PUT_BACK : EchoTranslations.SOUNDING_EXTRACT)
 				.withStyle(ready ? ChatFormatting.WHITE : ChatFormatting.DARK_GRAY);
-		graphics.drawString(font, extract,
+		graphics.text(font, extract,
 				SoundingTableLayout.EXTRACT_X + (SoundingTableLayout.EXTRACT_WIDTH - font.width(extract)) / 2,
 				SoundingTableLayout.EXTRACT_Y + 4, 0xFFFFFF, true);
 	}
 
-	private void centred(GuiGraphics graphics, Component text, int colour) {
-		graphics.pose().pushPose();
-		graphics.pose().translate(0.0F, 0.0F, OVER_STAGE_Z);
-		graphics.drawString(font, text,
+	private void centred(GuiGraphicsExtractor graphics, Component text, int colour) {
+		graphics.pose().pushMatrix();
+		graphics.pose().translate(0.0F, 0.0F);
+		graphics.text(font, text,
 				SoundingTableLayout.STAGE_X + (SoundingTableLayout.STAGE_WIDTH - font.width(text)) / 2,
 				SoundingTableLayout.STAGE_Y + SoundingTableLayout.STAGE_HEIGHT / 2 - 4, colour, true);
-		graphics.pose().popPose();
+		graphics.pose().popMatrix();
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-		super.render(graphics, mouseX, mouseY, partialTick);
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+		super.extractRenderState(graphics, mouseX, mouseY, partialTick);
 		renderTooltip(graphics, mouseX, mouseY);
 
 		if (hoveredSlot == null && overExtract(mouseX, mouseY)) {
-			graphics.renderTooltip(font, Component.translatable(menu.canReturn()
+			graphics.setTooltipForNextFrame(font, Component.translatable(menu.canReturn()
 					? EchoTranslations.SOUNDING_PUT_BACK_HINT : EchoTranslations.SOUNDING_WARNING),
 					mouseX, mouseY);
 		}
