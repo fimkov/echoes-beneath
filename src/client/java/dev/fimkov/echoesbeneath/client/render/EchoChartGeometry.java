@@ -19,7 +19,6 @@ public final class EchoChartGeometry {
 
 	public static void emit(EchoChartModel model, SubmitNodeCollector submits, PoseStack poseStack) {
 		BlockModelResolver blocks = new BlockModelResolver(Minecraft.getInstance().getModelManager());
-		BlockModelRenderState modelState = new BlockModelRenderState();
 		int light = LightCoordsUtil.pack(Math.round(FULL_BLOCK_LIGHT * model.brightness()), 0);
 		int budget = EchoClientConfig.values().chartBlockBudget();
 		int drawn = 0;
@@ -33,6 +32,9 @@ public final class EchoChartGeometry {
 			poseStack.pushPose();
 			poseStack.translate(EchoChartModel.cellX(cell), EchoChartModel.cellY(cell),
 					EchoChartModel.cellZ(cell));
+			// Submissions are collected and drawn later, so every cell needs a state
+			// of its own rather than a shared one that keeps being overwritten.
+			BlockModelRenderState modelState = new BlockModelRenderState();
 			blocks.update(modelState, model.stateAt(index), BlockDisplayContext.create());
 			modelState.submit(poseStack, submits, light, OverlayTexture.NO_OVERLAY, 0);
 			poseStack.popPose();
