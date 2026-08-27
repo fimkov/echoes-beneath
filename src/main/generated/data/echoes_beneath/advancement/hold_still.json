@@ -13,7 +13,6 @@
       "translate": "advancements.echoes_beneath.hold_still.description"
     },
     "icon": {
-      "count": 1,
       "id": "minecraft:sculk_sensor"
     },
     "title": {

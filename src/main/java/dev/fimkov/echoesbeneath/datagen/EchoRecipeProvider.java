@@ -29,10 +29,17 @@ public class EchoRecipeProvider extends FabricRecipeProvider {
 
 	@Override
 	protected RecipeProvider createRecipeProvider(HolderLookup.Provider registries, RecipeOutput exporter) {
-		return new RecipeProvider(registries, exporter) {
-			@Override
-			public void buildRecipes() {
-				HolderGetter<Item> items = registries.lookupOrThrow(Registries.ITEM);
+		return new Recipes(registries, exporter);
+	}
+
+	private static final class Recipes extends RecipeProvider {
+		private Recipes(HolderLookup.Provider registries, RecipeOutput exporter) {
+			super(registries, exporter);
+		}
+
+		@Override
+		public void buildRecipes() {
+			HolderGetter<Item> items = this.registries.lookupOrThrow(Registries.ITEM);
 
 			ShapedRecipeBuilder.shaped(items, RecipeCategory.TOOLS, EchoItems.ECHO_LENS)
 					.pattern("EEE")
@@ -64,8 +71,7 @@ public class EchoRecipeProvider extends FabricRecipeProvider {
 					.define(DEEPSLATE_KEY, Items.DEEPSLATE_TILES)
 					.unlockedBy(RecipeProvider.getHasName(Items.ECHO_SHARD), this.has(Items.ECHO_SHARD))
 					.save(this.output);
-				}
-		};
+		}
 	}
 
 	@Override

@@ -298,7 +298,8 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 
 	@Override
 	public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, imageWidth, imageHeight);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0.0F, 0.0F,
+				imageWidth, imageHeight, 256, 256);
 		renderRows(graphics, mouseX, mouseY, partialTick);
 		renderRuler(graphics, partialTick);
 		renderExtract(graphics, mouseX, mouseY, partialTick);

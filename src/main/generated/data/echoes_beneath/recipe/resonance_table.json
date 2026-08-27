@@ -1,19 +1,10 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
   "key": {
-    "A": {
-      "item": "minecraft:amethyst_shard"
-    },
-    "B": {
-      "item": "minecraft:amethyst_block"
-    },
-    "D": {
-      "item": "minecraft:deepslate_tiles"
-    },
-    "E": {
-      "item": "minecraft:echo_shard"
-    }
+    "A": "minecraft:amethyst_shard",
+    "B": "minecraft:amethyst_block",
+    "D": "minecraft:deepslate_tiles",
+    "E": "minecraft:echo_shard"
   },
   "pattern": [
     " E ",
@@ -21,7 +12,6 @@
     "DDD"
   ],
   "result": {
-    "count": 1,
     "id": "echoes_beneath:resonance_table"
   }
 }

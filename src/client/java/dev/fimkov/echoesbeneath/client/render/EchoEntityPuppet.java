@@ -22,6 +22,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 public final class EchoEntityPuppet {
+	private static final java.util.concurrent.atomic.AtomicInteger NEXT_PUPPET_ID =
+			new java.util.concurrent.atomic.AtomicInteger(-1);
+
 	private static final String REMEMBERED_PLAYER_NAME = "Echo";
 	private static final EquipmentSlot[] TRACKED_SLOTS = {
 			EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND,
@@ -70,6 +73,9 @@ public final class EchoEntityPuppet {
 			return Optional.empty();
 		}
 
+		// Puppets never join the level, so they carry a private id the renderer can
+		// key its state on.
+		created.setId(NEXT_PUPPET_ID.decrementAndGet());
 		created.setNoGravity(true);
 		created.setSilent(true);
 		created.noPhysics = true;
