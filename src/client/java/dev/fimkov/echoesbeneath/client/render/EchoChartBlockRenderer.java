@@ -61,7 +61,7 @@ public class EchoChartBlockRenderer implements BlockEntityRenderer<EchoChartBloc
 
 		if (EchoClientConfig.values().showChartAura() && (look.runs() || look.motes())) {
 			EchoChartAura.render(poseStack, submits, age, look.motes(), look.runs(),
-					Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation(),
+					camera.orientation,
 					brightness,
 					Math.min(look.boxReach(), halfWide + AURA_MARGIN),
 					look.boxFloor(),

@@ -2,7 +2,7 @@ package dev.fimkov.echoesbeneath.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -64,19 +64,19 @@ public final class EchoChartAura {
 		return value - (float) Math.floor(value);
 	}
 
-	public static void render(PoseStack poseStack, MultiBufferSource consumers, float age,
+	public static void render(PoseStack poseStack, SubmitNodeCollector submits, float age,
 			boolean withMotes, boolean withRuns, Quaternionf camera, float brightness,
 			float reach, float floor, float ceiling) {
-		VertexConsumer consumer = consumers.getBuffer(EchoRenderTypes.ECHO_TEXELS);
 		float band = Math.max(0.05F, ceiling - floor);
+		submits.submitCustomGeometry(poseStack, EchoRenderTypes.ECHO_TEXELS, (pose, consumer) -> {
+			if (withRuns) {
+				runs(consumer, pose.pose(), age, brightness, reach, floor, band);
+			}
 
-		if (withRuns) {
-			runs(consumer, poseStack.last().pose(), age, brightness, reach, floor, band);
-		}
-
-		if (withMotes) {
-			motes(poseStack, consumer, age, camera, brightness, reach, floor, band);
-		}
+			if (withMotes) {
+				motes(poseStack, consumer, age, camera, brightness, reach, floor, band);
+			}
+		});
 	}
 
 	private static void runs(VertexConsumer consumer, Matrix4f pose, float age, float brightness,
