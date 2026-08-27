@@ -1,5 +1,7 @@
 package dev.fimkov.echoesbeneath.client.screen;
 
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import com.mojang.math.Axis;
 import dev.fimkov.echoesbeneath.EchoTranslations;
 import dev.fimkov.echoesbeneath.EchoesBeneath;
@@ -162,7 +164,11 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubled) {
+		double mouseX = event.x();
+		double mouseY = event.y();
+		int button = event.button();
+
 		if (button == 0) {
 			for (int index = 0; index < ResonanceTableLayout.ROW_COUNT; index++) {
 				ResonanceTableUpgrade upgrade = ResonanceTableUpgrade.fromIndex(index);
@@ -186,7 +192,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 			}
 		}
 
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(event, doubled);
 	}
 
 	private void press(int buttonId) {
@@ -219,7 +225,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 
 	@Override
 	protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-		graphics.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, imageWidth, imageHeight);
 		renderGhostSlot(graphics);
 		renderRing(graphics, partialTick);
 		renderWires(graphics);

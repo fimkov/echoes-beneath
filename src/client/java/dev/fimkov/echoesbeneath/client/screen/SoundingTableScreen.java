@@ -1,5 +1,7 @@
 package dev.fimkov.echoesbeneath.client.screen;
 
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -167,7 +169,11 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubled) {
+		double mouseX = event.x();
+		double mouseY = event.y();
+		int button = event.button();
+
 		if (button == 0) {
 			List<EchoMemoryReference> memories = menu.memories();
 
@@ -205,11 +211,15 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 			}
 		}
 
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(event, doubled);
 	}
 
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+	public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+		double mouseX = event.x();
+		double mouseY = event.y();
+		int button = event.button();
+
 		if (turningStage) {
 			heldYaw += (float) dragX * TURN_PER_PIXEL;
 			heldPitch = Mth.clamp(heldPitch + (float) dragY * TURN_PER_PIXEL,
@@ -224,11 +234,15 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 			return true;
 		}
 
-		return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+		return super.mouseDragged(event, dragX, dragY);
 	}
 
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+	public boolean mouseReleased(MouseButtonEvent event) {
+		double mouseX = event.x();
+		double mouseY = event.y();
+		int button = event.button();
+
 		if (pendingValue != Integer.MIN_VALUE) {
 			sendWindow(pendingValue);
 			pendingValue = Integer.MIN_VALUE;
@@ -237,7 +251,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		dragging = -1;
 		turningStage = false;
 
-		return super.mouseReleased(mouseX, mouseY, button);
+		return super.mouseReleased(event);
 	}
 
 	private void dragTo(double mouseY) {
@@ -285,7 +299,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 
 	@Override
 	protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-		graphics.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, imageWidth, imageHeight);
 		renderRows(graphics, mouseX, mouseY, partialTick);
 		renderRuler(graphics, partialTick);
 		renderExtract(graphics, mouseX, mouseY, partialTick);

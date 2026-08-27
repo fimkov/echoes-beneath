@@ -1,5 +1,6 @@
 package dev.fimkov.echoesbeneath.client.screen;
 
+import net.minecraft.client.input.MouseButtonEvent;
 import dev.fimkov.echoesbeneath.EchoTranslations;
 import dev.fimkov.echoesbeneath.chart.EchoChartLook;
 import dev.fimkov.echoesbeneath.menu.ChartLookLayout;
@@ -65,7 +66,11 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubled) {
+		double mouseX = event.x();
+		double mouseY = event.y();
+		int button = event.button();
+
 		if (button == 0) {
 			for (int index = 0; index < ChartLookLayout.ROW_COUNT; index++) {
 				if (overRow((int) mouseX, (int) mouseY, index)) {
@@ -79,7 +84,7 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 			}
 		}
 
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(event, doubled);
 	}
 
 	@Override
