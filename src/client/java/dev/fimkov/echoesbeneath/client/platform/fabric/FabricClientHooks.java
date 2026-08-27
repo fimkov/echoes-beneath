@@ -1,15 +1,16 @@
 package dev.fimkov.echoesbeneath.client.platform.fabric;
 
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import dev.fimkov.echoesbeneath.client.platform.EchoClientHooks;
 import dev.fimkov.echoesbeneath.client.platform.EchoRenderContext;
 import java.util.function.Consumer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
@@ -33,9 +34,9 @@ public final class FabricClientHooks implements EchoClientHooks {
 	}
 
 	@Override
-	public <T extends BlockEntity> void registerBlockEntityRenderer(
+	public <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderer(
 			BlockEntityType<T> type,
-			BlockEntityRendererProvider<T> provider) {
+			BlockEntityRendererProvider<T, S> provider) {
 		BlockEntityRendererRegistry.register(type, provider);
 	}
 
@@ -63,22 +64,26 @@ public final class FabricClientHooks implements EchoClientHooks {
 
 	@Override
 	public void registerKey(KeyMapping mapping) {
-		KeyBindingHelper.registerKeyBinding(mapping);
+		KeyMappingHelper.registerKeyMapping(mapping);
 	}
 
+	// Everything the mod draws is collected in one pass now, so the three old
+	// frame hooks all hang off the submit event.
 	@Override
 	public void onFrameStart(Consumer<EchoRenderContext> handler) {
-		WorldRenderEvents.START.register(context -> handler.accept(new FabricRenderContext(context)));
+		LevelRenderEvents.COLLECT_SUBMITS.register(context ->
+				handler.accept(new FabricRenderContext(context)));
 	}
 
 	@Override
 	public void onAfterEntities(Consumer<EchoRenderContext> handler) {
-		WorldRenderEvents.AFTER_ENTITIES.register(context ->
+		LevelRenderEvents.COLLECT_SUBMITS.register(context ->
 				handler.accept(new FabricRenderContext(context)));
 	}
 
 	@Override
 	public void onFrameEnd(Consumer<EchoRenderContext> handler) {
-		WorldRenderEvents.END.register(context -> handler.accept(new FabricRenderContext(context)));
+		LevelRenderEvents.COLLECT_SUBMITS.register(context ->
+				handler.accept(new FabricRenderContext(context)));
 	}
 }

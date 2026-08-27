@@ -1,5 +1,6 @@
 package dev.fimkov.echoesbeneath.client.platform;
 
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import java.util.function.Consumer;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -18,9 +19,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 public interface EchoClientHooks {
 	<T extends CustomPacketPayload> void receive(CustomPacketPayload.Type<T> type, Consumer<T> handler);
 
-	<T extends BlockEntity> void registerBlockEntityRenderer(
+	<T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderer(
 			BlockEntityType<T> type,
-			BlockEntityRendererProvider<T> provider);
+			BlockEntityRendererProvider<T, S> provider);
 
 	void onClientTick(Runnable handler);
 
