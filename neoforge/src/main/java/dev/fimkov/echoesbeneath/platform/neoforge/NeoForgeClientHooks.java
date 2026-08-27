@@ -6,7 +6,6 @@ import dev.fimkov.echoesbeneath.client.platform.EchoRenderContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -14,9 +13,10 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.Entity;
@@ -30,7 +30,7 @@ import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 public final class NeoForgeClientHooks implements EchoClientHooks {
@@ -38,12 +38,12 @@ public final class NeoForgeClientHooks implements EchoClientHooks {
 	private final IEventBus bus = NeoForge.EVENT_BUS;
 	private final List<KeyMapping> pendingKeys =
 			new ArrayList<>();
-	private final List<BlockEntityBinding<?>> blockEntityRenderers =
+	private final List<BlockEntityBinding<?, ?>> blockEntityRenderers =
 			new ArrayList<>();
 
-	private record BlockEntityBinding<T extends BlockEntity>(
+	private record BlockEntityBinding<T extends BlockEntity, S extends BlockEntityRenderState>(
 			BlockEntityType<T> type,
-			BlockEntityRendererProvider<T> provider) {
+			BlockEntityRendererProvider<T, S> provider) {
 		@SuppressWarnings("unchecked")
 
 		void bind(EntityRenderersEvent.RegisterRenderers event) {
@@ -53,7 +53,7 @@ public final class NeoForgeClientHooks implements EchoClientHooks {
 
 	public void bindBlockEntityRenderers(
 			EntityRenderersEvent.RegisterRenderers event) {
-		for (BlockEntityBinding<?> binding : blockEntityRenderers) {
+		for (BlockEntityBinding<?, ?> binding : blockEntityRenderers) {
 			binding.bind(event);
 		}
 	}
@@ -69,9 +69,9 @@ public final class NeoForgeClientHooks implements EchoClientHooks {
 	}
 
 	@Override
-	public <T extends BlockEntity> void registerBlockEntityRenderer(
+	public <T extends BlockEntity, S extends BlockEntityRenderState> void registerBlockEntityRenderer(
 			BlockEntityType<T> type,
-			BlockEntityRendererProvider<T> provider) {
+			BlockEntityRendererProvider<T, S> provider) {
 		blockEntityRenderers.add(new BlockEntityBinding<>(type, provider));
 	}
 
@@ -109,39 +109,29 @@ public final class NeoForgeClientHooks implements EchoClientHooks {
 		}
 	}
 
+	// Everything the mod draws is collected in one pass now, so the three old
+	// frame hooks all hang off the submit event.
 	@Override
 	public void onFrameStart(Consumer<EchoRenderContext> handler) {
-		bus.addListener(RenderLevelStageEvent.class, event -> {
-			if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
-				handler.accept(wrap(event));
-			}
-		});
+		bus.addListener(SubmitCustomGeometryEvent.class, event -> handler.accept(wrap(event)));
 	}
 
 	@Override
 	public void onAfterEntities(Consumer<EchoRenderContext> handler) {
-		bus.addListener(RenderLevelStageEvent.class, event -> {
-			if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
-				handler.accept(wrap(event));
-			}
-		});
+		bus.addListener(SubmitCustomGeometryEvent.class, event -> handler.accept(wrap(event)));
 	}
 
 	@Override
 	public void onFrameEnd(Consumer<EchoRenderContext> handler) {
-		bus.addListener(RenderLevelStageEvent.class, event -> {
-			if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-				handler.accept(wrap(event));
-			}
-		});
+		bus.addListener(SubmitCustomGeometryEvent.class, event -> handler.accept(wrap(event)));
 	}
 
-	private static EchoRenderContext wrap(RenderLevelStageEvent event) {
-		return new StageContext(event.getPoseStack(), event.getPartialTick(), event.getCamera(),
-				event.getFrustum());
+	private static EchoRenderContext wrap(SubmitCustomGeometryEvent event) {
+		return new StageContext(event.getPoseStack(), event.getSubmitNodeCollector(),
+				event.getLevelRenderState().cameraRenderState);
 	}
 
-	private record StageContext(PoseStack pose, DeltaTracker tracker, Camera view, Frustum bounds)
+	private record StageContext(PoseStack pose, SubmitNodeCollector collector, CameraRenderState view)
 			implements EchoRenderContext {
 		@Override
 
@@ -151,25 +141,19 @@ public final class NeoForgeClientHooks implements EchoClientHooks {
 
 		@Override
 
-		public MultiBufferSource consumers() {
-			return Minecraft.getInstance().renderBuffers().bufferSource();
+		public SubmitNodeCollector submits() {
+			return collector;
 		}
 
 		@Override
 
 		public DeltaTracker tickCounter() {
-			return tracker;
+			return Minecraft.getInstance().getDeltaTracker();
 		}
 
 		@Override
 
-		public Frustum frustum() {
-			return bounds;
-		}
-
-		@Override
-
-		public Camera camera() {
+		public CameraRenderState camera() {
 			return view;
 		}
 

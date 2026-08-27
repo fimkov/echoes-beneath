@@ -44,7 +44,7 @@ public final class EchoesBeneathNeoForge {
 	private boolean contentRegistered;
 
 	public EchoesBeneathNeoForge(IEventBus modBus, ModContainer container) {
-		if (FMLEnvironment.dist == Dist.CLIENT) {
+		if (FMLEnvironment.getDist() == Dist.CLIENT) {
 			container.registerExtensionPoint(
 					IConfigScreenFactory.class,
 					(owner, parent) ->
@@ -66,7 +66,7 @@ public final class EchoesBeneathNeoForge {
 				platform.neoNetwork().publish(event.registrar(PROTOCOL_VERSION)));
 		modBus.addListener(BuildCreativeModeTabContentsEvent.class, platform.neoRegistries()::fillCreativeTab);
 
-		if (FMLEnvironment.dist == Dist.CLIENT) {
+		if (FMLEnvironment.getDist() == Dist.CLIENT) {
 			startClient(modBus);
 		}
 	}
