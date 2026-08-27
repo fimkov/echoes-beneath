@@ -6,7 +6,7 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 
 public final class EchoParticlePlayer {
@@ -60,7 +60,7 @@ public final class EchoParticlePlayer {
 		}
 	}
 
-	private static ParticleOptions optionsFor(ResourceLocation typeId) {
+	private static ParticleOptions optionsFor(Identifier typeId) {
 		ParticleType<?> type = BuiltInRegistries.PARTICLE_TYPE.get(typeId);
 
 		return type instanceof SimpleParticleType simple ? simple : null;

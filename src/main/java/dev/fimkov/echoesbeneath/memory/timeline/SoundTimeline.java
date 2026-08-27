@@ -8,7 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import dev.fimkov.echoesbeneath.memory.EchoCoordinates;
 
@@ -28,8 +28,8 @@ public final class SoundTimeline {
 	private static final float MILLI = 1000.0F;
 	private static final int NBT_STRING_TYPE = Tag.TAG_STRING;
 
-	private final List<ResourceLocation> soundPalette;
-	private final Object2IntMap<ResourceLocation> soundIndices;
+	private final List<Identifier> soundPalette;
+	private final Object2IntMap<Identifier> soundIndices;
 	private final IntList data;
 	private final int maxEvents;
 
@@ -41,7 +41,7 @@ public final class SoundTimeline {
 		this.maxEvents = maxEvents;
 	}
 
-	private SoundTimeline(List<ResourceLocation> soundPalette, IntList data, int maxEvents) {
+	private SoundTimeline(List<Identifier> soundPalette, IntList data, int maxEvents) {
 		this.soundPalette = soundPalette;
 		this.soundIndices = new Object2IntOpenHashMap<>();
 		this.soundIndices.defaultReturnValue(-1);
@@ -55,7 +55,7 @@ public final class SoundTimeline {
 	}
 
 	public boolean record(int tick, double relativeX, double relativeY, double relativeZ,
-			ResourceLocation soundId, SoundSource source, float volume, float pitch) {
+			Identifier soundId, SoundSource source, float volume, float pitch) {
 		if (size() >= maxEvents) {
 			return false;
 		}
@@ -102,7 +102,7 @@ public final class SoundTimeline {
 				&& data.getInt(last * STRIDE + OFFSET_PITCH) == pitch;
 	}
 
-	private int internSound(ResourceLocation soundId) {
+	private int internSound(Identifier soundId) {
 		int existing = soundIndices.getInt(soundId);
 
 		if (existing >= 0) {
@@ -136,11 +136,11 @@ public final class SoundTimeline {
 		return EchoCoordinates.dequantizePosition(data.getInt(index * STRIDE + OFFSET_Z));
 	}
 
-	public ResourceLocation soundAt(int index) {
+	public Identifier soundAt(int index) {
 		int soundIndex = data.getInt(index * STRIDE + OFFSET_SOUND);
 
 		if (soundIndex < 0 || soundIndex >= soundPalette.size()) {
-			return soundPalette.isEmpty() ? ResourceLocation.withDefaultNamespace("intentionally_empty") : soundPalette.getFirst();
+			return soundPalette.isEmpty() ? Identifier.withDefaultNamespace("intentionally_empty") : soundPalette.getFirst();
 		}
 
 		return soundPalette.get(soundIndex);
@@ -162,7 +162,7 @@ public final class SoundTimeline {
 		return SoundWaveStrength.radiusFor(categoryAt(index), volumeAt(index));
 	}
 
-	public List<ResourceLocation> soundPalette() {
+	public List<Identifier> soundPalette() {
 		return List.copyOf(soundPalette);
 	}
 
@@ -174,7 +174,7 @@ public final class SoundTimeline {
 		CompoundTag tag = new CompoundTag();
 		ListTag palette = new ListTag();
 
-		for (ResourceLocation soundId : soundPalette) {
+		for (Identifier soundId : soundPalette) {
 			palette.add(StringTag.valueOf(soundId.toString()));
 		}
 
@@ -185,10 +185,10 @@ public final class SoundTimeline {
 	}
 
 	public static SoundTimeline fromNbt(CompoundTag tag, int maxEvents) {
-		List<ResourceLocation> palette = new ArrayList<>();
+		List<Identifier> palette = new ArrayList<>();
 
-		for (Tag element : tag.getList("palette", NBT_STRING_TYPE)) {
-			ResourceLocation parsed = ResourceLocation.tryParse(element.getAsString());
+		for (Tag element : tag.getListOrEmpty("palette")) {
+			Identifier parsed = Identifier.tryParse(element.getAsString());
 
 			if (parsed == null) {
 				throw new IllegalArgumentException("Sound palette holds an unreadable identifier");
@@ -196,7 +196,7 @@ public final class SoundTimeline {
 			palette.add(parsed);
 		}
 
-		int[] raw = tag.getIntArray("events");
+		int[] raw = tag.getIntArray("events").orElse(new int[0]);
 
 		if (raw.length % STRIDE != 0) {
 			throw new IllegalArgumentException("Sound timeline length " + raw.length + " is not a multiple of " + STRIDE);
@@ -205,7 +205,7 @@ public final class SoundTimeline {
 		return new SoundTimeline(palette, new IntArrayList(raw), maxEvents);
 	}
 
-	public static SoundTimeline fromParts(List<ResourceLocation> palette, int[] raw, int maxEvents) {
+	public static SoundTimeline fromParts(List<Identifier> palette, int[] raw, int maxEvents) {
 		if (raw.length % STRIDE != 0) {
 			throw new IllegalArgumentException("Sound timeline length " + raw.length + " is not a multiple of " + STRIDE);
 		}

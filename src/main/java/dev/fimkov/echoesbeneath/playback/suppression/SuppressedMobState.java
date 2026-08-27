@@ -1,11 +1,12 @@
 package dev.fimkov.echoesbeneath.playback.suppression;
 
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -108,7 +109,7 @@ public record SuppressedMobState(
 
 	public CompoundTag toNbt() {
 		CompoundTag tag = new CompoundTag();
-		tag.putUUID("entity", entityId);
+		tag.putIntArray("entity", UUIDUtil.uuidToIntArray(entityId));
 		tag.putString("dimension", dimension.location().toString());
 		tag.putDouble("x", position.x);
 		tag.putDouble("y", position.y);
@@ -127,7 +128,7 @@ public record SuppressedMobState(
 		tag.putBoolean("no_ai", noAi);
 
 		if (targetId != null) {
-			tag.putUUID("target", targetId);
+			tag.putIntArray("target", UUIDUtil.uuidToIntArray(targetId));
 		}
 
 		ListTag effectList = new ListTag();
@@ -138,7 +139,7 @@ public record SuppressedMobState(
 	}
 
 	public static SuppressedMobState fromNbt(CompoundTag tag) {
-		ResourceLocation dimensionId = ResourceLocation.tryParse(tag.getString("dimension"));
+		Identifier dimensionId = Identifier.tryParse(tag.getStringOr("dimension", ""));
 
 		if (dimensionId == null) {
 			throw new IllegalArgumentException("Suppressed mob state has an unreadable dimension");
@@ -146,25 +147,25 @@ public record SuppressedMobState(
 
 		List<CompoundTag> effects = new ArrayList<>();
 
-		for (Tag element : tag.getList("effects", NBT_COMPOUND_TYPE)) {
+		for (Tag element : tag.getListOrEmpty("effects")) {
 			effects.add((CompoundTag) element);
 		}
 
 		return new SuppressedMobState(
-				tag.getUUID("entity"),
+				UUIDUtil.uuidFromIntArray(tag.getIntArray("entity").orElse(new int[4])),
 				ResourceKey.create(Registries.DIMENSION, dimensionId),
-				new Vec3(tag.getDouble("x"), tag.getDouble("y"), tag.getDouble("z")),
-				new Vec3(tag.getDouble("vx"), tag.getDouble("vy"), tag.getDouble("vz")),
-				tag.getFloat("yaw"),
-				tag.getFloat("pitch"),
-				tag.getFloat("health"),
-				tag.getInt("fire"),
-				tag.getInt("freeze"),
-				tag.getBoolean("invisible"),
-				tag.getBoolean("silent"),
-				tag.getBoolean("invulnerable"),
-				tag.getBoolean("no_ai"),
-				tag.hasUUID("target") ? tag.getUUID("target") : null,
+				new Vec3(tag.getDoubleOr("x", 0.0D), tag.getDoubleOr("y", 0.0D), tag.getDoubleOr("z", 0.0D)),
+				new Vec3(tag.getDoubleOr("vx", 0.0D), tag.getDoubleOr("vy", 0.0D), tag.getDoubleOr("vz", 0.0D)),
+				tag.getFloatOr("yaw", 0.0F),
+				tag.getFloatOr("pitch", 0.0F),
+				tag.getFloatOr("health", 0.0F),
+				tag.getIntOr("fire", 0),
+				tag.getIntOr("freeze", 0),
+				tag.getBooleanOr("invisible", false),
+				tag.getBooleanOr("silent", false),
+				tag.getBooleanOr("invulnerable", false),
+				tag.getBooleanOr("no_ai", false),
+				tag.contains("target") ? UUIDUtil.uuidFromIntArray(tag.getIntArray("target").orElse(new int[4])) : null,
 				List.copyOf(effects));
 	}
 

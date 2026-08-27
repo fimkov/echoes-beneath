@@ -12,7 +12,7 @@ base {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -22,7 +22,7 @@ neoForge {
     runs {
         client {
             client()
-            programArguments.addAll '--username', 'EchoDev'
+            programArguments.addAll '--username', 'fimkov'
         }
         server {
             server()
@@ -56,5 +56,5 @@ sourceSets {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
-    options.release = 21
+    options.release = 25
 }

@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
@@ -72,7 +72,7 @@ public class EchoLensEntityRenderer extends EntityRenderer<EchoLensEntity> {
 	}
 
 	@Override
-	public ResourceLocation getTextureLocation(EchoLensEntity entity) {
+	public Identifier getTextureLocation(EchoLensEntity entity) {
 		return EchoesBeneath.id("textures/item/echo_lens.png");
 	}
 }

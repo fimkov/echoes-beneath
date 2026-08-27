@@ -6,7 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,10 +16,10 @@ public final class EntityTimeline {
 	private static final int NBT_COMPOUND_TYPE = Tag.TAG_COMPOUND;
 	public static final int NO_ITEM_INDEX = -1;
 
-	private final List<ResourceLocation> entityTypePalette;
-	private final Object2IntMap<ResourceLocation> entityTypeIndices;
-	private final List<ResourceLocation> itemPalette;
-	private final Object2IntMap<ResourceLocation> itemIndices;
+	private final List<Identifier> entityTypePalette;
+	private final Object2IntMap<Identifier> entityTypeIndices;
+	private final List<Identifier> itemPalette;
+	private final Object2IntMap<Identifier> itemIndices;
 	private final List<EntityTrack> tracks;
 	private final int maxTracks;
 
@@ -27,7 +27,7 @@ public final class EntityTimeline {
 		this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), maxTracks);
 	}
 
-	private EntityTimeline(List<ResourceLocation> entityTypePalette, List<ResourceLocation> itemPalette,
+	private EntityTimeline(List<Identifier> entityTypePalette, List<Identifier> itemPalette,
 			List<EntityTrack> tracks, int maxTracks) {
 		this.entityTypePalette = entityTypePalette;
 		this.itemPalette = itemPalette;
@@ -51,14 +51,14 @@ public final class EntityTimeline {
 		return tracks.size() < maxTracks;
 	}
 
-	public EntityTrack createTrack(ResourceLocation entityTypeId) {
+	public EntityTrack createTrack(Identifier entityTypeId) {
 		EntityTrack track = new EntityTrack(internEntityType(entityTypeId));
 		tracks.add(track);
 
 		return track;
 	}
 
-	public int internItem(ResourceLocation itemId) {
+	public int internItem(Identifier itemId) {
 		int existing = itemIndices.getInt(itemId);
 
 		if (existing >= 0) {
@@ -72,7 +72,7 @@ public final class EntityTimeline {
 		return index;
 	}
 
-	private int internEntityType(ResourceLocation entityTypeId) {
+	private int internEntityType(Identifier entityTypeId) {
 		int existing = entityTypeIndices.getInt(entityTypeId);
 
 		if (existing >= 0) {
@@ -104,25 +104,25 @@ public final class EntityTimeline {
 		return total;
 	}
 
-	public ResourceLocation entityTypeOf(EntityTrack track) {
+	public Identifier entityTypeOf(EntityTrack track) {
 		int index = track.typeIndex();
 
 		if (index < 0 || index >= entityTypePalette.size()) {
-			return ResourceLocation.withDefaultNamespace("marker");
+			return Identifier.withDefaultNamespace("marker");
 		}
 
 		return entityTypePalette.get(index);
 	}
 
-	public ResourceLocation itemAt(int index) {
+	public Identifier itemAt(int index) {
 		if (index < 0 || index >= itemPalette.size()) {
-			return ResourceLocation.withDefaultNamespace("air");
+			return Identifier.withDefaultNamespace("air");
 		}
 
 		return itemPalette.get(index);
 	}
 
-	public boolean holdsEntityType(ResourceLocation typeId) {
+	public boolean holdsEntityType(Identifier typeId) {
 		for (EntityTrack track : tracks()) {
 			if (entityTypeOf(track).equals(typeId)) {
 				return true;
@@ -132,11 +132,11 @@ public final class EntityTimeline {
 		return false;
 	}
 
-	public List<ResourceLocation> entityTypePalette() {
+	public List<Identifier> entityTypePalette() {
 		return List.copyOf(entityTypePalette);
 	}
 
-	public List<ResourceLocation> itemPalette() {
+	public List<Identifier> itemPalette() {
 		return List.copyOf(itemPalette);
 	}
 
@@ -155,21 +155,21 @@ public final class EntityTimeline {
 		return tag;
 	}
 
-	private static ListTag writeIdentifiers(List<ResourceLocation> identifiers) {
+	private static ListTag writeIdentifiers(List<Identifier> identifiers) {
 		ListTag list = new ListTag();
 
-		for (ResourceLocation identifier : identifiers) {
+		for (Identifier identifier : identifiers) {
 			list.add(StringTag.valueOf(identifier.toString()));
 		}
 
 		return list;
 	}
 
-	private static List<ResourceLocation> readIdentifiers(ListTag list) {
-		List<ResourceLocation> identifiers = new ArrayList<>(list.size());
+	private static List<Identifier> readIdentifiers(ListTag list) {
+		List<Identifier> identifiers = new ArrayList<>(list.size());
 
 		for (Tag element : list) {
-			ResourceLocation parsed = ResourceLocation.tryParse(element.getAsString());
+			Identifier parsed = Identifier.tryParse(element.getAsString());
 
 			if (parsed == null) {
 				throw new IllegalArgumentException("Entity timeline holds an unreadable identifier");
@@ -181,18 +181,18 @@ public final class EntityTimeline {
 	}
 
 	public static EntityTimeline fromNbt(CompoundTag tag, int maxTracks) {
-		List<ResourceLocation> entityTypes = readIdentifiers(tag.getList("entity_types", NBT_STRING_TYPE));
-		List<ResourceLocation> items = readIdentifiers(tag.getList("items", NBT_STRING_TYPE));
+		List<Identifier> entityTypes = readIdentifiers(tag.getListOrEmpty("entity_types"));
+		List<Identifier> items = readIdentifiers(tag.getListOrEmpty("items"));
 		List<EntityTrack> tracks = new ArrayList<>();
 
-		for (Tag element : tag.getList("tracks", NBT_COMPOUND_TYPE)) {
+		for (Tag element : tag.getListOrEmpty("tracks")) {
 			tracks.add(EntityTrack.fromNbt((CompoundTag) element));
 		}
 
 		return new EntityTimeline(entityTypes, items, tracks, Math.max(maxTracks, tracks.size()));
 	}
 
-	public static EntityTimeline fromParts(List<ResourceLocation> entityTypes, List<ResourceLocation> items,
+	public static EntityTimeline fromParts(List<Identifier> entityTypes, List<Identifier> items,
 			List<EntityTrack> tracks, int maxTracks) {
 		return new EntityTimeline(new ArrayList<>(entityTypes), new ArrayList<>(items),
 				new ArrayList<>(tracks), Math.max(maxTracks, tracks.size()));

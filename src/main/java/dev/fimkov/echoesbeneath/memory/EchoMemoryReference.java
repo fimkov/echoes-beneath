@@ -8,7 +8,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 
 import java.util.UUID;
@@ -42,7 +42,7 @@ public record EchoMemoryReference(
 	private static void encode(RegistryFriendlyByteBuf buffer, EchoMemoryReference reference) {
 		buffer.writeUUID(reference.memoryId);
 		buffer.writeVarInt(reference.slot);
-		buffer.writeResourceLocation(reference.dimension.location());
+		buffer.writeIdentifier(reference.dimension.location());
 		buffer.writeBlockPos(reference.center);
 		buffer.writeVarInt(reference.radius);
 		buffer.writeVarInt(reference.verticalRadius);
@@ -53,7 +53,7 @@ public record EchoMemoryReference(
 	private static EchoMemoryReference decode(RegistryFriendlyByteBuf buffer) {
 		UUID memoryId = buffer.readUUID();
 		int slot = buffer.readVarInt();
-		ResourceLocation dimensionId = buffer.readResourceLocation();
+		Identifier dimensionId = buffer.readIdentifier();
 		BlockPos center = buffer.readBlockPos();
 		int radius = buffer.readVarInt();
 		int verticalRadius = buffer.readVarInt();

@@ -9,7 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +29,8 @@ public final class ParticleTimeline {
 	private static final int MAX_COUNT_PER_EVENT = 64;
 	private static final int NBT_STRING_TYPE = Tag.TAG_STRING;
 
-	private final List<ResourceLocation> typePalette;
-	private final Object2IntMap<ResourceLocation> typeIndices;
+	private final List<Identifier> typePalette;
+	private final Object2IntMap<Identifier> typeIndices;
 	private final IntList data;
 	private final int maxEvents;
 
@@ -42,7 +42,7 @@ public final class ParticleTimeline {
 		this.maxEvents = maxEvents;
 	}
 
-	private ParticleTimeline(List<ResourceLocation> typePalette, IntList data, int maxEvents) {
+	private ParticleTimeline(List<Identifier> typePalette, IntList data, int maxEvents) {
 		this.typePalette = typePalette;
 		this.typeIndices = new Object2IntOpenHashMap<>();
 		this.typeIndices.defaultReturnValue(-1);
@@ -56,7 +56,7 @@ public final class ParticleTimeline {
 	}
 
 	public boolean record(int tick, double relativeX, double relativeY, double relativeZ,
-			ResourceLocation typeId, int count, double spreadX, double spreadY, double spreadZ) {
+			Identifier typeId, int count, double spreadX, double spreadY, double spreadZ) {
 		if (size() >= maxEvents) {
 			return false;
 		}
@@ -99,7 +99,7 @@ public final class ParticleTimeline {
 				&& data.getInt(last * STRIDE + OFFSET_TYPE) == typeIndex;
 	}
 
-	private int internType(ResourceLocation typeId) {
+	private int internType(Identifier typeId) {
 		int existing = typeIndices.getInt(typeId);
 
 		if (existing >= 0) {
@@ -133,12 +133,12 @@ public final class ParticleTimeline {
 		return EchoCoordinates.dequantizePosition(data.getInt(index * STRIDE + OFFSET_Z));
 	}
 
-	public ResourceLocation typeAt(int index) {
+	public Identifier typeAt(int index) {
 		int typeIndex = data.getInt(index * STRIDE + OFFSET_TYPE);
 
 		if (typeIndex < 0 || typeIndex >= typePalette.size()) {
 			return typePalette.isEmpty()
-					? ResourceLocation.withDefaultNamespace("intentionally_empty")
+					? Identifier.withDefaultNamespace("intentionally_empty")
 					: typePalette.getFirst();
 		}
 
@@ -161,7 +161,7 @@ public final class ParticleTimeline {
 		return data.getInt(index * STRIDE + OFFSET_SPREAD_Z) / MILLI;
 	}
 
-	public List<ResourceLocation> typePalette() {
+	public List<Identifier> typePalette() {
 		return List.copyOf(typePalette);
 	}
 
@@ -173,7 +173,7 @@ public final class ParticleTimeline {
 		CompoundTag tag = new CompoundTag();
 		ListTag palette = new ListTag();
 
-		for (ResourceLocation typeId : typePalette) {
+		for (Identifier typeId : typePalette) {
 			palette.add(StringTag.valueOf(typeId.toString()));
 		}
 
@@ -184,10 +184,10 @@ public final class ParticleTimeline {
 	}
 
 	public static ParticleTimeline fromNbt(CompoundTag tag, int maxEvents) {
-		List<ResourceLocation> palette = new ArrayList<>();
+		List<Identifier> palette = new ArrayList<>();
 
-		for (Tag element : tag.getList("palette", NBT_STRING_TYPE)) {
-			ResourceLocation parsed = ResourceLocation.tryParse(element.getAsString());
+		for (Tag element : tag.getListOrEmpty("palette")) {
+			Identifier parsed = Identifier.tryParse(element.getAsString());
 
 			if (parsed == null) {
 				throw new IllegalArgumentException("Particle palette holds an unreadable identifier");
@@ -195,10 +195,10 @@ public final class ParticleTimeline {
 			palette.add(parsed);
 		}
 
-		return fromParts(palette, tag.getIntArray("events"), maxEvents);
+		return fromParts(palette, tag.getIntArray("events").orElse(new int[0]), maxEvents);
 	}
 
-	public static ParticleTimeline fromParts(List<ResourceLocation> palette, int[] raw, int maxEvents) {
+	public static ParticleTimeline fromParts(List<Identifier> palette, int[] raw, int maxEvents) {
 		if (raw.length % STRIDE != 0) {
 			throw new IllegalArgumentException(
 					"Particle timeline length " + raw.length + " is not a multiple of " + STRIDE);

@@ -69,7 +69,7 @@ public final class BlockTimeline {
 	}
 
 	public static BlockTimeline fromNbt(CompoundTag tag, int maxEvents) {
-		int[] raw = tag.getIntArray("events");
+		int[] raw = tag.getIntArray("events").orElse(new int[0]);
 
 		if (raw.length % STRIDE != 0) {
 			throw new IllegalArgumentException("Block timeline length " + raw.length + " is not a multiple of " + STRIDE);

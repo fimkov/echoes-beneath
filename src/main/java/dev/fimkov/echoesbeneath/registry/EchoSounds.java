@@ -3,7 +3,7 @@ package dev.fimkov.echoesbeneath.registry;
 import dev.fimkov.echoesbeneath.EchoesBeneath;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 
 public final class EchoSounds {
@@ -23,7 +23,7 @@ public final class EchoSounds {
 	}
 
 	private static SoundEvent of(String path) {
-		ResourceLocation id = EchoesBeneath.id(path);
+		Identifier id = EchoesBeneath.id(path);
 
 		return SoundEvent.createVariableRangeEvent(id);
 	}

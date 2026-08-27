@@ -11,7 +11,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
@@ -26,7 +26,7 @@ public class EchoSoundingTableGameTest implements FabricGameTest {
 	private static ItemStack chart() {
 		ItemStack stack = new ItemStack(EchoItems.ECHO_CHART);
 		stack.set(EchoComponents.CHART_DATA, new EchoChartData(UUID.randomUUID(),
-				ResourceKey.create(Registries.DIMENSION, ResourceLocation.withDefaultNamespace("overworld")),
+				ResourceKey.create(Registries.DIMENSION, Identifier.withDefaultNamespace("overworld")),
 				BlockPos.ZERO, RADIUS, LOWEST, HIGHEST, SOUNDED));
 
 		return stack;

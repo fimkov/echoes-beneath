@@ -9,7 +9,7 @@ import dev.fimkov.echoesbeneath.memory.snapshot.BlockSnapshot;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import dev.fimkov.echoesbeneath.client.platform.EchoRenderContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;

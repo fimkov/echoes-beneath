@@ -14,12 +14,12 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricAdvancementProvider;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
-import net.minecraft.advancements.Criterion;
-import net.minecraft.advancements.critereon.InventoryChangeTrigger;
-import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.advancements.triggers.Criterion;
+import net.minecraft.advancements.triggers.InventoryChangeTrigger;
+import net.minecraft.advancements.predicates.MinMaxBounds;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.item.Items;
 
@@ -31,12 +31,12 @@ import java.util.function.Consumer;
 public class EchoAdvancementProvider extends FabricAdvancementProvider {
 	private static final int FULL_RECORDING_TICKS = 2200;
 
-	private static final List<ResourceLocation> WARDEN_SOUNDS = List.of(
-			ResourceLocation.withDefaultNamespace("entity.warden.roar"),
-			ResourceLocation.withDefaultNamespace("entity.warden.heartbeat"),
-			ResourceLocation.withDefaultNamespace("entity.warden.listening_angry"),
-			ResourceLocation.withDefaultNamespace("entity.warden.sonic_boom"),
-			ResourceLocation.withDefaultNamespace("entity.warden.angry"));
+	private static final List<Identifier> WARDEN_SOUNDS = List.of(
+			Identifier.withDefaultNamespace("entity.warden.roar"),
+			Identifier.withDefaultNamespace("entity.warden.heartbeat"),
+			Identifier.withDefaultNamespace("entity.warden.listening_angry"),
+			Identifier.withDefaultNamespace("entity.warden.sonic_boom"),
+			Identifier.withDefaultNamespace("entity.warden.angry"));
 
 	public EchoAdvancementProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> lookup) {
 		super(output, lookup);
@@ -51,7 +51,7 @@ public class EchoAdvancementProvider extends FabricAdvancementProvider {
 	}
 
 	private static Criterion<MemoryRecordedTrigger.Instance> recorded(MinMaxBounds.Ints sounds,
-			MinMaxBounds.Ints slots, MinMaxBounds.Ints duration, List<ResourceLocation> heardAny) {
+			MinMaxBounds.Ints slots, MinMaxBounds.Ints duration, List<Identifier> heardAny) {
 		return EchoCriteria.MEMORY_RECORDED.createCriterion(
 				new MemoryRecordedTrigger.Instance(Optional.empty(), sounds, slots, duration, heardAny));
 	}
@@ -77,7 +77,7 @@ public class EchoAdvancementProvider extends FabricAdvancementProvider {
 	public void generateAdvancement(HolderLookup.Provider lookup, Consumer<AdvancementHolder> consumer) {
 		AdvancementHolder amethyst = Advancement.Builder.advancement()
 				.display(Items.AMETHYST_SHARD, title("amethyst"), description("amethyst"),
-						ResourceLocation.withDefaultNamespace("textures/block/sculk.png"),
+						Identifier.withDefaultNamespace("textures/block/sculk.png"),
 						AdvancementType.TASK, true, true, false)
 				.addCriterion("has_amethyst", InventoryChangeTrigger.TriggerInstance.hasItems(Items.AMETHYST_SHARD))
 				.save(consumer, EchoesBeneath.id("amethyst").toString());

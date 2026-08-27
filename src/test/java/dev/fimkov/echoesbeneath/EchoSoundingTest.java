@@ -16,7 +16,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.block.Blocks;
@@ -101,7 +101,7 @@ class EchoSoundingTest {
 
 	private static SoundTimeline oneSoundInTheOpenRoom() {
 		SoundTimeline sounds = new SoundTimeline(64);
-		sounds.record(10, 0.5D, 0.5D, 0.5D, ResourceLocation.withDefaultNamespace("block.stone.break"),
+		sounds.record(10, 0.5D, 0.5D, 0.5D, Identifier.withDefaultNamespace("block.stone.break"),
 				SoundSource.BLOCKS, 1.0F, 1.0F);
 
 		return sounds;

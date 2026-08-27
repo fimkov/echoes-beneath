@@ -24,7 +24,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.Bootstrap;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.block.Blocks;
@@ -118,7 +118,7 @@ class EchoPersistenceTest {
 
 		assertEquals(1, reloaded.soundTimeline().size());
 		assertEquals(120, reloaded.soundTimeline().tickAt(0));
-		assertEquals(ResourceLocation.withDefaultNamespace("entity.zombie.ambient"),
+		assertEquals(Identifier.withDefaultNamespace("entity.zombie.ambient"),
 				reloaded.soundTimeline().soundAt(0));
 		assertEquals(4.0D, reloaded.soundTimeline().relativeXAt(0), 0.01D);
 		assertEquals(-8.0D, reloaded.soundTimeline().relativeZAt(0), 0.01D);
@@ -225,18 +225,18 @@ class EchoPersistenceTest {
 				BlockPalette.AIR_INDEX, bricks);
 
 		EntityTimeline entityTimeline = new EntityTimeline(64);
-		EntityTrack track = entityTimeline.createTrack(ResourceLocation.withDefaultNamespace("zombie"));
+		EntityTrack track = entityTimeline.createTrack(Identifier.withDefaultNamespace("zombie"));
 		track.addKeyframe(0, 1.0D, 0.0D, 1.0D, 45.0F, 0.0F, 45.0F, true, 0, false);
 		track.addAction(20, EchoEntityAction.HURT);
 
 		SoundTimeline soundTimeline = new SoundTimeline(MAX_EVENTS);
 		soundTimeline.record(120, 4.0D, 1.0D, -8.0D,
-				ResourceLocation.withDefaultNamespace("entity.zombie.ambient"),
+				Identifier.withDefaultNamespace("entity.zombie.ambient"),
 				SoundSource.HOSTILE, 1.0F, 0.95F);
 
 		ParticleTimeline particleTimeline = new ParticleTimeline(MAX_EVENTS);
 		particleTimeline.record(120, 4.0D, 1.0D, -8.0D,
-				ResourceLocation.withDefaultNamespace("sculk_soul"), 3, 0.2D, 0.1D, 0.2D);
+				Identifier.withDefaultNamespace("sculk_soul"), 3, 0.2D, 0.1D, 0.2D);
 
 		return new EchoMemoryRecord(id, SLOT, EchoFormat.CURRENT_VERSION, EchoTestSupport.OVERWORLD,
 				new BlockPos(120, 40, -60), 50, 32, 1_700_000_000_000L, 2400,

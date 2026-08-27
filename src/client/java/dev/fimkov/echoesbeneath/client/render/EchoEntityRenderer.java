@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
@@ -71,7 +71,7 @@ public final class EchoEntityRenderer {
 	}
 
 
-	private static ResourceLocation textureOf(EntityRenderDispatcher dispatcher, Entity entity) {
+	private static Identifier textureOf(EntityRenderDispatcher dispatcher, Entity entity) {
 		return castRenderer(dispatcher.getRenderer(entity)).getTextureLocation(entity);
 	}
 

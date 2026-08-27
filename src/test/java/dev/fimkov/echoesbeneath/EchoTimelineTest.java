@@ -7,7 +7,7 @@ import dev.fimkov.echoesbeneath.memory.timeline.EntityTrack;
 import dev.fimkov.echoesbeneath.memory.timeline.SoundTimeline;
 import dev.fimkov.echoesbeneath.memory.EchoCoordinates;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,10 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EchoTimelineTest {
 	private static final int MAX_EVENTS = 4096;
-	private static final ResourceLocation DOOR_OPEN =
-			ResourceLocation.withDefaultNamespace("block.wooden_door.open");
-	private static final ResourceLocation ZOMBIE_AMBIENT =
-			ResourceLocation.withDefaultNamespace("entity.zombie.ambient");
+	private static final Identifier DOOR_OPEN =
+			Identifier.withDefaultNamespace("block.wooden_door.open");
+	private static final Identifier ZOMBIE_AMBIENT =
+			Identifier.withDefaultNamespace("entity.zombie.ambient");
 
 	@Test
 	@DisplayName("a sound event keeps its identifier, tick, position, volume and pitch")
@@ -114,11 +114,11 @@ class EchoTimelineTest {
 	@DisplayName("entity keyframes are stored and reloaded without losing motion")
 	void entityKeyframesRoundTrip() {
 		EntityTimeline timeline = new EntityTimeline(16);
-		EntityTrack track = timeline.createTrack(ResourceLocation.withDefaultNamespace("zombie"));
+		EntityTrack track = timeline.createTrack(Identifier.withDefaultNamespace("zombie"));
 		track.addKeyframe(0, 0.0D, 0.0D, 0.0D, 0.0F, 0.0F, 0.0F, true, 0, false);
 		track.addKeyframe(4, 1.5D, 0.25D, -2.0D, 90.0F, 10.0F, 95.0F, false, 1, true);
 		track.addAction(4, EchoEntityAction.SWING);
-		timeline.internItem(ResourceLocation.withDefaultNamespace("iron_sword"));
+		timeline.internItem(Identifier.withDefaultNamespace("iron_sword"));
 		track.addEquipment(0, 0, 0);
 
 		EntityTimeline restored = EntityTimeline.fromNbt(timeline.toNbt(), 16);
@@ -133,8 +133,8 @@ class EchoTimelineTest {
 		assertTrue(restoredTrack.keyframeBaby(1));
 		assertTrue(restoredTrack.keyframeOnGround(0));
 		assertEquals(EchoEntityAction.SWING, restoredTrack.actionAt(0));
-		assertEquals(ResourceLocation.withDefaultNamespace("zombie"), restored.entityTypeOf(restoredTrack));
-		assertEquals(ResourceLocation.withDefaultNamespace("iron_sword"), restored.itemAt(0));
+		assertEquals(Identifier.withDefaultNamespace("zombie"), restored.entityTypeOf(restoredTrack));
+		assertEquals(Identifier.withDefaultNamespace("iron_sword"), restored.itemAt(0));
 	}
 
 	@Test
@@ -142,8 +142,8 @@ class EchoTimelineTest {
 	void entityLimitIsEnforced() {
 		EntityTimeline timeline = new EntityTimeline(2);
 		assertTrue(timeline.hasCapacity());
-		timeline.createTrack(ResourceLocation.withDefaultNamespace("zombie"));
-		timeline.createTrack(ResourceLocation.withDefaultNamespace("skeleton"));
+		timeline.createTrack(Identifier.withDefaultNamespace("zombie"));
+		timeline.createTrack(Identifier.withDefaultNamespace("skeleton"));
 		assertTrue(!timeline.hasCapacity());
 		assertEquals(2, timeline.trackCount());
 	}
@@ -152,7 +152,7 @@ class EchoTimelineTest {
 	@DisplayName("interpolation between neighbouring keyframes does not teleport")
 	void neighbouringKeyframesStayClose() {
 		EntityTimeline timeline = new EntityTimeline(4);
-		EntityTrack track = timeline.createTrack(ResourceLocation.withDefaultNamespace("zombie"));
+		EntityTrack track = timeline.createTrack(Identifier.withDefaultNamespace("zombie"));
 		double previousX = 0.0D;
 
 		for (int tick = 0; tick <= 40; tick += 4) {

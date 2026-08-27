@@ -4,7 +4,7 @@ import dev.fimkov.echoesbeneath.recording.EchoRecordingHooks;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,7 +22,7 @@ public abstract class ServerLevelParticleMixin {
 			return;
 		}
 
-		ResourceLocation typeId = BuiltInRegistries.PARTICLE_TYPE.getKey(options.getType());
+		Identifier typeId = BuiltInRegistries.PARTICLE_TYPE.getKey(options.getType());
 
 		if (typeId == null) {
 			return;

@@ -38,21 +38,21 @@ class EchoStructureTemplateTest {
 				.getResourceAsStream("/data/echoes_beneath/structure/" + name + ".nbt")) {
 			assertNotNull(stream, name + " is missing");
 			CompoundTag root = NbtIo.readCompressed(stream, NbtAccounter.unlimitedHeap());
-			ListTag palette = root.getList("palette", Tag.TAG_COMPOUND);
+			ListTag palette = root.getListOrEmpty("palette");
 			List<String> names = new ArrayList<>();
 
 			for (int index = 0; index < palette.size(); index++) {
-				names.add(palette.getCompound(index).getString("Name"));
+				names.add(palette.getCompoundOrEmpty(index).getStringOr("Name", ""));
 			}
 			Map<List<Integer>, String> blocks = new HashMap<>();
 			List<List<Integer>> tables = new ArrayList<>();
-			ListTag placed = root.getList("blocks", Tag.TAG_COMPOUND);
+			ListTag placed = root.getListOrEmpty("blocks");
 
 			for (int index = 0; index < placed.size(); index++) {
-				CompoundTag entry = placed.getCompound(index);
-				ListTag position = entry.getList("pos", Tag.TAG_INT);
+				CompoundTag entry = placed.getCompoundOrEmpty(index);
+				ListTag position = entry.getListOrEmpty("pos");
 				List<Integer> key = List.of(position.getInt(0), position.getInt(1), position.getInt(2));
-				String block = names.get(entry.getInt("state"));
+				String block = names.get(entry.getIntOr("state", 0));
 				blocks.put(key, block);
 
 				if (block.equals(TABLE)) {

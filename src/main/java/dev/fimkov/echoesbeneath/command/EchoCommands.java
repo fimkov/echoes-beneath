@@ -49,6 +49,6 @@ public final class EchoCommands {
 
 	private static int locateStructure(CommandContext<CommandSourceStack> context)
 			throws CommandSyntaxException {
-		return EchoCommandActions.locateStructure(context, StringArgumentType.getString(context, STRUCTURE_ARGUMENT));
+		return EchoCommandActions.locateStructure(context, StringArgumentType.getStringOr(context, STRUCTURE_ARGUMENT, ""));
 	}
 }

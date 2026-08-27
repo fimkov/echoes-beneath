@@ -9,7 +9,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 
 public record PlaybackStartPayload(
@@ -30,7 +30,7 @@ public record PlaybackStartPayload(
 
 	private static void encode(RegistryFriendlyByteBuf buffer, PlaybackStartPayload payload) {
 		buffer.writeUUID(payload.playbackId);
-		buffer.writeResourceLocation(payload.dimension.location());
+		buffer.writeIdentifier(payload.dimension.location());
 		buffer.writeBlockPos(payload.center);
 		buffer.writeVarInt(payload.radius);
 		buffer.writeVarInt(payload.verticalRadius);
@@ -41,7 +41,7 @@ public record PlaybackStartPayload(
 
 	private static PlaybackStartPayload decode(RegistryFriendlyByteBuf buffer) {
 		UUID playbackId = buffer.readUUID();
-		ResourceLocation dimensionId = buffer.readResourceLocation();
+		Identifier dimensionId = buffer.readIdentifier();
 		BlockPos center = buffer.readBlockPos();
 		int radius = clamp(buffer.readVarInt(), EchoPayloadLimits.MAX_RADIUS);
 		int verticalRadius = clamp(buffer.readVarInt(), EchoPayloadLimits.MAX_RADIUS);

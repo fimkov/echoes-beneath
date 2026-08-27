@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -177,7 +177,7 @@ public final class EchoRecordingSession {
 				palette.indexOf(previous), palette.indexOf(current));
 	}
 
-	public void onSound(double x, double y, double z, ResourceLocation soundId, SoundSource source,
+	public void onSound(double x, double y, double z, Identifier soundId, SoundSource source,
 			float volume, float pitch) {
 		if (finished || !EchoSoundCategory.isRecordable(source)) {
 			return;
@@ -198,7 +198,7 @@ public final class EchoRecordingSession {
 		soundTimeline.record(currentTick, relativeX, relativeY, relativeZ, soundId, source, volume, pitch);
 	}
 
-	public void onParticle(double x, double y, double z, ResourceLocation typeId, int count,
+	public void onParticle(double x, double y, double z, Identifier typeId, int count,
 			double spreadX, double spreadY, double spreadZ) {
 		if (finished) {
 			return;

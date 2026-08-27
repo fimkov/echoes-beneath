@@ -30,7 +30,7 @@ public final class EchoSuppressionStore extends SavedData {
 	private static EchoSuppressionStore load(CompoundTag tag, HolderLookup.Provider lookup) {
 		EchoSuppressionStore store = new EchoSuppressionStore();
 
-		for (Tag element : tag.getList("states", NBT_COMPOUND_TYPE)) {
+		for (Tag element : tag.getListOrEmpty("states")) {
 			try {
 				SuppressedMobState state = SuppressedMobState.fromNbt((CompoundTag) element);
 				store.pending.put(state.entityId(), state);

@@ -11,7 +11,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SculkChargeParticleOptions;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
@@ -58,7 +58,7 @@ public final class EchoSoundPlayer {
 	}
 
 	private void emit(ClientLevel level, int index, int tick) {
-		ResourceLocation soundId = timeline.soundAt(index);
+		Identifier soundId = timeline.soundAt(index);
 		SoundEvent event = BuiltInRegistries.SOUND_EVENT.get(soundId);
 		boolean remembered = event != null;
 

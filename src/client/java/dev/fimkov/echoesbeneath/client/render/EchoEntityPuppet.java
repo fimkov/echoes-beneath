@@ -3,7 +3,7 @@ package dev.fimkov.echoesbeneath.client.render;
 import dev.fimkov.echoesbeneath.memory.timeline.EntityTimeline;
 import dev.fimkov.echoesbeneath.memory.timeline.EntityTrack;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -53,7 +53,7 @@ public final class EchoEntityPuppet {
 			return Optional.empty();
 		}
 
-		ResourceLocation typeId = timeline.entityTypeOf(track);
+		Identifier typeId = timeline.entityTypeOf(track);
 		Optional<EntityType<?>> type = BuiltInRegistries.ENTITY_TYPE.getOptional(typeId);
 
 		if (type.isEmpty()) {
@@ -139,7 +139,7 @@ public final class EchoEntityPuppet {
 			if (slotIndex < 0 || slotIndex >= TRACKED_SLOTS.length) {
 				continue;
 			}
-			ResourceLocation itemId = timeline.itemAt(track.equipmentItem(index));
+			Identifier itemId = timeline.itemAt(track.equipmentItem(index));
 			Item item = BuiltInRegistries.ITEM.get(itemId);
 			living.setItemSlot(TRACKED_SLOTS[slotIndex], new ItemStack(item));
 		}

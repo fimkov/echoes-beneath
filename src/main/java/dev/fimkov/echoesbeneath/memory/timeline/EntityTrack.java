@@ -167,9 +167,9 @@ public final class EntityTrack {
 	}
 
 	public static EntityTrack fromNbt(CompoundTag tag) {
-		int[] keyframeData = tag.getIntArray("keyframes");
-		int[] actionData = tag.getIntArray("actions");
-		int[] equipmentData = tag.getIntArray("equipment");
+		int[] keyframeData = tag.getIntArray("keyframes").orElse(new int[0]);
+		int[] actionData = tag.getIntArray("actions").orElse(new int[0]);
+		int[] equipmentData = tag.getIntArray("equipment").orElse(new int[0]);
 
 		if (keyframeData.length % KEYFRAME_STRIDE != 0
 				|| actionData.length % ACTION_STRIDE != 0
@@ -178,7 +178,7 @@ public final class EntityTrack {
 			throw new IllegalArgumentException("Entity track arrays have inconsistent lengths");
 		}
 
-		return new EntityTrack(tag.getInt("type"), new IntArrayList(keyframeData),
+		return new EntityTrack(tag.getIntOr("type", 0), new IntArrayList(keyframeData),
 				new IntArrayList(actionData), new IntArrayList(equipmentData));
 	}
 }

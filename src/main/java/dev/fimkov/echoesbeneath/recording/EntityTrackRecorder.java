@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -51,7 +51,7 @@ public final class EntityTrackRecorder {
 			if (!timeline.hasCapacity()) {
 				return;
 			}
-			ResourceLocation typeId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+			Identifier typeId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
 			state = new TrackedEntity(timeline.createTrack(typeId));
 			tracked.put(entity.getUUID(), state);
 			writeKeyframe(state, entity, tick);
@@ -172,7 +172,7 @@ public final class EntityTrackRecorder {
 
 		for (int slotIndex = 0; slotIndex < TRACKED_SLOTS.length; slotIndex++) {
 			ItemStack stack = living.getItemBySlot(TRACKED_SLOTS[slotIndex]);
-			ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+			Identifier itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
 			int itemIndex = timeline.internItem(itemId);
 
 			if (force || state.lastEquipment[slotIndex] != itemIndex) {

@@ -2,7 +2,7 @@ package dev.fimkov.echoesbeneath.recording;
 
 import dev.fimkov.echoesbeneath.runtime.EchoServerState;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
@@ -50,7 +50,7 @@ public final class EchoRecordingHooks {
 		}
 	}
 
-	public static void onSound(ServerLevel level, double x, double y, double z, ResourceLocation soundId,
+	public static void onSound(ServerLevel level, double x, double y, double z, Identifier soundId,
 			SoundSource source, float volume, float pitch) {
 		if (!isCapturing()) {
 			return;
@@ -67,7 +67,7 @@ public final class EchoRecordingHooks {
 		}
 	}
 
-	public static void onParticle(ServerLevel level, double x, double y, double z, ResourceLocation typeId,
+	public static void onParticle(ServerLevel level, double x, double y, double z, Identifier typeId,
 			int count, double spreadX, double spreadY, double spreadZ) {
 		if (!isCapturing()) {
 			return;

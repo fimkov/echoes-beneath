@@ -1,7 +1,7 @@
 package dev.fimkov.echoesbeneath;
 
 import dev.fimkov.echoesbeneath.memory.timeline.ParticleTimeline;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -10,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EchoParticleTimelineTest {
 	private static final int MAX_EVENTS = 512;
-	private static final ResourceLocation SOUL = ResourceLocation.withDefaultNamespace("sculk_soul");
-	private static final ResourceLocation SMOKE = ResourceLocation.withDefaultNamespace("smoke");
+	private static final Identifier SOUL = Identifier.withDefaultNamespace("sculk_soul");
+	private static final Identifier SMOKE = Identifier.withDefaultNamespace("smoke");
 
 	@Test
 	@DisplayName("a recorded burst keeps its tick, place, type, count and spread")

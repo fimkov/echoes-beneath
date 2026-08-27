@@ -13,7 +13,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
@@ -78,7 +78,7 @@ public record EchoMemoryRecord(
 
 	public static EchoMemoryRecord fromNbt(CompoundTag tag, HolderGetter<Block> blockLookup,
 			int maxBlockEvents, int maxEntityTracks, int maxSoundEvents, int maxParticleEvents) {
-		int formatVersion = tag.getInt("format_version");
+		int formatVersion = tag.getIntOr("format_version", 0);
 
 		if (!EchoFormat.isSupported(formatVersion)) {
 			throw new EchoMemoryFormatException("Unsupported memory format version " + formatVersion);
@@ -90,19 +90,19 @@ public record EchoMemoryRecord(
 			throw new EchoMemoryFormatException("Memory record has no identity");
 		}
 
-		ResourceLocation dimensionId = ResourceLocation.tryParse(tag.getString("dimension"));
+		Identifier dimensionId = Identifier.tryParse(tag.getStringOr("dimension", ""));
 
 		if (dimensionId == null) {
 			throw new EchoMemoryFormatException("Memory record has an unreadable dimension");
 		}
 
-		int slot = tag.getInt("slot");
+		int slot = tag.getIntOr("slot", 0);
 
 		if (slot < 0 || slot >= EchoFormat.MAX_MEMORY_SLOTS) {
 			throw new EchoMemoryFormatException("Memory record has an out of range slot " + slot);
 		}
 
-		BlockPos center = new BlockPos(tag.getInt("center_x"), tag.getInt("center_y"), tag.getInt("center_z"));
+		BlockPos center = new BlockPos(tag.getIntOr("center_x", 0), tag.getIntOr("center_y", 0), tag.getIntOr("center_z", 0));
 
 		return new EchoMemoryRecord(
 				id,
@@ -110,25 +110,25 @@ public record EchoMemoryRecord(
 				formatVersion,
 				ResourceKey.create(Registries.DIMENSION, dimensionId),
 				center,
-				tag.getInt("radius"),
-				tag.getInt("vertical_radius"),
-				tag.getLong("created_at"),
-				tag.getInt("duration_ticks"),
-				BlockSnapshot.fromNbt(tag.getCompound("snapshot"), blockLookup),
-				BlockTimeline.fromNbt(tag.getCompound("block_timeline"), maxBlockEvents),
-				EntityTimeline.fromNbt(tag.getCompound("entity_timeline"), maxEntityTracks),
-				SoundTimeline.fromNbt(tag.getCompound("sound_timeline"), maxSoundEvents),
+				tag.getIntOr("radius", 0),
+				tag.getIntOr("vertical_radius", 0),
+				tag.getLongOr("created_at", 0L),
+				tag.getIntOr("duration_ticks", 0),
+				BlockSnapshot.fromNbt(tag.getCompoundOrEmpty("snapshot"), blockLookup),
+				BlockTimeline.fromNbt(tag.getCompoundOrEmpty("block_timeline"), maxBlockEvents),
+				EntityTimeline.fromNbt(tag.getCompoundOrEmpty("entity_timeline"), maxEntityTracks),
+				SoundTimeline.fromNbt(tag.getCompoundOrEmpty("sound_timeline"), maxSoundEvents),
 				tag.contains("particle_timeline")
-						? ParticleTimeline.fromNbt(tag.getCompound("particle_timeline"), maxParticleEvents)
+						? ParticleTimeline.fromNbt(tag.getCompoundOrEmpty("particle_timeline"), maxParticleEvents)
 						: new ParticleTimeline(maxParticleEvents),
 				readPlayers(tag),
-				tag.contains("recorded_vision") ? tag.getInt("recorded_vision") : VISION_UNKNOWN);
+				tag.contains("recorded_vision") ? tag.getIntOr("recorded_vision", 0) : VISION_UNKNOWN);
 	}
 
 	private static List<UUID> readPlayers(CompoundTag tag) {
 		List<UUID> players = new ArrayList<>();
 
-		for (Tag element : tag.getList("recorded_players", Tag.TAG_INT_ARRAY)) {
+		for (Tag element : tag.getListOrEmpty("recorded_players")) {
 			players.add(NbtUtils.loadUUID(element));
 		}
 

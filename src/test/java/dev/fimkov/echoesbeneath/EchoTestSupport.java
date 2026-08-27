@@ -4,16 +4,16 @@ import dev.fimkov.echoesbeneath.memory.EchoMemoryReference;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 
 import java.util.UUID;
 
 public final class EchoTestSupport {
 	public static final ResourceKey<Level> OVERWORLD =
-			ResourceKey.create(Registries.DIMENSION, ResourceLocation.withDefaultNamespace("overworld"));
+			ResourceKey.create(Registries.DIMENSION, Identifier.withDefaultNamespace("overworld"));
 	public static final ResourceKey<Level> NETHER =
-			ResourceKey.create(Registries.DIMENSION, ResourceLocation.withDefaultNamespace("the_nether"));
+			ResourceKey.create(Registries.DIMENSION, Identifier.withDefaultNamespace("the_nether"));
 
 	public static final int DEFAULT_RADIUS = 50;
 	public static final int DEFAULT_VERTICAL_RADIUS = 32;

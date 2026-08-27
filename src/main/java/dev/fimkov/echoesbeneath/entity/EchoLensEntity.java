@@ -1,5 +1,6 @@
 package dev.fimkov.echoesbeneath.entity;
 
+import net.minecraft.core.UUIDUtil;
 import dev.fimkov.echoesbeneath.registry.EchoEntities;
 import dev.fimkov.echoesbeneath.runtime.EchoLensReturn;
 import java.util.Optional;
@@ -307,7 +308,7 @@ public class EchoLensEntity extends Entity {
 			return Vec3.ZERO;
 		}
 
-		ListTag values = tag.getList(key, Tag.TAG_DOUBLE);
+		ListTag values = tag.getListOrEmpty(key);
 
 		if (values.size() != 3) {
 			return Vec3.ZERO;
@@ -326,17 +327,17 @@ public class EchoLensEntity extends Entity {
 
 	@Override
 	protected void readAdditionalSaveData(CompoundTag tag) {
-		this.entityData.set(DATA_MODE, tag.getInt("mode"));
-		this.ownerId = tag.hasUUID("owner") ? tag.getUUID("owner") : null;
-		this.sessionId = tag.hasUUID("session") ? tag.getUUID("session") : null;
-		this.orphanTicks = tag.getInt("orphan_ticks");
-		this.arrivalTicksTotal = tag.getInt("arrival_total");
-		this.arrivalTicksRemaining = tag.getInt("arrival_left");
+		this.entityData.set(DATA_MODE, tag.getIntOr("mode", 0));
+		this.ownerId = tag.contains("owner") ? UUIDUtil.uuidFromIntArray(tag.getIntArray("owner").orElse(new int[4])) : null;
+		this.sessionId = tag.contains("session") ? UUIDUtil.uuidFromIntArray(tag.getIntArray("session").orElse(new int[4])) : null;
+		this.orphanTicks = tag.getIntOr("orphan_ticks", 0);
+		this.arrivalTicksTotal = tag.getIntOr("arrival_total", 0);
+		this.arrivalTicksRemaining = tag.getIntOr("arrival_left", 0);
 		this.arrivalOrigin = readVector(tag, "arrival_origin");
 		this.arrivalTarget = readVector(tag, "arrival_target");
 
 		if (tag.contains("lens")) {
-			this.setLens(ItemStack.parse(this.registryAccess(), tag.getCompound("lens")).orElse(ItemStack.EMPTY));
+			this.setLens(ItemStack.parse(this.registryAccess(), tag.getCompoundOrEmpty("lens")).orElse(ItemStack.EMPTY));
 		}
 	}
 
@@ -345,11 +346,11 @@ public class EchoLensEntity extends Entity {
 		tag.putInt("mode", this.entityData.get(DATA_MODE));
 
 		if (ownerId != null) {
-			tag.putUUID("owner", ownerId);
+			tag.putIntArray("owner", UUIDUtil.uuidToIntArray(ownerId));
 		}
 
 		if (sessionId != null) {
-			tag.putUUID("session", sessionId);
+			tag.putIntArray("session", UUIDUtil.uuidToIntArray(sessionId));
 		}
 
 		tag.putInt("orphan_ticks", orphanTicks);

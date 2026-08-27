@@ -112,15 +112,15 @@ public final class BlockSnapshot {
 	}
 
 	public static BlockSnapshot fromNbt(CompoundTag tag, HolderGetter<Block> blockLookup) {
-		BlockPalette palette = BlockPalette.fromNbt(tag.getList("palette", NBT_COMPOUND_TYPE), blockLookup);
+		BlockPalette palette = BlockPalette.fromNbt(tag.getListOrEmpty("palette"), blockLookup);
 		Int2ObjectMap<SnapshotSection> sections = new Int2ObjectOpenHashMap<>();
-		ListTag sectionList = tag.getList("sections", NBT_COMPOUND_TYPE);
+		ListTag sectionList = tag.getListOrEmpty("sections");
 
 		for (Tag element : sectionList) {
 			CompoundTag sectionTag = (CompoundTag) element;
-			sections.put(sectionTag.getInt("key"), SnapshotSection.fromNbt(sectionTag));
+			sections.put(sectionTag.getIntOr("key", 0), SnapshotSection.fromNbt(sectionTag));
 		}
 
-		return new BlockSnapshot(palette, sections, tag.getInt("radius"), tag.getInt("min_y"), tag.getInt("max_y"));
+		return new BlockSnapshot(palette, sections, tag.getIntOr("radius", 0), tag.getIntOr("min_y", 0), tag.getIntOr("max_y", 0));
 	}
 }

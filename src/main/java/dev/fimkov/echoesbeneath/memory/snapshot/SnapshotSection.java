@@ -76,9 +76,9 @@ public final class SnapshotSection {
 	}
 
 	public static SnapshotSection fromNbt(CompoundTag tag) {
-		int[] palette = tag.getIntArray("palette");
-		int bits = tag.getInt("bits");
-		long[] raw = tag.getLongArray("cells");
+		int[] palette = tag.getIntArray("palette").orElse(new int[0]);
+		int bits = tag.getIntOr("bits", 0);
+		long[] raw = tag.getLongArray("cells").orElse(new long[0]);
 
 		if (palette.length == 0 || bits <= 0) {
 			throw new IllegalArgumentException("Snapshot section has no palette");

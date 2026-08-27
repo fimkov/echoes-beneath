@@ -3,8 +3,8 @@ package dev.fimkov.echoesbeneath.client.render;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 public record EchoSilhouetteBuffers(MultiBufferSource delegate, RenderType layer,
@@ -12,7 +12,7 @@ public record EchoSilhouetteBuffers(MultiBufferSource delegate, RenderType layer
 	private static final int OPAQUE = 255;
 	private static final int REVEAL_BLOCK_LIGHT = 11;
 
-	public static EchoSilhouetteBuffers forEntity(MultiBufferSource delegate, ResourceLocation texture,
+	public static EchoSilhouetteBuffers forEntity(MultiBufferSource delegate, Identifier texture,
 			float reveal, float presence) {
 		return of(delegate, RenderType.entityTranslucent(texture), reveal, presence);
 	}

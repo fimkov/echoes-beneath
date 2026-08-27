@@ -17,7 +17,7 @@ import dev.fimkov.echoesbeneath.runtime.EchoServerState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -228,7 +228,7 @@ public final class EchoRecordingManager {
 		}
 
 		SoundTimeline sounds = record.soundTimeline();
-		Set<ResourceLocation> heard = new HashSet<>();
+		Set<Identifier> heard = new HashSet<>();
 
 		for (int index = 0; index < sounds.size(); index++) {
 			heard.add(sounds.soundAt(index));
