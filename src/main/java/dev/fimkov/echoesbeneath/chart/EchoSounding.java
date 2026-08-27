@@ -41,7 +41,8 @@ public final class EchoSounding {
 
 		IntList positions = new IntArrayList();
 		IntList states = new IntArrayList();
-		gather(snapshot, columns, record.radius(), lowest, highest, budget, positions, states);
+		gather(snapshot, seeThrough(snapshot.palette()), columns, record.radius(), lowest, highest,
+				budget, positions, states);
 
 		return new EchoChartShape(record.id(), snapshot.palette(), positions, states, lowest, highest,
 				record.recordedVision());
@@ -58,7 +59,19 @@ public final class EchoSounding {
 		}
 	}
 
-	private static void gather(BlockSnapshot snapshot, Columns columns, int radius,
+	// Grass, flowers, water and glass are not air, but you can see straight past
+	// them, so whatever sits behind them belongs on the chart too.
+	private static boolean[] seeThrough(BlockPalette palette) {
+		boolean[] clear = new boolean[palette.size()];
+
+		for (int index = 0; index < clear.length; index++) {
+			clear[index] = !palette.stateAt(index).isSolidRender();
+		}
+
+		return clear;
+	}
+
+	private static void gather(BlockSnapshot snapshot, boolean[] seen, Columns columns, int radius,
 			int lowest, int highest, int budget, IntList positions, IntList states) {
 		for (int x = -radius; x <= radius; x++) {
 			for (int z = -radius; z <= radius; z++) {
@@ -71,7 +84,7 @@ public final class EchoSounding {
 					}
 					int index = snapshot.paletteIndexAt(x, y, z);
 
-					if (index == BlockPalette.AIR_INDEX || !onSurface(snapshot, x, y, z)) {
+					if (index == BlockPalette.AIR_INDEX || !onSurface(snapshot, seen, x, y, z)) {
 						continue;
 					}
 					positions.add(EchoCoordinates.packRelative(x, y, z));
@@ -81,13 +94,16 @@ public final class EchoSounding {
 		}
 	}
 
-	private static boolean onSurface(BlockSnapshot snapshot, int x, int y, int z) {
-		return snapshot.paletteIndexAt(x + 1, y, z) == BlockPalette.AIR_INDEX
-				|| snapshot.paletteIndexAt(x - 1, y, z) == BlockPalette.AIR_INDEX
-				|| snapshot.paletteIndexAt(x, y + 1, z) == BlockPalette.AIR_INDEX
-				|| snapshot.paletteIndexAt(x, y - 1, z) == BlockPalette.AIR_INDEX
-				|| snapshot.paletteIndexAt(x, y, z + 1) == BlockPalette.AIR_INDEX
-				|| snapshot.paletteIndexAt(x, y, z - 1) == BlockPalette.AIR_INDEX;
+	private static boolean onSurface(BlockSnapshot snapshot, boolean[] seen, int x, int y, int z) {
+		return clear(snapshot, seen, x + 1, y, z) || clear(snapshot, seen, x - 1, y, z)
+				|| clear(snapshot, seen, x, y + 1, z) || clear(snapshot, seen, x, y - 1, z)
+				|| clear(snapshot, seen, x, y, z + 1) || clear(snapshot, seen, x, y, z - 1);
+	}
+
+	private static boolean clear(BlockSnapshot snapshot, boolean[] seen, int x, int y, int z) {
+		int index = snapshot.paletteIndexAt(x, y, z);
+
+		return index < 0 || index >= seen.length || seen[index];
 	}
 
 	public static final class Columns {
