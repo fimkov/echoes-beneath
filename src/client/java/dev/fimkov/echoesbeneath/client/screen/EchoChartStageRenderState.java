@@ -14,6 +14,6 @@ public record EchoChartStageRenderState(EchoChartModel model, int x0, int x1, in
 	public EchoChartStageRenderState(EchoChartModel model, int x0, int x1, int y0, int y1,
 			float scale, float pitch, float yaw, @Nullable ScreenRectangle scissorArea) {
 		this(model, x0, x1, y0, y1, scale, pitch, yaw, scissorArea,
-				PictureInPictureRenderState.getBounds(x0, x1, y0, y1, scissorArea));
+				PictureInPictureRenderState.getBounds(x0, y0, x1, y1, scissorArea));
 	}
 }

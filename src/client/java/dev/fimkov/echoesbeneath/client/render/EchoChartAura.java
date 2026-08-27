@@ -74,7 +74,7 @@ public final class EchoChartAura {
 			}
 
 			if (withMotes) {
-				motes(poseStack, consumer, age, camera, brightness, reach, floor, band);
+				motes(pose.pose(), consumer, age, camera, brightness, reach, floor, band);
 			}
 		});
 	}
@@ -128,7 +128,7 @@ public final class EchoChartAura {
 				FADE_POWER));
 	}
 
-	private static void motes(PoseStack poseStack, VertexConsumer consumer, float age,
+	private static void motes(Matrix4f base, VertexConsumer consumer, float age,
 			Quaternionf camera, float brightness, float reach, float floor, float band) {
 		for (int run = 0; run < RUN_COUNT; run++) {
 			float runX = Mth.cos(ANGLE[run]) * REACH[run] * reach;
@@ -148,13 +148,11 @@ public final class EchoChartAura {
 				if (alpha <= 2) {
 					continue;
 				}
-				poseStack.pushPose();
-				poseStack.translate(runX + Mth.cos(turn) * coil, floor + climb * TOP[run] * band,
-						runZ + Mth.sin(turn) * coil);
-				poseStack.mulPose(camera);
-				Matrix4f pose = poseStack.last().pose();
+				Matrix4f pose = new Matrix4f(base)
+						.translate(runX + Mth.cos(turn) * coil, floor + climb * TOP[run] * band,
+								runZ + Mth.sin(turn) * coil)
+						.rotate(camera);
 				facing(consumer, pose, size, colour, alpha);
-				poseStack.popPose();
 			}
 		}
 	}

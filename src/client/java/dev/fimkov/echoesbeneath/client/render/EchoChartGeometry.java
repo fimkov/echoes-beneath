@@ -37,6 +37,7 @@ public final class EchoChartGeometry {
 			BlockModelRenderState modelState = new BlockModelRenderState();
 			blocks.update(modelState, model.stateAt(index), BlockDisplayContext.create());
 			modelState.submit(poseStack, submits, light, OverlayTexture.NO_OVERLAY, 0);
+			EchoChartFluid.emit(model, submits, poseStack, model.stateAt(index), cell, light);
 			poseStack.popPose();
 			drawn++;
 		}
