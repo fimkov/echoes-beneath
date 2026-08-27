@@ -1,5 +1,6 @@
 package dev.fimkov.echoesbeneath.mixin;
 
+import net.minecraft.world.entity.Entity;
 import dev.fimkov.echoesbeneath.recording.EchoRecordingHooks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -21,9 +22,9 @@ public abstract class ServerLevelEventMixin {
 	private static final float BREAK_VOLUME_SHARE = 0.8F;
 	private static final float BREAK_PITCH_SHARE = 0.9F;
 
-	@Inject(method = "levelEvent(Lnet/minecraft/world/entity/player/Player;ILnet/minecraft/core/BlockPos;I)V",
+	@Inject(method = "levelEvent(Lnet/minecraft/world/entity/Entity;ILnet/minecraft/core/BlockPos;I)V",
 			at = @At("HEAD"))
-	private void echoesBeneath$recordLevelEvent(Player except, int type, BlockPos position, int data,
+	private void echoesBeneath$recordLevelEvent(Entity except, int type, BlockPos position, int data,
 			CallbackInfo callback) {
 		if (type != BLOCK_DESTROYED || !EchoRecordingHooks.isCapturing()) {
 			return;

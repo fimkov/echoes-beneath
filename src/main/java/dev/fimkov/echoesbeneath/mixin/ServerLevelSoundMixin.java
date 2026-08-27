@@ -14,9 +14,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerLevel.class)
 public abstract class ServerLevelSoundMixin {
-	@Inject(method = "playSeededSound(Lnet/minecraft/world/entity/player/Player;DDDLnet/minecraft/core/Holder;Lnet/minecraft/sounds/SoundSource;FFJ)V",
+	@Inject(method = "playSeededSound(Lnet/minecraft/world/entity/Entity;DDDLnet/minecraft/core/Holder;Lnet/minecraft/sounds/SoundSource;FFJ)V",
 			at = @At("HEAD"))
-	private void echoesBeneath$recordPositionedSound(Player except, double x, double y, double z,
+	private void echoesBeneath$recordPositionedSound(Entity except, double x, double y, double z,
 			Holder<SoundEvent> sound, SoundSource source, float volume, float pitch, long seed, CallbackInfo callback) {
 		if (!EchoRecordingHooks.isCapturing()) {
 			return;
@@ -26,9 +26,9 @@ public abstract class ServerLevelSoundMixin {
 				sound.value().location(), source, volume, pitch);
 	}
 
-	@Inject(method = "playSeededSound(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/core/Holder;Lnet/minecraft/sounds/SoundSource;FFJ)V",
+	@Inject(method = "playSeededSound(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/core/Holder;Lnet/minecraft/sounds/SoundSource;FFJ)V",
 			at = @At("HEAD"))
-	private void echoesBeneath$recordEntitySound(Player except, Entity source, Holder<SoundEvent> sound,
+	private void echoesBeneath$recordEntitySound(Entity except, Entity source, Holder<SoundEvent> sound,
 			SoundSource category, float volume, float pitch, long seed, CallbackInfo callback) {
 		if (!EchoRecordingHooks.isCapturing()) {
 			return;
