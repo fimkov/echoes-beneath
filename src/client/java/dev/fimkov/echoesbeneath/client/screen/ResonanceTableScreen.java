@@ -294,7 +294,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		float centreY = topPos + ResonanceTableLayout.DIAL_CENTRE_Y;
 		graphics.pose().pushMatrix();
 		graphics.pose().translate(centreX, centreY);
-		graphics.pose().mulPose(Axis.ZP.rotationDegrees(angle));
+		graphics.pose().rotate((float) Math.toRadians(angle));
 		graphics.pose().translate(-centreX, -centreY);
 		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, (int) centreX - half, (int) centreY - half, (float) ResonanceTableLayout.RING_SPRITE_U, (float) ResonanceTableLayout.RING_SPRITE_V, ResonanceTableLayout.RING_SPRITE_SIZE, ResonanceTableLayout.RING_SPRITE_SIZE, 256, 256);
 		graphics.pose().popMatrix();
@@ -372,7 +372,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		}
 
 		int x = increase ? ResonanceTableLayout.PLUS_X : ResonanceTableLayout.MINUS_X;
-		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + x, topPos + ResonanceTableLayout.rowY(index) + ResonanceTableLayout.BUTTON_Y_OFFSET, (float) increase ? PLUS_U : MINUS_U, (float) state, ResonanceTableLayout.BUTTON_SIZE, ResonanceTableLayout.BUTTON_SIZE, 256, 256);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + x, topPos + ResonanceTableLayout.rowY(index) + ResonanceTableLayout.BUTTON_Y_OFFSET, (float) (increase ? PLUS_U : MINUS_U), (float) state, ResonanceTableLayout.BUTTON_SIZE, ResonanceTableLayout.BUTTON_SIZE, 256, 256);
 	}
 
 	@Override
@@ -428,7 +428,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		super.extractRenderState(graphics, mouseX, mouseY, partialTick);
-		renderTooltip(graphics, mouseX, mouseY);
+		extractTooltip(graphics, mouseX, mouseY);
 
 		if (hoveredSlot != null && hoveredSlot.hasItem()) {
 			return;

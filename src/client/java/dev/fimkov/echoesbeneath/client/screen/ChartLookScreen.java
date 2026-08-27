@@ -162,6 +162,6 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		super.extractRenderState(graphics, mouseX, mouseY, partialTick);
-		renderTooltip(graphics, mouseX, mouseY);
+		extractTooltip(graphics, mouseX, mouseY);
 	}
 }

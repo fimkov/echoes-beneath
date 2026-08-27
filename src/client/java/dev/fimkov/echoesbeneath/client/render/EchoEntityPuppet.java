@@ -1,5 +1,6 @@
 package dev.fimkov.echoesbeneath.client.render;
 
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
 import dev.fimkov.echoesbeneath.memory.timeline.EntityTimeline;
 import dev.fimkov.echoesbeneath.memory.timeline.EntityTrack;
@@ -63,7 +64,7 @@ public final class EchoEntityPuppet {
 
 		Entity created = type.get() == EntityTypes.PLAYER
 				? playerStandIn(level)
-				: type.get().create(level);
+				: type.get().create(level, EntitySpawnReason.LOAD);
 
 		if (created == null) {
 			return Optional.empty();

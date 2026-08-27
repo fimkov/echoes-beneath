@@ -77,7 +77,7 @@ public final class ClientPlaybackManager {
 		transfers.remove(playbackId);
 
 		try {
-			var blockLookup = level.registryAccess().<Block>registryOrThrow(Registries.BLOCK).asLookup();
+			var blockLookup = level.registryAccess().<Block>lookupOrThrow(Registries.BLOCK);
 			ClientPlaybackData data = ClientPlaybackData.assemble(
 					transfer.assembler().decode(EchoPlaybackDataPart.SNAPSHOT),
 					transfer.assembler().decode(EchoPlaybackDataPart.BLOCK_TIMELINE),

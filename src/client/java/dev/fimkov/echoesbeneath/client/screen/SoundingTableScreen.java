@@ -1,5 +1,6 @@
 package dev.fimkov.echoesbeneath.client.screen;
 
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import com.mojang.blaze3d.platform.Lighting;
@@ -417,25 +418,16 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 
 		int centreX = leftPos + SoundingTableLayout.STAGE_X + SoundingTableLayout.STAGE_WIDTH / 2;
 		int centreY = topPos + SoundingTableLayout.STAGE_Y + SoundingTableLayout.STAGE_HEIGHT / 2;
-		graphics.enableScissor(leftPos + SoundingTableLayout.STAGE_X + 1,
-				topPos + SoundingTableLayout.STAGE_Y + 1,
-				leftPos + SoundingTableLayout.STAGE_X + SoundingTableLayout.STAGE_WIDTH - 1,
-				topPos + SoundingTableLayout.STAGE_Y + SoundingTableLayout.STAGE_HEIGHT - 1);
-		Lighting.setupFor3DItems();
-		PoseStack poseStack = graphics.pose();
-		poseStack.pushPose();
-		poseStack.translate(centreX, centreY, 220.0F);
+		int left = leftPos + SoundingTableLayout.STAGE_X + 1;
+		int top = topPos + SoundingTableLayout.STAGE_Y + 1;
+		int right = leftPos + SoundingTableLayout.STAGE_X + SoundingTableLayout.STAGE_WIDTH - 1;
+		int bottom = topPos + SoundingTableLayout.STAGE_Y + SoundingTableLayout.STAGE_HEIGHT - 1;
 		float scale = SoundingTableLayout.STAGE_HEIGHT * STAGE_FILL / model.widest();
-		poseStack.scale(scale, -scale, scale);
-		poseStack.mulPose(Axis.XP.rotationDegrees(turnedByHand ? heldPitch : TILT_DEGREES));
-		poseStack.mulPose(Axis.YP.rotationDegrees(
-				turnedByHand ? heldYaw : spin + SPIN_DEGREES_PER_TICK * partialTick));
-		poseStack.translate(-model.spanX() * 0.5F, -model.spanY() * 0.5F, -model.spanZ() * 0.5F);
-		EchoChartGeometry.emit(model, graphics.bufferSource(), poseStack);
-		graphics.flush();
-		poseStack.popPose();
-		Lighting.setupForFlatItems();
-		graphics.disableScissor();
+		graphics.guiRenderState.addPicturesInPictureState(new EchoChartStageRenderState(model,
+				left, right, top, bottom, scale,
+				turnedByHand ? heldPitch : TILT_DEGREES,
+				turnedByHand ? heldYaw : spin + SPIN_DEGREES_PER_TICK * partialTick,
+				new ScreenRectangle(left, top, right - left, bottom - top)));
 	}
 
 	private EchoMemoryReference chosen() {
@@ -501,7 +493,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		super.extractRenderState(graphics, mouseX, mouseY, partialTick);
-		renderTooltip(graphics, mouseX, mouseY);
+		extractTooltip(graphics, mouseX, mouseY);
 
 		if (hoveredSlot == null && overExtract(mouseX, mouseY)) {
 			graphics.setTooltipForNextFrame(font, Component.translatable(menu.canReturn()
