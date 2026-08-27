@@ -26,6 +26,7 @@ public final class EchoChartModel {
 	private final List<BlockState> states = new ArrayList<>();
 	private final IntSet occupied = new IntOpenHashSet();
 	private final IntSet opaque = new IntOpenHashSet();
+	private final IntSet wet = new IntOpenHashSet();
 	private final int spanX;
 	private final int spanY;
 	private final int spanZ;
@@ -80,7 +81,7 @@ public final class EchoChartModel {
 		}
 
 		for (Int2ObjectMap.Entry<Int2IntMap> entry : votes.int2ObjectEntrySet()) {
-			BlockState state = cloud.paletteAt(winner(entry.getValue()));
+			BlockState state = cloud.paletteAt(winner(entry.getValue(), cloud));
 			model.cells.add(entry.getIntKey());
 			model.states.add(state);
 			model.occupied.add(entry.getIntKey());
@@ -88,18 +89,29 @@ public final class EchoChartModel {
 			if (state.isSolidRender()) {
 				model.opaque.add(entry.getIntKey());
 			}
+
+			if (!state.getFluidState().isEmpty()) {
+				model.wet.add(entry.getIntKey());
+			}
 		}
 
 		return model;
 	}
 
-	private static int winner(Int2IntMap tally) {
+	private static int winner(Int2IntMap tally, EchoChartCloud cloud) {
 		int best = 0;
 		int bestCount = -1;
+		boolean bestSolid = false;
 
 		for (Int2IntMap.Entry vote : tally.int2IntEntrySet()) {
-			if (vote.getIntValue() > bestCount) {
-				bestCount = vote.getIntValue();
+			int count = vote.getIntValue();
+			boolean solid = cloud.paletteAt(vote.getIntKey()).isSolidRender();
+
+			// A tie between a flower and the ground it stands on has to go to the
+			// ground, or the flower ends up hanging in the air.
+			if (count > bestCount || (count == bestCount && solid && !bestSolid)) {
+				bestCount = count;
+				bestSolid = solid;
 				best = vote.getIntKey();
 			}
 		}
@@ -143,6 +155,10 @@ public final class EchoChartModel {
 	// so they do not count as walls when deciding what to leave out.
 	public boolean blocks(int x, int y, int z) {
 		return opaque.contains(pack(x, y, z));
+	}
+
+	public boolean wet(int x, int y, int z) {
+		return wet.contains(pack(x, y, z));
 	}
 
 	public boolean isBuried(int packed) {

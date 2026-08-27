@@ -42,27 +42,27 @@ public final class EchoChartFluid {
 		submits.submitCustomGeometry(poseStack, RenderTypes.translucentMovingBlock(), (pose, consumer) -> {
 			Matrix4f matrix = pose.pose();
 
-			if (!model.blocks(x, y - 1, z)) {
+			if (!model.blocks(x, y - 1, z) && !model.wet(x, y - 1, z)) {
 				face(consumer, matrix, sprite, tint, light, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, -1, 0);
 			}
 
-			if (!model.blocks(x, y + 1, z)) {
+			if (!model.blocks(x, y + 1, z) && !model.wet(x, y + 1, z)) {
 				face(consumer, matrix, sprite, tint, light, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0);
 			}
 
-			if (!model.blocks(x, y, z - 1)) {
+			if (!model.blocks(x, y, z - 1) && !model.wet(x, y, z - 1)) {
 				face(consumer, matrix, sprite, tint, light, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, -1);
 			}
 
-			if (!model.blocks(x, y, z + 1)) {
+			if (!model.blocks(x, y, z + 1) && !model.wet(x, y, z + 1)) {
 				face(consumer, matrix, sprite, tint, light, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1);
 			}
 
-			if (!model.blocks(x - 1, y, z)) {
+			if (!model.blocks(x - 1, y, z) && !model.wet(x - 1, y, z)) {
 				face(consumer, matrix, sprite, tint, light, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, -1, 0, 0);
 			}
 
-			if (!model.blocks(x + 1, y, z)) {
+			if (!model.blocks(x + 1, y, z) && !model.wet(x + 1, y, z)) {
 				face(consumer, matrix, sprite, tint, light, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0);
 			}
 		});
