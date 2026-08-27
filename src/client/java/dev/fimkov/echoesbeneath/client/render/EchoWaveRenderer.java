@@ -31,7 +31,7 @@ public final class EchoWaveRenderer {
 	public static void render(EchoRenderContext context, ClientPlaybackSession session, Vec3 cameraPosition) {
 		List<EchoWave> waves = session.waves().active();
 
-		if (waves.isEmpty() || context.consumers() == null) {
+		if (waves.isEmpty() || context.submits() == null) {
 			return;
 		}
 
@@ -41,8 +41,8 @@ public final class EchoWaveRenderer {
 		poseStack.pushPose();
 		poseStack.translate(center.getX() - cameraPosition.x,
 				center.getY() - cameraPosition.y, center.getZ() - cameraPosition.z);
-		VertexConsumer consumer = context.consumers().getBuffer(EchoRenderTypes.ECHO_TEXELS);
-		lightTexels(session, waves, center, partialTick, poseStack.last().pose(), consumer);
+		context.submits().submitCustomGeometry(poseStack, EchoRenderTypes.ECHO_TEXELS,
+				(pose, consumer) -> lightTexels(session, waves, center, partialTick, pose.pose(), consumer));
 		poseStack.popPose();
 	}
 
