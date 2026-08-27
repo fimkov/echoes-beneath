@@ -1,5 +1,6 @@
 package dev.fimkov.echoesbeneath.test;
 
+import net.minecraft.world.entity.EntityTypes;
 import dev.fimkov.echoesbeneath.playback.suppression.EchoSuppressedEntity;
 import dev.fimkov.echoesbeneath.playback.suppression.HostileMobSuppressionManager;
 import dev.fimkov.echoesbeneath.playback.suppression.SuppressedMobState;
@@ -24,7 +25,7 @@ public class EchoSuppressionGameTest implements FabricGameTest {
 	public void hostileMobIsSuppressedAndFullyRestored(GameTestHelper helper) {
 		HostileMobSuppressionManager manager =
 				new HostileMobSuppressionManager(helper.getLevel().getServer());
-		Zombie zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, SPAWN);
+		Zombie zombie = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, SPAWN);
 		zombie.setHealth(WOUNDED_HEALTH);
 		zombie.setRemainingFireTicks(FIRE_TICKS);
 		zombie.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, EFFECT_DURATION_TICKS));
@@ -94,8 +95,8 @@ public class EchoSuppressionGameTest implements FabricGameTest {
 	public void emergencyRecoveryReleasesEverySuppressedMob(GameTestHelper helper) {
 		HostileMobSuppressionManager manager =
 				new HostileMobSuppressionManager(helper.getLevel().getServer());
-		Zombie first = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, SPAWN);
-		Zombie second = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, SPAWN.offset(2, 0, 0));
+		Zombie first = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, SPAWN);
+		Zombie second = helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, SPAWN.offset(2, 0, 0));
 		manager.suppress(first);
 		manager.suppress(second);
 
@@ -118,13 +119,13 @@ public class EchoSuppressionGameTest implements FabricGameTest {
 
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void passiveMobsAreNeverSuppressed(GameTestHelper helper) {
-		if (HostileMobSuppressionManager.isSuppressible(helper.spawn(EntityType.COW, SPAWN))) {
+		if (HostileMobSuppressionManager.isSuppressible(helper.spawn(EntityTypes.COW, SPAWN))) {
 			helper.fail("a cow must not be treated as a suppressible hostile mob");
 		}
 
 		if (!HostileMobSuppressionManager.isSuppressible(
 
-				helper.spawnWithNoFreeWill(EntityType.ZOMBIE, SPAWN.offset(2, 0, 0)))) {
+				helper.spawnWithNoFreeWill(EntityTypes.ZOMBIE, SPAWN.offset(2, 0, 0)))) {
 			helper.fail("a zombie must be treated as a suppressible hostile mob");
 		}
 

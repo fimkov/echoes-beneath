@@ -1,38 +1,45 @@
 package dev.fimkov.echoesbeneath.playback.suppression;
 
+import com.mojang.serialization.Codec;
 import dev.fimkov.echoesbeneath.EchoesBeneath;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 public final class EchoSuppressionStore extends SavedData {
 	public static final String STORAGE_KEY = "echoes_beneath_suppressed_mobs";
-	private static final int NBT_COMPOUND_TYPE = Tag.TAG_COMPOUND;
+
+	public static final Codec<EchoSuppressionStore> CODEC = CompoundTag.CODEC.listOf().xmap(
+			EchoSuppressionStore::fromTags, EchoSuppressionStore::toTags);
+
+	public static final SavedDataType<EchoSuppressionStore> TYPE = new SavedDataType<>(
+			Identifier.fromNamespaceAndPath(EchoesBeneath.MOD_ID, "suppressed_mobs"),
+			EchoSuppressionStore::new,
+			CODEC,
+			DataFixTypes.LEVEL);
 
 	private final Map<UUID, SuppressedMobState> pending = new HashMap<>();
 
-	public static SavedData.Factory<EchoSuppressionStore> factory() {
-		return new SavedData.Factory<>(EchoSuppressionStore::new, EchoSuppressionStore::load, null);
-	}
-
 	public static EchoSuppressionStore of(MinecraftServer server) {
-		return server.overworld().getDataStorage().computeIfAbsent(factory(), STORAGE_KEY);
+		return server.overworld().getDataStorage().computeIfAbsent(TYPE);
 	}
 
-	private static EchoSuppressionStore load(CompoundTag tag, HolderLookup.Provider lookup) {
+	private static EchoSuppressionStore fromTags(List<CompoundTag> tags) {
 		EchoSuppressionStore store = new EchoSuppressionStore();
 
-		for (Tag element : tag.getListOrEmpty("states")) {
+		for (CompoundTag tag : tags) {
 			try {
-				SuppressedMobState state = SuppressedMobState.fromNbt((CompoundTag) element);
+				SuppressedMobState state = SuppressedMobState.fromNbt(tag);
 				store.pending.put(state.entityId(), state);
 			} catch (RuntimeException failure) {
 				EchoesBeneath.LOGGER.warn("Dropping an unreadable suppressed mob entry", failure);
@@ -42,17 +49,14 @@ public final class EchoSuppressionStore extends SavedData {
 		return store;
 	}
 
-	@Override
-	public CompoundTag save(CompoundTag tag, HolderLookup.Provider lookup) {
-		ListTag states = new ListTag();
+	private static List<CompoundTag> toTags(EchoSuppressionStore store) {
+		List<CompoundTag> tags = new ArrayList<>(store.pending.size());
 
-		for (SuppressedMobState state : pending.values()) {
-			states.add(state.toNbt());
+		for (SuppressedMobState state : store.pending.values()) {
+			tags.add(state.toNbt());
 		}
 
-		tag.put("states", states);
-
-		return tag;
+		return tags;
 	}
 
 	public void remember(SuppressedMobState state) {

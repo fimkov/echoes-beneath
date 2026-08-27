@@ -2,7 +2,7 @@ package dev.fimkov.echoesbeneath.datagen;
 
 import dev.fimkov.echoesbeneath.registry.EchoBlocks;
 import dev.fimkov.echoesbeneath.registry.EchoItems;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.RecipeCategory;
@@ -19,7 +19,7 @@ public class EchoRecipeProvider extends FabricRecipeProvider {
 	private static final char MAP_KEY = 'M';
 	private static final char DEEPSLATE_KEY = 'D';
 
-	public EchoRecipeProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> lookup) {
+	public EchoRecipeProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> lookup) {
 		super(output, lookup);
 	}
 

@@ -1,8 +1,8 @@
 package dev.fimkov.echoesbeneath.datagen;
 
 import dev.fimkov.echoesbeneath.worldgen.EchoStructures;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.SimpleFabricLootTableProvider;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.SimpleFabricLootTableSubProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Items;
@@ -18,8 +18,8 @@ import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
-public class EchoLootTableProvider extends SimpleFabricLootTableProvider {
-	public EchoLootTableProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> lookup) {
+public class EchoLootTableProvider extends SimpleFabricLootTableSubProvider {
+	public EchoLootTableProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> lookup) {
 		super(output, lookup, LootContextParamSets.CHEST);
 	}
 
@@ -41,7 +41,7 @@ public class EchoLootTableProvider extends SimpleFabricLootTableProvider {
 						.add(LootItem.lootTableItem(Items.CANDLE)
 								.setWeight(18)
 								.apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 4.0F))))
-						.add(LootItem.lootTableItem(Items.CYAN_WOOL)
+						.add(LootItem.lootTableItem(Items.WOOL.cyan())
 								.setWeight(14)
 								.apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 5.0F))))
 						.add(LootItem.lootTableItem(Items.COAL)
@@ -74,7 +74,7 @@ public class EchoLootTableProvider extends SimpleFabricLootTableProvider {
 								.setWeight(14)
 								.apply(SetItemCountFunction.setCount(UniformGenerator.between(2.0F, 5.0F))))
 						.add(LootItem.lootTableItem(Items.BOOK).setWeight(12))
-						.add(LootItem.lootTableItem(Items.LIGHT_GRAY_WOOL)
+						.add(LootItem.lootTableItem(Items.WOOL.lightGray())
 								.setWeight(10)
 								.apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 4.0F))))
 						.add(LootItem.lootTableItem(Items.EXPERIENCE_BOTTLE)

@@ -1,5 +1,7 @@
 package dev.fimkov.echoesbeneath.entity;
 
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.core.UUIDUtil;
 import dev.fimkov.echoesbeneath.registry.EchoEntities;
 import dev.fimkov.echoesbeneath.runtime.EchoLensReturn;
@@ -261,7 +263,7 @@ public class EchoLensEntity extends Entity {
 	}
 
 	@Override
-	public InteractionResult interact(Player player, InteractionHand hand) {
+	public InteractionResult interact(Player player, InteractionHand hand, Vec3 hitPos) {
 		if (this.level().isClientSide()) {
 			return InteractionResult.SUCCESS;
 		}
@@ -294,74 +296,59 @@ public class EchoLensEntity extends Entity {
 	}
 
 	@Override
-	public boolean hurt(DamageSource source, float amount) {
+	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
 		return false;
 	}
 
 	@Override
-	public boolean isInvulnerableTo(DamageSource source) {
+	public boolean isInvulnerableTo(ServerLevel level, DamageSource source) {
 		return true;
 	}
 
-	private static Vec3 readVector(CompoundTag tag, String key) {
-		if (!tag.contains(key)) {
-			return Vec3.ZERO;
-		}
-
-		ListTag values = tag.getListOrEmpty(key);
-
-		if (values.size() != 3) {
-			return Vec3.ZERO;
-		}
-
-		return new Vec3(values.getDouble(0), values.getDouble(1), values.getDouble(2));
+	private static Vec3 readVector(ValueInput input, String key) {
+		return input.read(key, Vec3.CODEC).orElse(Vec3.ZERO);
 	}
 
-	private static void writeVector(CompoundTag tag, String key, Vec3 value) {
-		ListTag values = new ListTag();
-		values.add(DoubleTag.valueOf(value.x));
-		values.add(DoubleTag.valueOf(value.y));
-		values.add(DoubleTag.valueOf(value.z));
-		tag.put(key, values);
+	private static void writeVector(ValueOutput output, String key, Vec3 value) {
+		output.store(key, Vec3.CODEC, value);
 	}
 
 	@Override
-	protected void readAdditionalSaveData(CompoundTag tag) {
-		this.entityData.set(DATA_MODE, tag.getIntOr("mode", 0));
-		this.ownerId = tag.contains("owner") ? UUIDUtil.uuidFromIntArray(tag.getIntArray("owner").orElse(new int[4])) : null;
-		this.sessionId = tag.contains("session") ? UUIDUtil.uuidFromIntArray(tag.getIntArray("session").orElse(new int[4])) : null;
-		this.orphanTicks = tag.getIntOr("orphan_ticks", 0);
-		this.arrivalTicksTotal = tag.getIntOr("arrival_total", 0);
-		this.arrivalTicksRemaining = tag.getIntOr("arrival_left", 0);
-		this.arrivalOrigin = readVector(tag, "arrival_origin");
-		this.arrivalTarget = readVector(tag, "arrival_target");
+	protected void readAdditionalSaveData(ValueInput input) {
+		this.entityData.set(DATA_MODE, input.getIntOr("mode", 0));
+		this.ownerId = input.getIntArray("owner").map(UUIDUtil::uuidFromIntArray).orElse(null);
+		this.sessionId = input.getIntArray("session").map(UUIDUtil::uuidFromIntArray).orElse(null);
+		this.orphanTicks = input.getIntOr("orphan_ticks", 0);
+		this.arrivalTicksTotal = input.getIntOr("arrival_total", 0);
+		this.arrivalTicksRemaining = input.getIntOr("arrival_left", 0);
+		this.arrivalOrigin = readVector(input, "arrival_origin");
+		this.arrivalTarget = readVector(input, "arrival_target");
 
-		if (tag.contains("lens")) {
-			this.setLens(ItemStack.parse(this.registryAccess(), tag.getCompoundOrEmpty("lens")).orElse(ItemStack.EMPTY));
-		}
+		this.setLens(input.read("lens", ItemStack.CODEC).orElse(ItemStack.EMPTY));
 	}
 
 	@Override
-	protected void addAdditionalSaveData(CompoundTag tag) {
-		tag.putInt("mode", this.entityData.get(DATA_MODE));
+	protected void addAdditionalSaveData(ValueOutput output) {
+		output.putInt("mode", this.entityData.get(DATA_MODE));
 
 		if (ownerId != null) {
-			tag.putIntArray("owner", UUIDUtil.uuidToIntArray(ownerId));
+			output.putIntArray("owner", UUIDUtil.uuidToIntArray(ownerId));
 		}
 
 		if (sessionId != null) {
-			tag.putIntArray("session", UUIDUtil.uuidToIntArray(sessionId));
+			output.putIntArray("session", UUIDUtil.uuidToIntArray(sessionId));
 		}
 
-		tag.putInt("orphan_ticks", orphanTicks);
-		tag.putInt("arrival_total", arrivalTicksTotal);
-		tag.putInt("arrival_left", arrivalTicksRemaining);
-		writeVector(tag, "arrival_origin", arrivalOrigin);
-		writeVector(tag, "arrival_target", arrivalTarget);
+		output.putInt("orphan_ticks", orphanTicks);
+		output.putInt("arrival_total", arrivalTicksTotal);
+		output.putInt("arrival_left", arrivalTicksRemaining);
+		writeVector(output, "arrival_origin", arrivalOrigin);
+		writeVector(output, "arrival_target", arrivalTarget);
+
 		ItemStack lens = getLens();
 
 		if (!lens.isEmpty()) {
-			tag.put("lens", lens.save(this.registryAccess()));
+			output.store("lens", ItemStack.CODEC, lens);
 		}
 	}
 }

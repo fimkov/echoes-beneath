@@ -48,7 +48,7 @@ public final class EchoBlocks {
 					.sound(SoundType.AMETHYST)
 					.lightLevel(state -> CHART_GLOW)
 					.noOcclusion()
-					.noCollission()
+					.noCollision()
 					.pushReaction(PushReaction.DESTROY));
 
 	private EchoBlocks() {

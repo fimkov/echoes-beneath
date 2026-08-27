@@ -1,9 +1,9 @@
 package dev.fimkov.echoesbeneath.platform.fabric;
 
 import dev.fimkov.echoesbeneath.platform.EchoRegistries;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuProvider;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -21,17 +21,17 @@ import java.util.function.Supplier;
 public final class FabricRegistries implements EchoRegistries {
 	@Override
 	public <T extends AbstractContainerMenu> MenuType<T> blockPosMenu(BlockPosMenuFactory<T> factory) {
-		return new ExtendedScreenHandlerType<>(factory::create, BlockPos.STREAM_CODEC);
+		return new ExtendedMenuType<>(factory::create, BlockPos.STREAM_CODEC);
 	}
 
 	@Override
 	public void addToCreativeTab(ResourceKey<CreativeModeTab> tab, Supplier<ItemStack> entry) {
-		ItemGroupEvents.modifyEntriesEvent(tab).register(entries -> entries.accept(entry.get()));
+		CreativeModeTabEvents.modifyEntriesEvent(tab).register(entries -> entries.accept(entry.get()));
 	}
 
 	@Override
 	public void openBlockPosMenu(ServerPlayer player, MenuProvider provider, BlockPos position) {
-		player.openMenu(new ExtendedScreenHandlerFactory<BlockPos>() {
+		player.openMenu(new ExtendedMenuProvider<BlockPos>() {
 			@Override
 			public BlockPos getScreenOpeningData(ServerPlayer viewer) {
 				return position;

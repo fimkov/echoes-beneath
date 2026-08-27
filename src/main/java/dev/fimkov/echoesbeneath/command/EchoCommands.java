@@ -25,7 +25,7 @@ public final class EchoCommands {
 
 	private static LiteralArgumentBuilder<CommandSourceStack> buildRoot() {
 		return Commands.literal("echo")
-				.requires(source -> source.hasPermission(OPERATOR_LEVEL))
+				.requires(Commands.LEVEL_GAMEMASTERS)
 				.then(Commands.literal("give").executes(EchoCommandActions::give))
 				.then(Commands.literal("status").executes(EchoCommandActions::status))
 				.then(Commands.literal("start_recording").executes(EchoCommandActions::startRecording))
@@ -42,7 +42,7 @@ public final class EchoCommands {
 										SharedSuggestionProvider.suggest(EchoStructures.ALL, builder))
 								.executes(EchoCommands::locateStructure)))
 				.then(Commands.literal("admin_clear_memory")
-						.requires(source -> source.hasPermission(RECOVERY_LEVEL))
+						.requires(Commands.LEVEL_ADMINS)
 						.then(Commands.argument(MEMORY_ARGUMENT, StringArgumentType.word())
 								.executes(EchoCommandActions::adminClearMemory)));
 	}

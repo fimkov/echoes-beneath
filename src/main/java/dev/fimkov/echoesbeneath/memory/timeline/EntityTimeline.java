@@ -169,7 +169,7 @@ public final class EntityTimeline {
 		List<Identifier> identifiers = new ArrayList<>(list.size());
 
 		for (Tag element : list) {
-			Identifier parsed = Identifier.tryParse(element.getAsString());
+			Identifier parsed = Identifier.tryParse(element.asString().orElse(""));
 
 			if (parsed == null) {
 				throw new IllegalArgumentException("Entity timeline holds an unreadable identifier");

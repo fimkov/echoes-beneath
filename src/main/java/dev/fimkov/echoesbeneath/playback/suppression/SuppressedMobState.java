@@ -175,6 +175,6 @@ public record SuppressedMobState(
 	}
 
 	public static UUID readEntityId(CompoundTag tag) {
-		return NbtUtils.loadUUID(tag.get("entity"));
+		return UUIDUtil.readUUIDFromTag(tag.get("entity"));
 	}
 }

@@ -84,7 +84,7 @@ public record EchoMemoryRecord(
 			throw new EchoMemoryFormatException("Unsupported memory format version " + formatVersion);
 		}
 
-		UUID id = tag.contains("id") ? NbtUtils.loadUUID(tag.get("id")) : null;
+		UUID id = tag.contains("id") ? UUIDUtil.readUUIDFromTag(tag.get("id")) : null;
 
 		if (id == null) {
 			throw new EchoMemoryFormatException("Memory record has no identity");
@@ -129,7 +129,7 @@ public record EchoMemoryRecord(
 		List<UUID> players = new ArrayList<>();
 
 		for (Tag element : tag.getListOrEmpty("recorded_players")) {
-			players.add(NbtUtils.loadUUID(element));
+			players.add(UUIDUtil.readUUIDFromTag(element));
 		}
 
 		return List.copyOf(players);

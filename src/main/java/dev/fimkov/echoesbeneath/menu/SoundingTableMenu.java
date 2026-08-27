@@ -124,8 +124,8 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 		selected.set(-1);
 
 		access.execute((level, position) -> {
-			worldBottom.set(level.getMinBuildHeight());
-			worldTop.set(level.getMaxBuildHeight() - 1);
+			worldBottom.set(level.getMinY());
+			worldTop.set(level.getMaxY() - 1);
 			floor.set(worldBottom.get());
 			ceiling.set(worldTop.get());
 		});

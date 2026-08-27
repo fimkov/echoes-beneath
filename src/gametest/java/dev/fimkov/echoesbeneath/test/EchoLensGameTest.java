@@ -1,5 +1,6 @@
 package dev.fimkov.echoesbeneath.test;
 
+import net.minecraft.world.entity.EntityTypes;
 import dev.fimkov.echoesbeneath.entity.EchoLensEntity;
 import dev.fimkov.echoesbeneath.entity.EchoLensMode;
 import dev.fimkov.echoesbeneath.item.EchoLensStacks;
@@ -142,15 +143,15 @@ public class EchoLensGameTest implements FabricGameTest {
 
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void displayEntitiesAreExcludedFromRecordings(GameTestHelper helper) {
-		if (!EntityType.MARKER.is(EchoTags.RECORDING_BLACKLIST)) {
+		if (!EntityTypes.MARKER.is(EchoTags.RECORDING_BLACKLIST)) {
 			helper.fail("marker entities must never be recorded");
 		}
 
-		if (!EntityType.BLOCK_DISPLAY.is(EchoTags.RECORDING_BLACKLIST)) {
+		if (!EntityTypes.BLOCK_DISPLAY.is(EchoTags.RECORDING_BLACKLIST)) {
 			helper.fail("display entities must never be recorded");
 		}
 
-		if (EntityType.ZOMBIE.is(EchoTags.RECORDING_BLACKLIST)) {
+		if (EntityTypes.ZOMBIE.is(EchoTags.RECORDING_BLACKLIST)) {
 			helper.fail("ordinary mobs must be recorded");
 		}
 

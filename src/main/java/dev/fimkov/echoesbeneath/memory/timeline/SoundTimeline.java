@@ -188,7 +188,7 @@ public final class SoundTimeline {
 		List<Identifier> palette = new ArrayList<>();
 
 		for (Tag element : tag.getListOrEmpty("palette")) {
-			Identifier parsed = Identifier.tryParse(element.getAsString());
+			Identifier parsed = Identifier.tryParse(element.asString().orElse(""));
 
 			if (parsed == null) {
 				throw new IllegalArgumentException("Sound palette holds an unreadable identifier");

@@ -9,7 +9,7 @@ import dev.fimkov.echoesbeneath.item.EchoLensUpgrades;
 import dev.fimkov.echoesbeneath.memory.EchoFormat;
 import dev.fimkov.echoesbeneath.registry.EchoBlocks;
 import dev.fimkov.echoesbeneath.registry.EchoItems;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricAdvancementProvider;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
@@ -38,7 +38,7 @@ public class EchoAdvancementProvider extends FabricAdvancementProvider {
 			Identifier.withDefaultNamespace("entity.warden.sonic_boom"),
 			Identifier.withDefaultNamespace("entity.warden.angry"));
 
-	public EchoAdvancementProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> lookup) {
+	public EchoAdvancementProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> lookup) {
 		super(output, lookup);
 	}
 

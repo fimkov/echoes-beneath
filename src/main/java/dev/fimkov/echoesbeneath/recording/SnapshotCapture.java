@@ -37,8 +37,8 @@ public final class SnapshotCapture {
 		this.center = center;
 		this.radius = radius;
 		this.palette = palette;
-		this.minRelativeY = Math.max(level.getMinBuildHeight() - center.getY(), -verticalRadius);
-		this.maxRelativeY = Math.min(level.getMaxBuildHeight() - 1 - center.getY(), verticalRadius);
+		this.minRelativeY = Math.max(level.getMinY() - center.getY(), -verticalRadius);
+		this.maxRelativeY = Math.min(level.getMaxY() - 1 - center.getY(), verticalRadius);
 		queueSections();
 	}
 

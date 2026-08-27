@@ -63,14 +63,14 @@ class SoundingTableTextTest {
 
 			for (String key : new String[] {"sounding.echoes_beneath.extract",
 					"sounding.echoes_beneath.put_back"}) {
-				int button = measure(advances, language.get(key).getAsString()) + BUTTON_PADDING * 2;
+				int button = measure(advances, language.get(key).asString().orElse("")) + BUTTON_PADDING * 2;
 
 				if (button > SoundingTableLayout.EXTRACT_WIDTH) {
 					tooWide.add(code + " " + key + " is " + button + "px against "
 							+ SoundingTableLayout.EXTRACT_WIDTH);
 				}
 			}
-			String window = language.get("sounding.echoes_beneath.window").getAsString()
+			String window = language.get("sounding.echoes_beneath.window").asString().orElse("")
 					.replace("%s", "")
 					+ WIDEST_WINDOW_LOW + WIDEST_WINDOW_HIGH;
 			int readout = measure(advances, window) + STAGE_PADDING;
@@ -81,7 +81,7 @@ class SoundingTableTextTest {
 			}
 			for (String key : new String[] {"sounding.echoes_beneath.no_lens",
 					"sounding.echoes_beneath.no_memories"}) {
-				int width = measure(advances, language.get(key).getAsString()) + STAGE_PADDING;
+				int width = measure(advances, language.get(key).asString().orElse("")) + STAGE_PADDING;
 
 				if (width > SoundingTableLayout.STAGE_WIDTH) {
 					tooWide.add(code + " " + key + " is " + width + "px against "

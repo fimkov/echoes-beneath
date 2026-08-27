@@ -301,7 +301,7 @@ public final class EchoCommandActions {
 		ServerPlayer player = context.getSource().getPlayerOrException();
 		ServerLevel level = player.level();
 		Optional<Holder.Reference<Structure>> structure = level.registryAccess()
-				.registryOrThrow(Registries.STRUCTURE)
+				.lookupOrThrow(Registries.STRUCTURE)
 				.getHolder(EchoStructures.structureKey(structureName));
 
 		if (structure.isEmpty()) {

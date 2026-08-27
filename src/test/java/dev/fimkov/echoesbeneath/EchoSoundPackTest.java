@@ -41,7 +41,7 @@ class EchoSoundPackTest {
 
 		for (Map.Entry<String, com.google.gson.JsonElement> entry : definitions().entrySet()) {
 			for (var element : entry.getValue().getAsJsonObject().getAsJsonArray("sounds")) {
-				String name = element.getAsJsonObject().get("name").getAsString()
+				String name = element.getAsJsonObject().get("name").asString().orElse("")
 						.replace(NAMESPACE + ":", "");
 				String path = "/assets/" + NAMESPACE + "/sounds/" + name + ".ogg";
 
@@ -77,7 +77,7 @@ class EchoSoundPackTest {
 		for (Map.Entry<String, com.google.gson.JsonElement> entry : definitions().entrySet()) {
 			JsonObject definition = entry.getValue().getAsJsonObject();
 			assertTrue(definition.has("subtitle"), entry.getKey() + " has no subtitle");
-			String key = definition.get("subtitle").getAsString();
+			String key = definition.get("subtitle").asString().orElse("");
 
 			if (!english.has(key)) {
 				missing.add("en_us " + key);

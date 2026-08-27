@@ -74,7 +74,7 @@ class ResonanceTableTextTest {
 
 	private static String translate(JsonObject language, String key, Object... arguments) {
 		assertTrue(language.has(key), "missing translation key " + key);
-		String value = language.get(key).getAsString();
+		String value = language.get(key).asString().orElse("");
 
 		for (Object argument : arguments) {
 			value = value.replaceFirst("%s", String.valueOf(argument));
@@ -148,7 +148,7 @@ class ResonanceTableTextTest {
 		List<String> wrong = new ArrayList<>();
 
 		russian.entrySet().forEach(entry -> {
-			String value = entry.getValue().getAsString().toLowerCase(Locale.ROOT);
+			String value = entry.getValue().asString().orElse("").toLowerCase(Locale.ROOT);
 			wrongRussian.forEach((bad, good) -> {
 				if (value.contains(bad)) {
 					wrong.add(entry.getKey() + " says \"" + bad + "\", the game says \"" + good + "\"");
