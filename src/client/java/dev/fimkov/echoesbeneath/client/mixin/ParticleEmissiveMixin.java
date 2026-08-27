@@ -1,23 +1,21 @@
 package dev.fimkov.echoesbeneath.client.mixin;
 
 import dev.fimkov.echoesbeneath.client.render.EchoDarkness;
-import net.minecraft.client.particle.SingleQuadParticle;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.util.LightCoordsUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(SingleQuadParticle.class)
+// Particles are the one thing that keeps its own light while the memory is dark,
+// otherwise a replay swallows them whole.
+@Mixin(Particle.class)
 public abstract class ParticleEmissiveMixin {
-	@Redirect(
-			method = "renderRotatedQuad(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lorg/joml/Quaternionf;FFFF)V",
-			at = @At(value = "INVOKE",
-					target = "Lnet/minecraft/client/particle/SingleQuadParticle;getLightColor(F)I"))
-	private int echoesBeneath$keepParticlesLit(SingleQuadParticle particle, float partialTick) {
+	@Inject(method = "getLightCoords", at = @At("HEAD"), cancellable = true)
+	private void echoesBeneath$keepParticlesLit(float partialTick, CallbackInfoReturnable<Integer> callback) {
 		if (EchoDarkness.isTransitionActive()) {
-			return LightTexture.FULL_BRIGHT;
+			callback.setReturnValue(LightCoordsUtil.FULL_BRIGHT);
 		}
-
-		return particle.getLightColor(partialTick);
 	}
 }

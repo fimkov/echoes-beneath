@@ -114,39 +114,6 @@ public final class EchoDarkness {
 		darkness = 0.0F;
 	}
 
-	public static void applyDarkness(float partialTick) {
-		if (restoring) {
-			return;
-		}
 
-		lightTextureAccess().ifPresent(access -> access.echoesBeneath$applyDarkness(darkness, partialTick));
-	}
 
-	public static void restoreNaturalLight(float partialTick) {
-		Optional<EchoLightTextureAccess> access = lightTextureAccess();
-
-		if (access.isEmpty()) {
-			return;
-		}
-
-		restoring = true;
-
-		try {
-			access.get().echoesBeneath$restoreNaturalLight(partialTick);
-		} finally {
-			restoring = false;
-		}
-	}
-
-	private static Optional<EchoLightTextureAccess> lightTextureAccess() {
-		Minecraft client = Minecraft.getInstance();
-
-		if (client.gameRenderer == null
-
-				|| !(client.gameRenderer.lightTexture() instanceof EchoLightTextureAccess access)) {
-			return Optional.empty();
-		}
-
-		return Optional.of(access);
-	}
 }

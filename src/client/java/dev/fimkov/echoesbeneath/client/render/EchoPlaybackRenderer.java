@@ -14,10 +14,6 @@ public final class EchoPlaybackRenderer {
 		EchoDarkness.refreshFrameState();
 		EchoDarkness.advanceTransition(context.tickCounter().getRealtimeDeltaTicks());
 
-		if (EchoDarkness.isTransitionActive()) {
-			EchoDarkness.applyDarkness(context.tickCounter().getGameTimeDeltaPartialTick(false));
-		}
-
 		EchoRegionAmbience.follow();
 	}
 
@@ -28,7 +24,7 @@ public final class EchoPlaybackRenderer {
 			return;
 		}
 
-		Vec3 cameraPosition = context.camera().getPosition();
+		Vec3 cameraPosition = context.camera().pos;
 
 		for (ClientPlaybackSession session : manager.sessions()) {
 			if (!session.region().dimension().equals(context.world().dimension())) {
@@ -50,10 +46,5 @@ public final class EchoPlaybackRenderer {
 	}
 
 	public static void frameEnd(EchoRenderContext context) {
-		if (!EchoDarkness.isTransitionActive()) {
-			return;
-		}
-
-		EchoDarkness.restoreNaturalLight(context.tickCounter().getGameTimeDeltaPartialTick(false));
 	}
 }
