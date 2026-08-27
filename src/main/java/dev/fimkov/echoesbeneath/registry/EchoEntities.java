@@ -1,5 +1,7 @@
 package dev.fimkov.echoesbeneath.registry;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.entity.EchoLensEntity;
 import net.minecraft.core.Registry;
@@ -18,7 +20,7 @@ public final class EchoEntities {
 			.noSummon()
 			.clientTrackingRange(TRACKING_RANGE_CHUNKS)
 			.updateInterval(UPDATE_INTERVAL_TICKS)
-			.build("echo_lens");
+			.build(ResourceKey.create(Registries.ENTITY_TYPE, EchoesBeneath.id("echo_lens")));
 
 	private EchoEntities() {
 	}

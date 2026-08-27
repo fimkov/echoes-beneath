@@ -1,5 +1,7 @@
 package dev.fimkov.echoesbeneath.blockentity;
 
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 import dev.fimkov.echoesbeneath.chart.EchoChartData;
 import dev.fimkov.echoesbeneath.chart.EchoChartLook;
 import dev.fimkov.echoesbeneath.registry.EchoBlockEntities;
@@ -142,38 +144,28 @@ public class EchoChartBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-		super.loadAdditional(tag, registries);
-		chart = tag.contains(TAG_CHART)
-				? EchoChartData.CODEC.parse(NbtOps.INSTANCE, tag.get(TAG_CHART)).result().orElse(null)
-				: null;
-		look = tag.contains(TAG_LOOK)
-				? EchoChartLook.CODEC.parse(NbtOps.INSTANCE, tag.get(TAG_LOOK)).result()
-						.orElse(EchoChartLook.DEFAULT)
-				: EchoChartLook.DEFAULT;
-		turn = Math.clamp(tag.getInt(TAG_TURN), 0, TURN_STEPS - 1);
+	protected void loadAdditional(ValueInput input) {
+		super.loadAdditional(input);
+		chart = input.read(TAG_CHART, EchoChartData.CODEC).orElse(null);
+		look = input.read(TAG_LOOK, EchoChartLook.CODEC).orElse(EchoChartLook.DEFAULT);
+		turn = Math.clamp(input.getIntOr(TAG_TURN, 0), 0, TURN_STEPS - 1);
 	}
 
 	@Override
-	protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-		super.saveAdditional(tag, registries);
+	protected void saveAdditional(ValueOutput output) {
+		super.saveAdditional(output);
 
 		if (chart != null) {
-			EchoChartData.CODEC.encodeStart(NbtOps.INSTANCE, chart).result()
-					.ifPresent(encoded -> tag.put(TAG_CHART, encoded));
+			output.store(TAG_CHART, EchoChartData.CODEC, chart);
 		}
 
-		EchoChartLook.CODEC.encodeStart(NbtOps.INSTANCE, look).result()
-				.ifPresent(encoded -> tag.put(TAG_LOOK, encoded));
-		tag.putInt(TAG_TURN, turn);
+		output.store(TAG_LOOK, EchoChartLook.CODEC, look);
+		output.putInt(TAG_TURN, turn);
 	}
 
 	@Override
 	public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-		CompoundTag tag = new CompoundTag();
-		saveAdditional(tag, registries);
-
-		return tag;
+		return saveCustomOnly(registries);
 	}
 
 	@Nullable

@@ -1,5 +1,7 @@
 package dev.fimkov.echoesbeneath.memory;
 
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.nbt.IntArrayTag;
 import dev.fimkov.echoesbeneath.memory.snapshot.BlockSnapshot;
 import dev.fimkov.echoesbeneath.memory.timeline.BlockTimeline;
 import dev.fimkov.echoesbeneath.memory.timeline.EntityTimeline;
@@ -49,7 +51,7 @@ public record EchoMemoryRecord(
 	public CompoundTag toNbt() {
 		CompoundTag tag = new CompoundTag();
 		tag.putInt("format_version", formatVersion);
-		tag.put("id", NbtUtils.createUUID(id));
+		tag.put("id", new IntArrayTag(UUIDUtil.uuidToIntArray(id)));
 		tag.putInt("slot", slot);
 		tag.putString("dimension", dimension.identifier().toString());
 		tag.putInt("center_x", center.getX());
@@ -68,7 +70,7 @@ public record EchoMemoryRecord(
 		ListTag players = new ListTag();
 
 		for (UUID player : recordedPlayers) {
-			players.add(NbtUtils.createUUID(player));
+			players.add(new IntArrayTag(UUIDUtil.uuidToIntArray(player)));
 		}
 
 		tag.put("recorded_players", players);
@@ -84,7 +86,7 @@ public record EchoMemoryRecord(
 			throw new EchoMemoryFormatException("Unsupported memory format version " + formatVersion);
 		}
 
-		UUID id = tag.contains("id") ? UUIDUtil.readUUIDFromTag(tag.get("id")) : null;
+		UUID id = tag.contains("id") ? UUIDUtil.uuidFromIntArray(((IntArrayTag) tag.get("id")).getAsIntArray()) : null;
 
 		if (id == null) {
 			throw new EchoMemoryFormatException("Memory record has no identity");
@@ -129,7 +131,7 @@ public record EchoMemoryRecord(
 		List<UUID> players = new ArrayList<>();
 
 		for (Tag element : tag.getListOrEmpty("recorded_players")) {
-			players.add(UUIDUtil.readUUIDFromTag(element));
+			players.add(UUIDUtil.uuidFromIntArray(((IntArrayTag) element)).getAsIntArray());
 		}
 
 		return List.copyOf(players);

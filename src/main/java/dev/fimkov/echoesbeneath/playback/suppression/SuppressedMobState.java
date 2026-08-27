@@ -1,5 +1,7 @@
 package dev.fimkov.echoesbeneath.playback.suppression;
 
+import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -51,7 +53,7 @@ public record SuppressedMobState(
 
 		if (entity instanceof LivingEntity living) {
 			for (MobEffectInstance instance : living.getActiveEffects()) {
-				Tag saved = instance.save();
+				Tag saved = MobEffectInstance.CODEC.encodeStart(NbtOps.INSTANCE, instance).result().orElse(null);
 
 				if (saved instanceof CompoundTag compound) {
 					effects.add(compound);
@@ -98,7 +100,7 @@ public record SuppressedMobState(
 			living.removeAllEffects();
 
 			for (CompoundTag saved : effects) {
-				MobEffectInstance instance = MobEffectInstance.load(saved);
+				MobEffectInstance instance = MobEffectInstance.CODEC.parse(NbtOps.INSTANCE, saved).result().orElse(null);
 
 				if (instance != null) {
 					living.addEffect(instance);
@@ -175,6 +177,6 @@ public record SuppressedMobState(
 	}
 
 	public static UUID readEntityId(CompoundTag tag) {
-		return UUIDUtil.readUUIDFromTag(tag.get("entity"));
+		return UUIDUtil.uuidFromIntArray(((IntArrayTag) tag.get("entity")).getAsIntArray());
 	}
 }

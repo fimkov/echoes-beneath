@@ -25,7 +25,7 @@ public final class EchoCommands {
 
 	private static LiteralArgumentBuilder<CommandSourceStack> buildRoot() {
 		return Commands.literal("echo")
-				.requires(Commands.LEVEL_GAMEMASTERS)
+				.requires(source -> Commands.LEVEL_GAMEMASTERS.check(source.permissions()))
 				.then(Commands.literal("give").executes(EchoCommandActions::give))
 				.then(Commands.literal("status").executes(EchoCommandActions::status))
 				.then(Commands.literal("start_recording").executes(EchoCommandActions::startRecording))
@@ -42,13 +42,13 @@ public final class EchoCommands {
 										SharedSuggestionProvider.suggest(EchoStructures.ALL, builder))
 								.executes(EchoCommands::locateStructure)))
 				.then(Commands.literal("admin_clear_memory")
-						.requires(Commands.LEVEL_ADMINS)
+						.requires(source -> Commands.LEVEL_ADMINS.check(source.permissions()))
 						.then(Commands.argument(MEMORY_ARGUMENT, StringArgumentType.word())
 								.executes(EchoCommandActions::adminClearMemory)));
 	}
 
 	private static int locateStructure(CommandContext<CommandSourceStack> context)
 			throws CommandSyntaxException {
-		return EchoCommandActions.locateStructure(context, StringArgumentType.getStringOr(context, STRUCTURE_ARGUMENT, ""));
+		return EchoCommandActions.locateStructure(context, StringArgumentType.getString(context, STRUCTURE_ARGUMENT));
 	}
 }

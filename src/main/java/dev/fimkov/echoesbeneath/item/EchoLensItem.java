@@ -1,5 +1,9 @@
 package dev.fimkov.echoesbeneath.item;
 
+import java.util.function.Consumer;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.server.level.ServerLevel;
 import dev.fimkov.echoesbeneath.EchoTranslations;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReference;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReferences;
@@ -27,27 +31,28 @@ public class EchoLensItem extends Item {
 	}
 
 	@Override
-	public void inventoryTick(ItemStack stack, Level level,
-			Entity holder, int slotId, boolean selected) {
-		EchoLensResonance.tick(stack, level, holder, selected);
+	public void inventoryTick(ItemStack stack, ServerLevel level,
+			Entity holder, EquipmentSlot slot) {
+		EchoLensResonance.tick(stack, level, holder, slot == EquipmentSlot.MAINHAND);
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+	public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
+			Consumer<Component> tooltip, TooltipFlag flag) {
 		EchoMemoryReferences references = EchoLensStacks.references(stack);
 		EchoLensUpgrades upgrades = EchoLensStacks.upgrades(stack);
-		tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_MEMORIES,
+		tooltip.accept(Component.translatable(EchoTranslations.TOOLTIP_MEMORIES,
 				references.filledSlots(), upgrades.memorySlots()).withStyle(ChatFormatting.AQUA));
 		appendCapacityLine(references, upgrades, tooltip);
-		tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_TUNING,
+		tooltip.accept(Component.translatable(EchoTranslations.TOOLTIP_TUNING,
 				upgrades.radius(), upgrades.sensitivity(), upgrades.vision()).withStyle(ChatFormatting.DARK_GRAY));
 		appendResonanceLines(references, tooltip);
 	}
 
 	private void appendCapacityLine(EchoMemoryReferences references, EchoLensUpgrades upgrades,
-			List<Component> tooltip) {
+			Consumer<Component> tooltip) {
 		if (references.isEmpty()) {
-			tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_SILENT).withStyle(ChatFormatting.DARK_GRAY));
+			tooltip.accept(Component.translatable(EchoTranslations.TOOLTIP_SILENT).withStyle(ChatFormatting.DARK_GRAY));
 
 			return;
 		}
@@ -55,16 +60,16 @@ public class EchoLensItem extends Item {
 		Optional<Integer> nextSlot = references.nextFreeSlot(upgrades.memorySlots());
 
 		if (nextSlot.isPresent()) {
-			tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_WILL_RECORD,
+			tooltip.accept(Component.translatable(EchoTranslations.TOOLTIP_WILL_RECORD,
 					EchoTextFormat.romanSlot(nextSlot.get())).withStyle(ChatFormatting.DARK_AQUA));
 
 			return;
 		}
 
-		tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_FULL).withStyle(ChatFormatting.DARK_GRAY));
+		tooltip.accept(Component.translatable(EchoTranslations.TOOLTIP_FULL).withStyle(ChatFormatting.DARK_GRAY));
 	}
 
-	private void appendResonanceLines(EchoMemoryReferences references, List<Component> tooltip) {
+	private void appendResonanceLines(EchoMemoryReferences references, Consumer<Component> tooltip) {
 		Optional<EchoMemoryReference> resonating = EchoLensTooltipContext.resonatingHere(references);
 
 		if (resonating.isEmpty()) {
@@ -72,9 +77,9 @@ public class EchoLensItem extends Item {
 		}
 
 		EchoMemoryReference reference = resonating.get();
-		tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_RESONATES,
+		tooltip.accept(Component.translatable(EchoTranslations.TOOLTIP_RESONATES,
 				EchoTextFormat.romanSlot(reference.slot())).withStyle(ChatFormatting.LIGHT_PURPLE));
-		tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_DURATION,
+		tooltip.accept(Component.translatable(EchoTranslations.TOOLTIP_DURATION,
 				EchoTextFormat.clock(reference.durationTicks())).withStyle(ChatFormatting.GRAY));
 	}
 }

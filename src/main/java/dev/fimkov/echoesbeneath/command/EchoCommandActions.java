@@ -338,7 +338,7 @@ public final class EchoCommandActions {
 			return FAILURE;
 		}
 
-		String rawMemory = StringArgumentType.getStringOr(context, EchoCommands.MEMORY_ARGUMENT, "");
+		String rawMemory = StringArgumentType.getString(context, EchoCommands.MEMORY_ARGUMENT);
 		ItemStack held = player.getMainHandItem();
 
 		if (!EchoLensStacks.isLens(held)) {
