@@ -3,7 +3,6 @@ package dev.fimkov.echoesbeneath.client.render;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.resources.Identifier;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 
@@ -12,8 +11,10 @@ public record EchoSilhouetteBuffers(RenderType layer, int red, int green, int bl
 	private static final int OPAQUE = 255;
 	private static final int REVEAL_BLOCK_LIGHT = 11;
 
-	public static EchoSilhouetteBuffers forEntity(Identifier texture, float reveal, float presence) {
-		return of(RenderTypes.entityTranslucent(texture), reveal, presence);
+	// The entity keeps whatever layer its own renderer asked for; only the colour
+	// and the light are taken over.
+	public static EchoSilhouetteBuffers forEntity(float reveal, float presence) {
+		return of(null, reveal, presence);
 	}
 
 	public static EchoSilhouetteBuffers forBlocks(float reveal, float presence) {
@@ -27,6 +28,10 @@ public record EchoSilhouetteBuffers(RenderType layer, int red, int green, int bl
 		return new EchoSilhouetteBuffers(layer, level, level, level, visible,
 				LightCoordsUtil.pack(Math.round(Mth.clamp(reveal, 0.0F, 1.0F) * REVEAL_BLOCK_LIGHT), 0),
 				visible < OPAQUE);
+	}
+
+	public int tint() {
+		return (alpha << 24) | (red << 16) | (green << 8) | blue;
 	}
 
 	public boolean isInvisible() {
