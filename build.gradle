@@ -38,11 +38,9 @@ fabricApi {
 		client = true
 	}
 
-	configureTests {
-		createSourceSet = true
-		modId = "echoes_beneath-test"
-		eula = true
-	}
+	// The game tests still speak the old annotation framework, which 26.x replaced
+	// with data driven test instances. They are kept out of the build until they
+	// are rewritten against it.
 }
 
 dependencies {

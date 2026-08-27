@@ -95,7 +95,7 @@ class EchoConfigScreenTest {
 			JsonObject language = language(code);
 
 			for (Option option : OPTIONS) {
-				String label = language.get("config.echoes_beneath." + option.key()).asString().orElse("");
+				String label = language.get("config.echoes_beneath." + option.key()).getAsString();
 				int width = measure(advances, label + option.widestValue());
 
 				if (width > LABEL_BUDGET) {

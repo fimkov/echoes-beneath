@@ -41,7 +41,7 @@ class EchoSoundPackTest {
 
 		for (Map.Entry<String, com.google.gson.JsonElement> entry : definitions().entrySet()) {
 			for (var element : entry.getValue().getAsJsonObject().getAsJsonArray("sounds")) {
-				String name = element.getAsJsonObject().get("name").asString().orElse("")
+				String name = element.getAsJsonObject().get("name").getAsString()
 						.replace(NAMESPACE + ":", "");
 				String path = "/assets/" + NAMESPACE + "/sounds/" + name + ".ogg";
 
@@ -77,7 +77,7 @@ class EchoSoundPackTest {
 		for (Map.Entry<String, com.google.gson.JsonElement> entry : definitions().entrySet()) {
 			JsonObject definition = entry.getValue().getAsJsonObject();
 			assertTrue(definition.has("subtitle"), entry.getKey() + " has no subtitle");
-			String key = definition.get("subtitle").asString().orElse("");
+			String key = definition.get("subtitle").getAsString();
 
 			if (!english.has(key)) {
 				missing.add("en_us " + key);
@@ -102,13 +102,13 @@ class EchoSoundPackTest {
 			}
 			SoundEvent event =
 					(SoundEvent) field.get(null);
-			String key = event.getLocation().getPath();
+			String key = event.location().getPath();
 
-			if (!event.getLocation().getNamespace().equals(NAMESPACE)) {
+			if (!event.location().getNamespace().equals(NAMESPACE)) {
 				continue;
 			}
 			if (!definitions.has(key)) {
-				missing.add(field.getName() + " is registered as " + event.getLocation()
+				missing.add(field.getName() + " is registered as " + event.location()
 						+ " but the pack has no entry named " + key);
 			}
 		}

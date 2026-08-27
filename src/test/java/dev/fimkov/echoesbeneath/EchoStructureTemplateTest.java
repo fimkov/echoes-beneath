@@ -51,7 +51,7 @@ class EchoStructureTemplateTest {
 			for (int index = 0; index < placed.size(); index++) {
 				CompoundTag entry = placed.getCompoundOrEmpty(index);
 				ListTag position = entry.getListOrEmpty("pos");
-				List<Integer> key = List.of(position.getInt(0), position.getInt(1), position.getInt(2));
+				List<Integer> key = List.of(position.getIntOr(0, 0), position.getIntOr(1, 0), position.getIntOr(2, 0));
 				String block = names.get(entry.getIntOr("state", 0));
 				blocks.put(key, block);
 

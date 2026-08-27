@@ -68,7 +68,7 @@ class EchoPersistenceTest {
 		assertTrue(deepslate != sculk);
 		assertEquals(deepslate, palette.indexOf(Blocks.DEEPSLATE_BRICKS.defaultBlockState()));
 
-		BlockPalette restored = BlockPalette.fromNbt(palette.toNbt(), BuiltInRegistries.BLOCK.asLookup());
+		BlockPalette restored = BlockPalette.fromNbt(palette.toNbt(), BuiltInRegistries.BLOCK);
 		assertEquals(Blocks.SCULK.defaultBlockState(), restored.stateAt(sculk));
 		assertEquals(Blocks.AIR.defaultBlockState(), restored.stateAt(BlockPalette.AIR_INDEX));
 	}
@@ -98,7 +98,7 @@ class EchoPersistenceTest {
 	@DisplayName("a full memory record survives being written to disk and read back")
 	void memoryRecordSurvivesAServerRestart(@TempDir Path directory) {
 		EchoMemoryRecord original = sampleRecord(UUID.randomUUID());
-		EchoMemoryStorage storage = new EchoMemoryStorage(directory, BuiltInRegistries.BLOCK.asLookup());
+		EchoMemoryStorage storage = new EchoMemoryStorage(directory, BuiltInRegistries.BLOCK);
 		assertTrue(storage.save(original));
 
 		storage.clearCache();
@@ -132,7 +132,7 @@ class EchoPersistenceTest {
 	@DisplayName("playing a memory back never rewrites it")
 	void loadingDoesNotMutateStoredData(@TempDir Path directory) {
 		EchoMemoryRecord original = sampleRecord(UUID.randomUUID());
-		EchoMemoryStorage storage = new EchoMemoryStorage(directory, BuiltInRegistries.BLOCK.asLookup());
+		EchoMemoryStorage storage = new EchoMemoryStorage(directory, BuiltInRegistries.BLOCK);
 		storage.save(original);
 
 		for (int replay = 0; replay < 4; replay++) {
@@ -154,7 +154,7 @@ class EchoPersistenceTest {
 		assertFalse(record.holdsPlayerOtherThan(RECORDED_PLAYER),
 				"a memory holding only you must not count you as somebody else");
 		EchoMemoryRecord restored = EchoMemoryRecord.fromNbt(record.toNbt(),
-				BuiltInRegistries.BLOCK.asLookup(), MAX_EVENTS, MAX_EVENTS, MAX_EVENTS, MAX_EVENTS);
+				BuiltInRegistries.BLOCK, MAX_EVENTS, MAX_EVENTS, MAX_EVENTS, MAX_EVENTS);
 		assertEquals(record.recordedPlayers(), restored.recordedPlayers());
 	}
 
@@ -164,14 +164,14 @@ class EchoPersistenceTest {
 		CompoundTag tag = sampleRecord(UUID.randomUUID()).toNbt();
 		tag.putInt("format_version", EchoFormat.CURRENT_VERSION + 99);
 		assertThrows(RuntimeException.class,
-				() -> EchoMemoryRecord.fromNbt(tag, BuiltInRegistries.BLOCK.asLookup(),
+				() -> EchoMemoryRecord.fromNbt(tag, BuiltInRegistries.BLOCK,
 						MAX_EVENTS, MAX_EVENTS, MAX_EVENTS, MAX_EVENTS));
 	}
 
 	@Test
 	@DisplayName("a damaged record is skipped rather than propagated")
 	void damagedRecordIsSkipped(@TempDir Path directory) {
-		EchoMemoryStorage storage = new EchoMemoryStorage(directory, BuiltInRegistries.BLOCK.asLookup());
+		EchoMemoryStorage storage = new EchoMemoryStorage(directory, BuiltInRegistries.BLOCK);
 		Optional<EchoMemoryRecord> missing = storage.load(UUID.randomUUID());
 		assertTrue(missing.isEmpty());
 	}
@@ -247,7 +247,7 @@ class EchoPersistenceTest {
 	@Test
 	@DisplayName("a memory keeps the vision the lens had when it was sealed")
 	void visionSurvivesTheRoundTrip(@TempDir Path directory) {
-		EchoMemoryStorage storage = new EchoMemoryStorage(directory, BuiltInRegistries.BLOCK.asLookup());
+		EchoMemoryStorage storage = new EchoMemoryStorage(directory, BuiltInRegistries.BLOCK);
 		EchoMemoryRecord record = sampleRecord(UUID.randomUUID());
 		storage.save(record);
 		EchoMemoryRecord reloaded = storage.load(record.id()).orElseThrow();

@@ -68,7 +68,7 @@ class EchoAdvancementTreeTest {
 			if (!entry.getValue().has("parent")) {
 				continue;
 			}
-			String parent = entry.getValue().get("parent").asString().orElse("");
+			String parent = entry.getValue().get("parent").getAsString();
 
 			if (parent.startsWith(NAMESPACE) && !tree.containsKey(parent)) {
 				broken.add(entry.getKey() + " points at missing " + parent);
@@ -100,7 +100,7 @@ class EchoAdvancementTreeTest {
 			assertNotNull(display, entry.getKey() + " has no display block");
 
 			for (String part : new String[] {"title", "description"}) {
-				String key = display.getAsJsonObject(part).get("translate").asString().orElse("");
+				String key = display.getAsJsonObject(part).get("translate").getAsString();
 
 				if (!english.has(key)) {
 					missing.add("en_us " + key);
