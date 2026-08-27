@@ -28,8 +28,6 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 
 	public ChartLookScreen(ChartLookMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
-		this.imageWidth = ChartLookLayout.PANEL_WIDTH;
-		this.imageHeight = ChartLookLayout.PANEL_HEIGHT;
 	}
 
 	@Override

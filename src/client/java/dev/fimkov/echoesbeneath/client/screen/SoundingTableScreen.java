@@ -76,8 +76,6 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 
 	public SoundingTableScreen(SoundingTableMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
-		this.imageWidth = SoundingTableLayout.PANEL_WIDTH;
-		this.imageHeight = SoundingTableLayout.PANEL_HEIGHT;
 	}
 
 	@Override

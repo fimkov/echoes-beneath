@@ -84,6 +84,12 @@ public record EchoSilhouetteBuffers(RenderType layer, int red, int green, int bl
 		public VertexConsumer setLineWidth(float width) {
 			return this;
 		}
+
+		@Override
+
+		public VertexConsumer setColor(int packed) {
+			return this;
+		}
 	};
 
 	private record SilhouetteConsumer(VertexConsumer delegate, int red, int green, int blue,
@@ -144,6 +150,12 @@ public record EchoSilhouetteBuffers(RenderType layer, int red, int green, int bl
 			delegate.setLineWidth(width);
 
 			return this;
+		}
+
+		@Override
+
+		public VertexConsumer setColor(int packed) {
+			return setColor(packed >> 16 & 0xFF, packed >> 8 & 0xFF, packed & 0xFF, packed >>> 24);
 		}
 	}
 }

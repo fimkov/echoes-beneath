@@ -21,7 +21,7 @@ public final class EchoBlockDeltaRenderer {
 	}
 
 	public static void render(EchoRenderContext context, ClientPlaybackSession session, Vec3 cameraPosition) {
-		if (context.consumers() == null) {
+		if (context.submits() == null) {
 			return;
 		}
 
@@ -42,47 +42,49 @@ public final class EchoBlockDeltaRenderer {
 		poseStack.pushPose();
 		poseStack.translate(center.getX() - cameraPosition.x,
 				center.getY() - cameraPosition.y, center.getZ() - cameraPosition.z);
-		VertexConsumer consumer = context.consumers().getBuffer(EchoRenderTypes.ECHO_TEXELS);
+		context.submits().submitCustomGeometry(poseStack, EchoRenderTypes.ECHO_TEXELS,
+				(pose, consumer) -> {
+			float[] basis = new float[9];
+			float[] sample = new float[EchoWaveRenderer.SAMPLE_SLOTS];
+			List<EchoWave> facing = new ArrayList<>();
+			int emitted = 0;
 
-		float[] basis = new float[9];
-		float[] sample = new float[EchoWaveRenderer.SAMPLE_SLOTS];
-		List<EchoWave> facing = new ArrayList<>();
-		int emitted = 0;
-
-		for (int packed : deltas.trackedPositions()) {
-			if (emitted >= MAX_DELTA_TEXELS) {
-				break;
-			}
-			if (!deltas.isSolidAt(packed)) {
-				continue;
-			}
-			int relativeX = EchoCoordinates.unpackX(packed);
-			int relativeY = EchoCoordinates.unpackY(packed);
-			int relativeZ = EchoCoordinates.unpackZ(packed);
-			double worldX = center.getX() + relativeX;
-			double worldY = center.getY() + relativeY;
-			double worldZ = center.getZ() + relativeZ;
-
-			if (cameraPosition.distanceToSqr(worldX, worldY, worldZ) > MAX_DELTA_DISTANCE * MAX_DELTA_DISTANCE) {
-				continue;
-			}
-			for (Direction direction : Direction.values()) {
-				if (deltas.isSolidAt(relativeX + direction.getStepX(),
-						relativeY + direction.getStepY(), relativeZ + direction.getStepZ())) {
+			for (int packed : deltas.trackedPositions()) {
+				if (emitted >= MAX_DELTA_TEXELS) {
+					break;
+				}
+				if (!deltas.isSolidAt(packed)) {
 					continue;
 				}
-				int packedFace = EchoFaceGeometry.pack(0, 0, 0, direction);
-				EchoFaceGeometry.faceBasis(packedFace, relativeX, relativeY, relativeZ, basis);
-				EchoWaveRenderer.collectFacingWaves(waves, packedFace, basis, center, facing, currentTick, partialTick);
+				int relativeX = EchoCoordinates.unpackX(packed);
+				int relativeY = EchoCoordinates.unpackY(packed);
+				int relativeZ = EchoCoordinates.unpackZ(packed);
+				double worldX = center.getX() + relativeX;
+				double worldY = center.getY() + relativeY;
+				double worldZ = center.getZ() + relativeZ;
 
-				if (facing.isEmpty()) {
+				if (cameraPosition.distanceToSqr(worldX, worldY, worldZ) > MAX_DELTA_DISTANCE * MAX_DELTA_DISTANCE) {
 					continue;
 				}
-				emitted += EchoWaveRenderer.lightFace(consumer, poseStack.last().pose(), facing, center,
-						basis, texel, currentTick, partialTick, animationStep, sample,
-						MAX_DELTA_TEXELS - emitted);
+				for (Direction direction : Direction.values()) {
+					if (deltas.isSolidAt(relativeX + direction.getStepX(),
+							relativeY + direction.getStepY(), relativeZ + direction.getStepZ())) {
+						continue;
+					}
+					int packedFace = EchoFaceGeometry.pack(0, 0, 0, direction);
+					EchoFaceGeometry.faceBasis(packedFace, relativeX, relativeY, relativeZ, basis);
+					EchoWaveRenderer.collectFacingWaves(waves, packedFace, basis, center, facing, currentTick, partialTick);
+
+					if (facing.isEmpty()) {
+						continue;
+					}
+					emitted += EchoWaveRenderer.lightFace(consumer, pose.pose(), facing, center,
+							basis, texel, currentTick, partialTick, animationStep, sample,
+							MAX_DELTA_TEXELS - emitted);
+				}
 			}
-		}
+
+		});
 
 		poseStack.popPose();
 	}

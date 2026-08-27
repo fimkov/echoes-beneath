@@ -81,8 +81,6 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 
 	public ResonanceTableScreen(ResonanceTableMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
-		this.imageWidth = ResonanceTableLayout.PANEL_WIDTH;
-		this.imageHeight = ResonanceTableLayout.PANEL_HEIGHT;
 	}
 
 	@Override
