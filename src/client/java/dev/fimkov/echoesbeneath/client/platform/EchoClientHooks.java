@@ -1,5 +1,7 @@
 package dev.fimkov.echoesbeneath.client.platform;
 
+import java.util.function.Supplier;
+import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import java.util.function.Consumer;
 import net.minecraft.client.KeyMapping;
@@ -35,6 +37,8 @@ public interface EchoClientHooks {
 			MenuType<M> type, MenuScreens.ScreenConstructor<M, S> constructor);
 
 	void registerKey(KeyMapping mapping);
+
+	void registerPictureInPicture(Supplier<PictureInPictureRenderer<?>> renderer);
 
 	void onFrameStart(Consumer<EchoRenderContext> handler);
 

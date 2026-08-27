@@ -1,5 +1,7 @@
 package dev.fimkov.echoesbeneath.neoforge;
 
+import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
+import dev.fimkov.echoesbeneath.client.screen.EchoChartStageRenderer;
 import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.EchoesBeneathBootstrap;
 import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
@@ -77,6 +79,8 @@ public final class EchoesBeneathNeoForge {
 		EchoClientConfig.load();
 		EchoLensTooltipContext.bindViewer(EchoesBeneathNeoForge::localViewer);
 		hooks.registerKey(EchoKeys.OPEN_CONFIG);
+		hooks.registerPictureInPicture(EchoChartStageRenderer::new);
+		modBus.addListener(RegisterPictureInPictureRenderersEvent.class, hooks::bindPictureInPicture);
 		EchoPlaybackReceiver.register();
 		hooks.onFrameStart(EchoPlaybackRenderer::frameStart);
 		hooks.onAfterEntities(EchoPlaybackRenderer::afterEntities);

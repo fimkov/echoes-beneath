@@ -1,5 +1,8 @@
 package dev.fimkov.echoesbeneath.client.platform.fabric;
 
+import java.util.function.Supplier;
+import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
+import net.fabricmc.fabric.api.client.rendering.v1.PictureInPictureRendererRegistry;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import dev.fimkov.echoesbeneath.client.platform.EchoClientHooks;
 import dev.fimkov.echoesbeneath.client.platform.EchoRenderContext;
@@ -60,6 +63,11 @@ public final class FabricClientHooks implements EchoClientHooks {
 	public <M extends AbstractContainerMenu, S extends Screen & MenuAccess<M>> void registerScreen(
 			MenuType<M> type, MenuScreens.ScreenConstructor<M, S> constructor) {
 		MenuScreens.register(type, constructor);
+	}
+
+	@Override
+	public void registerPictureInPicture(Supplier<PictureInPictureRenderer<?>> renderer) {
+		PictureInPictureRendererRegistry.register(context -> renderer.get());
 	}
 
 	@Override

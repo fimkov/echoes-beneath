@@ -9,6 +9,7 @@ import dev.fimkov.echoesbeneath.client.render.EchoChartBlockRenderer;
 import dev.fimkov.echoesbeneath.client.render.EchoLensEntityRenderer;
 import dev.fimkov.echoesbeneath.client.render.EchoPlaybackRenderer;
 import dev.fimkov.echoesbeneath.client.screen.ChartLookScreen;
+import dev.fimkov.echoesbeneath.client.screen.EchoChartStageRenderer;
 import dev.fimkov.echoesbeneath.client.screen.ResonanceTableScreen;
 import dev.fimkov.echoesbeneath.client.screen.SoundingTableScreen;
 import dev.fimkov.echoesbeneath.item.EchoLensTooltipContext;
@@ -31,6 +32,7 @@ public final class EchoesBeneathClient implements ClientModInitializer {
 		EchoClientPlatforms.get().registerBlockEntityRenderer(
 				EchoBlockEntities.ECHO_CHART,
 				EchoChartBlockRenderer::new);
+		EchoClientPlatforms.get().registerPictureInPicture(EchoChartStageRenderer::new);
 		EchoClientPlatforms.get().registerKey(
 				EchoKeys.OPEN_CONFIG);
 		EchoPlaybackReceiver.register();

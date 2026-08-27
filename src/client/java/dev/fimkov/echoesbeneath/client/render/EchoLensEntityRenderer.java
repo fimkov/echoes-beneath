@@ -72,7 +72,8 @@ public class EchoLensEntityRenderer extends EntityRenderer<EchoLensEntity, EchoL
 		poseStack.mulPose(Axis.YP.rotationDegrees(state.spin));
 		poseStack.mulPose(Axis.XP.rotationDegrees(state.lean));
 		poseStack.scale(state.scale, state.scale, state.scale);
-		state.lens.submit(poseStack, collector, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
+		state.lens.submit(poseStack, collector, FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
+				state.outlineColor);
 		poseStack.popPose();
 		super.submit(state, poseStack, collector, camera);
 	}

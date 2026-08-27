@@ -1,6 +1,7 @@
 package dev.fimkov.echoesbeneath.client.mixin;
 
 import dev.fimkov.echoesbeneath.client.render.EchoDarkness;
+import org.joml.Vector3f;
 import net.minecraft.client.renderer.LightmapRenderStateExtractor;
 import net.minecraft.client.renderer.state.LightmapRenderState;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,10 +22,12 @@ public abstract class LightTextureDarknessMixin {
 			return;
 		}
 
+		// Sky and ambient go, block light stays. That keeps the lens, the chart and
+		// the boundary particles alight while the world itself falls dark, which is
+		// what the old single bright texel used to do.
 		float retained = 1.0F - Math.clamp(darkness, 0.0F, 1.0F);
-		state.blockFactor *= retained;
 		state.skyFactor *= retained;
-		state.brightness *= retained;
+		state.ambientColor = state.ambientColor.mul(retained, new Vector3f());
 		state.needsUpdate = true;
 	}
 }

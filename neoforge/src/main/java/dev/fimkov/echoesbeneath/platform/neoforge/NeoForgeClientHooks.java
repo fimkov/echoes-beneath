@@ -1,5 +1,8 @@
 package dev.fimkov.echoesbeneath.platform.neoforge;
 
+import java.util.function.Supplier;
+import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
+import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.fimkov.echoesbeneath.client.platform.EchoClientHooks;
 import dev.fimkov.echoesbeneath.client.platform.EchoRenderContext;
@@ -37,6 +40,8 @@ public final class NeoForgeClientHooks implements EchoClientHooks {
 	private final NeoForgeNetwork network;
 	private final IEventBus bus = NeoForge.EVENT_BUS;
 	private final List<KeyMapping> pendingKeys =
+			new ArrayList<>();
+	private final List<Supplier<PictureInPictureRenderer<?>>> pendingPictures =
 			new ArrayList<>();
 	private final List<BlockEntityBinding<?, ?>> blockEntityRenderers =
 			new ArrayList<>();
@@ -96,6 +101,24 @@ public final class NeoForgeClientHooks implements EchoClientHooks {
 	public <M extends AbstractContainerMenu, S extends Screen & MenuAccess<M>> void registerScreen(
 			MenuType<M> type, MenuScreens.ScreenConstructor<M, S> constructor) {
 		throw new UnsupportedOperationException("NeoForge binds screens from its own event");
+	}
+
+	@Override
+	public void registerPictureInPicture(Supplier<PictureInPictureRenderer<?>> renderer) {
+		pendingPictures.add(renderer);
+	}
+
+	public void bindPictureInPicture(RegisterPictureInPictureRenderersEvent event) {
+		for (Supplier<PictureInPictureRenderer<?>> renderer : pendingPictures) {
+			bindOne(event, renderer);
+		}
+	}
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	private static void bindOne(RegisterPictureInPictureRenderersEvent event,
+			Supplier<PictureInPictureRenderer<?>> renderer) {
+		PictureInPictureRenderer<?> made = renderer.get();
+		event.register((Class) made.getRenderStateClass(), () -> (PictureInPictureRenderer) renderer.get());
 	}
 
 	@Override
