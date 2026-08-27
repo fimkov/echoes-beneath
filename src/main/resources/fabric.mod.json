@@ -23,7 +23,8 @@
       "dev.fimkov.echoesbeneath.client.EchoesBeneathClient"
     ],
     "fabric-datagen": [
-      "dev.fimkov.echoesbeneath.datagen.EchoDataGenerator"
+      "dev.fimkov.echoesbeneath.datagen.EchoDataGenerator",
+      "dev.fimkov.echoesbeneath.datagen.EchoClientDataGenerator"
     ]
   },
   "mixins": [

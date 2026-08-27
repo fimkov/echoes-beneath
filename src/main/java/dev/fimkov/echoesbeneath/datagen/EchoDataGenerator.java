@@ -9,7 +9,6 @@ public final class EchoDataGenerator implements DataGeneratorEntrypoint {
 		FabricDataGenerator.Pack pack = generator.createPack();
 		pack.addProvider(EchoRecipeProvider::new);
 		pack.addProvider(EchoEntityTypeTagProvider::new);
-		pack.addProvider(EchoModelProvider::new);
 		pack.addProvider(EchoLootTableProvider::new);
 		pack.addProvider(EchoAdvancementProvider::new);
 	}

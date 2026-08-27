@@ -171,7 +171,7 @@ public class EchoAdvancementProvider extends FabricAdvancementProvider {
 
 		step(EchoItems.ECHO_CHART, "set_it_down", AdvancementType.GOAL)
 				.parent(chart)
-				.addCriterion("placed_chart", net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger
+				.addCriterion("placed_chart", net.minecraft.advancements.triggers.ItemUsedOnLocationTrigger
 						.TriggerInstance.placedBlock(EchoBlocks.ECHO_CHART))
 				.save(consumer, EchoesBeneath.id("set_it_down").toString());
 
