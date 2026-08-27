@@ -2,19 +2,18 @@ package dev.fimkov.echoesbeneath.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.entity.EchoLensEntity;
 import dev.fimkov.echoesbeneath.entity.EchoLensMode;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
-public class EchoLensEntityRenderer extends EntityRenderer<EchoLensEntity> {
+public class EchoLensEntityRenderer extends EntityRenderer<EchoLensEntity, EchoLensRenderState> {
 	private static final float HOVER_BOB_AMPLITUDE = 0.08F;
 	private static final float HOVER_BOB_SPEED = 0.08F;
 	private static final float RENDER_SCALE = 1.15F;
@@ -27,38 +26,55 @@ public class EchoLensEntityRenderer extends EntityRenderer<EchoLensEntity> {
 	private static final float HEARTBEAT_DECAY = 7.0F;
 	private static final float HEARTBEAT_AMOUNT = 0.13F;
 
-	private final ItemRenderer itemRenderer;
+	private final ItemModelResolver items;
 
 	public EchoLensEntityRenderer(EntityRendererProvider.Context context) {
 		super(context);
-		this.itemRenderer = context.getItemRenderer();
+		this.items = context.getItemModelResolver();
 		this.shadowRadius = 0.0F;
 	}
 
 	@Override
-	public void render(EchoLensEntity entity, float entityYaw, float partialTick, PoseStack poseStack,
-			MultiBufferSource buffers, int packedLight) {
-		ItemStack stack = entity.getLens();
+	public EchoLensRenderState createRenderState() {
+		return new EchoLensRenderState();
+	}
 
-		if (stack.isEmpty()) {
+	@Override
+	public void extractRenderState(EchoLensEntity entity, EchoLensRenderState state, float partialTick) {
+		super.extractRenderState(entity, state, partialTick);
+		ItemStack stack = entity.getLens();
+		state.hasLens = !stack.isEmpty();
+
+		if (!state.hasLens) {
+			state.lens.clear();
+
 			return;
 		}
 
 		float age = entity.tickCount + partialTick;
-		float bob = (float) Math.sin(age * HOVER_BOB_SPEED) * HOVER_BOB_AMPLITUDE;
-		float lean = (float) Math.sin(age * NUTATION_SPEED) * NUTATION_DEGREES;
-		float scale = RENDER_SCALE * (1.0F + (float) Math.sin(age * BREATH_SPEED) * BREATH_AMOUNT
+		state.spin = entity.getSpin();
+		state.bob = (float) Math.sin(age * HOVER_BOB_SPEED) * HOVER_BOB_AMPLITUDE;
+		state.lean = (float) Math.sin(age * NUTATION_SPEED) * NUTATION_DEGREES;
+		state.scale = RENDER_SCALE * (1.0F + (float) Math.sin(age * BREATH_SPEED) * BREATH_AMOUNT
 				+ heartbeat(entity, age));
+		items.updateForNonLiving(state.lens, stack, ItemDisplayContext.GROUND, entity);
+	}
+
+	@Override
+	public void submit(EchoLensRenderState state, PoseStack poseStack, SubmitNodeCollector collector,
+			CameraRenderState camera) {
+		if (!state.hasLens) {
+			return;
+		}
+
 		poseStack.pushPose();
-		poseStack.translate(0.0D, bob + 0.25D, 0.0D);
-		poseStack.mulPose(Axis.YP.rotationDegrees(entity.getSpin()));
-		poseStack.mulPose(Axis.XP.rotationDegrees(lean));
-		poseStack.scale(scale, scale, scale);
-		itemRenderer.renderStatic(stack, ItemDisplayContext.GROUND, FULL_BRIGHT,
-				OverlayTexture.NO_OVERLAY,
-				poseStack, buffers, entity.level(), entity.getId());
+		poseStack.translate(0.0D, state.bob + 0.25D, 0.0D);
+		poseStack.mulPose(Axis.YP.rotationDegrees(state.spin));
+		poseStack.mulPose(Axis.XP.rotationDegrees(state.lean));
+		poseStack.scale(state.scale, state.scale, state.scale);
+		state.lens.submit(poseStack, collector, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
 		poseStack.popPose();
-		super.render(entity, entityYaw, partialTick, poseStack, buffers, packedLight);
+		super.submit(state, poseStack, collector, camera);
 	}
 
 	private static float heartbeat(EchoLensEntity entity, float age) {
@@ -69,10 +85,5 @@ public class EchoLensEntityRenderer extends EntityRenderer<EchoLensEntity> {
 		float sinceBeat = (age % HEARTBEAT_TICKS) / HEARTBEAT_TICKS;
 
 		return (float) Math.exp(-sinceBeat * HEARTBEAT_DECAY) * HEARTBEAT_AMOUNT;
-	}
-
-	@Override
-	public Identifier getTextureLocation(EchoLensEntity entity) {
-		return EchoesBeneath.id("textures/item/echo_lens.png");
 	}
 }
