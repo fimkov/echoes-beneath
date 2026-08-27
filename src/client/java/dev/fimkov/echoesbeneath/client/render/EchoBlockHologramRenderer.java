@@ -1,5 +1,11 @@
 package dev.fimkov.echoesbeneath.client.render;
 
+import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.model.BlockDisplayContext;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
+import net.minecraft.client.renderer.block.BlockModelResolver;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
 import dev.fimkov.echoesbeneath.client.playback.ClientPlaybackSession;
@@ -10,7 +16,6 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import dev.fimkov.echoesbeneath.client.platform.EchoRenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
@@ -42,7 +47,7 @@ public final class EchoBlockHologramRenderer {
 		Minecraft client = Minecraft.getInstance();
 		Level level = client.level;
 
-		if (context.consumers() == null || level == null) {
+		if (context.submits() == null || level == null) {
 			return;
 		}
 
@@ -56,15 +61,20 @@ public final class EchoBlockHologramRenderer {
 		BlockSnapshot snapshot = session.data().snapshot();
 		EchoBlockDeltaState deltas = session.blockDeltas();
 		BlockPalette palette = snapshot.palette();
-		BlockRenderDispatcher blocks = client.getBlockRenderer();
+		BlockModelResolver blocks = new BlockModelResolver(client.getModelManager());
 		float presence = EchoDarkness.transitionProgress();
 
 		if (presence <= 0.0F) {
 			return;
 		}
 
-		EchoSilhouetteBuffers buffers = EchoSilhouetteBuffers.forBlocks(context.consumers(),
-				EchoReveal.of(session), presence);
+		EchoSilhouetteBuffers look = EchoSilhouetteBuffers.forBlocks(EchoReveal.of(session), presence);
+
+		if (look.isInvisible()) {
+			return;
+		}
+
+		SubmitNodeCollector submits = new EchoSilhouetteCollector(context.submits(), look);
 		BlockPos center = session.region().center();
 		PoseStack poseStack = context.matrixStack();
 		BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
@@ -79,7 +89,7 @@ public final class EchoBlockHologramRenderer {
 			if (index == BlockPalette.AIR_INDEX) {
 				continue;
 			}
-			drawn += draw(context, level, blocks, buffers, poseStack, cursor, center, cameraPosition,
+			drawn += draw(context, level, blocks, submits, poseStack, cursor, center, cameraPosition,
 					packed, palette.stateAt(index), reach);
 		}
 
@@ -95,13 +105,13 @@ public final class EchoBlockHologramRenderer {
 			if (index == BlockPalette.AIR_INDEX) {
 				continue;
 			}
-			drawn += draw(context, level, blocks, buffers, poseStack, cursor, center, cameraPosition,
+			drawn += draw(context, level, blocks, submits, poseStack, cursor, center, cameraPosition,
 					packed, palette.stateAt(index), reach);
 		}
 	}
 
-	private static int draw(EchoRenderContext context, Level level, BlockRenderDispatcher blocks,
-			EchoSilhouetteBuffers buffers, PoseStack poseStack, BlockPos.MutableBlockPos cursor,
+	private static int draw(EchoRenderContext context, Level level, BlockModelResolver blocks,
+			SubmitNodeCollector submits, PoseStack poseStack, BlockPos.MutableBlockPos cursor,
 			BlockPos center, Vec3 cameraPosition, int packed, BlockState remembered, double reach) {
 		if (remembered.isAir()) {
 			return 0;
@@ -121,15 +131,13 @@ public final class EchoBlockHologramRenderer {
 			return 0;
 		}
 
-		if (context.frustum() != null && !context.frustum().isVisible(new AABB(cursor))) {
-			return 0;
-		}
 
 		poseStack.pushPose();
 		poseStack.translate(cursor.getX() - cameraPosition.x,
 				cursor.getY() - cameraPosition.y, cursor.getZ() - cameraPosition.z);
-		blocks.renderBatched(remembered, cursor, level, poseStack,
-				buffers.getBuffer(RenderType.translucent()), false, SHADE_RANDOM);
+		BlockModelRenderState modelState = new BlockModelRenderState();
+		blocks.update(modelState, remembered, BlockDisplayContext.create());
+		modelState.submit(poseStack, submits, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
 		poseStack.popPose();
 
 		return 1;
