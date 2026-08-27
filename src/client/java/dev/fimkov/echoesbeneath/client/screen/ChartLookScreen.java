@@ -88,7 +88,7 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 	}
 
 	@Override
-	protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+	public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		graphics.fill(leftPos, topPos, leftPos + imageWidth, topPos + imageHeight, PANEL);
 		graphics.fill(leftPos, topPos, leftPos + imageWidth, topPos + 1, PANEL_EDGE);
 		graphics.fill(leftPos, topPos + imageHeight - 1, leftPos + imageWidth,

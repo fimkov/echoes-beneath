@@ -224,7 +224,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	}
 
 	@Override
-	protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+	public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, imageWidth, imageHeight);
 		renderGhostSlot(graphics);
 		renderRing(graphics, partialTick);
@@ -235,12 +235,9 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 			int y = topPos + ResonanceTableLayout.rowY(index);
 
 			if (overRow(mouseX, mouseY, index)) {
-				graphics.blit(TEXTURE, leftPos + ResonanceTableLayout.ROW_X, y, ROW_HOVER_U, ROW_HOVER_V,
-						ResonanceTableLayout.ROW_WIDTH, ResonanceTableLayout.ROW_HEIGHT);
+				graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + ResonanceTableLayout.ROW_X, y, (float) ROW_HOVER_U, (float) ROW_HOVER_V, ResonanceTableLayout.ROW_WIDTH, ResonanceTableLayout.ROW_HEIGHT, 256, 256);
 			}
-			graphics.blit(TEXTURE, leftPos + ResonanceTableLayout.ICON_X,
-					y + ResonanceTableLayout.ICON_Y_OFFSET, ICON_U + index * ResonanceTableLayout.ICON_SIZE, 0,
-					ResonanceTableLayout.ICON_SIZE, ResonanceTableLayout.ICON_SIZE);
+			graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + ResonanceTableLayout.ICON_X, y + ResonanceTableLayout.ICON_Y_OFFSET, (float) ICON_U + index * ResonanceTableLayout.ICON_SIZE, (float) 0, ResonanceTableLayout.ICON_SIZE, ResonanceTableLayout.ICON_SIZE, 256, 256);
 			renderPips(graphics, index, y);
 			renderButton(graphics, mouseX, mouseY, index, false);
 			renderButton(graphics, mouseX, mouseY, index, true);
@@ -254,9 +251,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 			return;
 		}
 
-		graphics.blit(TEXTURE, leftPos + ResonanceTableLayout.AMETHYST_SLOT_X,
-				topPos + ResonanceTableLayout.AMETHYST_SLOT_Y, GHOST_U, GHOST_V,
-				ResonanceTableLayout.SLOT_SIZE, ResonanceTableLayout.SLOT_SIZE);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + ResonanceTableLayout.AMETHYST_SLOT_X, topPos + ResonanceTableLayout.AMETHYST_SLOT_Y, (float) GHOST_U, (float) GHOST_V, ResonanceTableLayout.SLOT_SIZE, ResonanceTableLayout.SLOT_SIZE, 256, 256);
 	}
 
 	private void renderDialGlow(GuiGraphicsExtractor graphics, float partialTick) {
@@ -283,10 +278,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	}
 
 	private void blitDial(GuiGraphicsExtractor graphics, int x, int y, float alpha) {
-		graphics.setColor(1.0F, 1.0F, 1.0F, alpha);
-		graphics.blit(TEXTURE, x, y, GLOW_U, GLOW_V,
-				ResonanceTableLayout.DIAL_GLOW_SIZE, ResonanceTableLayout.DIAL_GLOW_SIZE);
-		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, (float) GLOW_U, (float) GLOW_V, ResonanceTableLayout.DIAL_GLOW_SIZE, ResonanceTableLayout.DIAL_GLOW_SIZE, 256, 256);
 	}
 
 	private float filledDial(float partialTick) {
@@ -306,11 +298,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		graphics.pose().translate(centreX, centreY);
 		graphics.pose().mulPose(Axis.ZP.rotationDegrees(angle));
 		graphics.pose().translate(-centreX, -centreY);
-		graphics.setColor(1.0F, 1.0F, 1.0F, alpha);
-		graphics.blit(TEXTURE, (int) centreX - half, (int) centreY - half,
-				ResonanceTableLayout.RING_SPRITE_U, ResonanceTableLayout.RING_SPRITE_V,
-				ResonanceTableLayout.RING_SPRITE_SIZE, ResonanceTableLayout.RING_SPRITE_SIZE);
-		graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, (int) centreX - half, (int) centreY - half, (float) ResonanceTableLayout.RING_SPRITE_U, (float) ResonanceTableLayout.RING_SPRITE_V, ResonanceTableLayout.RING_SPRITE_SIZE, ResonanceTableLayout.RING_SPRITE_SIZE, 256, 256);
 		graphics.pose().popMatrix();
 	}
 
@@ -367,17 +355,13 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 			float reached = Mth.clamp(filled - pip, 0.0F, 1.0F);
 
 			if (u != PIP_EMPTY_U && reached < 1.0F) {
-				graphics.blit(TEXTURE, x, y, PIP_EMPTY_U, 0,
-						ResonanceTableLayout.PIP_WIDTH, ResonanceTableLayout.PIP_HEIGHT);
+				graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, (float) PIP_EMPTY_U, (float) 0, ResonanceTableLayout.PIP_WIDTH, ResonanceTableLayout.PIP_HEIGHT, 256, 256);
 
 				if (reached <= 0.0F) {
 					continue;
 				}
-				graphics.setColor(1.0F, 1.0F, 1.0F, reached);
 			}
-			graphics.blit(TEXTURE, x, y, u, v,
-					ResonanceTableLayout.PIP_WIDTH, ResonanceTableLayout.PIP_HEIGHT);
-			graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+			graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, (float) u, (float) v, ResonanceTableLayout.PIP_WIDTH, ResonanceTableLayout.PIP_HEIGHT, 256, 256);
 		}
 	}
 
@@ -390,10 +374,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		}
 
 		int x = increase ? ResonanceTableLayout.PLUS_X : ResonanceTableLayout.MINUS_X;
-		graphics.blit(TEXTURE, leftPos + x,
-				topPos + ResonanceTableLayout.rowY(index) + ResonanceTableLayout.BUTTON_Y_OFFSET,
-				increase ? PLUS_U : MINUS_U, state,
-				ResonanceTableLayout.BUTTON_SIZE, ResonanceTableLayout.BUTTON_SIZE);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + x, topPos + ResonanceTableLayout.rowY(index) + ResonanceTableLayout.BUTTON_Y_OFFSET, (float) increase ? PLUS_U : MINUS_U, (float) state, ResonanceTableLayout.BUTTON_SIZE, ResonanceTableLayout.BUTTON_SIZE, 256, 256);
 	}
 
 	@Override
