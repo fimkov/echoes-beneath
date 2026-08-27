@@ -81,7 +81,7 @@ public final class EchoChartModel {
 		}
 
 		for (Int2ObjectMap.Entry<Int2IntMap> entry : votes.int2ObjectEntrySet()) {
-			BlockState state = cloud.paletteAt(winner(entry.getValue(), cloud));
+			BlockState state = cloud.paletteAt(winner(entry.getValue()));
 			model.cells.add(entry.getIntKey());
 			model.states.add(state);
 			model.occupied.add(entry.getIntKey());
@@ -98,20 +98,13 @@ public final class EchoChartModel {
 		return model;
 	}
 
-	private static int winner(Int2IntMap tally, EchoChartCloud cloud) {
+	private static int winner(Int2IntMap tally) {
 		int best = 0;
 		int bestCount = -1;
-		boolean bestSolid = false;
 
 		for (Int2IntMap.Entry vote : tally.int2IntEntrySet()) {
-			int count = vote.getIntValue();
-			boolean solid = cloud.paletteAt(vote.getIntKey()).isSolidRender();
-
-			// A tie between a flower and the ground it stands on has to go to the
-			// ground, or the flower ends up hanging in the air.
-			if (count > bestCount || (count == bestCount && solid && !bestSolid)) {
-				bestCount = count;
-				bestSolid = solid;
+			if (vote.getIntValue() > bestCount) {
+				bestCount = vote.getIntValue();
 				best = vote.getIntKey();
 			}
 		}
