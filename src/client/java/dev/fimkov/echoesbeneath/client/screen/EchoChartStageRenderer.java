@@ -34,9 +34,10 @@ public class EchoChartStageRenderer extends PictureInPictureRenderer<EchoChartSt
 		// means invisible.
 		Minecraft.getInstance().gameRenderer.lighting().setupFor(Lighting.Entry.ITEMS_3D);
 		EchoChartModel model = state.model();
-		// The stage inherits the screen's downward y, and the base already mirrors
-		// z, so flipping y here leaves a plain rotation and the chart stands up.
-		poseStack.scale(1.0F, -1.0F, 1.0F);
+		// The stage hands us a left handed frame: y runs down the screen and the
+		// base has already mirrored z. Undo both and the chart stands up, turns
+		// the way it is dragged, and sorts its own depth.
+		poseStack.scale(1.0F, -1.0F, -1.0F);
 		poseStack.mulPose(Axis.XP.rotationDegrees(state.pitch()));
 		poseStack.mulPose(Axis.YP.rotationDegrees(state.yaw()));
 		poseStack.translate(-model.spanX() * 0.5F, -model.spanY() * 0.5F, -model.spanZ() * 0.5F);
