@@ -241,6 +241,9 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 			renderButton(graphics, mouseX, mouseY, index, false);
 			renderButton(graphics, mouseX, mouseY, index, true);
 		}
+
+		// The container draws its slots and labels here, so our art goes underneath.
+		super.extractContents(graphics, mouseX, mouseY, partialTick);
 	}
 
 	private static final int ICON_U = 212;

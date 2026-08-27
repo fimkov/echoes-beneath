@@ -115,6 +115,8 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 						y + ChartLookLayout.ROW_HEIGHT, lit);
 			}
 		}
+		// The container draws its slots and labels here, so our art goes underneath.
+		super.extractContents(graphics, mouseX, mouseY, partialTick);
 	}
 
 	@Override

@@ -306,6 +306,9 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 		renderStage(graphics, partialTick);
 		renderStageEdge(graphics, partialTick);
 		renderResultGlow(graphics, partialTick);
+
+		// The container draws its slots and labels here, so our art goes underneath.
+		super.extractContents(graphics, mouseX, mouseY, partialTick);
 	}
 
 	private void renderResultGlow(GuiGraphicsExtractor graphics, float partialTick) {
