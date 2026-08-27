@@ -17,7 +17,7 @@ public abstract class LevelChunkBlockChangeMixin {
 	public abstract Level getLevel();
 
 	@Inject(method = "setBlockState", at = @At("RETURN"))
-	private void echoesBeneath$recordBlockChange(BlockPos position, BlockState state, boolean isMoving,
+	private void echoesBeneath$recordBlockChange(BlockPos position, BlockState state, int flags,
 			CallbackInfoReturnable<BlockState> callback) {
 		if (!EchoRecordingHooks.isCapturing()) {
 			return;

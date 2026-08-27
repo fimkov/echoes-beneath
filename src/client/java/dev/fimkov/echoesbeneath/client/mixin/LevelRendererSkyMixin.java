@@ -1,31 +1,32 @@
 package dev.fimkov.echoesbeneath.client.mixin;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import dev.fimkov.echoesbeneath.client.render.EchoDarkness;
-import net.minecraft.client.Camera;
-import net.minecraft.client.renderer.LevelRenderer;
-import org.joml.Matrix4f;
+import net.minecraft.client.renderer.SkyRenderer;
+import net.minecraft.client.renderer.state.level.SkyRenderState;
+import net.minecraft.world.level.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(LevelRenderer.class)
+// The sky is extracted into a state before it is drawn, so a memory blanks that
+// state rather than cancelling the draw.
+@Mixin(SkyRenderer.class)
 public abstract class LevelRendererSkyMixin {
-	@Inject(method = "renderSky", at = @At("HEAD"), cancellable = true)
-	private void echoesBeneath$hideSkyInsideRegion(Matrix4f frustumMatrix, Matrix4f projectionMatrix,
-			float partialTick, Camera camera, boolean isFoggy, Runnable skyFogSetup, CallbackInfo callback) {
-		if (EchoDarkness.shouldHideSky()) {
-			callback.cancel();
+	@Inject(method = "extractRenderState", at = @At("TAIL"))
+	private void echoesBeneath$hideSkyInsideRegion(net.minecraft.client.multiplayer.ClientLevel level,
+			float partialTick, net.minecraft.client.Camera camera, SkyRenderState state,
+			CallbackInfo callback) {
+		if (!EchoDarkness.shouldHideSky()) {
+			return;
 		}
-	}
 
-	@Inject(method = "renderClouds", at = @At("HEAD"), cancellable = true)
-	private void echoesBeneath$hideCloudsInsideRegion(PoseStack poseStack,
-			Matrix4f frustumMatrix, Matrix4f projectionMatrix, float partialTick,
-			double cameraX, double cameraY, double cameraZ, CallbackInfo callback) {
-		if (EchoDarkness.shouldHideSky()) {
-			callback.cancel();
-		}
+		state.skybox = DimensionType.Skybox.NONE;
+		state.shouldRenderDarkDisc = true;
+		state.starBrightness = 0.0F;
+		state.rainBrightness = 0.0F;
+		state.skyColor = 0;
+		state.sunriseAndSunsetColor = 0;
+		state.endFlashIntensity = 0.0F;
 	}
 }

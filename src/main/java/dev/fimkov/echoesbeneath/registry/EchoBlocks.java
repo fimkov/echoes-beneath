@@ -1,5 +1,7 @@
 package dev.fimkov.echoesbeneath.registry;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.block.EchoChartBlock;
 import dev.fimkov.echoesbeneath.block.ResonanceTableBlock;
@@ -24,6 +26,7 @@ public final class EchoBlocks {
 
 	public static final Block RESONANCE_TABLE = new ResonanceTableBlock(
 			BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_TILES)
+					.setId(ResourceKey.create(Registries.BLOCK, EchoesBeneath.id("resonance_table")))
 					.strength(HARDNESS, BLAST_RESISTANCE)
 					.sound(SoundType.DEEPSLATE_TILES)
 					.lightLevel(state -> GLOW_LEVEL)
@@ -31,19 +34,23 @@ public final class EchoBlocks {
 
 	public static final Block SOUNDING_TABLE = new SoundingTableBlock(
 			BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_TILES)
+					.setId(ResourceKey.create(Registries.BLOCK, EchoesBeneath.id("sounding_table")))
 					.strength(HARDNESS, BLAST_RESISTANCE)
 					.sound(SoundType.DEEPSLATE_TILES)
 					.lightLevel(state -> GLOW_LEVEL)
 					.noOcclusion());
 
 	public static final BlockItem SOUNDING_TABLE_ITEM = new BlockItem(SOUNDING_TABLE,
-			new Item.Properties().rarity(Rarity.RARE));
+			new Item.Properties().rarity(Rarity.RARE).useBlockDescriptionPrefix()
+					.setId(ResourceKey.create(Registries.ITEM, EchoesBeneath.id("sounding_table"))));
 
 	public static final BlockItem RESONANCE_TABLE_ITEM = new BlockItem(RESONANCE_TABLE,
-			new Item.Properties().rarity(Rarity.RARE));
+			new Item.Properties().rarity(Rarity.RARE).useBlockDescriptionPrefix()
+					.setId(ResourceKey.create(Registries.ITEM, EchoesBeneath.id("resonance_table"))));
 
 	public static final Block ECHO_CHART = new EchoChartBlock(
 			BlockBehaviour.Properties.ofFullCopy(Blocks.AMETHYST_BLOCK)
+					.setId(ResourceKey.create(Registries.BLOCK, EchoesBeneath.id("echo_chart")))
 					.strength(CHART_HARDNESS, CHART_HARDNESS)
 					.sound(SoundType.AMETHYST)
 					.lightLevel(state -> CHART_GLOW)

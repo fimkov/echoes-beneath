@@ -1,5 +1,7 @@
 package dev.fimkov.echoesbeneath.registry;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import dev.fimkov.echoesbeneath.EchoesBeneath;
 import dev.fimkov.echoesbeneath.item.EchoChartItem;
 import dev.fimkov.echoesbeneath.item.EchoLensItem;
@@ -12,10 +14,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 
 public final class EchoItems {
-	public static final EchoLensItem ECHO_LENS = new EchoLensItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
+	public static final EchoLensItem ECHO_LENS = new EchoLensItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)
+			.setId(ResourceKey.create(Registries.ITEM, EchoesBeneath.id("echo_lens"))));
 
 	public static final EchoChartItem ECHO_CHART = new EchoChartItem(EchoBlocks.ECHO_CHART,
-			new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
+			new Item.Properties().stacksTo(1).rarity(Rarity.RARE).useBlockDescriptionPrefix()
+					.setId(ResourceKey.create(Registries.ITEM, EchoesBeneath.id("echo_chart"))));
 
 	private EchoItems() {
 	}
