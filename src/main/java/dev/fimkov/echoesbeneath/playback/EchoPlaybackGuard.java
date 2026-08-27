@@ -54,8 +54,8 @@ public final class EchoPlaybackGuard {
 		}
 
 		if (player instanceof ServerPlayer serverPlayer) {
-			serverPlayer.displayClientMessage(
-					Component.translatable(EchoTranslations.MESSAGE_PLAYBACK_BLOCKED_INTERACTION), true);
+			serverPlayer.sendOverlayMessage(
+					Component.translatable(EchoTranslations.MESSAGE_PLAYBACK_BLOCKED_INTERACTION));
 		}
 
 		return true;

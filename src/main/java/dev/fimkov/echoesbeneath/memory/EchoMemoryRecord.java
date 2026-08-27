@@ -51,7 +51,7 @@ public record EchoMemoryRecord(
 		tag.putInt("format_version", formatVersion);
 		tag.put("id", NbtUtils.createUUID(id));
 		tag.putInt("slot", slot);
-		tag.putString("dimension", dimension.location().toString());
+		tag.putString("dimension", dimension.identifier().toString());
 		tag.putInt("center_x", center.getX());
 		tag.putInt("center_y", center.getY());
 		tag.putInt("center_z", center.getZ());

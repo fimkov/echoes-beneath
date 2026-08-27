@@ -312,8 +312,8 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 				: EchoServerState.current().storage().load(data.memoryId());
 
 		if (record.isEmpty()) {
-			viewer.displayClientMessage(
-					Component.translatable(EchoTranslations.MESSAGE_MEMORY_CORRUPT), true);
+			viewer.sendOverlayMessage(
+					Component.translatable(EchoTranslations.MESSAGE_MEMORY_CORRUPT));
 
 			return false;
 		}

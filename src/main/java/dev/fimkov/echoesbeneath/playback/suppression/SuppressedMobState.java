@@ -110,7 +110,7 @@ public record SuppressedMobState(
 	public CompoundTag toNbt() {
 		CompoundTag tag = new CompoundTag();
 		tag.putIntArray("entity", UUIDUtil.uuidToIntArray(entityId));
-		tag.putString("dimension", dimension.location().toString());
+		tag.putString("dimension", dimension.identifier().toString());
 		tag.putDouble("x", position.x);
 		tag.putDouble("y", position.y);
 		tag.putDouble("z", position.z);

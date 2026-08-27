@@ -117,7 +117,7 @@ public final class EchoLensReturn {
 		Player owner = level.getServer().getPlayerList().getPlayer(ownerId);
 
 		if (owner != null) {
-			owner.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_LENS_RETURNED_TO_GROUND), true);
+			owner.sendOverlayMessage(Component.translatable(EchoTranslations.MESSAGE_LENS_RETURNED_TO_GROUND));
 		}
 	}
 }

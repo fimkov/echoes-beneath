@@ -30,7 +30,7 @@ public record PlaybackStartPayload(
 
 	private static void encode(RegistryFriendlyByteBuf buffer, PlaybackStartPayload payload) {
 		buffer.writeUUID(payload.playbackId);
-		buffer.writeIdentifier(payload.dimension.location());
+		buffer.writeIdentifier(payload.dimension.identifier());
 		buffer.writeBlockPos(payload.center);
 		buffer.writeVarInt(payload.radius);
 		buffer.writeVarInt(payload.verticalRadius);

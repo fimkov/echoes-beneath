@@ -20,3 +20,5 @@ bin/
 .DS_Store
 src/main/generated/.cache/
 logs/
+run/mods/
+run/mods-26.2/

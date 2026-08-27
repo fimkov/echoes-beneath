@@ -76,7 +76,7 @@ public final class EchoLensInteraction {
 			InteractionHand hand, BlockPos clickedPos, EchoMemoryReferences references,
 			int capacity) {
 		if (references.isFull(capacity)) {
-			player.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_NO_MORE), true);
+			player.sendOverlayMessage(Component.translatable(EchoTranslations.MESSAGE_NO_MORE));
 
 			return InteractionResult.FAIL;
 		}

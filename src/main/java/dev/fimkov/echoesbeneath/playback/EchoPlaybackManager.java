@@ -89,18 +89,18 @@ public final class EchoPlaybackManager {
 		Optional<EchoMemoryRecord> loaded = state.storage().load(reference.memoryId());
 
 		if (loaded.isEmpty()) {
-			player.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_MEMORY_CORRUPT), true);
+			player.sendOverlayMessage(Component.translatable(EchoTranslations.MESSAGE_MEMORY_CORRUPT));
 
 			return false;
 		}
 
 		EchoMemoryRecord record = loaded.get();
-		ServerLevel level = player.serverLevel();
+		ServerLevel level = player.level();
 		EchoRegion region = new EchoRegion(reference.dimension(), reference.center(),
 				reference.radius(), reference.verticalRadius());
 
 		if (!EchoConfig.values().allowOverlappingPlayback() && overlapsExisting(region)) {
-			player.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_PLAYBACK_OVERLAP), true);
+			player.sendOverlayMessage(Component.translatable(EchoTranslations.MESSAGE_PLAYBACK_OVERLAP));
 
 			return false;
 		}
@@ -111,7 +111,7 @@ public final class EchoPlaybackManager {
 			encoded = EchoPlaybackTransfer.encode(record);
 		} catch (RuntimeException failure) {
 			EchoesBeneath.LOGGER.error("Unable to encode memory {} for playback", reference.memoryId(), failure);
-			player.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_MEMORY_CORRUPT), true);
+			player.sendOverlayMessage(Component.translatable(EchoTranslations.MESSAGE_MEMORY_CORRUPT));
 
 			return false;
 		}

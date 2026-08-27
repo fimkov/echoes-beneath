@@ -52,7 +52,7 @@ public final class EchoLensResonance {
 			return;
 		}
 
-		ServerLevel serverLevel = player.serverLevel();
+		ServerLevel serverLevel = player.level();
 
 		if (particleBeat) {
 			serverLevel.sendParticles(player, ParticleTypes.SCULK_SOUL, false,

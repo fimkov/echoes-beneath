@@ -184,7 +184,7 @@ public final class EchoCommandActions {
 		}
 
 		Optional<EchoPlaybackSession> playback = state.playbacks()
-				.sessionAt(player.serverLevel(), player.position());
+				.sessionAt(player.level(), player.position());
 
 		if (playback.isPresent()) {
 			EchoPlaybackSession session = playback.get();
@@ -224,7 +224,7 @@ public final class EchoCommandActions {
 		}
 
 		Optional<EchoPlaybackSession> playback = state.playbacks()
-				.sessionAt(player.serverLevel(), player.position());
+				.sessionAt(player.level(), player.position());
 
 		if (playback.isPresent()) {
 			EchoPlaybackSession session = playback.get();
@@ -257,7 +257,7 @@ public final class EchoCommandActions {
 		}
 
 		Optional<EchoPlaybackSession> playback = state.playbacks()
-				.sessionAt(player.serverLevel(), player.position());
+				.sessionAt(player.level(), player.position());
 
 		if (playback.isPresent()) {
 			EchoPlaybackSession session = playback.get();
@@ -299,7 +299,7 @@ public final class EchoCommandActions {
 	public static int locateStructure(CommandContext<CommandSourceStack> context, String structureName)
 			throws CommandSyntaxException {
 		ServerPlayer player = context.getSource().getPlayerOrException();
-		ServerLevel level = player.serverLevel();
+		ServerLevel level = player.level();
 		Optional<Holder.Reference<Structure>> structure = level.registryAccess()
 				.registryOrThrow(Registries.STRUCTURE)
 				.getHolder(EchoStructures.structureKey(structureName));

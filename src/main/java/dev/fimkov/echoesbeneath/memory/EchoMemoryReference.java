@@ -42,7 +42,7 @@ public record EchoMemoryReference(
 	private static void encode(RegistryFriendlyByteBuf buffer, EchoMemoryReference reference) {
 		buffer.writeUUID(reference.memoryId);
 		buffer.writeVarInt(reference.slot);
-		buffer.writeIdentifier(reference.dimension.location());
+		buffer.writeIdentifier(reference.dimension.identifier());
 		buffer.writeBlockPos(reference.center);
 		buffer.writeVarInt(reference.radius);
 		buffer.writeVarInt(reference.verticalRadius);

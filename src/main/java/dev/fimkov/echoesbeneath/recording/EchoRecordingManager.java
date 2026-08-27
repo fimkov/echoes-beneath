@@ -84,12 +84,12 @@ public final class EchoRecordingManager {
 		Optional<Integer> freeSlot = references.nextFreeSlot(EchoLensStacks.upgrades(lensStack).memorySlots());
 
 		if (freeSlot.isEmpty()) {
-			player.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_NO_MORE), true);
+			player.sendOverlayMessage(Component.translatable(EchoTranslations.MESSAGE_NO_MORE));
 
 			return Optional.empty();
 		}
 
-		ServerLevel level = player.serverLevel();
+		ServerLevel level = player.level();
 		BlockPos center = supportBlock.above();
 		Vec3 hoverPosition = new Vec3(center.getX() + 0.5D,
 				center.getY() + EchoLensEntity.HOVER_HEIGHT, center.getZ() + 0.5D);
@@ -281,9 +281,9 @@ public final class EchoRecordingManager {
 		ServerPlayer owner = session.level().getServer().getPlayerList().getPlayer(session.ownerId());
 
 		if (owner != null) {
-			owner.displayClientMessage(Component.translatable(
+			owner.sendOverlayMessage(Component.translatable(
 					EchoTranslations.MESSAGE_RECORDING_STOPPED_UNLOADED,
-					EchoTextFormat.romanSlot(session.slot())), true);
+					EchoTextFormat.romanSlot(session.slot())));
 		}
 	}
 
