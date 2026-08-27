@@ -22,8 +22,8 @@ public class EchoChartItem extends BlockItem {
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip,
-			TooltipFlag flag) {
+	public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
+			Consumer<Component> tooltip, TooltipFlag flag) {
 		EchoChartData data = stack.get(EchoComponents.CHART_DATA);
 
 		if (data == null) {

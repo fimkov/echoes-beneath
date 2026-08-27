@@ -70,7 +70,7 @@ public final class RecordingPulseTrace {
 			ParticleOptions particle = point % ACCENT_EVERY == 0
 					? ParticleTypes.SCULK_SOUL
 					: new SculkChargeParticleOptions((float) Math.sin(angle) * CHARGE_ROLL_SCALE);
-			level.sendParticles(viewer, particle, true, x, surface + SURFACE_OFFSET - 1.0D, z,
+			level.sendParticles(viewer, particle, true, false, x, surface + SURFACE_OFFSET - 1.0D, z,
 					PARTICLE_COUNT, NO_SPREAD, NO_SPREAD, NO_SPREAD, NO_SPEED);
 		}
 	}

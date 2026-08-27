@@ -12,7 +12,7 @@ public final class FabricNetwork implements EchoNetwork {
 	@Override
 	public <T extends CustomPacketPayload> void serverToClient(CustomPacketPayload.Type<T> type,
 			StreamCodec<? super RegistryFriendlyByteBuf, T> codec) {
-		PayloadTypeRegistry.playS2C().register(type, cast(codec));
+		PayloadTypeRegistry.clientboundPlay().register(type, cast(codec));
 	}
 
 	@Override

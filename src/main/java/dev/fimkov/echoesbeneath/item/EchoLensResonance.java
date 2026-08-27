@@ -55,7 +55,7 @@ public final class EchoLensResonance {
 		ServerLevel serverLevel = player.level();
 
 		if (particleBeat) {
-			serverLevel.sendParticles(player, ParticleTypes.SCULK_SOUL, false,
+			serverLevel.sendParticles(player, ParticleTypes.SCULK_SOUL, false, false,
 					player.getX(), player.getEyeY(), player.getZ(),
 					PARTICLE_COUNT, PARTICLE_SPREAD, PARTICLE_SPREAD, PARTICLE_SPREAD, 0.0D);
 		}

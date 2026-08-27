@@ -302,7 +302,7 @@ public final class EchoCommandActions {
 		ServerLevel level = player.level();
 		Optional<Holder.Reference<Structure>> structure = level.registryAccess()
 				.lookupOrThrow(Registries.STRUCTURE)
-				.getHolder(EchoStructures.structureKey(structureName));
+				.get(EchoStructures.structureKey(structureName));
 
 		if (structure.isEmpty()) {
 			context.getSource().sendFailure(

@@ -97,8 +97,8 @@ public final class FabricServerHooks implements EchoServerHooks {
 			ItemStack stack = player.getItemInHand(hand);
 
 			return guard.allow(player, level, hand)
-					? InteractionResult.pass(stack)
-					: InteractionResult.fail(stack);
+					? InteractionResult.PASS
+					: InteractionResult.FAIL;
 		});
 	}
 

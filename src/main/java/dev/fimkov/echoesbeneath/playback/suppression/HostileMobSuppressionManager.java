@@ -26,7 +26,7 @@ public final class HostileMobSuppressionManager {
 	}
 
 	public static boolean isSuppressible(Entity entity) {
-		return entity instanceof Mob && entity.getType().is(EchoTags.TEMPORARILY_SUPPRESSED);
+		return entity instanceof Mob && entity.getType().builtInRegistryHolder().is(EchoTags.TEMPORARILY_SUPPRESSED);
 	}
 
 	public Map<UUID, SuppressedMobState> suppressRegion(ServerLevel level, EchoRegion region) {

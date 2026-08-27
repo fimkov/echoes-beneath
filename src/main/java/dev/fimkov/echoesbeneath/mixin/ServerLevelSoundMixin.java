@@ -23,7 +23,7 @@ public abstract class ServerLevelSoundMixin {
 		}
 
 		EchoRecordingHooks.onSound((ServerLevel) (Object) this, x, y, z,
-				sound.value().getLocation(), source, volume, pitch);
+				sound.value().location(), source, volume, pitch);
 	}
 
 	@Inject(method = "playSeededSound(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/core/Holder;Lnet/minecraft/sounds/SoundSource;FFJ)V",
@@ -35,6 +35,6 @@ public abstract class ServerLevelSoundMixin {
 		}
 
 		EchoRecordingHooks.onSound((ServerLevel) (Object) this, source.getX(), source.getY(), source.getZ(),
-				sound.value().getLocation(), category, volume, pitch);
+				sound.value().location(), category, volume, pitch);
 	}
 }

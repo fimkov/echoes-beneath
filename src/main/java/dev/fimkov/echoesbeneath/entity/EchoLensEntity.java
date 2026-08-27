@@ -301,7 +301,7 @@ public class EchoLensEntity extends Entity {
 	}
 
 	@Override
-	public boolean isInvulnerableTo(ServerLevel level, DamageSource source) {
+	public boolean isInvulnerable() {
 		return true;
 	}
 

@@ -70,7 +70,7 @@ public final class PlaybackBoundaryTrace {
 				ParticleOptions particle = (point + layer) % ACCENT_EVERY == 0
 						? ParticleTypes.SCULK_SOUL
 						: new SculkChargeParticleOptions((float) Math.cos(angle + layer) * CHARGE_ROLL_SCALE);
-				level.sendParticles(viewer, particle, true, x, y, z,
+				level.sendParticles(viewer, particle, true, false, x, y, z,
 						PARTICLE_COUNT, NO_SPREAD, NO_SPREAD, NO_SPREAD, NO_SPEED);
 			}
 		}

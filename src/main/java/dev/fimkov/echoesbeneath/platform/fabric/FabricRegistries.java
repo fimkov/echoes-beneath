@@ -26,7 +26,7 @@ public final class FabricRegistries implements EchoRegistries {
 
 	@Override
 	public void addToCreativeTab(ResourceKey<CreativeModeTab> tab, Supplier<ItemStack> entry) {
-		CreativeModeTabEvents.modifyEntriesEvent(tab).register(entries -> entries.accept(entry.get()));
+		CreativeModeTabEvents.modifyOutputEvent(tab).register(output -> output.accept(entry.get()));
 	}
 
 	@Override

@@ -131,7 +131,7 @@ public record EchoMemoryRecord(
 		List<UUID> players = new ArrayList<>();
 
 		for (Tag element : tag.getListOrEmpty("recorded_players")) {
-			players.add(UUIDUtil.uuidFromIntArray(((IntArrayTag) element)).getAsIntArray());
+			players.add(UUIDUtil.uuidFromIntArray(((IntArrayTag) element).getAsIntArray()));
 		}
 
 		return List.copyOf(players);

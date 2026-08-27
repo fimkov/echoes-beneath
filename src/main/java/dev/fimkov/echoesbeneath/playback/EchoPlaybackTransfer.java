@@ -79,6 +79,6 @@ public final class EchoPlaybackTransfer {
 			}
 		}
 
-		EchoesBeneath.LOGGER.debug("Sent playback {} data to {}", playbackId, player.getGameProfile().getName());
+		EchoesBeneath.LOGGER.debug("Sent playback {} data to {}", playbackId, player.getGameProfile().name());
 	}
 }

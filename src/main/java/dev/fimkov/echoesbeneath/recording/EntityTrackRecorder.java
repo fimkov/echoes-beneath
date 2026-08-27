@@ -41,7 +41,7 @@ public final class EntityTrackRecorder {
 			return false;
 		}
 
-		return !entity.getType().is(EchoTags.RECORDING_BLACKLIST);
+		return !entity.getType().builtInRegistryHolder().is(EchoTags.RECORDING_BLACKLIST);
 	}
 
 	public void sample(Entity entity, int tick) {

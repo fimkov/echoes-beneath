@@ -108,11 +108,11 @@ public class EchoChartBlock extends BaseEntityBlock {
 	}
 
 	@Override
-	public ItemStack getCloneItemStack(LevelReader level, BlockPos position,
-			BlockState state) {
+	protected ItemStack getCloneItemStack(LevelReader level, BlockPos position,
+			BlockState state, boolean includeData) {
 		return level.getBlockEntity(position) instanceof EchoChartBlockEntity chart
 				? chart.asItem()
-				: super.getCloneItemStack(level, position, state);
+				: super.getCloneItemStack(level, position, state, includeData);
 	}
 
 	@Override

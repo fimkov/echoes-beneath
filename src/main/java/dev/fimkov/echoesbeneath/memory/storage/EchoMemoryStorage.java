@@ -48,7 +48,7 @@ public final class EchoMemoryStorage {
 	public static EchoMemoryStorage forServer(MinecraftServer server) {
 		Path root = server.getWorldPath(LevelResource.ROOT).resolve(DIRECTORY_NAME);
 
-		return new EchoMemoryStorage(root, server.registryAccess().<Block>registryOrThrow(Registries.BLOCK).asLookup());
+		return new EchoMemoryStorage(root, server.registryAccess().<Block>lookupOrThrow(Registries.BLOCK));
 	}
 
 	public Path root() {
