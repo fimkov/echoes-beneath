@@ -45,11 +45,11 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	private static final int GHOST_U = 208;
 	private static final int GHOST_V = 36;
 
-	private static final int INK = 0xB4C4C2;
-	private static final int DIM = 0x68767A;
-	private static final int TITLE = 0xC8DCDA;
-	private static final int COST_OK = 0x7EE36B;
-	private static final int COST_BAD = 0xE0605E;
+	private static final int INK = 0xFFB4C4C2;
+	private static final int DIM = 0xFF68767A;
+	private static final int TITLE = 0xFFC8DCDA;
+	private static final int COST_OK = 0xFF7EE36B;
+	private static final int COST_BAD = 0xFFE0605E;
 
 	private static final float PULSE_PERIOD_TICKS = 46.0F;
 	private static final float PULSE_BASE = 0.30F;

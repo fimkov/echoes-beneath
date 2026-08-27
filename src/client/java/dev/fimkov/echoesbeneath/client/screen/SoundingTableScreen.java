@@ -33,10 +33,10 @@ import net.minecraft.world.entity.player.Inventory;
 public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMenu> {
 	private static final Identifier TEXTURE = EchoesBeneath.id("textures/gui/sounding_table.png");
 
-	private static final int INK = 0xB4C4C2;
-	private static final int DIM = 0x68767A;
-	private static final int TITLE = 0xC8DCDA;
-	private static final int SELECTED_INK = 0xE8FFFF;
+	private static final int INK = 0xFFB4C4C2;
+	private static final int DIM = 0xFF68767A;
+	private static final int TITLE = 0xFFC8DCDA;
+	private static final int SELECTED_INK = 0xFFE8FFFF;
 	private static final int BAND = 0x5529DFEB;
 	private static final int ROW_CHOSEN = 0xFF1B3238;
 	private static final int ROW_HOVER = 0xFF232B2C;
@@ -61,7 +61,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	private static final float PULSE_SWING = 0.82F;
 	private static final float ANIMATION_CYCLE_TICKS = 4608.0F;
 	private static final int BRACKET_LENGTH = 7;
-	private static final int EDGE_RGB = 0x29DFEB;
+	private static final int EDGE_RGB = 0xFF29DFEB;
 	private static final float DENIED_PITCH = 0.65F;
 	private static final float DENIED_VOLUME = 0.7F;
 
@@ -479,7 +479,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 				.withStyle(ready ? ChatFormatting.WHITE : ChatFormatting.DARK_GRAY);
 		graphics.text(font, extract,
 				SoundingTableLayout.EXTRACT_X + (SoundingTableLayout.EXTRACT_WIDTH - font.width(extract)) / 2,
-				SoundingTableLayout.EXTRACT_Y + 4, 0xFFFFFF, true);
+				SoundingTableLayout.EXTRACT_Y + 4, 0xFFFFFFFF, true);
 	}
 
 	private void centred(GuiGraphicsExtractor graphics, Component text, int colour) {

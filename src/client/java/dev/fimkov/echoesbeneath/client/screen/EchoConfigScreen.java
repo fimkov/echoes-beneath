@@ -133,7 +133,7 @@ public final class EchoConfigScreen extends Screen {
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		super.extractRenderState(graphics, mouseX, mouseY, partialTick);
-		graphics.centeredText(font, title, width / 2, TITLE_Y, 0xFFFFFF);
+		graphics.centeredText(font, title, width / 2, TITLE_Y, 0xFFFFFFFF);
 	}
 
 	private static final class CommonLabels {

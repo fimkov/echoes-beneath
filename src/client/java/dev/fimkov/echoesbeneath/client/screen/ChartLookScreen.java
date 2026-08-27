@@ -19,9 +19,9 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 	private static final int ROW = 0xFF1C2122;
 	private static final int ROW_HOVER = 0xFF273031;
 	private static final int VALUE_WELL = 0xFF0D1113;
-	private static final int INK = 0xB4C4C2;
-	private static final int TITLE = 0xC8DCDA;
-	private static final int LIT = 0x29DFEB;
+	private static final int INK = 0xFFB4C4C2;
+	private static final int TITLE = 0xFFC8DCDA;
+	private static final int LIT = 0xFF29DFEB;
 	private static final float PULSE_PERIOD_TICKS = 48.0F;
 
 	private float animation;
@@ -135,7 +135,7 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 					ChartLookLayout.ROW_X + ChartLookLayout.LABEL_INSET, y, INK, true);
 			int centre = ChartLookLayout.valueX() + ChartLookLayout.VALUE_WIDTH / 2;
 			graphics.text(font, values[index], centre - font.width(values[index]) / 2, y,
-					0xE8FFFF, true);
+					0xFFE8FFFF, true);
 		}
 	}
 
