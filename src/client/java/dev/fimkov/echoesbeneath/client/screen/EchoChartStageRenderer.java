@@ -20,6 +20,13 @@ public class EchoChartStageRenderer extends PictureInPictureRenderer<EchoChartSt
 		return "echoes_beneath chart stage";
 	}
 
+	// The stage puts its origin at the bottom edge, where an entity would stand.
+	// A chart hangs around its own middle instead.
+	@Override
+	protected float getTranslateY(int height, int guiScale) {
+		return height * 0.5F;
+	}
+
 	@Override
 	protected void renderToTexture(EchoChartStageRenderState state, PoseStack poseStack,
 			SubmitNodeCollector collector) {

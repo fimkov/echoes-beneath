@@ -16,7 +16,7 @@ a recording heard at a Sounding Table, and draw a memory out as an Echo Chart yo
 and walk around. The lens remembers shape and sound, but not light.
 '''
 authors = "fimkov"
-logoFile = "icon.png"
+iconFile = "icon.png"
 
 [[mixins]]
 config = "echoes_beneath.mixins.json"
