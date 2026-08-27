@@ -8,12 +8,15 @@ import dev.fimkov.echoesbeneath.client.chart.ClientChartShapes;
 import dev.fimkov.echoesbeneath.client.chart.EchoChartModel;
 import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 
-public class EchoChartBlockRenderer implements BlockEntityRenderer<EchoChartBlockEntity> {
+public class EchoChartBlockRenderer implements BlockEntityRenderer<EchoChartBlockEntity, EchoChartRenderState> {
 	private static final float BOB_PERIOD_TICKS = 120.0F;
 	private static final double BOB_HEIGHT = 0.045D;
 	private static final float DEGREES_PER_STEP = 360.0F / EchoChartBlockEntity.TURN_STEPS;
@@ -23,15 +26,31 @@ public class EchoChartBlockRenderer implements BlockEntityRenderer<EchoChartBloc
 	}
 
 	@Override
-	public void render(EchoChartBlockEntity chart, float partialTick, PoseStack poseStack,
-			MultiBufferSource consumers, int light, int overlay) {
-		if (chart.chart() == null) {
+	public EchoChartRenderState createRenderState() {
+		return new EchoChartRenderState();
+	}
+
+	@Override
+	public void extractRenderState(EchoChartBlockEntity chart, EchoChartRenderState state, float partialTick,
+			Vec3 cameraPosition, ModelFeatureRenderer.CrumblingOverlay crumbling) {
+		BlockEntityRenderer.super.extractRenderState(chart, state, partialTick, cameraPosition, crumbling);
+		state.drawn = chart.chart() != null;
+		state.model = ClientChartShapes.of(chart.getBlockPos().asLong());
+		state.look = chart.look();
+		state.age = chart.age(partialTick);
+		state.turn = chart.turn();
+	}
+
+	@Override
+	public void submit(EchoChartRenderState state, PoseStack poseStack, SubmitNodeCollector submits,
+			CameraRenderState camera) {
+		if (!state.drawn) {
 			return;
 		}
 
-		EchoChartModel model = ClientChartShapes.of(chart.getBlockPos().asLong());
-		EchoChartLook look = chart.look();
-		float age = chart.age(partialTick);
+		EchoChartModel model = state.model;
+		EchoChartLook look = state.look;
+		float age = state.age;
 		float brightness = model == null ? 1.0F : model.brightness();
 		float scale = model == null ? look.modelScale() : look.modelScale() / model.widest();
 		float halfWide = model == null ? look.modelScale() * 0.5F
@@ -41,7 +60,7 @@ public class EchoChartBlockRenderer implements BlockEntityRenderer<EchoChartBloc
 		poseStack.translate(0.5D, 0.0D, 0.5D);
 
 		if (EchoClientConfig.values().showChartAura() && (look.runs() || look.motes())) {
-			EchoChartAura.render(poseStack, consumers, age, look.motes(), look.runs(),
+			EchoChartAura.render(poseStack, submits, age, look.motes(), look.runs(),
 					Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation(),
 					brightness,
 					Math.min(look.boxReach(), halfWide + AURA_MARGIN),
@@ -57,10 +76,10 @@ public class EchoChartBlockRenderer implements BlockEntityRenderer<EchoChartBloc
 
 		poseStack.translate(0.0D, lift, 0.0D);
 		poseStack.mulPose(Axis.YP.rotationDegrees(
-				chart.turn() * DEGREES_PER_STEP + age * look.spinDegreesPerTick()));
+				state.turn * DEGREES_PER_STEP + age * look.spinDegreesPerTick()));
 		poseStack.scale(scale, scale, scale);
 		poseStack.translate(-model.spanX() * 0.5F, -model.spanY() * 0.5F, -model.spanZ() * 0.5F);
-		EchoChartGeometry.emit(model, consumers, poseStack);
+		EchoChartGeometry.emit(model, submits, poseStack);
 		poseStack.popPose();
 	}
 

@@ -4,9 +4,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.fimkov.echoesbeneath.client.chart.EchoChartModel;
 import dev.fimkov.echoesbeneath.client.config.EchoClientConfig;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
+import net.minecraft.client.renderer.block.BlockModelResolver;
+import net.minecraft.client.renderer.block.model.BlockDisplayContext;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 
 public final class EchoChartGeometry {
@@ -15,9 +17,10 @@ public final class EchoChartGeometry {
 	private EchoChartGeometry() {
 	}
 
-	public static void emit(EchoChartModel model, MultiBufferSource consumers, PoseStack poseStack) {
-		BlockRenderDispatcher blocks = Minecraft.getInstance().getBlockRenderer();
-		int light = LightTexture.pack(Math.round(FULL_BLOCK_LIGHT * model.brightness()), 0);
+	public static void emit(EchoChartModel model, SubmitNodeCollector submits, PoseStack poseStack) {
+		BlockModelResolver blocks = new BlockModelResolver(Minecraft.getInstance().getModelManager());
+		BlockModelRenderState modelState = new BlockModelRenderState();
+		int light = LightCoordsUtil.pack(Math.round(FULL_BLOCK_LIGHT * model.brightness()), 0);
 		int budget = EchoClientConfig.values().chartBlockBudget();
 		int drawn = 0;
 
@@ -30,8 +33,8 @@ public final class EchoChartGeometry {
 			poseStack.pushPose();
 			poseStack.translate(EchoChartModel.cellX(cell), EchoChartModel.cellY(cell),
 					EchoChartModel.cellZ(cell));
-			blocks.renderSingleBlock(model.stateAt(index), poseStack, consumers, light,
-					OverlayTexture.NO_OVERLAY);
+			blocks.update(modelState, model.stateAt(index), BlockDisplayContext.create());
+			modelState.submit(poseStack, submits, light, OverlayTexture.NO_OVERLAY, 0);
 			poseStack.popPose();
 			drawn++;
 		}
