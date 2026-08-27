@@ -126,7 +126,7 @@ public final class EchoConfigScreen extends Screen {
 	@Override
 	public void onClose() {
 		if (minecraft != null) {
-			minecraft.setScreen(parent);
+			minecraft.setScreenAndShow(parent);
 		}
 	}
 

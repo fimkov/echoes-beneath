@@ -59,7 +59,7 @@ public final class EchoSoundPlayer {
 
 	private void emit(ClientLevel level, int index, int tick) {
 		Identifier soundId = timeline.soundAt(index);
-		SoundEvent event = BuiltInRegistries.SOUND_EVENT.get(soundId);
+		SoundEvent event = BuiltInRegistries.SOUND_EVENT.get(soundId).map(net.minecraft.core.Holder::value).orElse(null);
 		boolean remembered = event != null;
 
 		if (!remembered) {
@@ -86,11 +86,11 @@ public final class EchoSoundPlayer {
 
 	private void burst(ClientLevel level, Vec3 position, float radius) {
 		for (int index = 0; index < BURST_PARTICLES; index++) {
-			double angle = level.random.nextDouble() * Math.PI * 2.0D;
-			double lift = (level.random.nextDouble() - 0.5D) * BURST_SPEED;
+			double angle = level.getRandom().nextDouble() * Math.PI * 2.0D;
+			double lift = (level.getRandom().nextDouble() - 0.5D) * BURST_SPEED;
 			level.addParticle(
 					new SculkChargeParticleOptions(
-							level.random.nextFloat() * BURST_ROLL),
+							level.getRandom().nextFloat() * BURST_ROLL),
 					position.x, position.y, position.z,
 					Math.cos(angle) * BURST_SPEED, lift, Math.sin(angle) * BURST_SPEED);
 		}

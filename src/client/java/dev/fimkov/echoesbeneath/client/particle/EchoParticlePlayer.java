@@ -53,15 +53,15 @@ public final class EchoParticlePlayer {
 
 		for (int emitted = 0; emitted < count; emitted++) {
 			level.addParticle(options,
-					origin.x + level.random.nextGaussian() * spreadX,
-					origin.y + level.random.nextGaussian() * spreadY,
-					origin.z + level.random.nextGaussian() * spreadZ,
+					origin.x + level.getRandom().nextGaussian() * spreadX,
+					origin.y + level.getRandom().nextGaussian() * spreadY,
+					origin.z + level.getRandom().nextGaussian() * spreadZ,
 					DRIFT, DRIFT, DRIFT);
 		}
 	}
 
 	private static ParticleOptions optionsFor(Identifier typeId) {
-		ParticleType<?> type = BuiltInRegistries.PARTICLE_TYPE.get(typeId);
+		ParticleType<?> type = BuiltInRegistries.PARTICLE_TYPE.get(typeId).map(net.minecraft.core.Holder::value).orElse(null);
 
 		return type instanceof SimpleParticleType simple ? simple : null;
 	}
