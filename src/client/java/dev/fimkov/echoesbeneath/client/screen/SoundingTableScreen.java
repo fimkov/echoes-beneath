@@ -76,7 +76,7 @@ public class SoundingTableScreen extends AbstractContainerScreen<SoundingTableMe
 	private boolean turningStage;
 
 	public SoundingTableScreen(SoundingTableMenu menu, Inventory inventory, Component title) {
-		super(menu, inventory, title);
+		super(menu, inventory, title, SoundingTableLayout.PANEL_WIDTH, SoundingTableLayout.PANEL_HEIGHT);
 	}
 
 	@Override

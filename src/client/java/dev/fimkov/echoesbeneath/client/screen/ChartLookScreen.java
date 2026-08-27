@@ -27,7 +27,7 @@ public class ChartLookScreen extends AbstractContainerScreen<ChartLookMenu> {
 	private float animation;
 
 	public ChartLookScreen(ChartLookMenu menu, Inventory inventory, Component title) {
-		super(menu, inventory, title);
+		super(menu, inventory, title, ChartLookLayout.PANEL_WIDTH, ChartLookLayout.PANEL_HEIGHT);
 	}
 
 	@Override

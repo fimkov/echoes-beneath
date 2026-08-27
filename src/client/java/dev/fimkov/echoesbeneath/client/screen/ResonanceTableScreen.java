@@ -80,7 +80,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 	private float spin;
 
 	public ResonanceTableScreen(ResonanceTableMenu menu, Inventory inventory, Component title) {
-		super(menu, inventory, title);
+		super(menu, inventory, title, ResonanceTableLayout.PANEL_WIDTH, ResonanceTableLayout.PANEL_HEIGHT);
 	}
 
 	@Override
