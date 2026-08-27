@@ -25,7 +25,7 @@ public final class EchoKeys {
 			pressed = true;
 		}
 
-		if (pressed && client.screen == null) {
+		if (pressed && client.gui.screen() == null) {
 			client.setScreenAndShow(new EchoConfigScreen(null));
 		}
 	}

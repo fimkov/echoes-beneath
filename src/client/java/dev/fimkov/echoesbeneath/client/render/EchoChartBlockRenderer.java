@@ -93,7 +93,7 @@ public class EchoChartBlockRenderer implements BlockEntityRenderer<EchoChartBloc
 	}
 
 	@Override
-	public boolean shouldRenderOffScreen(EchoChartBlockEntity chart) {
+	public boolean shouldRenderOffScreen() {
 		return true;
 	}
 }

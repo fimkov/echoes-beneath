@@ -4,7 +4,7 @@ import dev.fimkov.echoesbeneath.chart.EchoChartLook;
 import dev.fimkov.echoesbeneath.client.chart.EchoChartModel;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class EchoChartRenderState extends BlockEntityRenderState {
 	public boolean drawn;

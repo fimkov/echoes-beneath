@@ -123,7 +123,7 @@ public final class EchoEntityPuppet {
 		living.yHeadRotO = headYaw;
 		living.yBodyRotO = bodyYaw;
 		double travelled = seeded ? Math.hypot(worldX - lastX, worldZ - lastZ) : 0.0D;
-		living.walkAnimation.update((float) travelled * WALK_ANIMATION_SCALE, 1.0F);
+		living.walkAnimation.update((float) travelled * WALK_ANIMATION_SCALE, 1.0F, 1.0F);
 		lastX = worldX;
 		lastZ = worldZ;
 		seeded = true;
@@ -141,7 +141,7 @@ public final class EchoEntityPuppet {
 				continue;
 			}
 			Identifier itemId = timeline.itemAt(track.equipmentItem(index));
-			Item item = BuiltInRegistries.ITEM.get(itemId);
+			Item item = BuiltInRegistries.ITEM.get(itemId).map(net.minecraft.core.Holder::value).orElse(null);
 			living.setItemSlot(TRACKED_SLOTS[slotIndex], new ItemStack(item));
 		}
 	}
