@@ -5,7 +5,7 @@ issueTrackerURL = "https://github.com/fimkov/echoes-beneath/issues"
 
 [[mods]]
 modId = "echoes_beneath"
-version = "1.0.0"
+version = "${version}"
 displayName = "Echoes Beneath"
 description = '''
 Record a place with an Echo Lens: its blocks, the creatures moving through it, and the real
