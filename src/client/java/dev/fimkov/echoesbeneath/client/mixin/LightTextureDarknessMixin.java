@@ -28,6 +28,11 @@ public abstract class LightTextureDarknessMixin {
 		float retained = 1.0F - Math.clamp(darkness, 0.0F, 1.0F);
 		state.skyFactor *= retained;
 		state.ambientColor = state.ambientColor.mul(retained, new Vector3f());
+		// Underground there is no sky and no ambient to take, and the player's own
+		// brightness pulls what is left back into view. Night vision would undo the
+		// whole thing on its own.
+		state.brightness *= retained;
+		state.nightVisionEffectIntensity *= retained;
 		state.needsUpdate = true;
 	}
 }
