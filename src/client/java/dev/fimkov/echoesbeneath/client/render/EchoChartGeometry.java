@@ -17,9 +17,18 @@ public final class EchoChartGeometry {
 	private EchoChartGeometry() {
 	}
 
+	// A light level does not read as its own fraction of full: the lightmap runs it
+	// through l / (4 - 3l), which turns four tenths into one and a half. Invert that
+	// so a chart is as bright as the lens it was drawn from says it should be.
+	private static int levelFor(float brightness) {
+		float wanted = Math.clamp(brightness, 0.0F, 1.0F);
+
+		return Math.round(FULL_BLOCK_LIGHT * (4.0F * wanted) / (1.0F + 3.0F * wanted));
+	}
+
 	public static void emit(EchoChartModel model, SubmitNodeCollector submits, PoseStack poseStack) {
 		BlockModelResolver blocks = new BlockModelResolver(Minecraft.getInstance().getModelManager());
-		int light = LightCoordsUtil.pack(Math.round(FULL_BLOCK_LIGHT * model.brightness()), 0);
+		int light = LightCoordsUtil.pack(levelFor(model.brightness()), 0);
 		int budget = EchoClientConfig.values().chartBlockBudget();
 		int drawn = 0;
 
