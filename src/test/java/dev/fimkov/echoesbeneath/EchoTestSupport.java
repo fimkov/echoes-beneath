@@ -30,4 +30,10 @@ public final class EchoTestSupport {
 	public static EchoMemoryReference reference(int slot, BlockPos center) {
 		return reference(slot, OVERWORLD, center);
 	}
+
+	public static EchoMemoryReference reference(int slot, BlockPos center, int radius,
+			int verticalRadius) {
+		return new EchoMemoryReference(UUID.randomUUID(), slot, OVERWORLD, center,
+				radius, verticalRadius, DEFAULT_DURATION_TICKS, 1_700_000_000_000L);
+	}
 }

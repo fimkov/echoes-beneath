@@ -80,4 +80,15 @@ class EchoMemoryLocatorTest {
 				references, EchoTestSupport.OVERWORLD, BlockPos.ZERO);
 		assertEquals(0, found.orElseThrow().slot());
 	}
+
+	@Test
+	@DisplayName("a memory nested in a wider one wins where the two overlap")
+	void nestedMemoryBeatsTheWiderOne() {
+		EchoMemoryReferences references = EchoMemoryReferences.EMPTY
+				.withAdded(EchoTestSupport.reference(0, new BlockPos(8, 0, 0), 50, 32))
+				.withAdded(EchoTestSupport.reference(1, BlockPos.ZERO, 8, 8));
+		Optional<EchoMemoryReference> found = EchoMemoryLocator.resonating(
+				references, EchoTestSupport.OVERWORLD, new BlockPos(7, 0, 0));
+		assertEquals(1, found.orElseThrow().slot());
+	}
 }
