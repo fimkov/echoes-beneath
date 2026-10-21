@@ -1,16 +1,26 @@
 {
   "parent": "echoes_beneath:echo_chart",
   "criteria": {
-    "placed_chart": {
+    "played_record": {
       "conditions": {
         "location": [
           {
-            "block": "echoes_beneath:echo_chart",
-            "condition": "minecraft:block_state_property"
+            "condition": "minecraft:location_check",
+            "predicate": {
+              "block": {
+                "blocks": "minecraft:jukebox"
+              }
+            }
+          },
+          {
+            "condition": "minecraft:match_tool",
+            "predicate": {
+              "items": "echoes_beneath:echo_chart"
+            }
           }
         ]
       },
-      "trigger": "minecraft:placed_block"
+      "trigger": "minecraft:item_used_on_block"
     }
   },
   "display": {
@@ -27,7 +37,7 @@
   },
   "requirements": [
     [
-      "placed_chart"
+      "played_record"
     ]
   ],
   "sends_telemetry_event": true

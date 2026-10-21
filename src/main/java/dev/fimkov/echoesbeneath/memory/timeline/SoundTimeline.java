@@ -56,6 +56,17 @@ public final class SoundTimeline {
 
 	public boolean record(int tick, double relativeX, double relativeY, double relativeZ,
 			Identifier soundId, SoundSource source, float volume, float pitch) {
+		return record(tick, relativeX, relativeY, relativeZ, soundId,
+				EchoSoundCategory.indexOf(source), volume, pitch);
+	}
+
+	public boolean recordJukebox(int tick, double x, double y, double z, Identifier soundId, boolean playing) {
+		return record(tick, x, y, z, soundId, -EchoSoundCategory.indexOf(SoundSource.RECORDS) - 1,
+				playing ? 4.0F : -1.0F, 1.0F);
+	}
+
+	private boolean record(int tick, double relativeX, double relativeY, double relativeZ,
+			Identifier soundId, int categoryIndex, float volume, float pitch) {
 		if (size() >= maxEvents) {
 			return false;
 		}
@@ -66,9 +77,9 @@ public final class SoundTimeline {
 		int soundIndex = internSound(soundId);
 		int volumeMilli = Math.round(volume * MILLI);
 		int pitchMilli = Math.round(pitch * MILLI);
-		int categoryIndex = EchoSoundCategory.indexOf(source);
 
-		if (duplicatesLastEvent(tick, quantizedX, quantizedY, quantizedZ, soundIndex, volumeMilli, pitchMilli)) {
+		if (duplicatesLastEvent(tick, quantizedX, quantizedY, quantizedZ, soundIndex, volumeMilli, pitchMilli,
+				categoryIndex)) {
 			return true;
 		}
 
@@ -84,7 +95,8 @@ public final class SoundTimeline {
 		return true;
 	}
 
-	private boolean duplicatesLastEvent(int tick, int x, int y, int z, int soundIndex, int volume, int pitch) {
+	private boolean duplicatesLastEvent(int tick, int x, int y, int z, int soundIndex, int volume, int pitch,
+			int category) {
 		int count = size();
 
 		if (count == 0) {
@@ -99,7 +111,8 @@ public final class SoundTimeline {
 				&& data.getInt(last * STRIDE + OFFSET_Z) == z
 				&& data.getInt(last * STRIDE + OFFSET_SOUND) == soundIndex
 				&& data.getInt(last * STRIDE + OFFSET_VOLUME) == volume
-				&& data.getInt(last * STRIDE + OFFSET_PITCH) == pitch;
+				&& data.getInt(last * STRIDE + OFFSET_PITCH) == pitch
+				&& data.getInt(last * STRIDE + OFFSET_CATEGORY) == category;
 	}
 
 	private int internSound(Identifier soundId) {
@@ -155,7 +168,16 @@ public final class SoundTimeline {
 	}
 
 	public SoundSource categoryAt(int index) {
-		return EchoSoundCategory.fromIndex(data.getInt(index * STRIDE + OFFSET_CATEGORY));
+		int category = data.getInt(index * STRIDE + OFFSET_CATEGORY);
+		return EchoSoundCategory.fromIndex(category < 0 ? -category - 1 : category);
+	}
+
+	public boolean isJukeboxAt(int index) {
+		return data.getInt(index * STRIDE + OFFSET_CATEGORY) < 0 && categoryAt(index) == SoundSource.RECORDS;
+	}
+
+	public boolean isStopAt(int index) {
+		return isJukeboxAt(index) && volumeAt(index) < 0.0F;
 	}
 
 	public float waveRadiusAt(int index) {

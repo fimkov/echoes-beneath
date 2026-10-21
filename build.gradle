@@ -75,6 +75,11 @@ java {
 	targetCompatibility = JavaVersion.VERSION_25
 }
 
+sourceSets.test {
+	compileClasspath += sourceSets.client.output + sourceSets.client.compileClasspath
+	runtimeClasspath += sourceSets.client.output + sourceSets.client.runtimeClasspath
+}
+
 test {
 	useJUnitPlatform()
 	testLogging {

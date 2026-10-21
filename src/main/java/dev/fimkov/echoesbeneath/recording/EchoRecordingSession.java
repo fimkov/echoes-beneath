@@ -216,6 +216,15 @@ public final class EchoRecordingSession {
 				spreadX, spreadY, spreadZ);
 	}
 
+	public void onJukebox(BlockPos position, Identifier soundId, boolean playing) {
+		double x = position.getX() + 0.5D - center.getX();
+		double y = position.getY() + 0.5D - center.getY();
+		double z = position.getZ() + 0.5D - center.getZ();
+		if (!finished && withinRegion(x, y, z)) {
+			soundTimeline.recordJukebox(currentTick, x, y, z, soundId, playing);
+		}
+	}
+
 	public void tick() {
 		if (finished || lensEntity.isArriving()) {
 			return;

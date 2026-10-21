@@ -25,6 +25,7 @@ public final class EchoTranslations {
 	public static final String SOUNDING_PUT_BACK = "sounding.echoes_beneath.put_back";
 	public static final String SOUNDING_PUT_BACK_HINT = "sounding.echoes_beneath.put_back_hint";
 	public static final String TOOLTIP_TUNING = "tooltip.echoes_beneath.tuning";
+	public static final String TOOLTIP_PORTABLE_PLAYBACK = "tooltip.echoes_beneath.portable_playback";
 
 	public static final String MESSAGE_NO_MORE = "message.echoes_beneath.no_more";
 	public static final String MESSAGE_NO_RESONANCE = "message.echoes_beneath.no_resonance";

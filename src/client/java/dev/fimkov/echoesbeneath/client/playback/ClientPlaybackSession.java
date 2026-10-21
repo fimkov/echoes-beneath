@@ -153,6 +153,7 @@ public final class ClientPlaybackSession {
 	}
 
 	public void discard() {
+		soundPlayer.discard();
 		meshes.clear();
 		pendingSectionKeys.clear();
 		puppets.clear();

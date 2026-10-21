@@ -9,6 +9,8 @@ import dev.fimkov.echoesbeneath.network.PlaybackDataPayload;
 import dev.fimkov.echoesbeneath.network.PlaybackStartPayload;
 import dev.fimkov.echoesbeneath.network.PlaybackStopPayload;
 import dev.fimkov.echoesbeneath.network.PlaybackTickPayload;
+import dev.fimkov.echoesbeneath.network.RecordSoundPayload;
+import dev.fimkov.echoesbeneath.client.sound.EchoRecordSounds;
 import net.minecraft.client.Minecraft;
 
 public final class EchoPlaybackReceiver {
@@ -16,6 +18,7 @@ public final class EchoPlaybackReceiver {
 	}
 
 	public static void register() {
+		EchoClientPlatforms.get().receive(RecordSoundPayload.TYPE, EchoRecordSounds::accept);
 		EchoClientPlatforms.get().receive(PlaybackStartPayload.TYPE,
 				payload -> ClientPlaybackManager.instance().onStart(payload));
 
@@ -36,6 +39,7 @@ public final class EchoPlaybackReceiver {
 		EchoClientPlatforms.get().receive(ChartShapePayload.TYPE, ClientChartShapes::accept);
 
 		EchoClientPlatforms.get().onDisconnect(() -> {
+			EchoRecordSounds.clear();
 			ClientChartShapes.forget();
 			ClientPlaybackManager.instance().clearAll();
 			EchoDarkness.clearFrameState();

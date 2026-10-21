@@ -17,8 +17,9 @@ public final class EchoItems {
 	public static final EchoLensItem ECHO_LENS = new EchoLensItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)
 			.setId(ResourceKey.create(Registries.ITEM, EchoesBeneath.id("echo_lens"))));
 
-	public static final EchoChartItem ECHO_CHART = new EchoChartItem(EchoBlocks.ECHO_CHART,
-			new Item.Properties().stacksTo(1).rarity(Rarity.RARE).useBlockDescriptionPrefix()
+	public static final EchoChartItem ECHO_CHART = new EchoChartItem(
+			new Item.Properties().stacksTo(1).rarity(Rarity.RARE)
+					.jukeboxPlayable(ResourceKey.create(Registries.JUKEBOX_SONG, EchoesBeneath.id("echo_record")))
 					.setId(ResourceKey.create(Registries.ITEM, EchoesBeneath.id("echo_chart"))));
 
 	private EchoItems() {

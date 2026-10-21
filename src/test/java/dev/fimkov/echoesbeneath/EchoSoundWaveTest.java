@@ -11,10 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EchoSoundWaveTest {
 	@Test
-	@DisplayName("music, records and interface sounds are never recorded")
+	@DisplayName("background music and interface sounds are never recorded")
 	void nonSpatialCategoriesAreSkipped() {
 		assertFalse(EchoSoundCategory.isRecordable(SoundSource.MUSIC));
-		assertFalse(EchoSoundCategory.isRecordable(SoundSource.RECORDS));
 		assertFalse(EchoSoundCategory.isRecordable(SoundSource.MASTER));
 		assertFalse(EchoSoundCategory.isRecordable(SoundSource.VOICE));
 		assertFalse(EchoSoundCategory.isRecordable(SoundSource.WEATHER));
@@ -23,6 +22,7 @@ class EchoSoundWaveTest {
 	@Test
 	@DisplayName("world sounds are recorded")
 	void spatialCategoriesAreRecorded() {
+		assertTrue(EchoSoundCategory.isRecordable(SoundSource.RECORDS));
 		assertTrue(EchoSoundCategory.isRecordable(SoundSource.BLOCKS));
 		assertTrue(EchoSoundCategory.isRecordable(SoundSource.HOSTILE));
 		assertTrue(EchoSoundCategory.isRecordable(SoundSource.PLAYERS));

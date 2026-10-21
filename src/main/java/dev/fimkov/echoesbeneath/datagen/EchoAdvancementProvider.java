@@ -16,6 +16,12 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.triggers.Criterion;
 import net.minecraft.advancements.triggers.InventoryChangeTrigger;
+import net.minecraft.advancements.triggers.ItemUsedOnLocationTrigger;
+import net.minecraft.advancements.predicates.BlockPredicate;
+import net.minecraft.advancements.predicates.ItemPredicate;
+import net.minecraft.advancements.predicates.LocationPredicate;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.advancements.predicates.MinMaxBounds;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
@@ -171,8 +177,14 @@ public class EchoAdvancementProvider extends FabricAdvancementProvider {
 
 		step(EchoItems.ECHO_CHART, "set_it_down", AdvancementType.GOAL)
 				.parent(chart)
-				.addCriterion("placed_chart", net.minecraft.advancements.triggers.ItemUsedOnLocationTrigger
-						.TriggerInstance.placedBlock(EchoBlocks.ECHO_CHART))
+				.addCriterion("played_record", ItemUsedOnLocationTrigger
+						.TriggerInstance.itemUsedOnBlock(
+								LocationPredicate.Builder.location().setBlock(
+										BlockPredicate.Builder.block().of(
+												lookup.lookupOrThrow(Registries.BLOCK),
+												Blocks.JUKEBOX)),
+								ItemPredicate.Builder.item().of(
+										lookup.lookupOrThrow(Registries.ITEM), EchoItems.ECHO_CHART)))
 				.save(consumer, EchoesBeneath.id("set_it_down").toString());
 
 		step(Items.AMETHYST_CLUSTER, "tuner", AdvancementType.CHALLENGE)

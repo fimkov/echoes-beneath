@@ -24,6 +24,7 @@ public final class EchoServerLifecycle {
 			if (state != null) {
 				state.recordings().stopAll(EchoRecordingStopReason.SERVER_STOPPING);
 				state.playbacks().stopAll(EchoPlaybackStopReason.SERVER_STOPPING);
+				state.records().stopAll();
 				state.suppression().recoverEverything();
 			}
 		});
@@ -39,6 +40,7 @@ public final class EchoServerLifecycle {
 			if (state != null) {
 				state.recordings().stopIn(level, EchoRecordingStopReason.DIMENSION_UNLOADED);
 				state.playbacks().stopIn(level, EchoPlaybackStopReason.DIMENSION_UNLOADED);
+				state.records().stopIn(level);
 			}
 		});
 
@@ -72,6 +74,7 @@ public final class EchoServerLifecycle {
 			if (state != null) {
 				state.recordings().handOverTo(player);
 				state.playbacks().onOwnerDisconnected(player);
+				state.records().stopPreview(player.getUUID());
 			}
 		});
 	}

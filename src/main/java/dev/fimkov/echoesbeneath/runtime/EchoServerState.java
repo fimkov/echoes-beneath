@@ -5,6 +5,7 @@ import dev.fimkov.echoesbeneath.memory.storage.EchoMemoryStorage;
 import dev.fimkov.echoesbeneath.playback.EchoPlaybackManager;
 import dev.fimkov.echoesbeneath.playback.suppression.HostileMobSuppressionManager;
 import dev.fimkov.echoesbeneath.recording.EchoRecordingManager;
+import dev.fimkov.echoesbeneath.record.EchoRecordPlayback;
 import net.minecraft.server.MinecraftServer;
 
 public final class EchoServerState {
@@ -16,6 +17,7 @@ public final class EchoServerState {
 	private final HostileMobSuppressionManager suppression;
 	private final EchoRecordingManager recordings;
 	private final EchoPlaybackManager playbacks;
+	private final EchoRecordPlayback records;
 
 	private EchoServerState(MinecraftServer server) {
 		this.server = server;
@@ -24,6 +26,7 @@ public final class EchoServerState {
 		this.suppression = new HostileMobSuppressionManager(server);
 		this.recordings = new EchoRecordingManager(this);
 		this.playbacks = new EchoPlaybackManager(this);
+		this.records = new EchoRecordPlayback(this);
 	}
 
 	public static EchoServerState current() {
@@ -68,5 +71,10 @@ public final class EchoServerState {
 	public void tick() {
 		recordings().tick();
 		playbacks().tick();
+		records.tick();
+	}
+
+	public EchoRecordPlayback records() {
+		return records;
 	}
 }

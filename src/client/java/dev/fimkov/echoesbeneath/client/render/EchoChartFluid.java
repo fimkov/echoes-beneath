@@ -19,7 +19,7 @@ import org.joml.Matrix4f;
 // which is all the detail survives the downsampling anyway.
 public final class EchoChartFluid {
 	private static final int WATER_TINT = 0x3F76E4;
-	private static final int ALPHA = 0xCC;
+	private static final int ALPHA = 0xFF;
 
 	private EchoChartFluid() {
 	}

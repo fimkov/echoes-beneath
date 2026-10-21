@@ -13,10 +13,32 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EchoTimelineTest {
+	@Test
+	void jukeboxStartsAndStopsSurviveSavingWithoutBecomingNoteBlockSounds() {
+		SoundTimeline timeline = new SoundTimeline(16);
+		Identifier song = Identifier.withDefaultNamespace("music_disc.cat");
+		timeline.recordJukebox(4, 1.5D, 2.5D, 3.5D, song, true);
+		timeline.record(5, 1.5D, 2.5D, 3.5D, Identifier.withDefaultNamespace("block.note_block.harp"),
+				SoundSource.RECORDS, 3.0F, 0.5F);
+		timeline.recordJukebox(20, 1.5D, 2.5D, 3.5D,
+				Identifier.withDefaultNamespace("intentionally_empty"), false);
+		SoundTimeline restored = SoundTimeline.fromNbt(timeline.toNbt(), 16);
+		assertEquals(3, restored.size());
+		assertTrue(restored.isJukeboxAt(0));
+		assertFalse(restored.isStopAt(0));
+		assertFalse(restored.isJukeboxAt(1));
+		assertEquals(0.5F, restored.pitchAt(1));
+		assertTrue(restored.isStopAt(2));
+		assertEquals(SoundSource.RECORDS, restored.categoryAt(2));
+		assertEquals(20, restored.tickAt(2));
+		assertEquals(song, restored.soundAt(0));
+	}
+
 	private static final int MAX_EVENTS = 4096;
 	private static final Identifier DOOR_OPEN =
 			Identifier.withDefaultNamespace("block.wooden_door.open");

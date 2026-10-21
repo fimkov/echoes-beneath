@@ -73,7 +73,9 @@ public final class EchoConfig {
 				DEFAULT_DISABLE_BLOCK_INTERACTION_DURING_PLAYBACK,
 				DEFAULT_ALLOW_CHARTS,
 				DEFAULT_CHART_BLOCK_LIMIT,
-				DEFAULT_SOUND_CARRY_BLOCKS);
+				DEFAULT_SOUND_CARRY_BLOCKS,
+				false,
+				EchoUpgradeSettings.defaults());
 	}
 
 	public static void load() {
@@ -109,7 +111,9 @@ public final class EchoConfig {
 				clampInt(properties, "chartBlockLimit", DEFAULT_CHART_BLOCK_LIMIT,
 						MIN_CHART_BLOCK_LIMIT, MAX_CHART_BLOCK_LIMIT),
 				clampInt(properties, "soundCarryBlocks", DEFAULT_SOUND_CARRY_BLOCKS,
-						MIN_SOUND_CARRY, MAX_SOUND_CARRY));
+						MIN_SOUND_CARRY, MAX_SOUND_CARRY),
+				readBoolean(properties, "sphericalCharts", false),
+				EchoUpgradeSettings.read(properties));
 	}
 
 	private static void write(Path path) {
@@ -129,6 +133,8 @@ public final class EchoConfig {
 		out.setProperty("allowCharts", Boolean.toString(current.allowCharts()));
 		out.setProperty("chartBlockLimit", Integer.toString(current.chartBlockLimit()));
 		out.setProperty("soundCarryBlocks", Integer.toString(current.soundCarryBlocks()));
+		out.setProperty("sphericalCharts", Boolean.toString(current.sphericalCharts()));
+		current.upgrades().write(out);
 
 		try {
 			Files.createDirectories(path.getParent());

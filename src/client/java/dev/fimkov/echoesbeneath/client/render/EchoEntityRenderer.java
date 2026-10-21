@@ -50,6 +50,10 @@ public final class EchoEntityRenderer {
 	private static void renderPuppet(EchoRenderContext context, EntityRenderDispatcher dispatcher,
 			PoseStack poseStack, Entity entity, Vec3 cameraPosition, float partialTick, float reveal,
 			float presence) {
+		if (entity.getBoundingBox().inflate(0.05D).contains(cameraPosition)) {
+			return;
+		}
+
 		EchoSilhouetteBuffers look = EchoSilhouetteBuffers.forEntity(reveal, presence);
 
 		if (look.isInvisible()) {

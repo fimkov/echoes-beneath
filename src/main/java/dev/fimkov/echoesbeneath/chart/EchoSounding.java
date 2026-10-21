@@ -8,6 +8,7 @@ import dev.fimkov.echoesbeneath.memory.snapshot.BlockSnapshot;
 import dev.fimkov.echoesbeneath.memory.timeline.SoundTimeline;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.world.level.block.Blocks;
 
 public final class EchoSounding {
 	private static final int MIN_CARRY = 2;
@@ -30,6 +31,11 @@ public final class EchoSounding {
 
 	public static EchoChartShape of(EchoMemoryRecord record, Columns columns, int minY, int maxY,
 			int budget) {
+		return of(record, columns, minY, maxY, budget, EchoConfig.values().sphericalCharts());
+	}
+
+	public static EchoChartShape of(EchoMemoryRecord record, Columns columns, int minY, int maxY,
+			int budget, boolean spherical) {
 		BlockSnapshot snapshot = record.snapshot();
 		int vertical = record.verticalRadius();
 		int lowest = Math.max(-vertical, minY - record.center().getY());
@@ -42,14 +48,23 @@ public final class EchoSounding {
 		IntList positions = new IntArrayList();
 		IntList states = new IntArrayList();
 		gather(snapshot, seeThrough(snapshot.palette()), columns, record.radius(), lowest, highest,
-				budget, positions, states);
+				budget, positions, states, spherical);
+		BlockPalette silhouettes = new BlockPalette();
+		for (int index = 0; index < states.size(); index++) {
+			var state = snapshot.palette().stateAt(states.getInt(index));
+			states.set(index, silhouettes.indexOf(state.isSolidRender()
+					? Blocks.STONE.defaultBlockState() : state));
+		}
 
-		return new EchoChartShape(record.id(), snapshot.palette(), positions, states, lowest, highest,
+		return new EchoChartShape(record.id(), silhouettes, positions, states, lowest, highest,
 				record.recordedVision());
 	}
 
 	private static void seed(SoundTimeline sounds, Columns columns, int radius) {
 		for (int index = 0; index < sounds.size(); index++) {
+			if (sounds.isStopAt(index)) {
+				continue;
+			}
 			int x = (int) Math.floor(sounds.relativeXAt(index));
 			int z = (int) Math.floor(sounds.relativeZAt(index));
 			int carry = Math.clamp(Math.round(sounds.volumeAt(index)
@@ -72,13 +87,16 @@ public final class EchoSounding {
 	}
 
 	private static void gather(BlockSnapshot snapshot, boolean[] seen, Columns columns, int radius,
-			int lowest, int highest, int budget, IntList positions, IntList states) {
+			int lowest, int highest, int budget, IntList positions, IntList states, boolean spherical) {
 		for (int x = -radius; x <= radius; x++) {
 			for (int z = -radius; z <= radius; z++) {
 				if (!columns.charted(x, z)) {
 					continue;
 				}
 				for (int y = lowest; y <= highest; y++) {
+					if (spherical && x * x + y * y + z * z > radius * radius) {
+						continue;
+					}
 					if (positions.size() >= budget) {
 						return;
 					}

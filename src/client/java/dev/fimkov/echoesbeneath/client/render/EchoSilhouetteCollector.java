@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.OrderedSubmitNodeCollector;
 import net.minecraft.client.renderer.block.MovingBlockRenderState;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
@@ -16,6 +17,7 @@ import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.network.chat.Component;
+import net.minecraft.core.Direction;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.phys.Vec3;
@@ -25,11 +27,22 @@ import java.util.List;
 
 // Everything a puppet submits is recoloured on the way through, which is what
 // turns a normally lit model into a flat silhouette.
-public record EchoSilhouetteCollector(SubmitNodeCollector delegate, EchoSilhouetteBuffers look)
+public record EchoSilhouetteCollector(SubmitNodeCollector root, OrderedSubmitNodeCollector delegate,
+		EchoSilhouetteBuffers look, boolean textureless)
 		implements SubmitNodeCollector {
+	private static final Direction[] FACES = Direction.values();
+
+	public EchoSilhouetteCollector(SubmitNodeCollector delegate, EchoSilhouetteBuffers look) {
+		this(delegate, delegate, look, false);
+	}
+
+	public EchoSilhouetteCollector(SubmitNodeCollector delegate, EchoSilhouetteBuffers look, boolean textureless) {
+		this(delegate, delegate, look, textureless);
+	}
+
 	@Override
 	public SubmitNodeCollector order(int order) {
-		return new EchoSilhouetteCollector((SubmitNodeCollector) delegate.order(order), look);
+		return new EchoSilhouetteCollector(root, root.order(order), look, textureless);
 	}
 
 	@Override
@@ -43,6 +56,23 @@ public record EchoSilhouetteCollector(SubmitNodeCollector delegate, EchoSilhouet
 	@Override
 	public void submitBlockModel(PoseStack poseStack, RenderType renderType, List<BlockStateModelPart> parts,
 			int[] tints, int light, int overlay, int outline) {
+		if (textureless) {
+			delegate.submitCustomGeometry(poseStack, EchoRenderTypes.ECHO_TEXELS, (pose, consumer) -> {
+				for (BlockStateModelPart part : parts) {
+					for (int side = 0; side <= FACES.length; side++) {
+						Direction direction = side == FACES.length ? null : FACES[side];
+						for (BakedQuad quad : part.getQuads(direction)) {
+							for (int corner = 0; corner < 4; corner++) {
+								var vertex = quad.position(corner);
+								consumer.addVertex(pose.pose(), vertex.x(), vertex.y(), vertex.z())
+										.setColor(0, 0, 0, 255);
+								}
+						}
+					}
+				}
+			});
+			return;
+		}
 		delegate.submitBlockModel(poseStack, layerFor(renderType), parts, tints, look.light(), overlay, outline);
 	}
 

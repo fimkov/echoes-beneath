@@ -21,7 +21,7 @@ public final class EchoSoundCategory {
 	}
 
 	public static boolean isRecordable(SoundSource source) {
-		return source != SoundSource.MUSIC && source != SoundSource.RECORDS
+		return source != SoundSource.MUSIC
 				&& source != SoundSource.MASTER && source != SoundSource.VOICE
 				&& source != SoundSource.WEATHER;
 	}
