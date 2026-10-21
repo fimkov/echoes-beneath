@@ -57,8 +57,8 @@ Take the jar for your loader and drop it into `mods/`.
 
 | Loader | File |
 |---|---|
-| Fabric | `echoes-beneath-fabric-1.1.0.jar`, plus Fabric API |
-| NeoForge | `echoes-beneath-neoforge-1.1.0.jar` |
+| Fabric | `echoes-beneath-fabric-26.2-1.2.0.jar`, plus Fabric API |
+| NeoForge | `echoes-beneath-neoforge-26.2-1.2.0.jar` |
 
 ## Building
 
