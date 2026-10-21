@@ -7,6 +7,7 @@ public final class EchoNetworkPayloads {
 	}
 
 	public static void registerCommon() {
+		EchoPlatforms.network().serverToClient(RecordSoundPayload.TYPE, RecordSoundPayload.STREAM_CODEC);
 		EchoPlatforms.network().serverToClient(PlaybackStartPayload.TYPE, PlaybackStartPayload.STREAM_CODEC);
 		EchoPlatforms.network().serverToClient(PlaybackDataPayload.TYPE, PlaybackDataPayload.STREAM_CODEC);
 		EchoPlatforms.network().serverToClient(PlaybackTickPayload.TYPE, PlaybackTickPayload.STREAM_CODEC);

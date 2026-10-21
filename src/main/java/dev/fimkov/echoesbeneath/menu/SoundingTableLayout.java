@@ -24,20 +24,19 @@ public final class SoundingTableLayout {
 
 	public static final int STAGE_X = 76;
 	public static final int STAGE_Y = 18;
-	public static final int STAGE_WIDTH = 114;
-	public static final int STAGE_HEIGHT = 86;
+	public static final int STAGE_WIDTH = 132;
+	public static final int STAGE_HEIGHT = 24;
 
-	public static final int RULER_X = 196;
-	public static final int RULER_Y = 18;
-	public static final int RULER_WIDTH = 12;
-	public static final int RULER_HEIGHT = 86;
-	public static final int HANDLE_WIDTH = 16;
-	public static final int HANDLE_HEIGHT = 3;
-
-	public static final int EXTRACT_X = 76;
-	public static final int EXTRACT_Y = 108;
-	public static final int EXTRACT_WIDTH = 114;
-	public static final int EXTRACT_HEIGHT = 16;
+	public static final int START_Y = 46;
+	public static final int END_Y = 64;
+	public static final int VOLUME_Y = 82;
+	public static final int SLIDER_HEIGHT = 18;
+	public static final int PREVIEW_X = 76;
+	public static final int ACTION_WIDTH = 64;
+	public static final int EXTRACT_X = 144;
+	public static final int EXTRACT_Y = 106;
+	public static final int EXTRACT_WIDTH = 64;
+	public static final int EXTRACT_HEIGHT = 18;
 
 	public static final int TITLE_X = 8;
 	public static final int TITLE_Y = 6;

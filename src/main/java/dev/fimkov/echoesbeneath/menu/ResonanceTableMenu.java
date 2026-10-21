@@ -1,6 +1,8 @@
 package dev.fimkov.echoesbeneath.menu;
 
 import dev.fimkov.echoesbeneath.advancement.EchoCriteria;
+import dev.fimkov.echoesbeneath.config.EchoConfig;
+import dev.fimkov.echoesbeneath.config.EchoUpgradeSettings;
 import dev.fimkov.echoesbeneath.item.EchoLensStacks;
 import dev.fimkov.echoesbeneath.item.EchoLensUpgrades;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReferences;
@@ -41,6 +43,9 @@ public class ResonanceTableMenu extends AbstractContainerMenu {
 	private final Container output = new SimpleContainer(1);
 	private final ContainerLevelAccess access;
 	private final DataSlot[] targetSteps = new DataSlot[ResonanceTableUpgrade.all().length];
+	private final DataSlot[] limits = new DataSlot[targetSteps.length];
+	private final DataSlot[] levelPrices = new DataSlot[targetSteps.length];
+	private final DataSlot[] shardPrices = new DataSlot[targetSteps.length];
 	private final DataSlot costLevels = DataSlot.standalone();
 	private final DataSlot costShards = DataSlot.standalone();
 	private ItemStack seededFrom = ItemStack.EMPTY;
@@ -108,6 +113,14 @@ public class ResonanceTableMenu extends AbstractContainerMenu {
 
 		for (int index = 0; index < targetSteps.length; index++) {
 			targetSteps[index] = addDataSlot(DataSlot.standalone());
+			limits[index] = addDataSlot(DataSlot.standalone());
+			levelPrices[index] = addDataSlot(DataSlot.standalone());
+			shardPrices[index] = addDataSlot(DataSlot.standalone());
+			EchoUpgradeSettings.Track track = EchoConfig.values().upgrades()
+					.track(ResonanceTableUpgrade.fromIndex(index));
+			limits[index].set(track.maxSteps());
+			levelPrices[index].set(track.experiencePerStep());
+			shardPrices[index].set(track.shardsPerStep());
 		}
 
 		addDataSlot(costLevels);
@@ -175,7 +188,19 @@ public class ResonanceTableMenu extends AbstractContainerMenu {
 	}
 
 	public boolean canIncrease(ResonanceTableUpgrade upgrade) {
-		return !lens().isEmpty() && upgrade.stepsOf(targetUpgrades()) < upgrade.maxSteps();
+		return !lens().isEmpty() && upgrade.stepsOf(targetUpgrades()) < maxSteps(upgrade);
+	}
+
+	public int maxSteps(ResonanceTableUpgrade upgrade) {
+		return Math.max(limits[upgrade.ordinal()].get(), upgrade.stepsOf(floorUpgrades()));
+	}
+
+	public int experiencePerStep(ResonanceTableUpgrade upgrade) {
+		return levelPrices[upgrade.ordinal()].get();
+	}
+
+	public int shardsPerStep(ResonanceTableUpgrade upgrade) {
+		return shardPrices[upgrade.ordinal()].get();
 	}
 
 	public boolean canDecrease(ResonanceTableUpgrade upgrade) {
@@ -229,10 +254,11 @@ public class ResonanceTableMenu extends AbstractContainerMenu {
 		for (int index = 0; index < targetSteps.length; index++) {
 			ResonanceTableUpgrade upgrade = ResonanceTableUpgrade.fromIndex(index);
 			int lowest = upgrade.stepsOf(floor);
-			targetSteps[index].set(Math.clamp(targetSteps[index].get(), lowest, upgrade.maxSteps()));
+			targetSteps[index].set(Math.clamp(targetSteps[index].get(), lowest, maxSteps(upgrade)));
 		}
 
-		ResonanceTablePlan plan = ResonanceTablePlan.of(currentUpgrades(), floor, peakUpgrades(), targetUpgrades());
+		ResonanceTablePlan plan = ResonanceTablePlan.of(currentUpgrades(), floor, peakUpgrades(), targetUpgrades(),
+				EchoConfig.values().upgrades());
 		costLevels.set(plan.experienceLevels());
 		costShards.set(plan.amethystShards());
 

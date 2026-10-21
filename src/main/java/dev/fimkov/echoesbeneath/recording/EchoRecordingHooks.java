@@ -83,4 +83,14 @@ public final class EchoRecordingHooks {
 			session.onParticle(x, y, z, typeId, count, spreadX, spreadY, spreadZ);
 		}
 	}
+
+	public static void onJukebox(ServerLevel level, BlockPos position, ResourceLocation soundId, boolean playing) {
+		EchoServerState state = EchoServerState.current();
+		if (!isCapturing() || state == null) {
+			return;
+		}
+		for (EchoRecordingSession session : state.recordings().sessionsIn(level)) {
+			session.onJukebox(position, soundId, playing);
+		}
+	}
 }

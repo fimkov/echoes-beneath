@@ -42,6 +42,10 @@ public class EchoLensItem extends Item {
 		tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_TUNING,
 				upgrades.radius(), upgrades.sensitivity(), upgrades.vision()).withStyle(ChatFormatting.DARK_GRAY));
 		appendResonanceLines(references, tooltip);
+		if (!references.isEmpty()) {
+			tooltip.add(Component.translatable(EchoTranslations.TOOLTIP_PORTABLE_PLAYBACK)
+					.withStyle(ChatFormatting.DARK_AQUA));
+		}
 	}
 
 	private void appendCapacityLine(EchoMemoryReferences references, EchoLensUpgrades upgrades,

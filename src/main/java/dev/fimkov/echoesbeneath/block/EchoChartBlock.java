@@ -1,22 +1,13 @@
 package dev.fimkov.echoesbeneath.block;
 
 import com.mojang.serialization.MapCodec;
-import dev.fimkov.echoesbeneath.EchoTranslations;
 import dev.fimkov.echoesbeneath.blockentity.EchoChartBlockEntity;
 import dev.fimkov.echoesbeneath.chart.EchoChartLook;
-import dev.fimkov.echoesbeneath.menu.ChartLookMenu;
-import dev.fimkov.echoesbeneath.platform.EchoPlatforms;
 import dev.fimkov.echoesbeneath.registry.EchoBlockEntities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -126,32 +117,11 @@ public class EchoChartBlock extends BaseEntityBlock {
 			return InteractionResult.PASS;
 		}
 
-		if (player.isSecondaryUseActive()) {
-			if (player instanceof ServerPlayer viewer) {
-				EchoPlatforms.registries().openBlockPosMenu(viewer, new LookMenuProvider(position),
-						position);
-			}
-			return InteractionResult.CONSUME;
+		ItemStack record = chart.asItem();
+		level.removeBlock(position, false);
+		if (!player.getInventory().add(record)) {
+			popResource(level, position, record);
 		}
-
-		chart.turnOnce();
-
 		return InteractionResult.CONSUME;
-	}
-
-	private record LookMenuProvider(BlockPos position) implements MenuProvider {
-		@Override
-
-		public Component getDisplayName() {
-			return Component.translatable(EchoTranslations.CONTAINER_CHART_LOOK);
-		}
-
-		@Nullable
-		@Override
-
-		public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
-			return new ChartLookMenu(containerId, inventory,
-					ContainerLevelAccess.create(player.level(), position), position);
-		}
 	}
 }

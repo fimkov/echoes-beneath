@@ -3,11 +3,14 @@ package dev.fimkov.echoesbeneath.mixin;
 import dev.fimkov.echoesbeneath.recording.EchoRecordingHooks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +28,23 @@ public abstract class ServerLevelEventMixin {
 			at = @At("HEAD"))
 	private void echoesBeneath$recordLevelEvent(Player except, int type, BlockPos position, int data,
 			CallbackInfo callback) {
-		if (type != BLOCK_DESTROYED || !EchoRecordingHooks.isCapturing()) {
+		if (!EchoRecordingHooks.isCapturing()) {
+			return;
+		}
+		ServerLevel level = (ServerLevel) (Object) this;
+		if (type == LevelEvent.SOUND_PLAY_JUKEBOX_SONG) {
+			var song = level.registryAccess().registryOrThrow(Registries.JUKEBOX_SONG).byId(data);
+			if (song != null && !song.soundEvent().value().getLocation()
+					.equals(ResourceLocation.withDefaultNamespace("intentionally_empty"))) {
+				EchoRecordingHooks.onJukebox(level, position, song.soundEvent().value().getLocation(), true);
+			}
+			return;
+		}
+		if (type == LevelEvent.SOUND_STOP_JUKEBOX_SONG) {
+			EchoRecordingHooks.onJukebox(level, position, ResourceLocation.withDefaultNamespace("intentionally_empty"), false);
+			return;
+		}
+		if (type != BLOCK_DESTROYED) {
 			return;
 		}
 

@@ -171,8 +171,10 @@ public class EchoAdvancementProvider extends FabricAdvancementProvider {
 
 		step(EchoItems.ECHO_CHART, "set_it_down", AdvancementType.GOAL)
 				.parent(chart)
-				.addCriterion("placed_chart", net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger
-						.TriggerInstance.placedBlock(EchoBlocks.ECHO_CHART))
+				.addCriterion("played_record", net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger.TriggerInstance.itemUsedOnBlock(
+						net.minecraft.advancements.critereon.LocationPredicate.Builder.location().setBlock(
+								net.minecraft.advancements.critereon.BlockPredicate.Builder.block().of(net.minecraft.world.level.block.Blocks.JUKEBOX)),
+						net.minecraft.advancements.critereon.ItemPredicate.Builder.item().of(EchoItems.ECHO_CHART)))
 				.save(consumer, EchoesBeneath.id("set_it_down").toString());
 
 		step(Items.AMETHYST_CLUSTER, "tuner", AdvancementType.CHALLENGE)

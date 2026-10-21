@@ -336,7 +336,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 
 	private void renderPips(GuiGraphics graphics, int index, int rowScreenY) {
 		ResonanceTableUpgrade upgrade = ResonanceTableUpgrade.fromIndex(index);
-		int count = upgrade.maxSteps();
+		int count = menu.maxSteps(upgrade);
 		boolean empty = menu.lens().isEmpty();
 		int peak = empty ? 0 : upgrade.stepsOf(menu.peakUpgrades());
 		int staged = empty ? 0 : upgrade.stepsOf(menu.targetUpgrades());
@@ -490,7 +490,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 					.withStyle(ChatFormatting.DARK_AQUA).getVisualOrderText());
 		}
 
-		if (staged >= upgrade.maxSteps()) {
+		if (staged >= menu.maxSteps(upgrade)) {
 			lines.add(Component.translatable(EchoTranslations.UPGRADE_MAXED)
 					.withStyle(ChatFormatting.DARK_GRAY).getVisualOrderText());
 
@@ -498,7 +498,7 @@ public class ResonanceTableScreen extends AbstractContainerScreen<ResonanceTable
 		}
 
 		lines.add(Component.translatable(EchoTranslations.UPGRADE_PER_STEP_SHARDS,
-						upgrade.experiencePerStep(), upgrade.shardsPerStep())
+						menu.experiencePerStep(upgrade), menu.shardsPerStep(upgrade))
 				.withStyle(ChatFormatting.GRAY).getVisualOrderText());
 
 		return lines;

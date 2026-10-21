@@ -1,14 +1,12 @@
 package dev.fimkov.echoesbeneath.menu;
 
 import dev.fimkov.echoesbeneath.EchoTranslations;
-import dev.fimkov.echoesbeneath.chart.EchoChartData;
-import dev.fimkov.echoesbeneath.chart.EchoChartPreview;
 import dev.fimkov.echoesbeneath.config.EchoConfig;
 import dev.fimkov.echoesbeneath.item.EchoChartItem;
 import dev.fimkov.echoesbeneath.item.EchoLensStacks;
-import dev.fimkov.echoesbeneath.memory.EchoMemoryRecord;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReference;
-import dev.fimkov.echoesbeneath.memory.EchoMemoryReferences;
+import dev.fimkov.echoesbeneath.memory.EchoMemoryRecord;
+import dev.fimkov.echoesbeneath.record.EchoRecordData;
 import dev.fimkov.echoesbeneath.registry.EchoBlocks;
 import dev.fimkov.echoesbeneath.registry.EchoComponents;
 import dev.fimkov.echoesbeneath.registry.EchoItems;
@@ -16,7 +14,6 @@ import dev.fimkov.echoesbeneath.registry.EchoMenus;
 import dev.fimkov.echoesbeneath.registry.EchoSounds;
 import dev.fimkov.echoesbeneath.runtime.EchoServerState;
 import java.util.List;
-import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -34,15 +31,9 @@ import net.minecraft.world.item.ItemStack;
 public class SoundingTableMenu extends AbstractContainerMenu {
 	public static final int LENS_SLOT = 0;
 	public static final int RESULT_SLOT = 1;
-	private static final int INVENTORY_ROWS = 3;
-	private static final int INVENTORY_COLUMNS = 9;
-	private static final int SLOT_PITCH = 18;
-	private static final float TAKE_VOLUME = 0.7F;
-	private static final float TAKE_PITCH = 1.0F;
-
+	public static final int WAVE_BINS = 48;
 	private final Container input = new SimpleContainer(1) {
 		@Override
-
 		public void setChanged() {
 			super.setChanged();
 			slotsChanged(this);
@@ -52,12 +43,12 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 	private final ContainerLevelAccess access;
 	private final Player owner;
 	private final DataSlot selected = DataSlot.standalone();
-	private final DataSlot lowest = DataSlot.standalone();
-	private final DataSlot highest = DataSlot.standalone();
-	private final DataSlot worldBottom = DataSlot.standalone();
-	private final DataSlot worldTop = DataSlot.standalone();
-	private final DataSlot floor = DataSlot.standalone();
-	private final DataSlot ceiling = DataSlot.standalone();
+	private final DataSlot duration = DataSlot.standalone();
+	private final DataSlot start = DataSlot.standalone();
+	private final DataSlot end = DataSlot.standalone();
+	private final DataSlot volume = DataSlot.standalone();
+	private final DataSlot playhead = DataSlot.standalone();
+	private final DataSlot[] wave = new DataSlot[WAVE_BINS];
 	private ItemStack seededFrom = ItemStack.EMPTY;
 
 	public SoundingTableMenu(int containerId, Inventory inventory, BlockPos position) {
@@ -68,323 +59,195 @@ public class SoundingTableMenu extends AbstractContainerMenu {
 		super(EchoMenus.SOUNDING_TABLE, containerId);
 		this.access = access;
 		this.owner = inventory.player;
-
-		addSlot(new Slot(input, LENS_SLOT, SoundingTableLayout.LENS_SLOT_X, SoundingTableLayout.LENS_SLOT_Y) {
-			@Override
-			public boolean mayPlace(ItemStack stack) {
-				return EchoLensStacks.isLens(stack);
-			}
-
-			@Override
-			public int getMaxStackSize() {
-				return 1;
-			}
+		addSlot(new Slot(input, 0, SoundingTableLayout.LENS_SLOT_X, SoundingTableLayout.LENS_SLOT_Y) {
+			@Override public boolean mayPlace(ItemStack stack) { return EchoLensStacks.isLens(stack); }
+			@Override public int getMaxStackSize() { return 1; }
 		});
-
 		addSlot(new Slot(output, 0, SoundingTableLayout.RESULT_SLOT_X, SoundingTableLayout.RESULT_SLOT_Y) {
-			@Override
-			public boolean mayPlace(ItemStack stack) {
+			@Override public boolean mayPlace(ItemStack stack) {
 				return stack.getItem() instanceof EchoChartItem
-						&& stack.get(EchoComponents.CHART_DATA) != null;
+						&& (stack.has(EchoComponents.RECORD_DATA) || stack.has(EchoComponents.CHART_DATA));
 			}
-
-			@Override
-			public int getMaxStackSize() {
-				return 1;
-			}
-
-			@Override
-			public void onTake(Player player, ItemStack stack) {
-				access.execute((level, position) -> level.playSound(null, position,
-						EchoSounds.TABLE_TUNE, SoundSource.BLOCKS, TAKE_VOLUME, TAKE_PITCH));
-				super.onTake(player, stack);
-			}
+			@Override public int getMaxStackSize() { return 1; }
 		});
-
-		for (int row = 0; row < INVENTORY_ROWS; row++) {
-			for (int column = 0; column < INVENTORY_COLUMNS; column++) {
-				addSlot(new Slot(inventory, column + row * INVENTORY_COLUMNS + INVENTORY_COLUMNS,
-						SoundingTableLayout.INVENTORY_X + column * SLOT_PITCH,
-						SoundingTableLayout.INVENTORY_Y + row * SLOT_PITCH));
+		for (int row = 0; row < 3; row++) {
+			for (int column = 0; column < 9; column++) {
+				addSlot(new Slot(inventory, column + row * 9 + 9,
+						SoundingTableLayout.INVENTORY_X + column * 18,
+						SoundingTableLayout.INVENTORY_Y + row * 18));
 			}
 		}
-
-		for (int column = 0; column < INVENTORY_COLUMNS; column++) {
-			addSlot(new Slot(inventory, column,
-					SoundingTableLayout.INVENTORY_X + column * SLOT_PITCH, SoundingTableLayout.HOTBAR_Y));
+		for (int column = 0; column < 9; column++) {
+			addSlot(new Slot(inventory, column, SoundingTableLayout.INVENTORY_X + column * 18,
+					SoundingTableLayout.HOTBAR_Y));
 		}
-
-		addDataSlot(selected);
-		addDataSlot(lowest);
-		addDataSlot(highest);
-		addDataSlot(worldBottom);
-		addDataSlot(worldTop);
-		addDataSlot(floor);
-		addDataSlot(ceiling);
+		for (DataSlot value : new DataSlot[]{selected, duration, start, end, volume, playhead}) {
+			addDataSlot(value);
+		}
+		for (int i = 0; i < WAVE_BINS; i++) {
+			wave[i] = addDataSlot(DataSlot.standalone());
+		}
 		selected.set(-1);
-
-		access.execute((level, position) -> {
-			worldBottom.set(level.getMinBuildHeight());
-			worldTop.set(level.getMaxBuildHeight() - 1);
-			floor.set(worldBottom.get());
-			ceiling.set(worldTop.get());
-		});
+		volume.set(100);
+		playhead.set(-1);
 	}
 
-	public ItemStack lens() {
-		return input.getItem(LENS_SLOT);
-	}
+	public ItemStack lens() { return input.getItem(0); }
+	public ItemStack chart() { return output.getItem(0); }
+	public List<EchoMemoryReference> memories() { return EchoLensStacks.references(lens()).entries(); }
+	public int selectedSlot() { return selected.get(); }
+	public int durationTicks() { return duration.get(); }
+	public int startTick() { return start.get(); }
+	public int endTick() { return end.get(); }
+	public int volume() { return volume.get(); }
+	public int playhead() { return playhead.get(); }
+	public int waveAt(int index) { return wave[index].get(); }
 
-	public List<EchoMemoryReference> memories() {
-		return EchoLensStacks.references(lens()).entries();
-	}
-
-	public int selectedSlot() {
-		return selected.get();
-	}
-
-	public int lowestY() {
-		return lowest.get();
-	}
-
-	public int highestY() {
-		return highest.get();
-	}
-
-	public int worldBottom() {
-		return worldBottom.get();
-	}
-
-	public int worldTop() {
-		return worldTop.get();
-	}
-
-	public int floor() {
-		return floor.get();
-	}
-
-	public int ceiling() {
-		return ceiling.get();
+	public EchoMemoryReference chosen() {
+		List<EchoMemoryReference> memories = memories();
+		return selected.get() < 0 || selected.get() >= memories.size() ? null : memories.get(selected.get());
 	}
 
 	@Override
 	public void slotsChanged(Container container) {
 		super.slotsChanged(container);
-		ItemStack lens = lens();
-
-		if (ItemStack.matches(lens, seededFrom)) {
-			return;
+		if (!ItemStack.matches(lens(), seededFrom)) {
+			stopPreview();
+			seededFrom = lens().copy();
+			selected.set(memories().isEmpty() ? -1 : 0);
+			resetEdit();
 		}
-
-		seededFrom = lens.copy();
-		List<EchoMemoryReference> memories = memories();
-		selected.set(memories.isEmpty() ? -1 : 0);
-		resetWindow();
-		pushPreview();
 	}
 
-	private void resetWindow() {
+	private void resetEdit() {
 		EchoMemoryReference chosen = chosen();
-
-		if (chosen == null) {
-			floor.set(worldBottom.get());
-			ceiling.set(worldTop.get());
-		} else {
-			floor.set(Math.max(worldBottom.get(), chosen.center().getY() - chosen.verticalRadius()));
-			ceiling.set(Math.min(worldTop.get(), chosen.center().getY() + chosen.verticalRadius()));
-		}
-
-		lowest.set(floor.get());
-		highest.set(ceiling.get());
-	}
-
-	private EchoMemoryReference chosen() {
-		List<EchoMemoryReference> memories = memories();
-		int index = selected.get();
-
-		return index < 0 || index >= memories.size() ? null : memories.get(index);
+		duration.set(chosen == null ? 0 : chosen.durationTicks());
+		start.set(0);
+		end.set(duration.get());
+		volume.set(100);
+		for (DataSlot bin : wave) { bin.set(0); }
+		EchoServerState state = EchoServerState.current();
+		if (!(owner instanceof ServerPlayer) || state == null || chosen == null) { return; }
+		state.storage().load(chosen.memoryId()).ifPresent(memory -> {
+			var sounds = memory.soundTimeline();
+			for (int i = 0; i < sounds.size(); i++) {
+				if (sounds.isStopAt(i)) { continue; }
+				int bin = Math.clamp(sounds.tickAt(i) * WAVE_BINS / Math.max(1, duration.get()), 0, WAVE_BINS - 1);
+				wave[bin].set(Math.max(wave[bin].get(), Math.clamp(Math.round(sounds.volumeAt(i) * 50), 1, 100)));
+			}
+		});
 	}
 
 	@Override
 	public boolean clickMenuButton(Player player, int button) {
-		List<EchoMemoryReference> memories = memories();
-
-		if (SoundingTablePlan.isSelect(button, memories.size())) {
-			selected.set(SoundingTablePlan.offsetOf(button, SoundingTablePlan.SELECT_BASE));
-			resetWindow();
-			pushPreview();
-
-			return true;
+		if (SoundingTablePlan.isSelect(button, memories().size())) {
+			stopPreview(); selected.set(button); resetEdit(); broadcastChanges(); return true;
 		}
-
-		if (SoundingTablePlan.isLowest(button)) {
-			int value = floor.get() + SoundingTablePlan.offsetOf(button, SoundingTablePlan.LOWEST_BASE);
-			lowest.set(Math.clamp(value, floor.get(), highest.get()));
-			pushPreview();
-
-			return true;
+		if (button == SoundingTablePlan.STOP) { stopPreview(); return true; }
+		if (button == SoundingTablePlan.EXTRACT) { return canReturn() ? putBack(player) : extract(player); }
+		if (chosen() == null || duration.get() <= 0) { return false; }
+		if (button == SoundingTablePlan.PREVIEW && player instanceof ServerPlayer server) {
+			EchoServerState state = EchoServerState.current();
+			return state != null && state.records().preview(server, edit());
 		}
-
-		if (SoundingTablePlan.isHighest(button)) {
-			int value = floor.get() + SoundingTablePlan.offsetOf(button, SoundingTablePlan.HIGHEST_BASE);
-			highest.set(Math.clamp(value, lowest.get(), ceiling.get()));
-			pushPreview();
-
-			return true;
-		}
-
-		if (button == SoundingTablePlan.EXTRACT) {
-			return canReturn() ? putBack(player) : extract(player);
-		}
-
-		return false;
+		stopPreview();
+		if (button >= SoundingTablePlan.START_BASE && button <= SoundingTablePlan.START_BASE + EchoRecordData.MAX_TICKS) {
+			start.set(Math.clamp(button - SoundingTablePlan.START_BASE, 0, Math.max(0, end.get() - 1)));
+		} else if (button >= SoundingTablePlan.END_BASE && button <= SoundingTablePlan.END_BASE + EchoRecordData.MAX_TICKS) {
+			end.set(Math.clamp(button - SoundingTablePlan.END_BASE, start.get() + 1, duration.get()));
+		} else if (button >= SoundingTablePlan.VOLUME_BASE && button <= SoundingTablePlan.VOLUME_BASE + EchoRecordData.MAX_VOLUME) {
+			volume.set(button - SoundingTablePlan.VOLUME_BASE);
+		} else { return false; }
+		broadcastChanges(); return true;
 	}
 
-	private void pushPreview() {
-		if (owner instanceof ServerPlayer viewer) {
-			EchoChartPreview.send(viewer, chosen(), lowest.get(), highest.get());
-		}
-	}
-
-	public ItemStack chart() {
-		return output.getItem(0);
+	private EchoRecordData edit() {
+		return EchoRecordData.edited(chosen().memoryId(), duration.get(), start.get(), end.get(), volume.get());
 	}
 
 	public boolean canExtract() {
-		return EchoConfig.values().allowCharts()
-				&& chosen() != null && output.getItem(0).isEmpty();
+		return EchoConfig.values().allowCharts() && chosen() != null && duration.get() > 0 && chart().isEmpty();
 	}
 
 	public boolean canReturn() {
-		EchoChartData data = chart().get(EchoComponents.CHART_DATA);
-
-		return data != null && !lens().isEmpty()
-				&& EchoLensStacks.references(lens())
-						.nextFreeSlot(EchoLensStacks.upgrades(lens()).memorySlots()).isPresent();
+		return !chart().isEmpty() && !lens().isEmpty() && (chart().has(EchoComponents.RECORD_DATA)
+				|| chart().has(EchoComponents.CHART_DATA)) && EchoLensStacks.references(lens())
+				.nextFreeSlot(EchoLensStacks.effectiveUpgrades(lens()).memorySlots()).isPresent();
 	}
 
 	private boolean extract(Player player) {
-		EchoMemoryReference chosen = chosen();
-
-		if (chosen == null || !output.getItem(0).isEmpty() || !(player instanceof ServerPlayer viewer)) {
-			return false;
+		EchoServerState state = EchoServerState.current();
+		if (!(player instanceof ServerPlayer server) || !canExtract() || state == null) { return false; }
+		if (state.storage().load(chosen().memoryId()).isEmpty()) {
+			server.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_MEMORY_CORRUPT), true); return false;
 		}
-
-		int sounded = EchoChartPreview.soundedCount(viewer, chosen, lowest.get(), highest.get());
-
-		if (sounded <= 0) {
-			return false;
-		}
-
-		ItemStack lens = lens();
-		EchoMemoryReferences remaining = EchoLensStacks.references(lens).withRemoved(chosen.memoryId());
-		lens.set(EchoComponents.MEMORY_REFERENCES, remaining);
-		seededFrom = lens.copy();
-		ItemStack chart = new ItemStack(EchoItems.ECHO_CHART);
-		chart.set(EchoComponents.CHART_DATA, new EchoChartData(chosen.memoryId(), chosen.dimension(),
-				chosen.center(), chosen.radius(), lowest.get(), highest.get(), sounded));
-		output.setItem(0, chart);
-		selected.set(remaining.entries().isEmpty() ? -1 : 0);
-		resetWindow();
-		pushPreview();
-		broadcastChanges();
-
-		return true;
+		stopPreview();
+		ItemStack result = new ItemStack(EchoItems.ECHO_CHART);
+		result.set(EchoComponents.RECORD_DATA, edit());
+		EchoLensStacks.setReferences(lens(), EchoLensStacks.references(lens()).withRemoved(chosen().memoryId()));
+		output.setItem(0, result);
+		seededFrom = lens().copy();
+		selected.set(memories().isEmpty() ? -1 : 0); resetEdit();
+		access.execute((level, position) -> level.playSound(null, position, EchoSounds.TABLE_TUNE,
+				SoundSource.BLOCKS, 0.7F, 1.0F));
+		broadcastChanges(); return true;
 	}
 
 	private boolean putBack(Player player) {
-		EchoChartData data = chart().get(EchoComponents.CHART_DATA);
-
-		if (data == null || !(player instanceof ServerPlayer viewer)) {
-			return false;
-		}
-
-		ItemStack lens = lens();
-		EchoMemoryReferences held = EchoLensStacks.references(lens);
-		Optional<Integer> free = held.nextFreeSlot(EchoLensStacks.upgrades(lens).memorySlots());
-
-		if (free.isEmpty()) {
-			return false;
-		}
-
-		Optional<EchoMemoryRecord> record = EchoServerState.current() == null
-				? Optional.empty()
-				: EchoServerState.current().storage().load(data.memoryId());
-
+		EchoServerState state = EchoServerState.current();
+		if (!(player instanceof ServerPlayer server) || !canReturn() || state == null) { return false; }
+		EchoRecordData data = EchoChartItem.recordData(chart(), state.storage());
+		var record = data == null ? java.util.Optional.<EchoMemoryRecord>empty() : state.storage().load(data.memoryId());
 		if (record.isEmpty()) {
-			viewer.displayClientMessage(
-					Component.translatable(EchoTranslations.MESSAGE_MEMORY_CORRUPT), true);
-
-			return false;
+			server.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_MEMORY_CORRUPT), true); return false;
 		}
+		stopPreview();
+		var memory = record.get();
+		int free = EchoLensStacks.references(lens()).nextFreeSlot(EchoLensStacks.effectiveUpgrades(lens()).memorySlots()).orElseThrow();
+		EchoLensStacks.setReferences(lens(), EchoLensStacks.references(lens()).withAdded(new EchoMemoryReference(
+				memory.id(), free, memory.dimension(), memory.center(), memory.radius(), memory.verticalRadius(),
+				memory.durationTicks(), memory.createdAtEpochMillis())));
+		seededFrom = lens().copy(); output.setItem(0, ItemStack.EMPTY);
+		selected.set(0); resetEdit(); broadcastChanges(); return true;
+	}
 
-		EchoMemoryRecord kept = record.get();
-		lens.set(EchoComponents.MEMORY_REFERENCES, held.withAdded(new EchoMemoryReference(
-				kept.id(), free.get(), kept.dimension(), kept.center(),
-				kept.radius(), kept.verticalRadius(), kept.durationTicks(),
-				kept.createdAtEpochMillis())));
-		seededFrom = lens.copy();
-		output.setItem(0, ItemStack.EMPTY);
-		selected.set(free.get());
-		resetWindow();
-		pushPreview();
-		access.execute((level, position) -> level.playSound(null, position,
-				EchoSounds.TABLE_TUNE, SoundSource.BLOCKS, TAKE_VOLUME, TAKE_PITCH));
-		broadcastChanges();
+	private void stopPreview() {
+		if (owner instanceof ServerPlayer && EchoServerState.current() != null) {
+			EchoServerState.current().records().stopPreview(owner.getUUID());
+		}
+		playhead.set(-1);
+	}
 
-		return true;
+	@Override
+	public void broadcastChanges() {
+		if (owner instanceof ServerPlayer && EchoServerState.current() != null) {
+			playhead.set(EchoServerState.current().records().previewTick(owner.getUUID()));
+		}
+		super.broadcastChanges();
 	}
 
 	@Override
 	public ItemStack quickMoveStack(Player player, int index) {
 		Slot slot = slots.get(index);
-
-		if (!slot.hasItem()) {
-			return ItemStack.EMPTY;
-		}
-
-		ItemStack stack = slot.getItem();
-		ItemStack copy = stack.copy();
-
+		if (!slot.hasItem()) { return ItemStack.EMPTY; }
+		ItemStack stack = slot.getItem(); ItemStack copy = stack.copy();
 		if (index < 2) {
-			if (!moveItemStackTo(stack, 2, slots.size(), true)) {
-				return ItemStack.EMPTY;
-			}
+			if (!moveItemStackTo(stack, 2, slots.size(), true)) { return ItemStack.EMPTY; }
 		} else if (EchoLensStacks.isLens(stack)) {
-			if (!moveItemStackTo(stack, LENS_SLOT, LENS_SLOT + 1, false)) {
-				return ItemStack.EMPTY;
-			}
-		} else if (stack.getItem() instanceof EchoChartItem
-
-				&& stack.get(EchoComponents.CHART_DATA) != null) {
-			if (!moveItemStackTo(stack, RESULT_SLOT, RESULT_SLOT + 1, false)) {
-				return ItemStack.EMPTY;
-			}
-		} else {
-			return ItemStack.EMPTY;
-		}
-
-		if (stack.isEmpty()) {
-			slot.setByPlayer(ItemStack.EMPTY);
-		} else {
-			slot.setChanged();
-		}
-
+			if (!moveItemStackTo(stack, LENS_SLOT, LENS_SLOT + 1, false)) { return ItemStack.EMPTY; }
+		} else if (stack.getItem() instanceof EchoChartItem) {
+			if (!moveItemStackTo(stack, RESULT_SLOT, RESULT_SLOT + 1, false)) { return ItemStack.EMPTY; }
+		} else { return ItemStack.EMPTY; }
+		if (stack.isEmpty()) { slot.setByPlayer(ItemStack.EMPTY); } else { slot.setChanged(); }
 		return copy;
 	}
 
 	@Override
 	public void removed(Player player) {
-		super.removed(player);
-
-		access.execute((level, position) -> {
-			clearContainer(player, input);
-			clearContainer(player, output);
-		});
+		super.removed(player); stopPreview();
+		access.execute((level, position) -> { clearContainer(player, input); clearContainer(player, output); });
 	}
 
 	@Override
-	public boolean stillValid(Player player) {
-		return stillValid(access, player, EchoBlocks.SOUNDING_TABLE);
-	}
+	public boolean stillValid(Player player) { return stillValid(access, player, EchoBlocks.SOUNDING_TABLE); }
 }

@@ -1,6 +1,7 @@
 package dev.fimkov.echoesbeneath.menu;
 
 import dev.fimkov.echoesbeneath.item.EchoLensUpgrades;
+import dev.fimkov.echoesbeneath.config.EchoUpgradeSettings;
 
 public record ResonanceTablePlan(EchoLensUpgrades target, int experienceLevels, int amethystShards,
 		boolean changed) {
@@ -9,7 +10,12 @@ public record ResonanceTablePlan(EchoLensUpgrades target, int experienceLevels, 
 
 	public static ResonanceTablePlan of(EchoLensUpgrades current, EchoLensUpgrades floor,
 			EchoLensUpgrades peak, EchoLensUpgrades desired) {
-		EchoLensUpgrades clamped = ResonanceTableUpgrade.clampToFloor(floor, desired);
+		return of(current, floor, peak, desired, EchoUpgradeSettings.defaults());
+	}
+
+	public static ResonanceTablePlan of(EchoLensUpgrades current, EchoLensUpgrades floor,
+			EchoLensUpgrades peak, EchoLensUpgrades desired, EchoUpgradeSettings settings) {
+		EchoLensUpgrades clamped = ResonanceTableUpgrade.clampToFloor(floor, settings.limit(desired));
 		int levels = 0;
 		int shards = 0;
 
@@ -17,8 +23,8 @@ public record ResonanceTablePlan(EchoLensUpgrades target, int experienceLevels, 
 			int unpaid = upgrade.stepsOf(clamped) - upgrade.stepsOf(peak);
 
 			if (unpaid > 0) {
-				levels += unpaid * upgrade.experiencePerStep();
-				shards += unpaid * upgrade.shardsPerStep();
+				levels += unpaid * settings.track(upgrade).experiencePerStep();
+				shards += unpaid * settings.track(upgrade).shardsPerStep();
 			}
 		}
 

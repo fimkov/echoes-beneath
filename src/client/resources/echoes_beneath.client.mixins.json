@@ -6,7 +6,9 @@
     "FogRendererEchoMixin",
     "LevelRendererSkyMixin",
     "LightTextureDarknessMixin",
-    "ParticleEmissiveMixin"
+    "ParticleEmissiveMixin",
+    "RecordAudioOffsetMixin",
+    "ClientLevelAmbienceMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -8,6 +8,7 @@ import dev.fimkov.echoesbeneath.memory.snapshot.BlockSnapshot;
 import dev.fimkov.echoesbeneath.memory.timeline.SoundTimeline;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.world.level.block.Blocks;
 
 public final class EchoSounding {
 	private static final int MIN_CARRY = 2;
@@ -30,6 +31,11 @@ public final class EchoSounding {
 
 	public static EchoChartShape of(EchoMemoryRecord record, Columns columns, int minY, int maxY,
 			int budget) {
+		return of(record, columns, minY, maxY, budget, EchoConfig.values().sphericalCharts());
+	}
+
+	public static EchoChartShape of(EchoMemoryRecord record, Columns columns, int minY, int maxY,
+			int budget, boolean spherical) {
 		BlockSnapshot snapshot = record.snapshot();
 		int vertical = record.verticalRadius();
 		int lowest = Math.max(-vertical, minY - record.center().getY());
@@ -41,14 +47,24 @@ public final class EchoSounding {
 
 		IntList positions = new IntArrayList();
 		IntList states = new IntArrayList();
-		gather(snapshot, columns, record.radius(), lowest, highest, budget, positions, states);
+		gather(snapshot, seeThrough(snapshot.palette()), columns, record.radius(), lowest, highest,
+				budget, positions, states, spherical);
+		BlockPalette silhouettes = new BlockPalette();
+		for (int index = 0; index < states.size(); index++) {
+			var state = snapshot.palette().stateAt(states.getInt(index));
+			states.set(index, silhouettes.indexOf(state.isSolidRender(net.minecraft.world.level.EmptyBlockGetter.INSTANCE, net.minecraft.core.BlockPos.ZERO)
+					? Blocks.STONE.defaultBlockState() : state));
+		}
 
-		return new EchoChartShape(record.id(), snapshot.palette(), positions, states, lowest, highest,
+		return new EchoChartShape(record.id(), silhouettes, positions, states, lowest, highest,
 				record.recordedVision());
 	}
 
 	private static void seed(SoundTimeline sounds, Columns columns, int radius) {
 		for (int index = 0; index < sounds.size(); index++) {
+			if (sounds.isStopAt(index)) {
+				continue;
+			}
 			int x = (int) Math.floor(sounds.relativeXAt(index));
 			int z = (int) Math.floor(sounds.relativeZAt(index));
 			int carry = Math.clamp(Math.round(sounds.volumeAt(index)
@@ -58,20 +74,33 @@ public final class EchoSounding {
 		}
 	}
 
-	private static void gather(BlockSnapshot snapshot, Columns columns, int radius,
-			int lowest, int highest, int budget, IntList positions, IntList states) {
+	private static boolean[] seeThrough(BlockPalette palette) {
+		boolean[] clear = new boolean[palette.size()];
+
+		for (int index = 0; index < clear.length; index++) {
+			clear[index] = !palette.stateAt(index).isSolidRender(net.minecraft.world.level.EmptyBlockGetter.INSTANCE, net.minecraft.core.BlockPos.ZERO);
+		}
+
+		return clear;
+	}
+
+	private static void gather(BlockSnapshot snapshot, boolean[] seen, Columns columns, int radius,
+			int lowest, int highest, int budget, IntList positions, IntList states, boolean spherical) {
 		for (int x = -radius; x <= radius; x++) {
 			for (int z = -radius; z <= radius; z++) {
 				if (!columns.charted(x, z)) {
 					continue;
 				}
 				for (int y = lowest; y <= highest; y++) {
+					if (spherical && x * x + y * y + z * z > radius * radius) {
+						continue;
+					}
 					if (positions.size() >= budget) {
 						return;
 					}
 					int index = snapshot.paletteIndexAt(x, y, z);
 
-					if (index == BlockPalette.AIR_INDEX || !onSurface(snapshot, x, y, z)) {
+					if (index == BlockPalette.AIR_INDEX || !onSurface(snapshot, seen, x, y, z)) {
 						continue;
 					}
 					positions.add(EchoCoordinates.packRelative(x, y, z));
@@ -81,13 +110,16 @@ public final class EchoSounding {
 		}
 	}
 
-	private static boolean onSurface(BlockSnapshot snapshot, int x, int y, int z) {
-		return snapshot.paletteIndexAt(x + 1, y, z) == BlockPalette.AIR_INDEX
-				|| snapshot.paletteIndexAt(x - 1, y, z) == BlockPalette.AIR_INDEX
-				|| snapshot.paletteIndexAt(x, y + 1, z) == BlockPalette.AIR_INDEX
-				|| snapshot.paletteIndexAt(x, y - 1, z) == BlockPalette.AIR_INDEX
-				|| snapshot.paletteIndexAt(x, y, z + 1) == BlockPalette.AIR_INDEX
-				|| snapshot.paletteIndexAt(x, y, z - 1) == BlockPalette.AIR_INDEX;
+	private static boolean onSurface(BlockSnapshot snapshot, boolean[] seen, int x, int y, int z) {
+		return clear(snapshot, seen, x + 1, y, z) || clear(snapshot, seen, x - 1, y, z)
+				|| clear(snapshot, seen, x, y + 1, z) || clear(snapshot, seen, x, y - 1, z)
+				|| clear(snapshot, seen, x, y, z + 1) || clear(snapshot, seen, x, y, z - 1);
+	}
+
+	private static boolean clear(BlockSnapshot snapshot, boolean[] seen, int x, int y, int z) {
+		int index = snapshot.paletteIndexAt(x, y, z);
+
+		return index < 0 || index >= seen.length || seen[index];
 	}
 
 	public static final class Columns {

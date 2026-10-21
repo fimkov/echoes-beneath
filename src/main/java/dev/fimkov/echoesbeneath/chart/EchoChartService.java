@@ -85,6 +85,7 @@ public final class EchoChartService {
 	}
 
 	private static String cacheKey(EchoChartData data) {
-		return data.memoryId() + ":" + data.lowestY() + ":" + data.highestY();
+		return data.memoryId() + ":" + data.lowestY() + ":" + data.highestY()
+				+ ":" + EchoConfig.values().sphericalCharts();
 	}
 }

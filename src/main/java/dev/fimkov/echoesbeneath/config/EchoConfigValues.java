@@ -14,7 +14,9 @@ public record EchoConfigValues(
 		boolean disableBlockInteractionDuringPlayback,
 		boolean allowCharts,
 		int chartBlockLimit,
-		int soundCarryBlocks) {
+		int soundCarryBlocks,
+		boolean sphericalCharts,
+		EchoUpgradeSettings upgrades) {
 
 	private static final int TICKS_PER_SECOND = 20;
 

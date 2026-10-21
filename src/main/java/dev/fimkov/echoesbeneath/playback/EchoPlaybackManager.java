@@ -8,6 +8,7 @@ import dev.fimkov.echoesbeneath.entity.EchoLensMode;
 import dev.fimkov.echoesbeneath.item.EchoLensStacks;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryRecord;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReference;
+import dev.fimkov.echoesbeneath.menu.ResonanceTableUpgrade;
 import dev.fimkov.echoesbeneath.network.EchoPlaybackDataPart;
 import dev.fimkov.echoesbeneath.recording.EchoRecordingHooks;
 import dev.fimkov.echoesbeneath.registry.EchoSounds;
@@ -19,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.ArrayDeque;
+import java.util.Comparator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -41,6 +44,7 @@ public final class EchoPlaybackManager {
 
 	private final EchoServerState state;
 	private final Map<UUID, EchoPlaybackSession> sessions = new HashMap<>();
+	private final Map<UUID, Playlist> playlists = new HashMap<>();
 
 	public EchoPlaybackManager(EchoServerState state) {
 		this.state = state;
@@ -85,6 +89,22 @@ public final class EchoPlaybackManager {
 	}
 
 	public boolean start(ServerPlayer player, InteractionHand hand, EchoMemoryReference reference) {
+		return startAt(player, hand, reference, null);
+	}
+
+	public boolean startPlaylist(ServerPlayer player, InteractionHand hand, BlockPos center) {
+		List<EchoMemoryReference> memories = EchoLensStacks.references(player.getItemInHand(hand)).entries()
+				.stream().sorted(Comparator.comparingInt(EchoMemoryReference::slot)).toList();
+		if (memories.isEmpty()) {
+			player.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_NO_RESONANCE), true);
+			return false;
+		}
+		return startAt(player, hand, memories.getFirst(), new Playlist(center.immutable(),
+				new ArrayDeque<>(memories.subList(1, memories.size()))));
+	}
+
+	private boolean startAt(ServerPlayer player, InteractionHand hand, EchoMemoryReference reference,
+			Playlist playlist) {
 		ItemStack lensStack = player.getItemInHand(hand);
 		Optional<EchoMemoryRecord> loaded = state.storage().load(reference.memoryId());
 
@@ -96,8 +116,9 @@ public final class EchoPlaybackManager {
 
 		EchoMemoryRecord record = loaded.get();
 		ServerLevel level = player.serverLevel();
-		EchoRegion region = new EchoRegion(reference.dimension(), reference.center(),
-				reference.radius(), reference.verticalRadius());
+		EchoRegion region = playlist == null
+				? new EchoRegion(record.dimension(), record.center(), record.radius(), record.verticalRadius())
+				: new EchoRegion(level.dimension(), playlist.center(), record.radius(), record.verticalRadius());
 
 		if (!EchoConfig.values().allowOverlappingPlayback() && overlapsExisting(region)) {
 			player.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_PLAYBACK_OVERLAP), true);
@@ -139,6 +160,9 @@ public final class EchoPlaybackManager {
 		}
 
 		sessions.put(playbackId, session);
+		if (playlist != null) {
+			playlists.put(playbackId, playlist);
+		}
 		EchoRecordingHooks.runWithoutCapture(() -> level.playSound(null, region.center(),
 				EchoSounds.PLAYBACK_START, SoundSource.AMBIENT, START_VOLUME, START_PITCH));
 
@@ -149,9 +173,11 @@ public final class EchoPlaybackManager {
 	private static int visionOf(EchoMemoryRecord record, ItemStack deployed) {
 		int recorded = record.recordedVision();
 
-		return recorded == EchoMemoryRecord.VISION_UNKNOWN
+		int vision = recorded == EchoMemoryRecord.VISION_UNKNOWN
 				? EchoLensStacks.upgrades(deployed).vision()
 				: recorded;
+		return Math.min(vision, EchoConfig.values().upgrades()
+				.track(ResonanceTableUpgrade.VISION).maxSteps());
 	}
 	private boolean overlapsExisting(EchoRegion region) {
 		for (EchoPlaybackSession session : sessions.values()) {
@@ -226,24 +252,66 @@ public final class EchoPlaybackManager {
 	}
 
 	public void stop(EchoPlaybackSession session, EchoPlaybackStopReason reason) {
-		session.awardWatchers();
-		sessions.remove(session.playbackId());
-
 		if (session.isFinished()) {
 			return;
 		}
 
+		session.awardWatchers();
+		sessions.remove(session.playbackId());
 		session.markFinished();
 		state.suppression().restoreAll(session.suppressedStates());
 		session.broadcastStop();
 		playEndingEffects(session);
 		EchoLensEntity lens = session.lensEntity();
+		Playlist playlist = playlists.remove(session.playbackId());
+		if (reason == EchoPlaybackStopReason.TIMELINE_COMPLETE && playlist != null
+				&& !lens.isRemoved() && continuePlaylist(session, playlist)) {
+			return;
+		}
 
 		if (!lens.isRemoved()) {
 			lens.setMode(EchoLensMode.RETURNING);
 		}
 
 		EchoesBeneath.LOGGER.debug("Playback {} stopped because {}", session.playbackId(), reason);
+	}
+
+	private boolean continuePlaylist(EchoPlaybackSession previous, Playlist playlist) {
+		EchoMemoryReference next = playlist.remaining().pollFirst();
+		if (next == null) {
+			return false;
+		}
+		ServerPlayer owner = previous.level().getServer().getPlayerList().getPlayer(previous.ownerId());
+		if (owner == null) {
+			return false;
+		}
+		try {
+			EchoMemoryRecord record = state.storage().load(next.memoryId()).orElseThrow();
+			EchoRegion region = new EchoRegion(previous.level().dimension(), playlist.center(),
+					record.radius(), record.verticalRadius());
+			if (!EchoConfig.values().allowOverlappingPlayback() && overlapsExisting(region)) {
+				owner.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_PLAYBACK_OVERLAP), true);
+				return false;
+			}
+			var encoded = EchoPlaybackTransfer.encode(record);
+			EchoLensEntity lens = previous.lensEntity();
+			EchoPlaybackSession session = new EchoPlaybackSession(previous.playbackId(), previous.ownerId(),
+					previous.level(), region, record, lens, encoded, visionOf(record, lens.getLens()));
+			lens.setProgress(0.0F);
+			if (EchoConfig.values().suppressHostileMobs()) {
+				session.rememberSuppressed(state.suppression().suppressRegion(previous.level(), region));
+			}
+			sessions.put(session.playbackId(), session);
+			playlists.put(session.playbackId(), playlist);
+			return true;
+		} catch (RuntimeException failure) {
+			EchoesBeneath.LOGGER.error("Unable to continue playback with memory {}", next.memoryId(), failure);
+			owner.displayClientMessage(Component.translatable(EchoTranslations.MESSAGE_MEMORY_CORRUPT), true);
+			return false;
+		}
+	}
+
+	private record Playlist(BlockPos center, ArrayDeque<EchoMemoryReference> remaining) {
 	}
 
 	private void playEndingEffects(EchoPlaybackSession session) {

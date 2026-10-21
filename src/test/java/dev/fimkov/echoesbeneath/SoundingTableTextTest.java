@@ -53,7 +53,7 @@ class SoundingTableTextTest {
 	}
 
 	@Test
-	@DisplayName("the button and the height readout fit in every language")
+	@DisplayName("the editor actions and readouts fit in every language")
 	void labelsFit() {
 		Map<Integer, Integer> advances = advances();
 		List<String> tooWide = new ArrayList<>();
@@ -70,14 +70,11 @@ class SoundingTableTextTest {
 							+ SoundingTableLayout.EXTRACT_WIDTH);
 				}
 			}
-			String window = language.get("sounding.echoes_beneath.window").getAsString()
-					.replace("%s", "")
-					+ WIDEST_WINDOW_LOW + WIDEST_WINDOW_HIGH;
-			int readout = measure(advances, window) + STAGE_PADDING;
-
-			if (readout > SoundingTableLayout.STAGE_WIDTH) {
-				tooWide.add(code + " window is " + readout + "px against "
-						+ SoundingTableLayout.STAGE_WIDTH);
+			for (String key : new String[]{"record.echoes_beneath.start", "record.echoes_beneath.end", "record.echoes_beneath.volume"}) {
+				String label = language.get(key).getAsString().replace("%s", key.endsWith("volume") ? "200" : "2:00.0").replace("%%", "%");
+				if (measure(advances, label) + STAGE_PADDING > SoundingTableLayout.STAGE_WIDTH) {
+					tooWide.add(code + " " + key + " leaves the slider");
+				}
 			}
 			for (String key : new String[] {"sounding.echoes_beneath.no_lens",
 					"sounding.echoes_beneath.no_memories"}) {
@@ -105,8 +102,10 @@ class SoundingTableTextTest {
 								+ SoundingTableLayout.ROW_GAP) - SoundingTableLayout.ROW_GAP},
 				new int[] {SoundingTableLayout.STAGE_X, SoundingTableLayout.STAGE_Y,
 						SoundingTableLayout.STAGE_WIDTH, SoundingTableLayout.STAGE_HEIGHT},
-				new int[] {SoundingTableLayout.RULER_X, SoundingTableLayout.RULER_Y,
-						SoundingTableLayout.RULER_WIDTH, SoundingTableLayout.RULER_HEIGHT},
+				new int[] {SoundingTableLayout.STAGE_X, SoundingTableLayout.START_Y, SoundingTableLayout.STAGE_WIDTH, SoundingTableLayout.SLIDER_HEIGHT},
+				new int[] {SoundingTableLayout.STAGE_X, SoundingTableLayout.END_Y, SoundingTableLayout.STAGE_WIDTH, SoundingTableLayout.SLIDER_HEIGHT},
+				new int[] {SoundingTableLayout.STAGE_X, SoundingTableLayout.VOLUME_Y, SoundingTableLayout.STAGE_WIDTH, SoundingTableLayout.SLIDER_HEIGHT},
+				new int[] {SoundingTableLayout.PREVIEW_X, SoundingTableLayout.EXTRACT_Y, SoundingTableLayout.ACTION_WIDTH, SoundingTableLayout.EXTRACT_HEIGHT},
 				new int[] {SoundingTableLayout.EXTRACT_X, SoundingTableLayout.EXTRACT_Y,
 						SoundingTableLayout.EXTRACT_WIDTH, SoundingTableLayout.EXTRACT_HEIGHT},
 				new int[] {SoundingTableLayout.INVENTORY_X, SoundingTableLayout.INVENTORY_Y, 162, 54},

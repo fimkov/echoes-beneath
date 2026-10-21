@@ -5,6 +5,7 @@ import dev.fimkov.echoesbeneath.memory.EchoMemoryLocator;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReference;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReferences;
 import dev.fimkov.echoesbeneath.runtime.EchoServerState;
+import dev.fimkov.echoesbeneath.registry.EchoBlocks;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -36,6 +37,11 @@ public final class EchoLensInteraction {
 
 		ItemStack stack = context.getItemInHand();
 		EchoMemoryReferences references = EchoLensStacks.references(stack);
+		if (player.isShiftKeyDown()
+				&& context.getLevel().getBlockState(context.getClickedPos()).is(EchoBlocks.SOUNDING_TABLE)) {
+			return state.playbacks().startPlaylist(player, context.getHand(), context.getClickedPos().above())
+					? InteractionResult.CONSUME : InteractionResult.FAIL;
+		}
 		Optional<EchoMemoryReference> resonating = EchoMemoryLocator.resonating(
 				references, player.level().dimension(), player.blockPosition());
 
@@ -44,7 +50,7 @@ public final class EchoLensInteraction {
 		}
 
 		return startRecording(state, player, context.getHand(), supportBlockFor(context), references,
-				EchoLensStacks.upgrades(stack).memorySlots());
+				EchoLensStacks.effectiveUpgrades(stack).memorySlots());
 	}
 
 	private static BlockPos supportBlockFor(UseOnContext context) {

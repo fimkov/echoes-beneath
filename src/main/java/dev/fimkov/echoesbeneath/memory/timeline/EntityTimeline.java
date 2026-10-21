@@ -142,8 +142,8 @@ public final class EntityTimeline {
 
 	public CompoundTag toNbt() {
 		CompoundTag tag = new CompoundTag();
-		tag.put("entity_types", writeIdentifiers(entityTypePalette));
-		tag.put("items", writeIdentifiers(itemPalette));
+		tag.put("entity_types", writeResourceLocations(entityTypePalette));
+		tag.put("items", writeResourceLocations(itemPalette));
 		ListTag trackList = new ListTag();
 
 		for (EntityTrack track : tracks) {
@@ -155,7 +155,7 @@ public final class EntityTimeline {
 		return tag;
 	}
 
-	private static ListTag writeIdentifiers(List<ResourceLocation> identifiers) {
+	private static ListTag writeResourceLocations(List<ResourceLocation> identifiers) {
 		ListTag list = new ListTag();
 
 		for (ResourceLocation identifier : identifiers) {
@@ -165,7 +165,7 @@ public final class EntityTimeline {
 		return list;
 	}
 
-	private static List<ResourceLocation> readIdentifiers(ListTag list) {
+	private static List<ResourceLocation> readResourceLocations(ListTag list) {
 		List<ResourceLocation> identifiers = new ArrayList<>(list.size());
 
 		for (Tag element : list) {
@@ -181,8 +181,8 @@ public final class EntityTimeline {
 	}
 
 	public static EntityTimeline fromNbt(CompoundTag tag, int maxTracks) {
-		List<ResourceLocation> entityTypes = readIdentifiers(tag.getList("entity_types", NBT_STRING_TYPE));
-		List<ResourceLocation> items = readIdentifiers(tag.getList("items", NBT_STRING_TYPE));
+		List<ResourceLocation> entityTypes = readResourceLocations(tag.getList("entity_types", NBT_STRING_TYPE));
+		List<ResourceLocation> items = readResourceLocations(tag.getList("items", NBT_STRING_TYPE));
 		List<EntityTrack> tracks = new ArrayList<>();
 
 		for (Tag element : tag.getList("tracks", NBT_COMPOUND_TYPE)) {

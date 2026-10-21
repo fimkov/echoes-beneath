@@ -1,5 +1,6 @@
 package dev.fimkov.echoesbeneath.item;
 
+import dev.fimkov.echoesbeneath.config.EchoConfig;
 import dev.fimkov.echoesbeneath.memory.EchoMemoryReferences;
 import dev.fimkov.echoesbeneath.registry.EchoComponents;
 import dev.fimkov.echoesbeneath.registry.EchoItems;
@@ -31,6 +32,10 @@ public final class EchoLensStacks {
 		EchoLensUpgrades reached = EchoLensUpgrades.highestOf(peak(stack), upgrades);
 		stack.set(EchoComponents.LENS_UPGRADES, upgrades);
 		stack.set(EchoComponents.LENS_PEAK, reached);
+	}
+
+	public static EchoLensUpgrades effectiveUpgrades(ItemStack stack) {
+		return EchoConfig.values().upgrades().limit(upgrades(stack));
 	}
 
 	public static EchoLensUpgrades peak(ItemStack stack) {

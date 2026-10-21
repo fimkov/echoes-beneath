@@ -45,8 +45,12 @@ class EchoSoundingTest {
 	}
 
 	private static BlockSnapshot stoneWithRooms() {
+		return roomsIn(Blocks.STONE.defaultBlockState());
+	}
+
+	private static BlockSnapshot roomsIn(net.minecraft.world.level.block.state.BlockState material) {
 		BlockPalette palette = new BlockPalette();
-		int stone = palette.indexOf(Blocks.STONE.defaultBlockState());
+		int stone = palette.indexOf(material);
 		Int2ObjectMap<SnapshotSection> sections = new Int2ObjectOpenHashMap<>();
 
 		for (int sectionX = -1; sectionX <= 0; sectionX++) {
@@ -93,9 +97,13 @@ class EchoSoundingTest {
 	}
 
 	private static EchoMemoryRecord recordWith(SoundTimeline sounds) {
+		return recordWith(sounds, stoneWithRooms());
+	}
+
+	private static EchoMemoryRecord recordWith(SoundTimeline sounds, BlockSnapshot snapshot) {
 		return new EchoMemoryRecord(UUID.randomUUID(), 0, EchoFormat.CURRENT_VERSION,
 				EchoTestSupport.OVERWORLD, CENTRE, RADIUS, VERTICAL, 1_700_000_000_000L, 200,
-				stoneWithRooms(), new BlockTimeline(256), new EntityTimeline(16), sounds,
+				snapshot, new BlockTimeline(256), new EntityTimeline(16), sounds,
 				new ParticleTimeline(16), List.of(), RECORDED_VISION);
 	}
 
@@ -183,6 +191,46 @@ class EchoSoundingTest {
 		for (int index = 0; index < shape.size(); index++) {
 			assertEquals(0, EchoCoordinates.unpackY(shape.positions().getInt(index)));
 		}
+	}
+
+	@Test
+	void sphericalChartsClipCornersButKeepTheNearbyRoom() {
+		EchoMemoryRecord original = recordWith(oneSoundInTheOpenRoom());
+		EchoMemoryRecord record = new EchoMemoryRecord(original.id(), original.slot(), original.formatVersion(),
+				original.dimension(), original.center(), 4, original.verticalRadius(), original.createdAtEpochMillis(),
+				original.durationTicks(), original.snapshot(), original.blockTimeline(), original.entityTimeline(),
+				original.soundTimeline(), original.particleTimeline(), original.recordedPlayers(), original.recordedVision());
+		var reach = EchoSounding.reach(record);
+		EchoChartShape cylinder = EchoSounding.of(record, reach, 0, 128, BUDGET, false);
+		EchoChartShape sphere = EchoSounding.of(record, reach, 0, 128, BUDGET, true);
+		assertTrue(holds(cylinder, 0, 6, 0));
+		assertFalse(holds(sphere, 0, 6, 0));
+		assertTrue(holds(sphere, 3, 0, 0));
+		for (int position : sphere.positions()) {
+			int x = EchoCoordinates.unpackX(position);
+			int y = EchoCoordinates.unpackY(position);
+			int z = EchoCoordinates.unpackZ(position);
+			assertTrue(x * x + y * y + z * z <= record.radius() * record.radius());
+		}
+	}
+
+	@Test
+	void chartPacketsNeverRevealOreTypesOrUnusedPaletteEntries() {
+		BlockSnapshot snapshot = roomsIn(Blocks.DIAMOND_ORE.defaultBlockState());
+		snapshot.palette().indexOf(Blocks.GOLD_ORE.defaultBlockState());
+		EchoChartShape shape = EchoSounding.of(recordWith(oneSoundInTheOpenRoom(), snapshot), 0, 128, BUDGET);
+		assertFalse(shape.isEmpty());
+		var decoded = dev.fimkov.echoesbeneath.chart.EchoChartCodec.decode(
+				dev.fimkov.echoesbeneath.chart.EchoChartCodec.encode(shape));
+		assertEquals(List.of(Blocks.AIR.defaultBlockState(), Blocks.STONE.defaultBlockState()), decoded.palette());
+	}
+
+	@Test
+	void stoppingAJukeboxDoesNotChartANewRoom() {
+		SoundTimeline sounds = new SoundTimeline(16);
+		sounds.recordJukebox(4, 0.5D, 0.5D, 0.5D,
+				ResourceLocation.withDefaultNamespace("intentionally_empty"), false);
+		assertTrue(EchoSounding.of(recordWith(sounds), 0, 128, BUDGET).isEmpty());
 	}
 
 	private static boolean holds(EchoChartShape shape, int x, int y, int z) {

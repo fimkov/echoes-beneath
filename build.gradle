@@ -7,7 +7,7 @@ version = project.mod_version
 group = project.maven_group
 
 base {
-	archivesName = "${project.archives_base_name}-fabric"
+	archivesName = "${project.archives_base_name}-fabric-${project.minecraft_version}"
 }
 
 repositories {
@@ -76,6 +76,11 @@ java {
 
 	sourceCompatibility = JavaVersion.VERSION_21
 	targetCompatibility = JavaVersion.VERSION_21
+}
+
+sourceSets.test {
+	compileClasspath += sourceSets.client.output + sourceSets.client.compileClasspath
+	runtimeClasspath += sourceSets.client.output + sourceSets.client.runtimeClasspath
 }
 
 test {
